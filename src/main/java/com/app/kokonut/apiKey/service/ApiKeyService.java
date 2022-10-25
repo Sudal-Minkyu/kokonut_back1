@@ -1,17 +1,13 @@
 package com.app.kokonut.apiKey.service;
 
 import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
-import com.app.kokonut.apiKey.entity.ApiKey;
+import com.app.kokonut.apiKey.dto.ApiKeyListDto;
 import com.app.kokonut.apiKey.repository.ApiKeyRepository;
-import com.app.kokonut.apiKey.vo.ApiKeyQueryVO;
-import com.app.kokonut.apiKey.vo.ApiKeyUpdateVO;
-import com.app.kokonut.apiKey.vo.ApiKeyVO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Woody
@@ -28,65 +24,64 @@ public class ApiKeyService {
         this.apiKeyRepository = apiKeyRepository;
     }
 
-    public Integer save(ApiKeyVO vO) {
-        ApiKey bean = new ApiKey();
-        BeanUtils.copyProperties(vO, bean);
-        bean = apiKeyRepository.save(bean);
-        return bean.getIdx();
-    }
-
-    public void delete(Integer id) {
-        apiKeyRepository.deleteById(id);
-    }
-
-    public void update(Integer id, ApiKeyUpdateVO vO) {
-        ApiKey bean = requireOne(id);
-        BeanUtils.copyProperties(vO, bean);
-        apiKeyRepository.save(bean);
-    }
-
-    public ApiKeyKeyDto getById(Integer id) {
-        ApiKey original = requireOne(id);
-        return toDTO(original);
-    }
-
-    public Page<ApiKeyKeyDto> query(ApiKeyQueryVO vO) {
-        throw new UnsupportedOperationException();
-    }
-
-    private ApiKeyKeyDto toDTO(ApiKey original) {
-        ApiKeyKeyDto bean = new ApiKeyKeyDto();
-        BeanUtils.copyProperties(original, bean);
-        return bean;
-    }
-
-    private ApiKey requireOne(Integer id) {
-        return apiKeyRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Resource not found: " + id));
-    }
+//    public Integer save(ApiKeyVO vO) {
+//        ApiKey bean = new ApiKey();
+//        BeanUtils.copyProperties(vO, bean);
+//        bean = apiKeyRepository.save(bean);
+//        return bean.getIdx();
+//    }
+//
+//    public void delete(Integer id) {
+//        apiKeyRepository.deleteById(id);
+//    }
+//
+//    public void update(Integer id, ApiKeyUpdateVO vO) {
+//        ApiKey bean = requireOne(id);
+//        BeanUtils.copyProperties(vO, bean);
+//        apiKeyRepository.save(bean);
+//    }
+//
+//    public ApiKeyKeyDto getById(Integer id) {
+//        ApiKey original = requireOne(id);
+//        return toDTO(original);
+//    }
+//
+//    public Page<ApiKeyKeyDto> query(ApiKeyQueryVO vO) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    private ApiKeyKeyDto toDTO(ApiKey original) {
+//        ApiKeyKeyDto bean = new ApiKeyKeyDto();
+//        BeanUtils.copyProperties(original, bean);
+//        return bean;
+//    }
+//
+//    private ApiKey requireOne(Integer id) {
+//        return apiKeyRepository.findById(id)
+//                .orElseThrow(() -> new NoSuchElementException("Resource not found: " + id));
+//    }
 
 
 //	private DBLogger dblogger = new DBLogger(ApiKeyService.class);
 
-//    @Autowired
-//    public ApiKeyService(ApiKeyRepository apiKeyRepository){
-//        this.apiKeyRepository = apiKeyRepository;
-//    }
-
-//	/**
-//	 * Api Key 리스트
-//	 */
+	/**
+	 * Api Key 리스트
+	 */
 //	public List<HashMap<String, Object>> SelectApiKeyList(HashMap<String, Object> paramMap) {
 //		return dao.SelectApiKeyList(paramMap);
 //	}
-//
-//	/**
-//	 * Api Key 리스트 Count
-//	 */
+    public List<ApiKeyListDto> findByKeyList(HashMap<String, Object> paramMap) {
+        return apiKeyRepository.findByKeyList(paramMap);
+    }
+
+	/**
+	 * Api Key 리스트 Count
+	 */
 //	public int SelectApiKeyListCount(HashMap<String, Object> paramMap) {
-//		return dao.SelectApiKeyListCount(paramMap);
-//	}
-//
+//        return dao.SelectApiKeyListCount(paramMap);
+//    }
+
+
 //	/**
 //	 * Api Key 상세보기
 //	 * @param idx

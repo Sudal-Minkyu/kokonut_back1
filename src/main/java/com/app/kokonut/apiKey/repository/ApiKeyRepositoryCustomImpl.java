@@ -21,7 +21,6 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         super(ApiKey.class);
     }
 
-    // 본사 접수현황 왼쪽 NativeQuery
 //    @Override
 //    public List<RequestReceiptListDto> findByHeadReceiptList(Long branchId, Long franchiseId, String filterFromDt, String filterToDt) {
 //        EntityManager em = getEntityManager();
