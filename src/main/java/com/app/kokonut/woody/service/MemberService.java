@@ -13,24 +13,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberService {
 
-//    private final CompanyRepository companyRepository;
+//    private final ApiKeyRepository apiKeyRepository;
 //
 //    @Autowired
-//    public UserService(CompanyRepository companyRepository){
-//        this.companyRepository = companyRepository;
-//    }
-//
-//    public ResponseEntity<Map<String, Object>> companyDetail(Integer IDX) {
-//        log.info("companyDetail 호출 ");
-//
-//        AjaxResponse res = new AjaxResponse();
-//        HashMap<String, Object> data = new HashMap<>();
-//
-//        CompanyListDto company = companyRepository.findByCompany(IDX);
-//        log.info("company : "+company);
-//        data.put("company",company);
-//
-//        return ResponseEntity.ok(res.success(data));
+//    public MemberService(ApiKeyRepository apiKeyRepository){
+//        this.apiKeyRepository = apiKeyRepository;
 //    }
 
 }

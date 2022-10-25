@@ -18,20 +18,20 @@ import java.util.List;
 @Repository
 public interface ApiKeyRepository extends JpaRepository<ApiKey, Integer>, JpaSpecificationExecutor<ApiKey>, ApiKeyRepositoryCustom {
 
-//     List<HashMap<String, Object>> SelectApiKeyList(HashMap<String, Object> paramMap);
+//     List<HashMap<String, Object>> SelectApiKeyList(HashMap<String, Object> paramMap); // 변경전 - Custom 완료
 //
-//     int SelectApiKeyListCount(HashMap<String, Object> paramMap);
+//     int SelectApiKeyListCount(HashMap<String, Object> paramMap); // 변경전 - Custom 완료
 //
-//     HashMap<String, Object> SelectApiKeyByIdx(int idx);
+//     HashMap<String, Object> SelectByKey(String key); // 변경전 - Custom 완료
+//
+//     HashMap<String, Object> SelectApiKeyByIdx(int idx); // 변경전 - Custom 완료
 //
 //     void InsertApiKey(HashMap<String, Object> paramMap);
 //
 //     void UpdateApiKey(HashMap<String, Object> paramMap);
 //
 //     void DeleteApiKeyByIdx(int idx);
-
-//     HashMap<String, Object> SelectByKey(String key); // 변경전 - Custom 완료
-
+//
 //     HashMap<String, Object> SelectTestApiKeyByCompanyIdx(HashMap<String, Object> paramMap);
 //
 //     int SelectApiKeyDuplicateCount(String key);

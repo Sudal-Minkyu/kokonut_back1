@@ -24,34 +24,34 @@ public class ApiKeyController {
     @Autowired
     private ApiKeyService apiKeyService;
 
-    @PostMapping
-    @ApiOperation("Save ")
-    public String save(@Valid @RequestBody ApiKeyVO vO) {
-        return apiKeyService.save(vO).toString();
-    }
-
-    @DeleteMapping("/{id}")
-    @ApiOperation("Delete ")
-    public void delete(@Valid @NotNull @PathVariable("id") Integer id) {
-        apiKeyService.delete(id);
-    }
-
-    @PutMapping("/{id}")
-    @ApiOperation("Update ")
-    public void update(@Valid @NotNull @PathVariable("id") Integer id,
-                       @Valid @RequestBody ApiKeyUpdateVO vO) {
-        apiKeyService.update(id, vO);
-    }
-
-    @GetMapping("/{id}")
-    @ApiOperation("Retrieve by ID ")
-    public ApiKeyKeyDto getById(@Valid @NotNull @PathVariable("id") Integer id) {
-        return apiKeyService.getById(id);
-    }
-
-    @GetMapping
-    @ApiOperation("Retrieve by query ")
-    public Page<ApiKeyKeyDto> query(@Valid ApiKeyQueryVO vO) {
-        return apiKeyService.query(vO);
-    }
+//    @PostMapping
+//    @ApiOperation("Save ")
+//    public String save(@Valid @RequestBody ApiKeyVO vO) {
+//        return apiKeyService.save(vO).toString();
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    @ApiOperation("Delete ")
+//    public void delete(@Valid @NotNull @PathVariable("id") Integer id) {
+//        apiKeyService.delete(id);
+//    }
+//
+//    @PutMapping("/{id}")
+//    @ApiOperation("Update ")
+//    public void update(@Valid @NotNull @PathVariable("id") Integer id,
+//                       @Valid @RequestBody ApiKeyUpdateVO vO) {
+//        apiKeyService.update(id, vO);
+//    }
+//
+//    @GetMapping("/{id}")
+//    @ApiOperation("Retrieve by ID ")
+//    public ApiKeyKeyDto getById(@Valid @NotNull @PathVariable("id") Integer id) {
+//        return apiKeyService.getById(id);
+//    }
+//
+//    @GetMapping
+//    @ApiOperation("Retrieve by query ")
+//    public Page<ApiKeyKeyDto> query(@Valid ApiKeyQueryVO vO) {
+//        return apiKeyService.query(vO);
+//    }
 }

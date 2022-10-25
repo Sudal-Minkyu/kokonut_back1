@@ -1,8 +1,11 @@
 package com.app.kokonut.apiKey.service;
 
 import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
-import com.app.kokonut.apiKey.dto.ApiKeyListDto;
+import com.app.kokonut.apiKey.dto.ApiKeyListCountDto;
+import com.app.kokonut.apiKey.dto.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.repository.ApiKeyRepository;
+import com.app.kokonut.woody.log4j.DBLogger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.List;
  * Date : 2022-10-25
  * Remark :
  */
+@Slf4j
 @Service
 public class ApiKeyService {
 
@@ -24,45 +28,7 @@ public class ApiKeyService {
         this.apiKeyRepository = apiKeyRepository;
     }
 
-//    public Integer save(ApiKeyVO vO) {
-//        ApiKey bean = new ApiKey();
-//        BeanUtils.copyProperties(vO, bean);
-//        bean = apiKeyRepository.save(bean);
-//        return bean.getIdx();
-//    }
-//
-//    public void delete(Integer id) {
-//        apiKeyRepository.deleteById(id);
-//    }
-//
-//    public void update(Integer id, ApiKeyUpdateVO vO) {
-//        ApiKey bean = requireOne(id);
-//        BeanUtils.copyProperties(vO, bean);
-//        apiKeyRepository.save(bean);
-//    }
-//
-//    public ApiKeyKeyDto getById(Integer id) {
-//        ApiKey original = requireOne(id);
-//        return toDTO(original);
-//    }
-//
-//    public Page<ApiKeyKeyDto> query(ApiKeyQueryVO vO) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    private ApiKeyKeyDto toDTO(ApiKey original) {
-//        ApiKeyKeyDto bean = new ApiKeyKeyDto();
-//        BeanUtils.copyProperties(original, bean);
-//        return bean;
-//    }
-//
-//    private ApiKey requireOne(Integer id) {
-//        return apiKeyRepository.findById(id)
-//                .orElseThrow(() -> new NoSuchElementException("Resource not found: " + id));
-//    }
-
-
-//	private DBLogger dblogger = new DBLogger(ApiKeyService.class);
+	private DBLogger dblogger = new DBLogger(ApiKeyService.class);
 
 	/**
 	 * Api Key 리스트
@@ -70,8 +36,9 @@ public class ApiKeyService {
 //	public List<HashMap<String, Object>> SelectApiKeyList(HashMap<String, Object> paramMap) {
 //		return dao.SelectApiKeyList(paramMap);
 //	}
-    public List<ApiKeyListDto> findByKeyList(HashMap<String, Object> paramMap) {
-        return apiKeyRepository.findByKeyList(paramMap);
+    public List<ApiKeyListAndDetailDto> findByApiKeyList(HashMap<String, Object> paramMap) {
+        log.info("findByApiKeyList 호출");
+        return apiKeyRepository.findByApiKeyList(paramMap);
     }
 
 	/**
@@ -80,7 +47,10 @@ public class ApiKeyService {
 //	public int SelectApiKeyListCount(HashMap<String, Object> paramMap) {
 //        return dao.SelectApiKeyListCount(paramMap);
 //    }
-
+    public ApiKeyListCountDto findByApiKeyListCount(HashMap<String, Object> paramMap) {
+        log.info("findByApiKeyListCount 호출");
+        return apiKeyRepository.findByApiKeyListCount(paramMap);
+    }
 
 //	/**
 //	 * Api Key 상세보기
@@ -89,7 +59,12 @@ public class ApiKeyService {
 //	public HashMap<String, Object> SelectApiKeyByIdx(int idx) {
 //		return dao.SelectApiKeyByIdx(idx);
 //	}
-//
+    public ApiKeyListAndDetailDto findByApiKeyDetail(Integer idx) {
+        log.info("findByApiKeyDetail 호출");
+        return apiKeyRepository.findByApiKeyDetail(idx);
+    }
+
+
 //	/**
 //	 * Api Key Insert
 //	 */
@@ -112,6 +87,7 @@ public class ApiKeyService {
 //		dao.DeleteApiKeyByIdx(idx);
 //	}
 //
+
     /**
      * ApiKey 조회
      * @param key
@@ -121,6 +97,7 @@ public class ApiKeyService {
 //        return apiKeyRepository.SelectByKey(key);
 //    }
      public ApiKeyKeyDto findByKey(String key) {
+         log.info("findByKey 호출");
          return apiKeyRepository.findByKey(key);
      }
 
@@ -192,7 +169,7 @@ public class ApiKeyService {
 //	public void UpdateTestKeyExpire(int companyIdx) {
 //		dao.UpdateTestKeyExpire(companyIdx);
 //	}
-//
+
 //	/**
 //	 * API KEY BLOCK, Send MAIL
 //	 * @param companyIdx - 회사IDX

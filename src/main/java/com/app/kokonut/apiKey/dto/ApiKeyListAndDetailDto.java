@@ -16,31 +16,31 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiKeyListDto {
+public class ApiKeyListAndDetailDto {
 
     private Integer idx;
     private Integer companyIdx;
     private Integer adminIdx;
-    private String registerName;
-
     private String key;
     private Date regdate;
+
     private Integer type;
     private String note;
-
     private Date validityStart;
     private Date validityEnd;
+    private String beInUse; // 조건문 : LocalDateTime.now() -> validityStart BETWEEN validityEnd 사이일 경우 "Y" 아니면 "N"
 
     private Integer useAccumulate;
     private Integer state;
     private String useYn;
+
     private String reason;
     private Integer modifierIdx;
     private String modifierName;
     private Date modifyDate;
 
-    private Long count;// 리스트 카운터
-
+    private String name;
+    private String companyName;
 
 
 }

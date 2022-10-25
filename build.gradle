@@ -32,11 +32,15 @@ dependencies {
 
 
 	// Woody 추가 ~
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.0.0' // Modelmapper 쓰기위함
+
 	implementation 'org.springframework.boot:spring-boot-starter-validation:2.7.4' // Spring validation 쓰기위함
 
 	implementation group: 'com.amazonaws', name: 'aws-java-sdk-kms', version: '1.11.202' // AWS KMS 쓰기위함
+
 	implementation "com.querydsl:querydsl-jpa:5.0.0" // querydsl 쓰기위함
 	implementation "com.querydsl:querydsl-apt:5.0.0" // querydsl 쓰기위함
+	implementation group: 'org.qlrm', name: 'qlrm', version: '3.0.4' // querydsl 내에 네이티브 쿼리를 사용하기위함
 
 	implementation 'io.springfox:springfox-boot-starter:3.0.0' // Swagger 쓰기위함
 	implementation 'io.springfox:springfox-swagger-ui:3.0.0' // Swagger 쓰기위함
