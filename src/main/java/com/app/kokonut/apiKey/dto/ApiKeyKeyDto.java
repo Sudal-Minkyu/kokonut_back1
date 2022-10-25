@@ -1,24 +1,29 @@
 package com.app.kokonut.apiKey.dto;
 
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+/**
+ * @author Woody
+ * Date : 2022-10-25
+ * Time :
+ * Remark : "Key"를 통해 데이터받아오는 Dto
+ */
 @Data
-@ApiModel("")
-public class ApiKeyDTO implements Serializable {
-    private static final long serialVersionUID = 1L;
+@NoArgsConstructor
+@AllArgsConstructor
+public class ApiKeyKeyDto {
 
     /**
      * 키
      */
-    @ApiModelProperty("키")
     private Integer idx;
-
 
     /**
      * 회사(Company) 키
@@ -130,5 +135,10 @@ public class ApiKeyDTO implements Serializable {
      */
     @ApiModelProperty("수정일자")
     private Date modifyDate;
+
+    // Date 변환
+//    public String getFrInsertDate() {
+//        return frInsertDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+//    }
 
 }

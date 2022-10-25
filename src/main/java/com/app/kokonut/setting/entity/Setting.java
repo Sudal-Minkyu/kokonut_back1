@@ -42,8 +42,7 @@ public class Setting implements Serializable {
  , 1:이관 없이 회원정보 삭제)
  */
     @Column(name = "DORMANT_ACCOUNT")
-    @ApiModelProperty("휴면회원 전환 시(0:다른DB로 정보이관
-            , 1:이관 없이 회원정보 삭제)")
+    @ApiModelProperty("휴면회원 전환 시(0:다른DB로 정보이관, 1:이관 없이 회원정보 삭제)")
     private Integer dormantAccount;
 
     /**

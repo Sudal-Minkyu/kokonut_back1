@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.NoSuchElementException;
 
-@Service
+@org.springframework.stereotype.Service
 public class ServiceService {
 
     @Autowired

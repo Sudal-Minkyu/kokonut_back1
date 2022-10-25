@@ -1,6 +1,6 @@
 package com.app.kokonut.apiKey.controller;
 
-import com.app.kokonut.apiKey.dto.ApiKeyDTO;
+import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
 import com.app.kokonut.apiKey.service.ApiKeyService;
 import com.app.kokonut.apiKey.vo.ApiKeyQueryVO;
 import com.app.kokonut.apiKey.vo.ApiKeyUpdateVO;
@@ -45,13 +45,13 @@ public class ApiKeyController {
 
     @GetMapping("/{id}")
     @ApiOperation("Retrieve by ID ")
-    public ApiKeyDTO getById(@Valid @NotNull @PathVariable("id") Integer id) {
+    public ApiKeyKeyDto getById(@Valid @NotNull @PathVariable("id") Integer id) {
         return apiKeyService.getById(id);
     }
 
     @GetMapping
     @ApiOperation("Retrieve by query ")
-    public Page<ApiKeyDTO> query(@Valid ApiKeyQueryVO vO) {
+    public Page<ApiKeyKeyDto> query(@Valid ApiKeyQueryVO vO) {
         return apiKeyService.query(vO);
     }
 }
