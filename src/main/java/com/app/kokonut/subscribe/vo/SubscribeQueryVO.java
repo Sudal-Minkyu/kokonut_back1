@@ -1,4 +1,4 @@
-package com.app.kokonut.service.dto;
+package com.app.kokonut.subscribe.vo;
 
 
 import io.swagger.annotations.ApiModel;
@@ -9,9 +9,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@ApiModel("")
-public class ServiceDTO implements Serializable {
+@ApiModel("Retrieve by query ")
+public class SubscribeQueryVO implements Serializable {
     private static final long serialVersionUID = 1L;
+
 
     /**
      * 주키

@@ -1,4 +1,4 @@
-package com.app.kokonut.service.vo;
+package com.app.kokonut.subscribe.vo;
 
 
 import io.swagger.annotations.ApiModel;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @ApiModel("Update ")
 @EqualsAndHashCode(callSuper = false)
-public class ServiceUpdateVO extends ServiceVO implements Serializable {
+public class SubscribeUpdateVO extends SubscribeVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
 }
