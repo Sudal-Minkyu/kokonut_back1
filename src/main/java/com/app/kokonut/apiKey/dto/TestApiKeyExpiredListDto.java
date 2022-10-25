@@ -11,12 +11,12 @@ import java.util.Date;
  * @author Woody
  * Date : 2022-10-25
  * Time :
- * Remark : ApiKey 리스트 받아오는 Dto
+ * Remark : 만료 예정인 TestApiKey 리스트 받아오는 Dto
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiKeyListAndDetailDto {
+public class TestApiKeyExpiredListDto {
 
     private Integer idx;
     private Integer companyIdx;
@@ -26,6 +26,7 @@ public class ApiKeyListAndDetailDto {
 
     private Integer type;
     private String note;
+
     private Date validityStart;
     private Date validityEnd;
     private String beInUse; // 조건문 : LocalDateTime.now() -> BETWEEN validityStart, validityEnd 사이일 경우 "Y" 아니면 "N"
@@ -35,11 +36,11 @@ public class ApiKeyListAndDetailDto {
     private String useYn;
 
     private String reason;
-    private Integer modifierIdx;
     private String modifierName;
     private Date modifyDate;
 
     private String name;
+    private String email;
     private String companyName;
 
 

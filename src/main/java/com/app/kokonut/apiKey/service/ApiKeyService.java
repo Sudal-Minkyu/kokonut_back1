@@ -3,12 +3,18 @@ package com.app.kokonut.apiKey.service;
 import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
 import com.app.kokonut.apiKey.dto.ApiKeyListCountDto;
 import com.app.kokonut.apiKey.dto.ApiKeyListAndDetailDto;
+import com.app.kokonut.apiKey.dto.TestApiKeyExpiredListDto;
 import com.app.kokonut.apiKey.repository.ApiKeyRepository;
 import com.app.kokonut.woody.log4j.DBLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.xml.bind.DatatypeConverter;
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,7 +53,7 @@ public class ApiKeyService {
 //	public int SelectApiKeyListCount(HashMap<String, Object> paramMap) {
 //        return dao.SelectApiKeyListCount(paramMap);
 //    }
-    public ApiKeyListCountDto findByApiKeyListCount(HashMap<String, Object> paramMap) {
+    public Long findByApiKeyListCount(HashMap<String, Object> paramMap) {
         log.info("findByApiKeyListCount 호출");
         return apiKeyRepository.findByApiKeyListCount(paramMap);
     }
@@ -101,60 +107,80 @@ public class ApiKeyService {
          return apiKeyRepository.findByKey(key);
      }
 
-//	/**
-//	 * Test Api Key 조회
-//	 * @param companyIdx
-//	 */
+	/**
+	 * Test Api Key 조회
+	 * @param companyIdx
+	 */
 //	public HashMap<String, Object> SelectTestApiKeyByCompanyIdx(int companyIdx) {
 //		HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //		paramMap.put("companyIdx", companyIdx);
 //
 //		return dao.SelectTestApiKeyByCompanyIdx(paramMap);
 //	}
-//
-//	/**
-//	 * Test Api Key 중복 조회
-//	 * @param key
-//	 */
+    public ApiKeyListAndDetailDto findByTestApiKeyByCompanyIdx(Integer companyIdx) {
+        log.info("findByTestApiKeyByCompanyIdx 호출");
+        return apiKeyRepository.findByTestApiKeyByCompanyIdx(companyIdx, 2);
+    }
+
+	/**
+	 * Test Api Key 중복 조회
+	 * @param key
+	 */
 //	public int SelectTestApiKeyDuplicateCount(String key) {
 //		return dao.SelectTestApiKeyDuplicateCount(key);
 //	}
-//
-//	/**
-//	 * 일반 Api Key 조회
-//	 * @param CompanyIdx
-//	 */
+    public Long findByTestApiKeyDuplicateCount(String key) {
+        log.info("findByTestApiKeyDuplicateCount 호출");
+        return apiKeyRepository.findByTestApiKeyDuplicateCount(key, 2);
+    }
+
+	/**
+	 * 일반 Api Key 조회
+	 * @param companyIdx
+	 */
 //	public HashMap<String, Object> SelectApiKeyByCompanyIdx(int companyIdx) {
 //		HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //		paramMap.put("companyIdx", companyIdx);
 //
 //		return dao.SelectApiKeyByCompanyIdx(paramMap);
 //	}
-//
-//	/**
-//	 * Api Key 중복 조회
-//	 * @param key
-//	 */
+    public ApiKeyListAndDetailDto findByApiKeyByCompanyIdx(Integer companyIdx) {
+        log.info("findByApiKeyByCompanyIdx 호출");
+        return apiKeyRepository.findByApiKeyByCompanyIdx(companyIdx, 1, "Y");
+    }
+
+	/**
+	 * Api Key 중복 조회
+	 * @param key
+	 */
 //	public int SelectApiKeyDuplicateCount(String key) {
 //		return dao.SelectApiKeyDuplicateCount(key);
 //	}
-//
-//
-//	/**
-//	 * 만료 예정인 Test API Key 리스트
-//	 */
+    public Long findByApiKeyDuplicateCount(String key) {
+        log.info("findByApiKeyDuplicateCount 호출");
+        return apiKeyRepository.findByApiKeyDuplicateCount(key, 1);
+    }
+
+	/**
+	 * 만료 예정인 Test API Key 리스트
+	 */
 //	public List<HashMap<String, Object>> SelectTestApiKeyExpiredList(HashMap<String, Object> paramMap) {
 //		return dao.SelectTestApiKeyExpiredList(paramMap);
 //	}
-//
-//	public static String keyGenerate(final int keyLen) throws NoSuchAlgorithmException {
-//        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-//        keyGen.init(keyLen);
-//        SecretKey secretKey = keyGen.generateKey();
-//        byte[] encoded = secretKey.getEncoded();
-//        return DatatypeConverter.printHexBinary(encoded).toLowerCase();
-//    }
-//
+    public List<TestApiKeyExpiredListDto> findByTestApiKeyExpiredList(HashMap<String, Object> paramMap) {
+        log.info("findByTestApiKeyExpiredList 호출");
+        return apiKeyRepository.findByTestApiKeyExpiredList(paramMap, 2);
+    }
+
+    // 이게뭔지 검토필요... keyGenerate인거보니까 순차적으로 값 올려주는 메서드인듯?
+	public static String keyGenerate(final int keyLen) throws NoSuchAlgorithmException {
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        keyGen.init(keyLen);
+        SecretKey secretKey = keyGen.generateKey();
+        byte[] encoded = secretKey.getEncoded();
+        return DatatypeConverter.printHexBinary(encoded).toLowerCase();
+    }
+
 //
 //	/**
 //	 * api key block 처리 - 결제 취소 시 사용
