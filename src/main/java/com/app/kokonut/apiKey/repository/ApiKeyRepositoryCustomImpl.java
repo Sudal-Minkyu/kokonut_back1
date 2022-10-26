@@ -7,21 +7,15 @@ import com.app.kokonut.apiKey.dto.TestApiKeyExpiredListDto;
 import com.app.kokonut.apiKey.entity.ApiKey;
 import com.app.kokonut.apiKey.entity.QApiKey;
 import com.app.kokonut.company.entity.QCompany;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.math.BigInteger;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -385,7 +379,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
     }
 
 
-    // 만료 예정인 TestApiKey 리스트 조회
+    // TestApiKey 만료예정 리스트 조회
     @Override
     public List<TestApiKeyExpiredListDto> findByTestApiKeyExpiredList(HashMap<String, Object> paramMap, Integer type) {
 
@@ -396,6 +390,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         Date systemDate = new Date(System.currentTimeMillis());
         log.info("현재 날짜 : "+systemDate);
 
+        // 현재 LocalDate에서 3일후인 날짜계산
         Calendar c = Calendar.getInstance();
         c.setTime(systemDate);
         c.add(Calendar.DATE, 3);

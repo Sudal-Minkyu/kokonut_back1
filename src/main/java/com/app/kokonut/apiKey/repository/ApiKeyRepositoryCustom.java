@@ -1,12 +1,10 @@
 package com.app.kokonut.apiKey.repository;
 
 import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
-import com.app.kokonut.apiKey.dto.ApiKeyListCountDto;
 import com.app.kokonut.apiKey.dto.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dto.TestApiKeyExpiredListDto;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,6 +35,9 @@ public interface ApiKeyRepositoryCustom {
     // ApiKey 중복 조회 : param -> key, type = 1
     Long findByApiKeyDuplicateCount(String key, Integer type); // SelectApiKeyDuplicateCount -> 변경후
 
-    // 만료 예정인 TestApiKey 리스트 조회
+    // TestApiKey 만료예정 리스트 조회
     List<TestApiKeyExpiredListDto> findByTestApiKeyExpiredList(HashMap<String, Object> paramMap, Integer type); // SelectTestApiKeyExpiredList -> 변경후
+
+
+
 }

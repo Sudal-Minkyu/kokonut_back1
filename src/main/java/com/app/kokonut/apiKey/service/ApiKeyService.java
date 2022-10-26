@@ -1,20 +1,21 @@
 package com.app.kokonut.apiKey.service;
 
 import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
-import com.app.kokonut.apiKey.dto.ApiKeyListCountDto;
 import com.app.kokonut.apiKey.dto.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dto.TestApiKeyExpiredListDto;
+import com.app.kokonut.apiKey.entity.ApiKey;
 import com.app.kokonut.apiKey.repository.ApiKeyRepository;
-import com.app.kokonut.woody.log4j.DBLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.transaction.Transactional;
 import javax.xml.bind.DatatypeConverter;
-import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,7 +35,109 @@ public class ApiKeyService {
         this.apiKeyRepository = apiKeyRepository;
     }
 
-	private DBLogger dblogger = new DBLogger(ApiKeyService.class);
+//	private DBLogger dblogger = new DBLogger(ApiKeyService.class);
+
+
+
+    /**
+     * Api Key Insert
+     */
+//	public void InsertApiKey(HashMap<String, Object> paramMap) {
+//		dao.InsertApiKey(paramMap);
+//	}
+    /** JPA save()로 재구성 : InsertApiKey -> 변경후
+     * 원래 받는 데이터 -> HashMap<String,Object> paramMap 형식
+     * param
+     * - Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state
+     * - String key
+     */
+    @Transactional
+    public Integer InsertApiKey(Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state,
+                             String key) {
+        log.info("InsertApiKey 호출");
+
+        Date systemDate = new Date(System.currentTimeMillis());
+        log.info("현재 날짜 : "+systemDate);
+
+        ApiKey apiKey = new ApiKey();
+        apiKey.setAdminIdx(adminIdx);
+        apiKey.setCompanyIdx(companyIdx);
+        apiKey.setRegisterName(registerName);
+        apiKey.setType(type);
+        apiKey.setState(state);
+        apiKey.setUseAccumulate(1);
+        apiKey.setKey(key);
+        apiKey.setRegdate(systemDate);
+        apiKey.setUseYn("Y");
+
+        if(type != null && type.equals(2)){
+            // 현재 LocalDate에서 14일후인 날짜계산
+            Calendar c = Calendar.getInstance();
+            c.setTime(systemDate);
+            c.add(Calendar.DATE, 14);
+
+            Date fourteenDayAfter = new Date(c.getTimeInMillis());
+            log.info("14일후 날짜 : "+fourteenDayAfter);
+
+            apiKey.setValidityStart(systemDate);
+            apiKey.setValidityEnd(fourteenDayAfter);
+        }
+
+        return apiKeyRepository.save(apiKey).getIdx();
+    }
+
+    /**
+     * Api Key Update
+     */
+//	public void UpdateApiKey(HashMap<String, Object> paramMap) {
+//		dao.UpdateApiKey(paramMap);
+//	}
+    /** JPA save()로 재구성 : UpdateApiKey -> 변경후
+     * 원래 받는 데이터 -> HashMap<String,Object> paramMap 형식
+     * param
+     * - Integer idx, String useYn, String reason, Integer modifierIdx, String modifierName
+     */
+    @Transactional
+    public void UpdateApiKey(Integer idx, String useYn, String reason, Integer modifierIdx, String modifierName) {
+        log.info("UpdateApiKey 호출");
+
+        ApiKey apiKey = apiKeyRepository.findById(idx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
+
+        Date systemDate = new Date(System.currentTimeMillis());
+        log.info("현재 날짜 : "+systemDate);
+
+        apiKey.setUseYn(useYn);
+        apiKey.setReason(reason);
+
+        apiKey.setModifierIdx(modifierIdx);
+        apiKey.setModifierName(modifierName);
+        apiKey.setModifyDate(systemDate);
+
+        apiKeyRepository.save(apiKey);
+    }
+
+    /**
+     * Api Key 삭제
+     * @param idx
+     */
+//	public void DeleteApiKeyByIdx(int idx) {
+//		dao.DeleteApiKeyByIdx(idx);
+//	}
+    /** JPA delete()로 재구성 : DeleteApiKeyByIdx -> 변경후
+     * 원래 받는 데이터 -> int idx 형식
+     * param
+     * - Integer idx
+     */
+    @Transactional
+    public void DeleteApiKeyByIdx(Integer idx) {
+        log.info("DeleteApiKeyByIdx 호출");
+
+        ApiKey apiKey = apiKeyRepository.findById(idx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
+
+        apiKeyRepository.delete(apiKey);
+    }
 
 	/**
 	 * Api Key 리스트
@@ -69,30 +172,6 @@ public class ApiKeyService {
         log.info("findByApiKeyDetail 호출");
         return apiKeyRepository.findByApiKeyDetail(idx);
     }
-
-
-//	/**
-//	 * Api Key Insert
-//	 */
-//	public void InsertApiKey(HashMap<String, Object> paramMap) {
-//		dao.InsertApiKey(paramMap);
-//	}
-//
-//	/**
-//	 * Api Key Update
-//	 */
-//	public void UpdateApiKey(HashMap<String, Object> paramMap) {
-//		dao.UpdateApiKey(paramMap);
-//	}
-//
-//	/**
-//	 * Api Key 삭제
-//	 * @param idx
-//	 */
-//	public void DeleteApiKeyByIdx(int idx) {
-//		dao.DeleteApiKeyByIdx(idx);
-//	}
-//
 
     /**
      * ApiKey 조회
@@ -181,25 +260,25 @@ public class ApiKeyService {
         return DatatypeConverter.printHexBinary(encoded).toLowerCase();
     }
 
-//
-//	/**
-//	 * api key block 처리 - 결제 취소 시 사용
-//	 */
+
+	/**
+	 * api key block 처리 - 결제 취소 시 사용
+	 */
 //	public void UpdateBlockKey(int companyIdx) {
 //		dao.UpdateBlockKey(companyIdx);
 //	}
-//
-//	/*
-//	 * 사용중인 TEST API KEY가 존재한다면 만료처리
-//	 */
+
+	/*
+	 * 사용중인 TEST API KEY가 존재한다면 만료처리
+	 */
 //	public void UpdateTestKeyExpire(int companyIdx) {
 //		dao.UpdateTestKeyExpire(companyIdx);
 //	}
 
-//	/**
-//	 * API KEY BLOCK, Send MAIL
-//	 * @param companyIdx - 회사IDX
-//	 */
+	/**
+	 * API KEY BLOCK, Send MAIL
+	 * @param companyIdx - 회사IDX
+	 */
 //	public void BlockApiByCompanyIdx(int companyIdx) {
 //		HashMap<String, Object> apiMap = new HashMap<String, Object>();
 //		apiMap.put("companyIdx", companyIdx);

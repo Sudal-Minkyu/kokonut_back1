@@ -1,6 +1,7 @@
 package com.app.kokonut.apiKey.entity;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -52,7 +53,7 @@ public class ApiKey implements Serializable {
      * API KEY
      */
     @ApiModelProperty("API KEY")
-    @Column(name = "KEY", nullable = false)
+    @Column(name = "\"KEY\"", nullable = false)
     private String key;
 
     /**
@@ -138,5 +139,6 @@ public class ApiKey implements Serializable {
     @ApiModelProperty("수정일자")
     @Column(name = "MODIFY_DATE")
     private Date modifyDate;
+
 
 }

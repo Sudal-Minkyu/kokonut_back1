@@ -32,6 +32,8 @@ dependencies {
 
 
 	// Woody 추가 ~
+
+	implementation 'junit:junit:4.13.2' // Junit 쓰기위함
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.0.0' // Modelmapper 쓰기위함
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation:2.7.4' // Spring validation 쓰기위함
