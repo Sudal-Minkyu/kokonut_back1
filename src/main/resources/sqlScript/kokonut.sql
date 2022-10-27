@@ -2,8 +2,7 @@
 SQLyog Professional v12.09 (64 bit)
 MySQL - 5.7.26-log : Database - kokonut
 *********************************************************************
-*/
-
+*/
 
 /*!40101 SET NAMES utf8 */;
 
@@ -44,7 +43,7 @@ CREATE TABLE `activity_history` (
   `COMPANY_IDX` int(11) DEFAULT NULL COMMENT '회사(Company) 키',
   `TYPE` int(11) DEFAULT NULL COMMENT '1:고객정보처리,2:관리자활동,3:회원DB관리이력',
   `ADMIN_IDX` int(11) DEFAULT NULL COMMENT '관리자키',
-  `ACTIVITY` int(11) DEFAULT NULL COMMENT '활동내역(1:로그인,2:회원정보변경,3:회원정보삭제,4:관리자추가,5:관리자권한변경,6:열람이력다운로드,7:활동이력다운로드,8:고객정보 열람,9:고객정보 다운로드,10:고객정보 처리,11:회원정보DB관리 변경,12:회원DB 항목 관리 변경,13:회원 관리 등록,14:정보제공 목록,15:정보 파기 관리,16:테이블 생성,17:전체DB다운로드,18:회원 관리 변경)',
+  `ACTIVITY` int(11) DEFAULT NULL COMMENT '활동내역(1:로그인,2:회원정보변경,3:회원정보삭제,4:관리자추가,5:관리자권한변경,6:처리이력다운로드,7:활동이력다운로드,8:고객정보 열람,9:고객정보 다운로드,10:고객정보 처리,11:회원정보DB관리 변경,12:회원DB 항목 관리 변경,13:회원 관리 등록,14:정보제공 목록,15:정보 파기 관리,16:테이블 생성,17:전체DB다운로드,18:회원 관리 변경)',
   `ACTIVITY_IDX` int(11) DEFAULT NULL COMMENT 'activity IDX',
   `ACTIVITY_DETAIL` varchar(256) DEFAULT NULL COMMENT '활동 상세 내역',
   `REASON` varchar(256) DEFAULT NULL COMMENT '사유',
@@ -77,7 +76,7 @@ CREATE TABLE `address_book` (
   `TYPE` varchar(16) DEFAULT NULL COMMENT '메시지종류(EMAIL: 이메일, alimTalk ALIMTALK: 알림톡)',
   `SENDER_EMAIL` varchar(256) DEFAULT NULL COMMENT '발신자 이메일',
   `TITLE` varchar(256) DEFAULT NULL COMMENT '메시지 제목',
-  `CONTENT` varchar(2048) DEFAULT NULL COMMENT '메시지 내용',
+  `CONTENT` text COMMENT '메시지 내용',
   PRIMARY KEY (`IDX`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -600,7 +599,7 @@ CREATE TABLE `payment` (
   `STATE` int(11) DEFAULT NULL COMMENT '상태(0:결제오류,1:결제완료)',
   `CARD_NAME` varchar(256) DEFAULT NULL COMMENT '카드이름',
   `CARD_NUMBER` varchar(256) DEFAULT NULL COMMENT '카드번호',
-  `PAY_METHOD` varchar(512) DEFAULT NULL COMMENT '결제방법(AUTO_CARD:자동결제, FEE_CALCULATE:요금정산, FAIL : 결제실패)',
+  `PAY_METHOD` varchar(512) DEFAULT NULL COMMENT '결제방법(AUTO_CARD:자동결제, FEE_CALCULATE:요금정산, FAIL : 결제실패, CARD : 해지할 때 결제, WITHDRAWAL_CANCEL : 해지 당시에 결제할 때)',
   `RECEIPT_URL` varchar(1024) DEFAULT NULL COMMENT '거래전표 URL',
   `IS_APPLY_REFUND` char(1) DEFAULT 'N' COMMENT '환불신청상태',
   `REFUND_APPLY_DATE` timestamp NULL DEFAULT NULL COMMENT '환불신청날짜',
@@ -792,9 +791,9 @@ CREATE TABLE `revised_document` (
 
 /*Table structure for table `service` */
 
-DROP TABLE IF EXISTS `subscribe`;
+DROP TABLE IF EXISTS `service`;
 
-CREATE TABLE `subscribe` (
+CREATE TABLE `service` (
   `IDX` int(11) NOT NULL AUTO_INCREMENT COMMENT '주키',
   `SERVICE` varchar(64) DEFAULT NULL COMMENT '서비스 이름',
   `PRICE` int(11) DEFAULT NULL COMMENT '서비스 금액',
@@ -802,11 +801,11 @@ CREATE TABLE `subscribe` (
   `REGDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
   `MODIFY_DATE` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일',
   PRIMARY KEY (`IDX`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 /*Data for the table `service` */
 
-insert  into `subscribe`(`IDX`,`SERVICE`,`PRICE`,`PER_PRICE`,`REGDATE`,`MODIFY_DATE`) values (1,'BASIC',0,0,'2021-12-02 13:19:52','2022-04-14 16:52:09'),(2,'STANDARD',0,10,'2021-12-02 13:20:53','2022-05-16 15:26:38');
+insert  into `service`(`IDX`,`SERVICE`,`PRICE`,`PER_PRICE`,`REGDATE`,`MODIFY_DATE`) values (1,'BASIC',0,0,'2021-12-02 13:19:52','2022-04-14 16:52:09'),(2,'STANDARD',0,20,'2021-12-02 13:20:53','2022-05-16 15:26:38');
 
 /*Table structure for table `setting` */
 
@@ -837,8 +836,6 @@ CREATE TABLE `shedlock` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='스케줄잠금';
 
 /*Data for the table `shedlock` */
-
-insert  into `shedlock`(`name`,`lock_until`,`locked_at`,`locked_by`) values ('checkAnswer','2022-08-05 01:00:00.000','2022-08-05 00:00:00.000','dev.localdomain'),('lockTest','2022-07-26 17:30:05.000','2022-07-26 17:29:05.000','DESKTOP-LMGK0AG'),('sendEmailToCompanyMember','2022-08-05 01:00:00.000','2022-08-05 00:00:00.000','dev.localdomain'),('sendEmailToRecipient','2022-08-05 01:00:00.000','2022-08-05 00:00:00.000','dev.localdomain'),('sendEmailToUserMember','2022-08-05 01:00:00.000','2022-08-05 00:00:00.000','dev.localdomain');
 
 /*Table structure for table `statistics_day` */
 
@@ -871,12 +868,13 @@ CREATE TABLE `statistics_day_system` (
   `NEW_ADMIN_MEMBER` int(11) DEFAULT '0' COMMENT '신규개인회원',
   `DORMANT` int(11) DEFAULT '0' COMMENT '휴면계정전환',
   `WITHDRAWAL` int(11) DEFAULT '0' COMMENT '회원탈퇴,회원탈퇴해지(이탈총합은 더해서 표현)',
-  `BASIC` int(11) DEFAULT '0' COMMENT '서비스 BASIC',
-  `STANDARD` int(11) DEFAULT '0' COMMENT '서비스 STANDARD',
-  `PREMIUM` int(11) DEFAULT '0' COMMENT '서비스 PREMIUM',
+  `BASIC` int(11) DEFAULT '0' COMMENT '신규 서비스 BASIC',
+  `STANDARD` int(11) DEFAULT '0' COMMENT '신규 서비스 STANDARD',
+  `PREMIUM` int(11) DEFAULT '0' COMMENT '신규 서비스 PREMIUM',
   `AUTO_CANCEL` int(11) DEFAULT '0' COMMENT '자동결제해지',
   `WITHDRAWAL_CANCEL` int(11) DEFAULT '0' COMMENT '회원탈퇴해지',
   `BASIC_AMOUNT` int(11) DEFAULT '0' COMMENT 'BASIC 결제금액',
+  `STANDARD_USER` int(11) DEFAULT '0' COMMENT 'STANDARD 이용자',
   `STANDARD_AMOUNT` int(11) DEFAULT '0' COMMENT 'STANDARD 결제금액',
   `PREMIUM_AMOUNT` int(11) DEFAULT '0' COMMENT 'PREMIUM 결제금액',
   `PERSONAL_HISTORY` int(11) DEFAULT '0' COMMENT '개인정보열람이력',
