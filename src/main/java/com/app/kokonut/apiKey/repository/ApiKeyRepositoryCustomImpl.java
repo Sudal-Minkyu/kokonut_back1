@@ -25,7 +25,7 @@ import java.util.List;
  * @author Woody
  * Date : 2022-10-25
  * Time :
- * Remark :
+ * Remark : ApiKeyRepositoryCustom 쿼리문 선언부
  */
 @Slf4j
 @Repository

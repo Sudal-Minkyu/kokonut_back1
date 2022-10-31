@@ -47,6 +47,7 @@ public class ApiKeyService {
 //	}
     /** JPA save()로 재구성 : InsertApiKey -> 변경후
      * 원래 받는 데이터 -> HashMap<String,Object> paramMap 형식
+     * Api Key Insert
      * param
      * - Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state
      * - String key
@@ -93,6 +94,7 @@ public class ApiKeyService {
 //		dao.UpdateApiKey(paramMap);
 //	}
     /** JPA save()로 재구성 : UpdateApiKey -> 변경후
+     * Api Key Update
      * 원래 받는 데이터 -> HashMap<String,Object> paramMap 형식
      * param
      * - Integer idx, String useYn, String reason, Integer modifierIdx, String modifierName
@@ -125,7 +127,7 @@ public class ApiKeyService {
 //		dao.DeleteApiKeyByIdx(idx);
 //	}
     /** JPA delete()로 재구성 : DeleteApiKeyByIdx -> 변경후
-     * 원래 받는 데이터 -> int idx 형식
+     * Api Key 삭제
      * param
      * - Integer idx
      */
@@ -251,7 +253,7 @@ public class ApiKeyService {
         return apiKeyRepository.findByTestApiKeyExpiredList(paramMap, 2);
     }
 
-    // 이게뭔지 검토필요... keyGenerate인거보니까 순차적으로 값 올려주는 메서드인듯?
+    // 검토필요
 	public static String keyGenerate(final int keyLen) throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(keyLen);
@@ -267,6 +269,21 @@ public class ApiKeyService {
 //	public void UpdateBlockKey(int companyIdx) {
 //		dao.UpdateBlockKey(companyIdx);
 //	}
+    /** JPA save()로 재구성 : UpdateBlockKey -> 변경후
+     * 결제 취소 시 사용
+     * param
+     * - Integer companyIdx
+     */
+    @Transactional
+    public void UpdateBlockKey(Integer companyIdx) {
+        log.info("UpdateBlockKey 호출");
+
+        ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdxAndType(companyIdx,1)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
+        apiKey.setUseYn("N");
+
+        apiKeyRepository.save(apiKey);
+    }
 
 	/*
 	 * 사용중인 TEST API KEY가 존재한다면 만료처리
@@ -274,6 +291,36 @@ public class ApiKeyService {
 //	public void UpdateTestKeyExpire(int companyIdx) {
 //		dao.UpdateTestKeyExpire(companyIdx);
 //	}
+    /** JPA save()로 재구성 : UpdateTestKeyExpire -> 변경후
+     * 사용중인 TEST API KEY가 존재한다면 만료처리
+     * param
+     * - Integer companyIdx
+     */
+    @Transactional
+    public void UpdateTestKeyExpire(Integer companyIdx) {
+        log.info("UpdateTestKeyExpire 호출");
+        Date systemDate = new Date(System.currentTimeMillis());
+
+        ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdxAndTypeDate(companyIdx,2, systemDate)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
+        apiKey.setValidityEnd(systemDate);
+
+        apiKeyRepository.save(apiKey);
+    }
+
+    /** JPA delete()로 재구성 : TotalDeleteService DeleteApiKeyByCompanyIdx -> 변경후
+     * param
+     * - Integer companyIdx
+     */
+    @Transactional
+    public void DeleteApiKeyByCompanyIdx(Integer companyIdx) {
+        log.info("DeleteApiKeyByCompanyIdx 호출");
+
+        ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdx(companyIdx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
+
+        apiKeyRepository.delete(apiKey);
+    }
 
 	/**
 	 * API KEY BLOCK, Send MAIL
@@ -290,5 +337,7 @@ public class ApiKeyService {
 //		}
 //		UpdateBlockKey(companyIdx);
 //	}
+    // 해당 메서드는 dblogger 유틸리티 추가하고 진행함
+
 
 }
