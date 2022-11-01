@@ -1,0 +1,20 @@
+server:
+  port: '8050'
+
+
+spring:
+  datasource: #DB
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DOCKER_DB_USERNAME}
+    url: jdbc:mariadb://${DOCKER_DB_HOST}:${DOCKER_DB_PORT}/${KOKONUT_DB_DBNAME}
+    password: ${DOCKER_DB_PASSWORD}
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+
+
+#Custom
+kokonut_aws_kms_secret: ${KOKONUT_AWS_KMS_SECRET}
+kokonut_aws_kms_access: ${KOKONUT_AWS_KMS_ACCESS}
+kokonut_aws_kms_id: ${KOKONUT_AWS_KMS_ID}
