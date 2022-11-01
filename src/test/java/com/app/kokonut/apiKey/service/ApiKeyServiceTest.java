@@ -233,6 +233,115 @@ class ApiKeyServiceTest {
 
     }
 
+    @Test
+    @DisplayName("ApiKey 결제취소 테스트 - " +
+            "1. 성공적으로 인서트(InsertApiKey)하고 결제취소를 호출한다. " +
+            "2. 인서트한 값의 결제취소(UpdateBlockKey)를 호출한다. " +
+            "3. 해당 데이터를 삭제(DeleteApiKeyByIdx)한 후 다시 조회하여 테스트를 마무리한다.")
+    public void UpdateBlockKeyTest(){
 
+        // given
+        Integer adminIdx = 1;
+        Integer companyIdx = 0;
+        String registerName = "테스트";
+        Integer type = 1;
+        Integer state = 1;
+        String key = "test_key";
+
+        // when
+        Integer createIdx = apiKeyService.InsertApiKey(adminIdx, companyIdx, registerName, type, state, key);
+        System.out.println("인서트 완료 createIdx : "+createIdx);
+
+        Optional<ApiKey> optionalApiKey = apiKeyRepository.findById(createIdx);
+        if(optionalApiKey.isPresent()){
+            System.out.println("UpdateBlockKeyTest : 인서트 성공");
+            assertEquals("Y", optionalApiKey.get().getUseYn());
+
+            apiKeyService.UpdateBlockKey(companyIdx);
+
+            ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdxAndType(companyIdx,1)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
+            assertEquals("N", apiKey.getUseYn());
+
+            apiKeyService.DeleteApiKeyByIdx(createIdx);
+            System.out.println("삭제 성공 createIdx : "+createIdx);
+
+            Optional<ApiKey> optionalDeleteApiKey = apiKeyRepository.findById(createIdx);
+            if(optionalDeleteApiKey.isEmpty()){
+                System.out.println("UpdateBlockKeyTest : 테스트 성공");
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("ApiKey 사용중인 TEST API KEY가 존재한다면 만료처리 테스트 - " +
+            "1. 성공적으로 인서트(InsertApiKey)하고 결제취소를 호출한다. " +
+            "2. 인서트한 값의 테스트키 만료처리(UpdateTestKeyExpire)를 호출한다. " +
+            "3. 해당 데이터를 삭제(DeleteApiKeyByIdx)한 후 다시 조회하여 테스트를 마무리한다.")
+    public void UpdateTestKeyExpireTest(){
+
+        // given
+        Integer adminIdx = 1;
+        Integer companyIdx = 0;
+        String registerName = "테스트";
+        Integer type = 2;
+        Integer state = 1;
+        String key = "test_key";
+
+        // when
+        Integer createIdx = apiKeyService.InsertApiKey(adminIdx, companyIdx, registerName, type, state, key);
+        System.out.println("인서트 완료 createIdx : "+createIdx);
+
+        Optional<ApiKey> optionalApiKey = apiKeyRepository.findById(createIdx);
+        if(optionalApiKey.isPresent()){
+            System.out.println("UpdateTestKeyExpire : 인서트 성공");
+            assertEquals(0, optionalApiKey.get().getCompanyIdx());
+            assertEquals(2, optionalApiKey.get().getType());
+
+            apiKeyService.UpdateTestKeyExpire(companyIdx);
+
+            apiKeyService.DeleteApiKeyByIdx(createIdx);
+            System.out.println("삭제 성공 createIdx : "+createIdx);
+
+            Optional<ApiKey> optionalDeleteApiKey = apiKeyRepository.findById(createIdx);
+            if(optionalDeleteApiKey.isEmpty()){
+                System.out.println("UpdateTestKeyExpire : 테스트 성공");
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("ApiKey TotalDeleteService DeleteApiKeyByCompanyIdx 테스트 - " +
+            "1. 성공적으로 인서트(InsertApiKey)하고 DeleteApiKeyByCompanyIdx를 호출한다. " +
+            "2. 인서트한 값의 DeleteApiKeyByCompanyIdx를 호출한다. " +
+            "3. 데이터를 삭제(DeleteApiKeyByIdx)한 후 다시 조회하여 테스트를 마무리한다.")
+    public void DeleteApiKeyByCompanyIdxTest(){
+
+        // given
+        Integer adminIdx = 1;
+        Integer companyIdx = 2;
+        String registerName = "테스트";
+        Integer type = 1;
+        Integer state = 1;
+        String key = "test_key";
+
+        // when
+        Integer createIdx = apiKeyService.InsertApiKey(adminIdx, companyIdx, registerName, type, state, key);
+        System.out.println("인서트 완료 createIdx : "+createIdx);
+
+        Optional<ApiKey> optionalApiKey = apiKeyRepository.findById(createIdx);
+        if(optionalApiKey.isPresent()){
+            System.out.println("DeleteApiKeyByCompanyIdx : 인서트 성공");
+            assertEquals(2, optionalApiKey.get().getCompanyIdx());
+
+            apiKeyService.DeleteApiKeyByCompanyIdx(companyIdx);
+            System.out.println("삭제 성공 companyIdx : "+companyIdx);
+
+            Optional<ApiKey> optionalDeleteApiKey = apiKeyRepository.findById(createIdx);
+            if(optionalDeleteApiKey.isEmpty()){
+                System.out.println("DeleteApiKeyByCompanyIdx : 테스트 성공");
+            }
+        }
+    }
 
 }

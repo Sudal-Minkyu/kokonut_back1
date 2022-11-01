@@ -8,6 +8,12 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author Woody
+ * Date : 2022-10-25
+ * Time :
+ * Remark : 기존의 코코넛 프로젝트의 ApiKey Sql 쿼리호출
+ */
 @Repository
 public interface ApiKeyRepositoryCustom {
 
