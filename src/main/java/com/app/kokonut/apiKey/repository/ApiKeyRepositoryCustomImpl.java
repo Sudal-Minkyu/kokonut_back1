@@ -1,9 +1,10 @@
 package com.app.kokonut.apiKey.repository;
 
 import com.app.kokonut.admin.entity.QAdmin;
-import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
-import com.app.kokonut.apiKey.dto.ApiKeyListAndDetailDto;
-import com.app.kokonut.apiKey.dto.TestApiKeyExpiredListDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyKeyDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
+import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
 import com.app.kokonut.apiKey.entity.ApiKey;
 import com.app.kokonut.apiKey.entity.QApiKey;
 import com.app.kokonut.company.entity.QCompany;
@@ -40,7 +41,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 
     // ApiKey 리스트 조회
     @Override
-    public List<ApiKeyListAndDetailDto> findByApiKeyList(HashMap<String, Object> paramMap) {
+    public List<ApiKeyListAndDetailDto> findByApiKeyList(ApiKeyMapperDto apiKeyMapperDto) {
 
         QApiKey apiKey = QApiKey.apiKey;
         QAdmin admin = QAdmin.admin;
@@ -80,41 +81,28 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
                         company.companyName
                 ));
 
-        if(!paramMap.get("useYn").equals("") && paramMap.get("useYn") != null){
-            query.where(apiKey.useYn.eq(String.valueOf(paramMap.get("useYn"))));
+        if(!apiKeyMapperDto.getUseYn().equals("") && apiKeyMapperDto.getUseYn() != null){
+            query.where(apiKey.useYn.eq(String.valueOf(apiKeyMapperDto.getUseYn())));
         }
 
-        if(!paramMap.get("state").equals("") && paramMap.get("state") != null){
-            query.where(apiKey.state.eq(Integer.valueOf(String.valueOf(paramMap.get("state")))));
+        if(apiKeyMapperDto.getType() != null){
+            query.where(apiKey.type.eq(apiKeyMapperDto.getType()));
         }
 
-        if(!paramMap.get("type").equals("") && paramMap.get("type") != null){
-            query.where(apiKey.type.eq(Integer.valueOf(String.valueOf(paramMap.get("type")))));
-        }
-
-        if(!paramMap.get("companyIdx").equals("") && paramMap.get("companyIdx") != null){
-            query.where(apiKey.companyIdx.eq(Integer.valueOf(String.valueOf(paramMap.get("companyIdx")))));
-        }
-
-        if(!paramMap.get("beInUse").equals("") && paramMap.get("beInUse") != null){
-            if(paramMap.get("beInUse").equals("Y")){
+        if(!apiKeyMapperDto.getBeInUse().equals("") && apiKeyMapperDto.getBeInUse() != null){
+            if(apiKeyMapperDto.getBeInUse().equals("Y")){
                 query.where(apiKey.validityStart.gt(systemDate).or(apiKey.validityEnd.lt(systemDate)));
             }else{
                 query.where(apiKey.validityEnd.lt(systemDate));
             }
         }
 
-        if(!paramMap.get("stimeStart").equals("") && paramMap.get("stimeStart") != null &&
-                !paramMap.get("stimeEnd").equals("") && paramMap.get("stimeEnd") != null){
-            query.where(apiKey.regdate.between((java.util.Date) paramMap.get("stimeStart"), (java.util.Date) paramMap.get("stimeEnd")));
+        if(apiKeyMapperDto.getStimeStart() != null && apiKeyMapperDto.getStimeEnd() != null){
+            query.where(apiKey.regdate.between(apiKeyMapperDto.getStimeStart(), apiKeyMapperDto.getStimeEnd()));
         }
 
-        if(!paramMap.get("searchText").equals("") && paramMap.get("searchText") != null){
-            query.where(apiKey.key.like("%"+ paramMap.get("searchText") +"%"));
-        }
-
-        if(!paramMap.get("dateType").equals("") && paramMap.get("dateType") != null && paramMap.get("dateType").equals("today")){
-            query.where(apiKey.regdate.eq(systemDate));
+        if(!apiKeyMapperDto.getSearchText().equals("") && apiKeyMapperDto.getSearchText() != null){
+            query.where(apiKey.key.like("%"+ apiKeyMapperDto.getSearchText() +"%"));
         }
 
         return query.fetch();
@@ -122,7 +110,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 
     // ApiKey 리스트 Count 조회
     @Override
-    public Long findByApiKeyListCount(HashMap<String, Object> paramMap) {
+    public Long findByApiKeyListCount(ApiKeyMapperDto apiKeyMapperDto) {
 
         QApiKey apiKey = QApiKey.apiKey;
         QAdmin admin = QAdmin.admin;
@@ -137,41 +125,28 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
                         apiKey.count()
                 ));
 
-        if(!paramMap.get("useYn").equals("") && paramMap.get("useYn") != null){
-            query.where(apiKey.useYn.eq(String.valueOf(paramMap.get("useYn"))));
+        if(!apiKeyMapperDto.getUseYn().equals("") && apiKeyMapperDto.getUseYn() != null){
+            query.where(apiKey.useYn.eq(String.valueOf(apiKeyMapperDto.getUseYn())));
         }
 
-        if(!paramMap.get("state").equals("") && paramMap.get("state") != null){
-            query.where(apiKey.state.eq(Integer.valueOf(String.valueOf(paramMap.get("state")))));
+        if(apiKeyMapperDto.getType() != null){
+            query.where(apiKey.type.eq(apiKeyMapperDto.getType()));
         }
 
-        if(!paramMap.get("type").equals("") && paramMap.get("type") != null){
-            query.where(apiKey.type.eq(Integer.valueOf(String.valueOf(paramMap.get("type")))));
-        }
-
-        if(!paramMap.get("companyIdx").equals("") && paramMap.get("companyIdx") != null){
-            query.where(apiKey.companyIdx.eq(Integer.valueOf(String.valueOf(paramMap.get("companyIdx")))));
-        }
-
-        if(!paramMap.get("beInUse").equals("") && paramMap.get("beInUse") != null){
-            if(paramMap.get("beInUse").equals("Y")){
+        if(!apiKeyMapperDto.getBeInUse().equals("") && apiKeyMapperDto.getBeInUse() != null){
+            if(apiKeyMapperDto.getBeInUse().equals("Y")){
                 query.where(apiKey.validityStart.gt(systemDate).or(apiKey.validityEnd.lt(systemDate)));
             }else{
                 query.where(apiKey.validityEnd.lt(systemDate));
             }
         }
 
-        if(!paramMap.get("stimeStart").equals("") && paramMap.get("stimeStart") != null &&
-                !paramMap.get("stimeEnd").equals("") && paramMap.get("stimeEnd") != null){
-            query.where(apiKey.regdate.between((java.util.Date) paramMap.get("stimeStart"), (java.util.Date) paramMap.get("stimeEnd")));
+        if(apiKeyMapperDto.getStimeStart() != null && apiKeyMapperDto.getStimeEnd() != null){
+            query.where(apiKey.regdate.between(apiKeyMapperDto.getStimeStart(), apiKeyMapperDto.getStimeEnd()));
         }
 
-        if(!paramMap.get("searchText").equals("") && paramMap.get("searchText") != null){
-            query.where(apiKey.key.like("%"+ paramMap.get("searchText") +"%"));
-        }
-
-        if(!paramMap.get("dateType").equals("") && paramMap.get("dateType") != null && paramMap.get("dateType").equals("today")){
-            query.where(apiKey.regdate.eq(systemDate));
+        if(!apiKeyMapperDto.getSearchText().equals("") && apiKeyMapperDto.getSearchText() != null){
+            query.where(apiKey.key.like("%"+ apiKeyMapperDto.getSearchText() +"%"));
         }
 
         return query.fetchOne();

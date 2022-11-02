@@ -1,8 +1,9 @@
 package com.app.kokonut.apiKey.service;
 
-import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
-import com.app.kokonut.apiKey.dto.ApiKeyListAndDetailDto;
-import com.app.kokonut.apiKey.dto.TestApiKeyExpiredListDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyKeyDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
+import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
 import com.app.kokonut.apiKey.entity.ApiKey;
 import com.app.kokonut.apiKey.repository.ApiKeyRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ public class ApiKeyService {
 //	public void InsertApiKey(HashMap<String, Object> paramMap) {
 //		dao.InsertApiKey(paramMap);
 //	}
-    /** JPA save()로 재구성 : InsertApiKey -> 변경후
+    /** JPA save()로 재구성 : insertApiKey -> 변경후
      * 원래 받는 데이터 -> HashMap<String,Object> paramMap 형식
      * Api Key Insert
      * param
@@ -53,9 +54,9 @@ public class ApiKeyService {
      * - String key
      */
     @Transactional
-    public Integer InsertApiKey(Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state,
+    public Integer insertApiKey(Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state,
                              String key) {
-        log.info("InsertApiKey 호출");
+        log.info("insertApiKey 호출");
 
         Date systemDate = new Date(System.currentTimeMillis());
         log.info("현재 날짜 : "+systemDate);
@@ -93,15 +94,15 @@ public class ApiKeyService {
 //	public void UpdateApiKey(HashMap<String, Object> paramMap) {
 //		dao.UpdateApiKey(paramMap);
 //	}
-    /** JPA save()로 재구성 : UpdateApiKey -> 변경후
+    /** JPA save()로 재구성 : updateApiKey -> 변경후
      * Api Key Update
      * 원래 받는 데이터 -> HashMap<String,Object> paramMap 형식
      * param
      * - Integer idx, String useYn, String reason, Integer modifierIdx, String modifierName
      */
     @Transactional
-    public void UpdateApiKey(Integer idx, String useYn, String reason, Integer modifierIdx, String modifierName) {
-        log.info("UpdateApiKey 호출");
+    public void updateApiKey(Integer idx, String useYn, String reason, Integer modifierIdx, String modifierName) {
+        log.info("updateApiKey 호출");
 
         ApiKey apiKey = apiKeyRepository.findById(idx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
@@ -126,14 +127,14 @@ public class ApiKeyService {
 //	public void DeleteApiKeyByIdx(int idx) {
 //		dao.DeleteApiKeyByIdx(idx);
 //	}
-    /** JPA delete()로 재구성 : DeleteApiKeyByIdx -> 변경후
+    /** JPA delete()로 재구성 : deleteApiKeyByIdx -> 변경후
      * Api Key 삭제
      * param
      * - Integer idx
      */
     @Transactional
-    public void DeleteApiKeyByIdx(Integer idx) {
-        log.info("DeleteApiKeyByIdx 호출");
+    public void deleteApiKeyByIdx(Integer idx) {
+        log.info("deleteApiKeyByIdx 호출");
 
         ApiKey apiKey = apiKeyRepository.findById(idx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
@@ -147,9 +148,9 @@ public class ApiKeyService {
 //	public List<HashMap<String, Object>> SelectApiKeyList(HashMap<String, Object> paramMap) {
 //		return dao.SelectApiKeyList(paramMap);
 //	}
-    public List<ApiKeyListAndDetailDto> findByApiKeyList(HashMap<String, Object> paramMap) {
+    public List<ApiKeyListAndDetailDto> findByApiKeyList(ApiKeyMapperDto apiKeyMapperDto) {
         log.info("findByApiKeyList 호출");
-        return apiKeyRepository.findByApiKeyList(paramMap);
+        return apiKeyRepository.findByApiKeyList(apiKeyMapperDto);
     }
 
 	/**
@@ -158,9 +159,9 @@ public class ApiKeyService {
 //	public int SelectApiKeyListCount(HashMap<String, Object> paramMap) {
 //        return dao.SelectApiKeyListCount(paramMap);
 //    }
-    public Long findByApiKeyListCount(HashMap<String, Object> paramMap) {
+    public Long findByApiKeyListCount(ApiKeyMapperDto apiKeyMapperDto) {
         log.info("findByApiKeyListCount 호출");
-        return apiKeyRepository.findByApiKeyListCount(paramMap);
+        return apiKeyRepository.findByApiKeyListCount(apiKeyMapperDto);
     }
 
 //	/**
@@ -269,14 +270,14 @@ public class ApiKeyService {
 //	public void UpdateBlockKey(int companyIdx) {
 //		dao.UpdateBlockKey(companyIdx);
 //	}
-    /** JPA save()로 재구성 : UpdateBlockKey -> 변경후
+    /** JPA save()로 재구성 : updateBlockKey -> 변경후
      * 결제 취소 시 사용
      * param
      * - Integer companyIdx
      */
     @Transactional
-    public void UpdateBlockKey(Integer companyIdx) {
-        log.info("UpdateBlockKey 호출");
+    public void updateBlockKey(Integer companyIdx) {
+        log.info("updateBlockKey 호출");
 
         ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdxAndType(companyIdx,1)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
@@ -291,14 +292,14 @@ public class ApiKeyService {
 //	public void UpdateTestKeyExpire(int companyIdx) {
 //		dao.UpdateTestKeyExpire(companyIdx);
 //	}
-    /** JPA save()로 재구성 : UpdateTestKeyExpire -> 변경후
+    /** JPA save()로 재구성 : updateTestKeyExpire -> 변경후
      * 사용중인 TEST API KEY가 존재한다면 만료처리
      * param
      * - Integer companyIdx
      */
     @Transactional
-    public void UpdateTestKeyExpire(Integer companyIdx) {
-        log.info("UpdateTestKeyExpire 호출");
+    public void updateTestKeyExpire(Integer companyIdx) {
+        log.info("updateTestKeyExpire 호출");
         Date systemDate = new Date(System.currentTimeMillis());
 
         ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdxAndTypeDate(companyIdx,2, systemDate)
@@ -308,13 +309,13 @@ public class ApiKeyService {
         apiKeyRepository.save(apiKey);
     }
 
-    /** JPA delete()로 재구성 : TotalDeleteService DeleteApiKeyByCompanyIdx -> 변경후
+    /** JPA delete()로 재구성 : TotalDeleteService deleteApiKeyByCompanyIdx -> 변경후
      * param
      * - Integer companyIdx
      */
     @Transactional
-    public void DeleteApiKeyByCompanyIdx(Integer companyIdx) {
-        log.info("DeleteApiKeyByCompanyIdx 호출");
+    public void deleteApiKeyByCompanyIdx(Integer companyIdx) {
+        log.info("deleteApiKeyByCompanyIdx 호출");
 
         ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdx(companyIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));

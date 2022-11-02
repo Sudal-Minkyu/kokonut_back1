@@ -1,11 +1,9 @@
-package com.app.kokonut.apiKey.dto;
+package com.app.kokonut.apiKey.dtos;
 
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 /**
  * @author Woody

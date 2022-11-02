@@ -1,8 +1,9 @@
 package com.app.kokonut.apiKey.repository;
 
-import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
-import com.app.kokonut.apiKey.dto.ApiKeyListAndDetailDto;
-import com.app.kokonut.apiKey.dto.TestApiKeyExpiredListDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyKeyDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
+import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -18,10 +19,10 @@ import java.util.List;
 public interface ApiKeyRepositoryCustom {
 
     // ApiKey 리스트 조회
-    List<ApiKeyListAndDetailDto> findByApiKeyList(HashMap<String, Object> paramMap); // SelectApiKeyList -> 변경후
+    List<ApiKeyListAndDetailDto> findByApiKeyList(ApiKeyMapperDto apiKeyMapperDto); // SelectApiKeyList -> 변경후
 
     // ApiKey 리스트의 Count 조회
-    Long findByApiKeyListCount(HashMap<String, Object> paramMap); // SelectApiKeyListCount -> 변경후
+    Long findByApiKeyListCount(ApiKeyMapperDto apiKeyMapperDto); // SelectApiKeyListCount -> 변경후
 
     // ApiKey 단일 조회(상세보기) : param -> idx
     ApiKeyListAndDetailDto findByApiKeyDetail(Integer idx); // SelectApiKeyByIdx -> 변경후

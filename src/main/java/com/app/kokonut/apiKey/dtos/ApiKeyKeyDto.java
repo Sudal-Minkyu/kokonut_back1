@@ -1,4 +1,4 @@
-package com.app.kokonut.apiKey.dto;
+package com.app.kokonut.apiKey.dtos;
 
 
 import io.swagger.annotations.ApiModelProperty;
@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**

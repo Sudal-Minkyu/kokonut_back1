@@ -1,17 +1,22 @@
 package com.app.kokonut.personalInfoProvision.dto;
 
-
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author Woody
+ * Date : 2022-11-01
+ * Time :
+ * Remark : 관리번호 반환하는 Dto
+ */
 @Data
-@ApiModel("")
-public class PersonalInfoProvisionDTO implements Serializable {
-    private static final long serialVersionUID = 1L;
+@NoArgsConstructor
+@AllArgsConstructor
+public class PersonalInfoProvisionDto {
 
     /**
      * 키
@@ -152,4 +157,5 @@ public class PersonalInfoProvisionDTO implements Serializable {
     @ApiModelProperty("제공 대상 상태 (전체: ALL, 선택완료: SELETED)")
     private String targetStatus;
 
+    private String adminName;
 }

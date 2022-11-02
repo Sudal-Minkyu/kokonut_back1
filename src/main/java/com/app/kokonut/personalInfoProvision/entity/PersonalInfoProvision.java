@@ -7,6 +7,12 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author Woody
+ * Date : 2022-11-01
+ * Time :
+ * Remark : personal_info_provision Table Entity
+ */
 @Data
 @Entity
 @Table(name = "personal_info_provision")
@@ -136,7 +142,7 @@ public class PersonalInfoProvision implements Serializable {
     private String columns;
 
     /**
-     * 받는사람 이메일
+     * 받는사람 이메일REASON
      */
     @ApiModelProperty("받는사람 이메일")
     @Column(name = "RECIPIENT_EMAIL", nullable = false)

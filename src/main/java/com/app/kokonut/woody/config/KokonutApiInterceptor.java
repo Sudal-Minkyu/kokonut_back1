@@ -1,6 +1,6 @@
 package com.app.kokonut.woody.config;
 
-import com.app.kokonut.apiKey.dto.ApiKeyKeyDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyKeyDto;
 import com.app.kokonut.apiKey.service.ApiKeyService;
 import com.app.kokonut.woody.been.ApiKeyInfo;
 import org.apache.http.HttpStatus;
@@ -100,7 +100,7 @@ public class KokonutApiInterceptor implements AsyncHandlerInterceptor {
 //		ApiKeyInfo apiKeyInfo = new ApiKeyInfo();
 //
 //		apiKeyInfo.setIdx(Integer.parseInt(apiKeyKeyDto.getIdx().toString()));
-
+//
 //		if(map.containsKey("COMPANY_IDX")){
 //			apiKeyInfo.setCompanyIdx(Integer.parseInt(map.get("COMPANY_IDX").toString()));
 //		}
@@ -146,7 +146,7 @@ public class KokonutApiInterceptor implements AsyncHandlerInterceptor {
 //		if(map.containsKey("MODIFY_DATE")) {
 //			apiKeyInfo.setModifyDate(SDF.parse(map.get("MODIFY_DATE").toString()));
 //		}
-		
+//
 //		return apiKeyInfo;
 //	}
 }

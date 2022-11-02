@@ -1,4 +1,4 @@
-package com.app.kokonut.apiKey.dto;
+package com.app.kokonut.apiKey.dtos;
 
 
 import lombok.AllArgsConstructor;

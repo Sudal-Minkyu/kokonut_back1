@@ -1,7 +1,6 @@
 package com.app.kokonut.apiKey.entity;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -10,6 +9,12 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author Woody
+ * Date : 2022-10-25
+ * Time :
+ * Remark : api_key Table Entity
+ */
 @Entity
 @EqualsAndHashCode(of = "idx")
 @Data

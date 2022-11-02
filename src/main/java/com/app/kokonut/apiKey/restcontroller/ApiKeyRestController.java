@@ -1,30 +1,25 @@
 package com.app.kokonut.apiKey.restcontroller;
 
-import com.app.kokonut.apiKey.dto.ApiKeyListAndDetailDto;
-import com.app.kokonut.apiKey.repository.ApiKeyRepository;
+import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
+import com.app.kokonut.apiKey.dtos.ApiKeySetDto;
 import com.app.kokonut.apiKey.service.ApiKeyService;
-import com.app.kokonut.woody.common.component.DataTables;
-import io.swagger.annotations.Api;
+import com.app.kokonut.woody.common.AjaxResponse;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api(tags = "")
-@Validated
+@Slf4j
 @RestController
 @RequestMapping("/api/ApiKey")
 public class ApiKeyRestController {
 
-    private Logger logger = LoggerFactory.getLogger(ApiKeyRestController.class);
+//    private Logger logger = LoggerFactory.getLogger(ApiKeyRestController.class);
 
     private final ApiKeyService apiKeyService;
 
@@ -36,34 +31,49 @@ public class ApiKeyRestController {
     /**
      *  시스템 관리자 > API 관리 > API key 리스트
      */
-    @SuppressWarnings("unchecked")
-    @GetMapping("list")
+    @PostMapping("list")
     @ApiOperation(value = "ApiKey 리스트 호출 API", notes = "" +
             "시스템 관리자 > API 관리 > API key 리스트")
-    public String ApiKeyList(@RequestBody HashMap<String,Object> paramMap){
-        Long total;
-        List<ApiKeyListAndDetailDto> rows;
+//    public String ApiKeyList(@RequestBody HashMap<String,Object> paramMap) {
+    public ResponseEntity<Map<String,Object>> ApiKeyList(@RequestBody ApiKeySetDto apiKeySetDto){
 
-        DataTables dataTables = null;
+        log.info("API key 리스트 호출");
 
-        try{
-            HashMap<String, Object> searchMap = null;
-            if(paramMap.containsKey("searchData")){
-                searchMap = (HashMap<String, Object>) paramMap.get("searchData");
-                paramMap.putAll(searchMap);
-            }
+        log.info("@RequestBody apiKeySetDto : "+apiKeySetDto);
 
-            rows = apiKeyService.findByApiKeyList(paramMap);
-            total = apiKeyService.findByApiKeyListCount(paramMap);
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
 
-//            dataTables = new DataTables(paramMap, rows, total);
+//        DataTables dataTables;
 
-        }
-        catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+//        try{
+//            HashMap<String, Object> searchMap;
+//            searchMap = (HashMap<String, Object>) paramMap.get("searchData");
 
-        return dataTables.getJsonString();
+//            if(paramMap.containsKey("searchData")){
+//                searchMap = (HashMap<String, Object>) paramMap.get("searchData");
+//                paramMap.putAll(searchMap);
+//            }
+
+        List<ApiKeyListAndDetailDto> apiKeyListAndDetailDtos = apiKeyService.findByApiKeyList(apiKeySetDto.getApiKeyMapperDto());
+        Long total = apiKeyService.findByApiKeyListCount(apiKeySetDto.getApiKeyMapperDto());
+        log.info("apiKeyListAndDetailDtos : "+apiKeyListAndDetailDtos);
+        log.info("total : "+total);
+
+        data.put("apiKeyListAndDetailDtos",apiKeyListAndDetailDtos);
+        data.put("total",total);
+
+//            dataTables = new DataTables(apiKeyTestDto.getSearchData(), data, total);
+
+//            return dataTables.getJsonString();
+//        }
+//        catch (Exception e) {
+//            log.info("예외발생 : "+e);
+//
+//            return "아무일도없었다.";
+//        }
+
+        return ResponseEntity.ok(res.success(data));
     }
 
 }

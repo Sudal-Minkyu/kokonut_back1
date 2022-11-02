@@ -1,9 +1,7 @@
 package com.app.kokonut.woody.common.component;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,16 +13,14 @@ public class DataTables {
 	private Logger logger = LoggerFactory.getLogger(DataTables.class);
 	
 	private long total;
-	private List<HashMap<String, Object>> rows;
+	private HashMap<String, Object> rows;
 	private int pageNumber;
 	private int pageSize;
 	private HashMap<String, Object> search;
-	
-	@SuppressWarnings("unchecked")
-	public DataTables(HashMap<String, Object> paramMap, List<HashMap<String, Object>> rows, Long total){
+
+	public DataTables(HashMap<String, Object> searchData, HashMap<String, Object> rows, Long total) {
 		this.total=total;
-		this.rows = new ArrayList<HashMap<String,Object>>();
-		this.search = (HashMap<String, Object>) paramMap.get("searchData");
+		this.search = searchData;
 		this.rows = rows;
 	}
 	
