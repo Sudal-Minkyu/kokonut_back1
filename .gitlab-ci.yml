@@ -35,6 +35,9 @@ Test-Coverage-Job:   # Jacoco를 이용한 Test Coverage 실행
 Unit-Test-Job:   # Unit Test 진행
   stage: test    
   script:
+    - export KOKONUT_AWS_KMS_ID="$KOKONUT_AWS_KMS_ID"           # CI/CD variables에 등록
+    - export KOKONUT_AWS_KMS_ACCESS="$KOKONUT_AWS_KMS_ACCESS"   # CI/CD variables에 등록
+    - export KOKONUT_AWS_KMS_SECRET="$KOKONUT_AWS_KMS_SECRET"   # CI/CD variables에 등록
     - ./gradlew check
 
 Deploy-Job:      # This job runs in the deploy stage.
