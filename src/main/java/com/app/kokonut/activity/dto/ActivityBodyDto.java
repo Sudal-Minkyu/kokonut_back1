@@ -1,15 +1,22 @@
 package com.app.kokonut.activity.dto;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author Woody
+ * Date : 2022-11-03
+ * Time :
+ * Remark : Activity 저장용 BodyDto
+ */
 @Data
-@io.swagger.annotations.ApiModel("")
-public class ActivityDTO implements Serializable {
-    private static final long serialVersionUID = 1L;
+@NoArgsConstructor
+@AllArgsConstructor
+public class ActivityBodyDto {
 
     /**
      * 주키
@@ -19,17 +26,10 @@ public class ActivityDTO implements Serializable {
 
 
     /**
-     * 활동 종류(1:고객정보처리,2:관리자활동,3:회원DB관리이력)
-     */
-    @io.swagger.annotations.ApiModelProperty("활동 종류(1:고객정보처리,2:관리자활동,3:회원DB관리이력)")
-    private Integer type;
-
-
-    /**
      * 활동
      */
     @io.swagger.annotations.ApiModelProperty("활동")
-    private String activity;
+    private String isActivity;
 
 
     /**
