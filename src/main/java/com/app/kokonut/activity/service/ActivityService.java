@@ -62,9 +62,9 @@ public class ActivityService {
      * - List<Activity> activityList
      */
     @Transactional
-    public void saveActivityList(List<Activity> activityList) {
+    public List<Activity> saveActivityList(List<Activity> activityList) {
         log.info("saveActivityList 호출");
-        activityRepository.saveAll(activityList);
+        return activityRepository.saveAll(activityList);
     }
 
 
