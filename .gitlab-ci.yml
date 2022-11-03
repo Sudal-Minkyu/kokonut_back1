@@ -1,0 +1,48 @@
+image: gradle:jdk11
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+    
+stages:          # 사용하는 stage 기재
+  - build
+  - test
+  - deploy
+
+Build-Job:       # gradle을 이용하여 프로젝트 build
+  stage: build
+  script:
+    - ./gradlew --build-cache assemble
+    - echo "Compile complete."
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 week
+  only:
+    - main
+
+Test-Coverage-Job:   # Jacoco를 이용한 Test Coverage 실행
+  stage: test    
+  script:
+    - echo "Running unit tests... This will take about 10 seconds."
+    - sleep 10
+    - echo "Code coverage is 90%"
+
+Unit-Test-Job:   # Unit Test 진행
+  stage: test    
+  script:
+    - ./gradlew check
+
+Deploy-Job:      # This job runs in the deploy stage.
+  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+  environment: production
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."
+
+after_script:
+  - echo "End CI"
