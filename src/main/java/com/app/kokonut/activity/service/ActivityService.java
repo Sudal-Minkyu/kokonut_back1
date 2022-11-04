@@ -1,58 +1,71 @@
 package com.app.kokonut.activity.service;
 
+import com.app.kokonut.activity.dto.ActivityDto;
 import com.app.kokonut.activity.entity.Activity;
-import com.app.kokonut.activity.vo.ActivityQueryVO;
-import com.app.kokonut.activity.vo.ActivityUpdateVO;
-import com.app.kokonut.activity.vo.ActivityVO;
-import com.app.kokonut.activity.dto.ActivityDTO;
 import com.app.kokonut.activity.repository.ActivityRepository;
-import org.springframework.beans.BeanUtils;
+import com.app.kokonut.apiKey.entity.ApiKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
+import javax.transaction.Transactional;
+import java.sql.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @Service
 public class ActivityService {
 
+    private final ActivityRepository activityRepository;
+
     @Autowired
-    private ActivityRepository activityRepository;
-
-    public Integer save(ActivityVO vO) {
-        Activity bean = new Activity();
-        BeanUtils.copyProperties(vO, bean);
-        bean = activityRepository.save(bean);
-        return bean.getIdx();
+    public ActivityService(ActivityRepository activityRepository) {
+        this.activityRepository = activityRepository;
     }
 
-    public void delete(Integer id) {
-        activityRepository.deleteById(id);
+    /***
+     * 활동 리스트 조회
+     * @param Map [type - 활동 종류(1:고객정보처리,2:관리자활동)]
+     * @return List
+     */
+//    public List<HashMap<String, Object>> SelectActivityList(Map<String, Object> paramMap){
+//        return dao.SelectActivityList(paramMap);
+//    }
+    public List<ActivityDto> findByActivityTypeList(Integer type) {
+        log.info("findByActivityTypeList 호출");
+        return activityRepository.findByActivityTypeList(type);
     }
 
-    public void update(Integer id, ActivityUpdateVO vO) {
-        Activity bean = requireOne(id);
-        BeanUtils.copyProperties(vO, bean);
-        activityRepository.save(bean);
+    /***
+     * 활동 업데이트
+     * @param paramMap
+     * --> 사용하지 않은듯(?)
+     */
+//    public void UpdateActivity(HashMap<String, Object> paramMap){
+//        dao.UpdateActivity(paramMap);
+//    }
+
+    /***
+     * 활동 리스트 저장
+     * @param activityList = 저장할 활동 리스트
+     */
+//    public void SaveActivityList(List<HashMap<String, Object>> activityList) {
+//        for (int i = 0; i < activityList.size(); i++) {
+//            dao.UpdateActivity(activityList.get(i));
+//        }
+//    }
+    /** JPA saveAll()로 재구성 : SaveActivityList -> 변경후
+     * 리스트형태로 받은 Activity들을 모두 저장(업데이트)
+     * param
+     * - List<Activity> activityList
+     */
+    @Transactional
+    public List<Activity> saveActivityList(List<Activity> activityList) {
+        log.info("saveActivityList 호출");
+        return activityRepository.saveAll(activityList);
     }
 
-    public ActivityDTO getById(Integer id) {
-        Activity original = requireOne(id);
-        return toDTO(original);
-    }
 
-    public Page<ActivityDTO> query(ActivityQueryVO vO) {
-        throw new UnsupportedOperationException();
-    }
-
-    private ActivityDTO toDTO(Activity original) {
-        ActivityDTO bean = new ActivityDTO();
-        BeanUtils.copyProperties(original, bean);
-        return bean;
-    }
-
-    private Activity requireOne(Integer id) {
-        return activityRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Resource not found: " + id));
-    }
 }

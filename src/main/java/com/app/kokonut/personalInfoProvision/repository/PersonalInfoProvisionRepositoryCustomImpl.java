@@ -26,7 +26,6 @@ import java.util.Objects;
  * Time :
  * Remark : PersonalInfoProvisionRepositoryCustom 쿼리문 선언부
  */
-@Slf4j
 @Repository
 public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositorySupport implements PersonalInfoProvisionRepositoryCustom {
 
