@@ -55,7 +55,7 @@ public class ApiKeyService {
      */
     @Transactional
     public Integer insertApiKey(Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state,
-                             String key) {
+                             String key, Integer useAccumulate) {
         log.info("insertApiKey 호출");
 
         Date systemDate = new Date(System.currentTimeMillis());
@@ -67,7 +67,7 @@ public class ApiKeyService {
         apiKey.setRegisterName(registerName);
         apiKey.setType(type);
         apiKey.setState(state);
-        apiKey.setUseAccumulate(1);
+        apiKey.setUseAccumulate(useAccumulate);
         apiKey.setKey(key);
         apiKey.setRegdate(systemDate);
         apiKey.setUseYn("Y");

@@ -81,7 +81,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
                         company.companyName
                 ));
 
-        if(!apiKeyMapperDto.getUseYn().equals("") && apiKeyMapperDto.getUseYn() != null){
+        if(apiKeyMapperDto.getUseYn() != null){
             query.where(apiKey.useYn.eq(String.valueOf(apiKeyMapperDto.getUseYn())));
         }
 
@@ -89,7 +89,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
             query.where(apiKey.type.eq(apiKeyMapperDto.getType()));
         }
 
-        if(!apiKeyMapperDto.getBeInUse().equals("") && apiKeyMapperDto.getBeInUse() != null){
+        if(apiKeyMapperDto.getBeInUse() != null){
             if(apiKeyMapperDto.getBeInUse().equals("Y")){
                 query.where(apiKey.validityStart.gt(systemDate).or(apiKey.validityEnd.lt(systemDate)));
             }else{
@@ -101,7 +101,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
             query.where(apiKey.regdate.between(apiKeyMapperDto.getStimeStart(), apiKeyMapperDto.getStimeEnd()));
         }
 
-        if(!apiKeyMapperDto.getSearchText().equals("") && apiKeyMapperDto.getSearchText() != null){
+        if(apiKeyMapperDto.getSearchText() != null){
             query.where(apiKey.key.like("%"+ apiKeyMapperDto.getSearchText() +"%"));
         }
 
@@ -125,7 +125,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
                         apiKey.count()
                 ));
 
-        if(!apiKeyMapperDto.getUseYn().equals("") && apiKeyMapperDto.getUseYn() != null){
+        if(apiKeyMapperDto.getUseYn() != null){
             query.where(apiKey.useYn.eq(String.valueOf(apiKeyMapperDto.getUseYn())));
         }
 
@@ -133,7 +133,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
             query.where(apiKey.type.eq(apiKeyMapperDto.getType()));
         }
 
-        if(!apiKeyMapperDto.getBeInUse().equals("") && apiKeyMapperDto.getBeInUse() != null){
+        if(apiKeyMapperDto.getBeInUse() != null){
             if(apiKeyMapperDto.getBeInUse().equals("Y")){
                 query.where(apiKey.validityStart.gt(systemDate).or(apiKey.validityEnd.lt(systemDate)));
             }else{
@@ -145,7 +145,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
             query.where(apiKey.regdate.between(apiKeyMapperDto.getStimeStart(), apiKeyMapperDto.getStimeEnd()));
         }
 
-        if(!apiKeyMapperDto.getSearchText().equals("") && apiKeyMapperDto.getSearchText() != null){
+        if(apiKeyMapperDto.getSearchText() != null){
             query.where(apiKey.key.like("%"+ apiKeyMapperDto.getSearchText() +"%"));
         }
 
@@ -305,7 +305,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         JPQLQuery<ApiKeyListAndDetailDto> query = from(apiKey)
                 .innerJoin(admin).on(admin.idx.eq(apiKey.adminIdx))
                 .innerJoin(company).on(company.idx.eq(admin.companyIdx))
-                .where(apiKey.companyIdx.eq(companyIdx).and(apiKey.type.eq(type).and(apiKey.useYn.eq(useYn))))
+                .where(apiKey.companyIdx.eq(companyIdx).and(apiKey.type.eq(type).and(apiKey.useYn.eq(useYn)))).limit(1)
                 .select(Projections.constructor(ApiKeyListAndDetailDto.class,
                         apiKey.idx,
                         apiKey.companyIdx,
