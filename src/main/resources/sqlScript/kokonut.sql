@@ -2,7 +2,8 @@
 SQLyog Professional v12.09 (64 bit)
 MySQL - 5.7.26-log : Database - kokonut
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
