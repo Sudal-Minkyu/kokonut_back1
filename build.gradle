@@ -27,12 +27,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation' // Spring validation 쓰기위함
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
 	runtimeOnly group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.0.8'
-	runtimeOnly group: 'com.h2database', name: 'h2', version: '2.1.214'
+	testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
 	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
 	testImplementation group: 'org.springframework.security', name: 'spring-security-test', version: '5.7.4'
 	//
@@ -47,6 +47,15 @@ dependencies {
 	implementation group: 'org.qlrm', name: 'qlrm', version: '3.0.4' // querydsl 내에 네이티브 쿼리를 사용하기위함
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0' // Swagger 쓰기위함
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0' // Swagger 쓰기위함
+
+	implementation group: 'org.apache.poi', name: 'poi', version: '5.2.2' // Excel Read 쓰기위함
+	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.2' // Swagger Read 쓰기위함
+
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2' // JWT 쓰기위함
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2' // JWT 쓰기위함
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2' // JWT 쓰기위함
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis 쓰기위함
 
 	// ~
 

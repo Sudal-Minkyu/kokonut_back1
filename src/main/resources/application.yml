@@ -1,7 +1,7 @@
 server:
   port: '8050'
 
-
+# JPA Setting
 spring:
   datasource: #DB
     driver-class-name: org.mariadb.jdbc.Driver
@@ -11,10 +11,17 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  redis:
+    host: localhost
+    port: '6379'
 
-
+# JWT_SECRET_STRING : echo 'spring-boot-security-jwt-tutorial-jiwoon-spring-boot-security-jwt-tutorial' | base64
+jwt:
+  secret: c3ByaW5nLWJvb3Qtc2VjdXJpdHktand0LXR1dG9yaWFsLWppd29vbi1zcHJpbmctYm9vdC1zZWN1cml0eS1qd3QtdHV0b3JpYWwK
 
 #Custom
 kokonut_aws_kms_secret: ${KOKONUT_AWS_KMS_SECRET}
 kokonut_aws_kms_access: ${KOKONUT_AWS_KMS_ACCESS}
 kokonut_aws_kms_id: ${KOKONUT_AWS_KMS_ID}
+
+kokonut_mail_host: ${KOKONUT_MAIL_HOST}

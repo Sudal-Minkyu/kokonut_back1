@@ -1,18 +1,27 @@
 package com.app.kokonut.admin.entity;
 
+import com.app.kokonut.admin.entity.enums.AuthorityRole;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 @Entity
-@Table(name = "admin")
-public class Admin implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@Table(name="admin")
+public class Admin implements UserDetails {
 
     /**
      * 키
@@ -241,11 +250,12 @@ public class Admin implements Serializable {
     private String loginAuth = "N";
 
     /**
-     * 권한(시스템관리자:ROLE_SYSTEM, 마스터관리자:ROLE_MASTER, 일반관리자 : ROLE_ADMIN)
+     * 권한(시스템관리자:ROLE_SYSTEM, 관리자 : ROLE_ADMIN, 마스터관리자:ROLE_MASTER)
      */
-    @Column(name = "ROLE_NAME")
-    @ApiModelProperty("권한(시스템관리자:ROLE_SYSTEM, 마스터관리자:ROLE_MASTER, 일반관리자 : ROLE_ADMIN)")
-    private String roleName;
+    @Enumerated(EnumType.STRING)
+    @ApiModelProperty("권한(시스템관리자:ROLE_SYSTEM, 관리자 : ROLE_ADMIN, 마스터관리자:ROLE_MASTER)")
+    @Column(name="ROLE_NAME")
+    private AuthorityRole roleName;
 
     /**
      * 등록일시
@@ -274,5 +284,42 @@ public class Admin implements Serializable {
     @ApiModelProperty("수정일시")
     @Column(name = "MODIFY_DATE")
     private Date modifyDate;
+
+    @Column
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
 }

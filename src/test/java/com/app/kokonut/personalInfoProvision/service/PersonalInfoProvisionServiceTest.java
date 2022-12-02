@@ -1,17 +1,15 @@
 package com.app.kokonut.personalInfoProvision.service;
 
-import com.app.kokonut.personalInfoProvision.dto.PersonalInfoProvisionListDto;
-import com.app.kokonut.personalInfoProvision.dto.PersonalInfoProvisionMapperDto;
+import com.app.kokonut.refactor.personalInfoProvision.dto.PersonalInfoProvisionListDto;
+import com.app.kokonut.refactor.personalInfoProvision.dto.PersonalInfoProvisionMapperDto;
+import com.app.kokonut.refactor.personalInfoProvision.service.PersonalInfoProvisionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.HashMap;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @AutoConfigureMockMvc
 @SpringBootTest

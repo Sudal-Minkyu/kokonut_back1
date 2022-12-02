@@ -1,9 +1,9 @@
 package com.app.kokonut.activity.service;
 
-import com.app.kokonut.activity.dto.ActivityDto;
-import com.app.kokonut.activity.entity.Activity;
-import com.app.kokonut.activity.repository.ActivityRepository;
-import com.app.kokonut.personalInfoProvision.dto.PersonalInfoProvisionMapperDto;
+import com.app.kokonut.activity.ActivityService;
+import com.app.kokonut.activity.dto.ActivityListDto;
+import com.app.kokonut.activity.Activity;
+import com.app.kokonut.activity.ActivityRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +30,16 @@ class ActivityServiceTest {
     @DisplayName("활동 리스트 조회 테스트 : param type 값이 4 일 경우 테스트 ")
     public void findByActivityTypeListTest1(){
         // when
-        List<ActivityDto> activityDtoList = activityService.findByActivityTypeList(4);
-        System.out.println("activityDtoList : "+activityDtoList);
+        List<ActivityListDto> activityListDtoList = activityService.findByActivityTypeList(4);
+        System.out.println("activityDtoList : "+ activityListDtoList);
     }
 
     @Test
     @DisplayName("활동 리스트 조회 테스트 : param type 값이 1 일 경우 테스트 ")
     public void findByActivityTypeListTest2(){
         // when
-        List<ActivityDto> activityDtoList = activityService.findByActivityTypeList(1);
-        System.out.println("activityDtoList : "+activityDtoList);
+        List<ActivityListDto> activityListDtoList = activityService.findByActivityTypeList(1);
+        System.out.println("activityDtoList : "+ activityListDtoList);
     }
 
     @Test
@@ -63,16 +63,16 @@ class ActivityServiceTest {
         List<Activity> activityList = activityService.saveActivityList(activities);
         System.out.println("인서트 완료 activityList : "+activityList);
 
-        List<ActivityDto> activityDtoList = activityService.findByActivityTypeList(99); // type 99로 조회
-        System.out.println("activityDtoList : "+activityDtoList);
+        List<ActivityListDto> activityListDtoList = activityService.findByActivityTypeList(99); // type 99로 조회
+        System.out.println("activityDtoList : "+ activityListDtoList);
 
-        assertEquals(10, activityDtoList.size()); // 인서트한 값이 10개인지 확인
+        assertEquals(10, activityListDtoList.size()); // 인서트한 값이 10개인지 확인
 
         activityRepository.deleteAll(activityList);
 
-        List<ActivityDto> activityDtoListCheck = activityService.findByActivityTypeList(99); // 다시 type 99로 조회
+        List<ActivityListDto> activityListDtoListCheck = activityService.findByActivityTypeList(99); // 다시 type 99로 조회
 
-        assertEquals(0, activityDtoListCheck.size()); // 모두 삭제됬는지 확인 : 인서트한 값이 0개인지 확인
+        assertEquals(0, activityListDtoListCheck.size()); // 모두 삭제됬는지 확인 : 인서트한 값이 0개인지 확인
 
         System.out.println("saveActivityListTest : 테스트 성공");
     }

@@ -40,4 +40,5 @@ public class AjaxResponse {
         res.put("err_msg", err_msg);
         return this.res;
     }
+
 }

@@ -1,15 +1,16 @@
 package com.app.kokonut.apiKey.service;
 
 import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.admin.repository.AdminRepository;
+import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.apiKey.ApiKeyService;
 import com.app.kokonut.apiKey.dtos.ApiKeyKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
-import com.app.kokonut.apiKey.entity.ApiKey;
-import com.app.kokonut.apiKey.repository.ApiKeyRepository;
-import com.app.kokonut.company.entity.Company;
-import com.app.kokonut.company.repository.CompanyRepository;
+import com.app.kokonut.apiKey.ApiKey;
+import com.app.kokonut.apiKey.ApiKeyRepository;
+import com.app.kokonut.refactor.company.entity.Company;
+import com.app.kokonut.refactor.company.repository.CompanyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,12 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * @author Woody
+ * Date : 2022-10-26
+ * Time :
+ * Remark : ApiKeyService 테스트코드
+ */
 @AutoConfigureMockMvc
 @SpringBootTest
 class ApiKeyServiceTest {
