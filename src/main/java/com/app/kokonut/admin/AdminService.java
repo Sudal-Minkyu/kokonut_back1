@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.sql.Date;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -57,10 +56,9 @@ public class AdminService {
     public ResponseEntity<Map<String,Object>> signUp(AuthRequestDto.SignUp signUp) {
         log.info("signUp 호출");
 
-        data.clear();
-
         if (adminRepository.existsByEmail(signUp.getEmail())) {
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO005.getCode(),ResponseErrorCode.KO005.getDesc()));
+            log.error("이미 회원가입된 이메일입니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO005.getCode(), ResponseErrorCode.KO005.getDesc()));
         }
 
         Admin admin = Admin.builder()
@@ -68,7 +66,6 @@ public class AdminService {
                 .password(passwordEncoder.encode(signUp.getPassword()))
                 .roleName(AuthorityRole.ROLE_MASTER)
                 .regdate(new Date(System.currentTimeMillis()))
-                .roles(Collections.singletonList(AuthorityRole.ROLE_MASTER.name()))
                 .build();
 
         adminRepository.save(admin);
@@ -79,9 +76,8 @@ public class AdminService {
     public ResponseEntity<Map<String,Object>> authToken(AuthRequestDto.Login login) {
         log.info("authToken 호출");
 
-        data.clear();
-
         if (adminRepository.findByEmail(login.getEmail()).orElse(null) == null) {
+            log.error("해당하는 유저가 존재하지 않습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(),"해당하는 유저가 "+ResponseErrorCode.KO004.getDesc()));
         }
 
@@ -106,11 +102,10 @@ public class AdminService {
 
     public ResponseEntity<Map<String,Object>> reissue(AuthRequestDto.Reissue reissue) {
         log.info("reissue 호출");
-        data.clear();
 
         // Refresh Token 검증
         if (!jwtTokenProvider.validateToken(reissue.getRefreshToken())) {
-            log.info("유효하지 않은 토큰임");
+            log.error("유효하지 않은 토큰정보임");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO007.getCode(),ResponseErrorCode.KO007.getDesc()));
         }
 
@@ -122,11 +117,12 @@ public class AdminService {
 
         // 로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리
         if(ObjectUtils.isEmpty(refreshToken)) {
-            log.info("로그아웃된 토큰임");
+            log.error("로그아웃된 토큰임");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO006.getCode(),ResponseErrorCode.KO006.getDesc()));
         }
+
         if(!refreshToken.equals(reissue.getRefreshToken())) {
-            log.info("리플레쉬 토큰이 맞지않음");
+            log.error("Redis토큰과 받은 리플레쉬 토큰이 맞지않음");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO008.getCode(),ResponseErrorCode.KO008.getDesc()));
         }
 
@@ -153,10 +149,10 @@ public class AdminService {
 
     public ResponseEntity<Map<String,Object>> logout(AuthRequestDto.Logout logout) {
         log.info("logout 호출");
-        data.clear();
 
         // Access Token 검증
         if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
+            log.error("유효하지 않은 토큰정보임");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO006.getCode(),ResponseErrorCode.KO006.getDesc()));
         }
 
@@ -169,7 +165,7 @@ public class AdminService {
             redisTemplate.delete("RT: "+authentication.getName());
         }
 
-        // 해당 Access Token 유효시간 가지고 와서 BlackList 로 저장하기
+        // 해당 Access Token 유효시간 가지고 와서 BlackList로 저장하기
         Long expiration = jwtTokenProvider.getExpiration(logout.getAccessToken());
         redisTemplate.opsForValue().set(logout.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
 
@@ -181,7 +177,7 @@ public class AdminService {
 
         // SecurityContext에 담겨 있는 authentication userEamil 정보
         String userEmail = SecurityUtil.getCurrentUserEmail();
-        log.info("관리자로 바꿀 이메일 : "+userEmail);
+
         if(userEmail.equals("anonymousUser")){
             log.info("사용할 수 없는 토큰입니다.");
         } else{
@@ -190,7 +186,7 @@ public class AdminService {
             Admin admin = adminRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new UsernameNotFoundException("No authentication information."));
 
-            log.info("해당 유저의 권한 : "+admin.getRoles());
+            log.info("해당 유저의 권한 : "+admin.getRoleName());
 
             // add ROLE_ADMIN
 //            admin.getRoles().add(AuthorityRole.ROLE_ADMIN.name());

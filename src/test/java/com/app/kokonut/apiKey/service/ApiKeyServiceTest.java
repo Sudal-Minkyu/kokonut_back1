@@ -156,7 +156,7 @@ class ApiKeyServiceTest {
         ApiKey apiKey = apiKeyRepository.findById(createIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
 
-        // than
+        // then
         assertEquals(createIdx,apiKey.getIdx());
         assertEquals("테스트_99",apiKey.getRegisterName());
         assertEquals("테스트사유",apiKey.getReason());
@@ -182,7 +182,7 @@ class ApiKeyServiceTest {
         List<ApiKeyListAndDetailDto> apiKeyListDtos = apiKeyService.findByApiKeyList(apiKeyMapperDto);
 //        System.out.println("apiKeyListDtos : "+apiKeyListDtos);
 
-        // than
+        // then
         assertEquals(10L, apiKeyListDtos.size());
     }
 
@@ -197,7 +197,7 @@ class ApiKeyServiceTest {
         Long count = apiKeyService.findByApiKeyListCount(apiKeyMapperDto);
         System.out.println("ApiKey 리스트 count : "+count);
 
-        // than
+        // then
         assertEquals(10L, count);
     }
 
@@ -209,7 +209,7 @@ class ApiKeyServiceTest {
         ApiKeyListAndDetailDto apiKeyDetail = apiKeyService.findByApiKeyDetail(1);
         System.out.println("apiKeyDetail : "+apiKeyDetail);
 
-        // than
+        // then
 //        assertEquals(1, apiKeyDetail.getIdx());
     }
 
@@ -223,7 +223,7 @@ class ApiKeyServiceTest {
         ApiKeyKeyDto apiKeyKeyDto = apiKeyService.findByKey(key);
 //        System.out.println("apiKeyKeyDto : "+apiKeyKeyDto);
 
-        // than
+        // then
         assertEquals("test_key_1", apiKeyKeyDto.getKey());
         assertEquals(1, apiKeyKeyDto.getType());
     }
@@ -236,7 +236,7 @@ class ApiKeyServiceTest {
         ApiKeyListAndDetailDto apiKeyDetail = apiKeyService.findByTestApiKeyByCompanyIdx(1);
         System.out.println("apiKeyDetail : "+apiKeyDetail);
 
-        // than
+        // then
 //        assertEquals(1, apiKeyDetail.getIdx());
     }
 
@@ -251,7 +251,7 @@ class ApiKeyServiceTest {
         Long count = apiKeyService.findByTestApiKeyDuplicateCount(key);
         System.out.println("count : "+count);
 
-        // than
+        // then
 //        assertEquals(1L, count);
     }
 
@@ -263,7 +263,7 @@ class ApiKeyServiceTest {
         ApiKeyListAndDetailDto apiKeyDetail = apiKeyService.findByApiKeyByCompanyIdx(1);
         System.out.println("apiKeyDetail : "+apiKeyDetail);
 
-        // than
+        // then
 //        assertNull(apiKeyDetail);
     }
 
@@ -278,7 +278,7 @@ class ApiKeyServiceTest {
         Long count = apiKeyService.findByApiKeyDuplicateCount(key);
         System.out.println("count : "+count);
 
-        // than
+        // then
 //        assertEquals(0, count);
     }
 

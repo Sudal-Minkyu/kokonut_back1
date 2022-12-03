@@ -12,7 +12,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @NoArgsConstructor
@@ -285,16 +284,11 @@ public class Admin implements UserDetails {
     @Column(name = "MODIFY_DATE")
     private Date modifyDate;
 
-    @Column
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.add(new SimpleGrantedAuthority(roleName.getDesc()));
+        return authorities;
     }
 
     @Override

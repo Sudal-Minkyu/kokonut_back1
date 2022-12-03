@@ -63,7 +63,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/logout")
-    @ApiOperation(value = "토큰 새로고침" , notes = "" +
+    @ApiOperation(value = "로그아웃 처리" , notes = "" +
             "1. Param 값으로 accessToken, refreshToken을 받는다." +
             "2. 받은 두 토큰을 검사하고 해당 토큰을 삭제처리 한다.")
     public ResponseEntity<Map<String,Object>> logout(@Validated AuthRequestDto.Logout logout) {

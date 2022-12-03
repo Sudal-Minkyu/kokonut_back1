@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author Woody
  * Date : 2022-12-01
  * Time :
- * Remark : 로그인 시 반환 Dto
+ * Remark : 토큰 반환Dto
  */
 public class AuthResponseDto {
 
