@@ -14,6 +14,10 @@ spring:
   redis:
     host: localhost
     port: '6379'
+  data:
+    redis:
+      repositories:
+        enabled: false
 
 # JWT_SECRET_STRING : echo 'spring-boot-security-jwt-tutorial-jiwoon-spring-boot-security-jwt-tutorial' | base64
 jwt:
@@ -25,3 +29,6 @@ kokonut_aws_kms_access: ${KOKONUT_AWS_KMS_ACCESS}
 kokonut_aws_kms_id: ${KOKONUT_AWS_KMS_ID}
 
 kokonut_mail_host: ${KOKONUT_MAIL_HOST}
+
+otp:
+  hostUrl: "http://127.0.0.1"

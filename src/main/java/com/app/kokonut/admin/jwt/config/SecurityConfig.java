@@ -50,7 +50,7 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/swagger-ui/index.html/**", "/api/Admin/authority").permitAll()
+                .antMatchers("/", "/swagger-ui/index.html/**", "/api/Admin/**").permitAll()
                 .antMatchers("/api/Admin/masterTest").hasAnyAuthority("ROLE_MASTER")
                 .antMatchers("/api/Admin/adminTest").hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요

@@ -1,5 +1,7 @@
 package com.app.kokonut.admin;
 
+import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
+
 /**
  * @author Woody
  * Date : 2022-11-29
@@ -7,5 +9,7 @@ package com.app.kokonut.admin;
  * Remark : 기존의 코코넛 프로젝트의 Admin Sql 쿼리호출
  */
 public interface AdminRepositoryCustom {
+
+    AdminOtpKeyDto findByOtpKey(String email);
 
 }
