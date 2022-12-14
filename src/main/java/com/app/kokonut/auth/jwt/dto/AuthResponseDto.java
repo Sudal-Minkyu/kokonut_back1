@@ -1,4 +1,4 @@
-package com.app.kokonut.admin.jwt.dto;
+package com.app.kokonut.auth.jwt.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

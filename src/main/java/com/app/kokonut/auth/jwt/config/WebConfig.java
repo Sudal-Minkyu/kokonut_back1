@@ -1,4 +1,4 @@
-package com.app.kokonut.admin.jwt.config;
+package com.app.kokonut.auth.jwt.config;
 
 import org.modelmapper.ModelMapper;
 import org.qlrm.mapper.JpaResultMapper;

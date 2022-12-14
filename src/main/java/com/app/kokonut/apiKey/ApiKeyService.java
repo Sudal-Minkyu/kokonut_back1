@@ -98,6 +98,7 @@ public class ApiKeyService {
      * param
      * - Integer idx, String useYn, String reason, Integer modifierIdx, String modifierName
      */
+
     @Transactional
     public void updateApiKey(Integer idx, String useYn, String reason, Integer modifierIdx, String modifierName) {
         log.info("updateApiKey 호출");

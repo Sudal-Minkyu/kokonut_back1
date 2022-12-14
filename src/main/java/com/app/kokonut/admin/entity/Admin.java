@@ -8,7 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -78,7 +78,7 @@ public class Admin implements UserDetails {
      */
     @ApiModelProperty("비밀번호 변경 일자")
     @Column(name = "PWD_CHANGE_DATE")
-    private Date pwdChangeDate;
+    private LocalDateTime pwdChangeDate;
 
     /**
      * 비밀번호오류횟수
@@ -120,14 +120,14 @@ public class Admin implements UserDetails {
      */
     @ApiModelProperty("휴면계정 전환일")
     @Column(name = "DORMANT_DATE")
-    private Date dormantDate;
+    private LocalDateTime dormantDate;
 
     /**
      * 계정삭제예정일
      */
     @ApiModelProperty("계정삭제예정일")
     @Column(name = "EXPECTED_DELETE_DATE")
-    private Date expectedDeleteDate;
+    private LocalDateTime expectedDeleteDate;
 
     /**
      * 권한해제 사유
@@ -155,7 +155,7 @@ public class Admin implements UserDetails {
      */
     @Column(name = "APPROVAL_DATE")
     @ApiModelProperty("관리자승인일시,반려일시")
-    private Date approvalDate;
+    private LocalDateTime approvalDate;
 
     /**
      * 관리자 반려 사유
@@ -190,14 +190,14 @@ public class Admin implements UserDetails {
      */
     @ApiModelProperty("탈퇴일시")
     @Column(name = "WITHDRAWAL_DATE")
-    private Date withdrawalDate;
+    private LocalDateTime withdrawalDate;
 
     /**
      * 최근접속일시(휴면계정전환에 필요)
      */
     @Column(name = "LAST_LOGIN_DATE")
     @ApiModelProperty("최근접속일시(휴면계정전환에 필요)")
-    private Date lastLoginDate;
+    private LocalDateTime lastLoginDate;
 
     /**
      * 이메일인증여부
@@ -225,14 +225,14 @@ public class Admin implements UserDetails {
      */
     @ApiModelProperty("인증시작시간")
     @Column(name = "AUTH_START_DATE")
-    private Date authStartDate;
+    private LocalDateTime authStartDate;
 
     /**
      * 인증종료시간
      */
     @ApiModelProperty("인증종료시간")
     @Column(name = "AUTH_END_DATE")
-    private Date authEndDate;
+    private LocalDateTime authEndDate;
 
     /**
      * 구글 OTP에 사용될 KEY
@@ -261,7 +261,7 @@ public class Admin implements UserDetails {
      */
     @Column(name = "REGDATE")
     @ApiModelProperty("등록일시")
-    private Date regdate;
+    private LocalDateTime regdate;
 
     /**
      * 수정자
@@ -282,7 +282,7 @@ public class Admin implements UserDetails {
      */
     @ApiModelProperty("수정일시")
     @Column(name = "MODIFY_DATE")
-    private Date modifyDate;
+    private LocalDateTime modifyDate;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

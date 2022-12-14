@@ -21,7 +21,7 @@ spring:
 
 # JWT_SECRET_STRING : echo 'spring-boot-security-jwt-tutorial-jiwoon-spring-boot-security-jwt-tutorial' | base64
 jwt:
-  secret: c3ByaW5nLWJvb3Qtc2VjdXJpdHktand0LXR1dG9yaWFsLWppd29vbi1zcHJpbmctYm9vdC1zZWN1cml0eS1qd3QtdHV0b3JpYWwK
+  secret: ${JWT_Secret}
 
 #Custom
 kokonut_aws_kms_secret: ${KOKONUT_AWS_KMS_SECRET}
@@ -31,4 +31,12 @@ kokonut_aws_kms_id: ${KOKONUT_AWS_KMS_ID}
 kokonut_mail_host: ${KOKONUT_MAIL_HOST}
 
 otp:
-  hostUrl: "http://127.0.0.1"
+  hostUrl: ${KOKONUT_OTP_URL}
+
+kokonut_iamport_key: ${KOKONUT_IAMPORT_KEY}
+kokonut_iamport_secret: ${KOKONUT_IAMPORT_SECRET}
+
+kokonut_nice_id: ${KOKONUT_NICE_ID}
+kokonut_nice_secret: ${KOKONUT_NICE_SECRET}
+kokonut_nice_product: ${KOKONUT_NICE_PRODUCT}
+kokonut_nice_access: ${KOKONUT_NICE_ACCESS}

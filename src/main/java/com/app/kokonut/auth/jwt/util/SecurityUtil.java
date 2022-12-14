@@ -1,4 +1,4 @@
-package com.app.kokonut.admin.jwt.util;
+package com.app.kokonut.auth.jwt.util;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

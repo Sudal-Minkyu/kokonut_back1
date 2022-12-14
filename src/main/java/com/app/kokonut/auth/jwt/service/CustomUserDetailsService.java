@@ -1,4 +1,4 @@
-package com.app.kokonut.admin.jwt.service;
+package com.app.kokonut.auth.jwt.service;
 
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;

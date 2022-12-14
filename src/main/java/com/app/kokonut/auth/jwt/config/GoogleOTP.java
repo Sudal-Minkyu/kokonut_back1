@@ -1,18 +1,17 @@
-package com.app.kokonut.admin.jwt.config;
+package com.app.kokonut.auth.jwt.config;
 
+import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;
+import org.apache.commons.codec.binary.Base32;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Random;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.codec.binary.Base32;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
 public class GoogleOTP {
@@ -20,22 +19,26 @@ public class GoogleOTP {
 	@Value("${otp.hostUrl}")
 	public String hostUrl;
 
-	public HashMap<String, String> generate(String userName) {
-		HashMap<String, String> map = new HashMap<String, String>();
+//	public HashMap<String, String> generate(String userName) {
+	public GoogleOtpGenerateDto generate(String userName) {
+		GoogleOtpGenerateDto googleOtpGenerateDto = new GoogleOtpGenerateDto();
 		byte[] buffer = new byte[5 + 5 * 5];
 		new Random().nextBytes(buffer);
 		Base32 codec = new Base32();
 		byte[] secretKey = Arrays.copyOf(buffer, 10);
 		byte[] bEncodedKey = codec.encode(secretKey);
 
-		String encodedKey = new String(bEncodedKey);
-		String url = getQRBarcodeURL(userName, hostUrl, encodedKey);
+		String otpKey = new String(bEncodedKey);
+		String url = getQRBarcodeURL(userName, hostUrl, otpKey);
 		// Google OTP 앱에 userName@hostName 으로 저장됨
 		// key를 입력하거나 생성된 QR코드를 바코드 스캔하여 등록
 
-		map.put("encodedKey", encodedKey);
-		map.put("url", url);
-		return map;
+		googleOtpGenerateDto.setOtpKey(otpKey);
+		googleOtpGenerateDto.setUrl(url);
+
+//		map.put("encodedKey", encodedKey);
+//		map.put("url", url);
+		return googleOtpGenerateDto;
 	}
 
 	public boolean checkCode(String userCode, String otpkey) {
@@ -57,7 +60,7 @@ public class GoogleOTP {
 		return result;
 	}
 
-	private static int verify_code(byte[] key, long t) throws NoSuchAlgorithmException, InvalidKeyException {
+	public static int verify_code(byte[] key, long t) throws NoSuchAlgorithmException, InvalidKeyException {
 		byte[] data = new byte[8];
 		long value = t;
 		for (int i = 8; i-- > 0; value >>>= 8) {

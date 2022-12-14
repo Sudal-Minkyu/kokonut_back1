@@ -79,15 +79,15 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
                         company.companyName
                 ));
 
-        if(apiKeyMapperDto.getUseYn() != null){
+        if(apiKeyMapperDto.getUseYn() != null) {
             query.where(apiKey.useYn.eq(String.valueOf(apiKeyMapperDto.getUseYn())));
         }
 
-        if(apiKeyMapperDto.getType() != null){
+        if(apiKeyMapperDto.getType() != null) {
             query.where(apiKey.type.eq(apiKeyMapperDto.getType()));
         }
 
-        if(apiKeyMapperDto.getBeInUse() != null){
+        if(apiKeyMapperDto.getBeInUse() != null) {
             if(apiKeyMapperDto.getBeInUse().equals("Y")){
                 query.where(apiKey.validityStart.gt(systemDate).or(apiKey.validityEnd.lt(systemDate)));
             }else{

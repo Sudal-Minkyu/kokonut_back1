@@ -1,9 +1,6 @@
-package com.app.kokonut.admin.jwt.config;
+package com.app.kokonut.auth.jwt.config;
 
-import com.app.kokonut.admin.jwt.been.JwtAccessDeniedHandler;
-import com.app.kokonut.admin.jwt.been.JwtAuthenticationEntryPoint;
-import com.app.kokonut.admin.jwt.been.JwtAuthenticationFilter;
-import com.app.kokonut.admin.jwt.been.JwtTokenProvider;
+import com.app.kokonut.auth.jwt.been.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -32,7 +29,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         // JWT 필터 및 권한 제외 url
-        return (web) -> web.ignoring().antMatchers("/favicon.ico","/swagger*/**","/v2/api-docs","/webjars/**", "/api/Auth/**");
+        return (web) -> web.ignoring().antMatchers("/favicon.ico","/swagger*/**","/v2/api-docs","/webjars/**", "/api/Auth/**", "/api/NiceId/**");
     }
 
     @Bean

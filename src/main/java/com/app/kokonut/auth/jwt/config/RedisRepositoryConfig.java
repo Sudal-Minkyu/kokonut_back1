@@ -1,4 +1,4 @@
-package com.app.kokonut.admin.jwt.config;
+package com.app.kokonut.auth.jwt.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

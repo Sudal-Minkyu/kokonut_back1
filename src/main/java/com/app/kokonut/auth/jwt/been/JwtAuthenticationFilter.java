@@ -1,4 +1,4 @@
-package com.app.kokonut.admin.jwt.been;
+package com.app.kokonut.auth.jwt.been;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

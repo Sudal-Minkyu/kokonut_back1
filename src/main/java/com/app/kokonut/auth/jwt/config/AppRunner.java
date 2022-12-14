@@ -1,4 +1,4 @@
-package com.app.kokonut.admin.jwt.config;
+package com.app.kokonut.auth.jwt.config;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

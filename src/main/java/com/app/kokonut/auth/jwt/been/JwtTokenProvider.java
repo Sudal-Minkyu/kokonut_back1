@@ -1,7 +1,6 @@
-package com.app.kokonut.admin.jwt.been;
+package com.app.kokonut.auth.jwt.been;
 
-import com.app.kokonut.admin.jwt.dto.AuthResponseDto;
-
+import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

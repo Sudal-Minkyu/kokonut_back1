@@ -57,6 +57,9 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis 쓰기위함
 
+	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1' // json 데이터 가공
+	implementation group: 'org.json', name: 'json', version: '20220924' // json Object 쓰기위함
+
 	// ~
 
 
