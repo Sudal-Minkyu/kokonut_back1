@@ -1,6 +1,9 @@
 package com.app.kokonut.auth.jwt.config;
 
-import com.app.kokonut.auth.jwt.been.*;
+import com.app.kokonut.auth.jwt.been.JwtAccessDeniedHandler;
+import com.app.kokonut.auth.jwt.been.JwtAuthenticationEntryPoint;
+import com.app.kokonut.auth.jwt.been.JwtAuthenticationFilter;
+import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -47,9 +50,10 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/swagger-ui/index.html/**", "/api/Admin/**").permitAll()
-                .antMatchers("/api/Admin/masterTest").hasAnyAuthority("ROLE_MASTER")
-                .antMatchers("/api/Admin/adminTest").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers("/", "/swagger-ui/index.html/**", "/api/AlimtalkTemplate/**").permitAll()
+                .antMatchers("/api/Admin/masterTest", "/api/Admin/**", "/api/AlimtalkMessage/**"
+                        , "/api/AlimtalkTemplate/**", "/api/KakaoChannel/**").hasAnyAuthority("ROLE_MASTER", "ROLE_SYSTEM")
+                .antMatchers("/api/Admin/adminTest").hasAnyAuthority("ROLE_ADMIN","ROLE_SYSTEM")
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);

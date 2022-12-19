@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * @author Woody
  * Date : 2022-12-09
  * Time :
- * Remark : AuthService(인증서비스)
+ * Remark : AuthService(인증서비스), 기존의 LoginService와 동일
  */
 @Slf4j
 @Service

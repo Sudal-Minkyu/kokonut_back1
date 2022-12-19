@@ -1,5 +1,6 @@
 package com.app.kokonut.admin;
 
+import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
 
 /**
@@ -11,5 +12,7 @@ import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
 public interface AdminRepositoryCustom {
 
     AdminOtpKeyDto findByOtpKey(String email);
+
+    AdminCompanyInfoDto findByCompanyInfo(String email);
 
 }

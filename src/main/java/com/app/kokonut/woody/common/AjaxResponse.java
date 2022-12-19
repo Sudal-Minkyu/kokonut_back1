@@ -1,5 +1,7 @@
 package com.app.kokonut.woody.common;
 
+import org.springframework.data.domain.Page;
+
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +40,31 @@ public class AjaxResponse {
         res.put("message", "Error");
         res.put("err_code", err_code);
         res.put("err_msg", err_msg);
+        return this.res;
+    }
+
+    // Pages 형태의 조회 API 반환 함수
+    // 리스트를 출력해야한다는 상황에 해당 함수사용
+    public Map<String, Object> ResponseEntityPage(Page pages){
+        res.clear();
+        res.put("status",200);
+        res.put("timestamp", new Timestamp(System.currentTimeMillis()));
+        res.put("message", "SUCCESS");
+        res.put("err_code", "");
+        res.put("err_msg", "");
+//        res.put("type",type);
+        if(pages.getTotalElements()> 0 ){
+            res.put("datalist",pages.getContent());
+            res.put("total_page",pages.getTotalPages());
+            res.put("current_page",pages.getNumber() + 1);
+            res.put("total_rows",pages.getTotalElements());
+            res.put("current_rows",pages.getNumberOfElements());
+        }else{
+            res.put("total_page",pages.getTotalPages());
+            res.put("current_page",pages.getNumber() + 1);
+            res.put("total_rows",pages.getTotalElements());
+            res.put("current_rows",pages.getNumberOfElements());
+        }
         return this.res;
     }
 

@@ -45,8 +45,7 @@ public class NiceIdService {
 
 	@Value("${kokonut_nice_access}")
 	public String accessToken;
-	
-	
+
 	/*** 
 	 * AccessToken 발급 요청(최초 1회 요청)
 	 */

@@ -1,8 +1,10 @@
 package com.app.kokonut.admin;
 
+import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
+import com.app.kokonut.refactor.company.entity.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -34,6 +36,23 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
                 .where(admin.email.eq(email))
                 .select(Projections.constructor(AdminOtpKeyDto.class,
                         admin.otpKey
+                ));
+
+        return query.fetchOne();
+    }
+
+    // Admin Company 정보 단일조회
+    @Override
+    public AdminCompanyInfoDto findByCompanyInfo(String email) {
+
+        QAdmin admin = QAdmin.admin;
+        QCompany company = QCompany.company;
+
+        JPQLQuery<AdminCompanyInfoDto> query = from(admin)
+                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
+                .where(admin.email.eq(email))
+                .select(Projections.constructor(AdminCompanyInfoDto.class,
+                        company.idx
                 ));
 
         return query.fetchOne();

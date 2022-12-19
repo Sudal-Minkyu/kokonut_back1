@@ -33,10 +33,22 @@ kokonut_mail_host: ${KOKONUT_MAIL_HOST}
 otp:
   hostUrl: ${KOKONUT_OTP_URL}
 
+# iamport 관련 값
 kokonut_iamport_key: ${KOKONUT_IAMPORT_KEY}
 kokonut_iamport_secret: ${KOKONUT_IAMPORT_SECRET}
 
+# niceId 관련 필요한 값
 kokonut_nice_id: ${KOKONUT_NICE_ID}
 kokonut_nice_secret: ${KOKONUT_NICE_SECRET}
 kokonut_nice_product: ${KOKONUT_NICE_PRODUCT}
 kokonut_nice_access: ${KOKONUT_NICE_ACCESS}
+
+# naver cloud 관련 값
+kokonut_ncloud_serviceId: ${KOKONUT_NCLOUD_SERVICEID}
+kokonut_ncloud_accessKey: ${KOKONUT_NCLOUD_ACCESSKEY}
+kokonut_ncloud_secretKey: ${KOKONUT_NCLOUD_SECRETKEY}
+kokonut_ncloud_primaryKey: ${KOKONUT_NCLOUD_PRIMARYKEY}
+kokonut_ncloud_categoryCode: ${KOKONUT_NCLOUD_CATEGORYCODE}
+
+#stibee
+kokonut_stibee_apiKey: ${KOKONUT_STIBEE_APIKEY}
