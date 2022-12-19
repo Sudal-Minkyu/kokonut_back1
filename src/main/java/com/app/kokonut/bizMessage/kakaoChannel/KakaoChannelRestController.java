@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Woody
+ * Date : 2022-12-16
+ * Time :
+ * Remark : KakaoChannel RestController
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/KakaoChannel")

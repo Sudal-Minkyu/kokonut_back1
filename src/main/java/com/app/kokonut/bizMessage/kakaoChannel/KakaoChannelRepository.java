@@ -10,6 +10,12 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 import java.util.List;
 
+/**
+ * @author Woody
+ * Date : 2022-12-16
+ * Time :
+ * Remark : KakaoChannel Repository
+ */
 @Repository
 public interface KakaoChannelRepository extends JpaRepository<KakaoChannel, Integer>, JpaSpecificationExecutor<KakaoChannel>, KakaoChannelRepositoryCustom {
 

@@ -706,71 +706,137 @@ public class NaverCloudPlatformService {
         return naverCloudPlatformResultDto;
     }
 
-//    /**
-//     * 알림톡/친구톡 메시지 발송 요청 조회
-//     *
-//     * @param String requestId 요청 아이디 (required)
-//     * @param String serviceType  취소 타입 지정. 알림톡/친구톡 - 호출 시 클래스 상단에 지정된 타입을 사용하자
-//     */
-//	public HashMap<String, Object> getMessages(String requestId, String serviceType) {
-//		boolean isSuccess = false;
-//		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-//
-//		String hostNameUrl = "https://sens.apigw.ntruss.com";
-//        String requestUrl= "/" + serviceType + "/v2/services/";
-//        String requestUrlType = "/messages?requestId=";
-//        String method = "GET";
-//        String timestamp = Long.toString(System.currentTimeMillis());
-//
-//        requestUrl += serviceId + requestUrlType + requestId;
-//        String apiUrl = hostNameUrl + requestUrl;
-//
-//        try {
-//            URL url = new URL(apiUrl);
-//
-//            HttpURLConnection con = (HttpURLConnection)url.openConnection();
-//            con.setUseCaches(false);
-//            con.setDoOutput(true);
-//            con.setDoInput(true);
-//            con.setRequestProperty("content-type", "application/json");
-//            con.setRequestProperty("x-ncp-apigw-timestamp", timestamp);
-//            con.setRequestProperty("x-ncp-iam-access-key", accessKey);
-//            con.setRequestProperty("x-ncp-apigw-signature-v2", makeSignature(requestUrl, timestamp, method));
-//            con.setRequestMethod(method);
-//            con.setDoOutput(true);
-//
-//            int responseCode = con.getResponseCode();
-//            BufferedReader br;
-//
-//            if(responseCode == 200) {
-//                // 정상 호출
-//                br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//            } else {
-//                // 에러 발생
-//                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
-//            }
-//
-//            String inputLine;
-//            StringBuffer response = new StringBuffer();
-//            while ((inputLine = br.readLine()) != null) {
-//                response.append(inputLine);
-//            }
-//
-//            br.close();
-//
-//            con.disconnect();
-//            isSuccess = true;
-//			resultMap.put("responseCode", responseCode);
-//	        resultMap.put("response", response);
-//			resultMap.put("isSuccess", isSuccess);
-//
-//	    } catch (Exception e) {
-//	    	logger.error(e.getMessage());
-//	    }
-//
-//	    return resultMap;
-//    }
-//
+    /**
+     * 알림톡/친구톡 메시지 발송 요청 조회
+     *
+     * @param String requestId 요청 아이디 (required)
+     * @param String serviceType  취소 타입 지정. 알림톡/친구톡 - 호출 시 클래스 상단에 지정된 타입을 사용하자
+     */
+	public NaverCloudPlatformResultDto getMessages(String requestId, String serviceType) {
+        NaverCloudPlatformResultDto naverCloudPlatformResultDto = new NaverCloudPlatformResultDto();
+
+		String hostNameUrl = "https://sens.apigw.ntruss.com";
+        String requestUrl= "/" + serviceType + "/v2/services/";
+        String requestUrlType = "/messages?requestId=";
+        String method = "GET";
+        String timestamp = Long.toString(System.currentTimeMillis());
+
+        requestUrl += serviceId + requestUrlType + requestId;
+        String apiUrl = hostNameUrl + requestUrl;
+
+        try {
+            URL url = new URL(apiUrl);
+
+            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            con.setUseCaches(false);
+            con.setDoOutput(true);
+            con.setDoInput(true);
+            con.setRequestProperty("content-type", "application/json");
+            con.setRequestProperty("x-ncp-apigw-timestamp", timestamp);
+            con.setRequestProperty("x-ncp-iam-access-key", accessKey);
+            con.setRequestProperty("x-ncp-apigw-signature-v2", makeSignature(requestUrl, timestamp, method));
+            con.setRequestMethod(method);
+            con.setDoOutput(true);
+
+            int responseCode = con.getResponseCode();
+            BufferedReader br;
+
+            if(responseCode == 200) {
+                // 정상 호출
+                br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            } else {
+                // 에러 발생
+                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+            }
+
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = br.readLine()) != null) {
+                response.append(inputLine);
+            }
+
+            br.close();
+
+            con.disconnect();
+
+            naverCloudPlatformResultDto.setResultCode(responseCode);
+            naverCloudPlatformResultDto.setResultText(String.valueOf(response));
+
+            log.info("알림톡/친구톡 메시지 발송 요청 조회 성공");
+	    } catch (Exception e) {
+            log.error("알림톡/친구톡 메시지 발송 요청 조회 실패"+e.getMessage());
+	    }
+
+	    return naverCloudPlatformResultDto;
+    }
+
+
+    /**
+     * 예약 메시지 상태 조회
+     *
+     * @param String  reserveId    예약 발송 요청 조회 시 반환되는 메시지 식별자(requestId)
+     * @param String  serviceType  취소 타입 지정. 알림톡/친구톡 - 호출 시 클래스 상단에 지정된 타입을 사용하자
+     */
+    public NaverCloudPlatformResultDto getReserveState(String reserveId, String serviceType) {
+        NaverCloudPlatformResultDto naverCloudPlatformResultDto = new NaverCloudPlatformResultDto();
+
+        String hostNameUrl = "https://sens.apigw.ntruss.com";
+        String requestUrl= "/" + serviceType + "/v2/services/";
+        String requestUrlSub = "/reservations/" + reserveId + "/reserve-status";
+        String method = "GET";
+        String timestamp = Long.toString(System.currentTimeMillis());
+
+        requestUrl += serviceId + requestUrlSub;
+
+        String apiUrl = hostNameUrl + requestUrl;
+
+        try {
+            URL url = new URL(apiUrl);
+
+            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            con.setUseCaches(false);
+            con.setDoOutput(true);
+            con.setDoInput(true);
+            con.setRequestProperty("content-type", "application/json");
+            con.setRequestProperty("x-ncp-apigw-timestamp", timestamp);
+            con.setRequestProperty("x-ncp-iam-access-key", accessKey);
+            con.setRequestProperty("x-ncp-apigw-signature-v2", makeSignature(requestUrl, timestamp, method));
+            con.setRequestMethod(method);
+            con.setDoOutput(true);
+
+            int responseCode = con.getResponseCode();
+            BufferedReader br;
+
+            if(responseCode == 200) {
+                // 정상 호출
+                br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            } else {
+                // 에러 발생
+                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+            }
+
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = br.readLine()) != null) {
+                response.append(inputLine);
+            }
+
+            br.close();
+
+            con.disconnect();
+
+            naverCloudPlatformResultDto.setResultCode(responseCode);
+            naverCloudPlatformResultDto.setResultText(String.valueOf(response));
+
+            log.info("예약메세지 상태 조회 성공");
+        } catch (Exception e) {
+            log.error("예약메세지 상태 조회 실패"+e.getMessage());
+        }
+
+        return naverCloudPlatformResultDto;
+    }
+
+
 //    /**
 //     * 알림톡 메시지 발송 요청
 //     *
@@ -968,73 +1034,6 @@ public class NaverCloudPlatformService {
 //
 //		return resultMap;
 //    }
-//
-//	/**
-//     * 예약 메시지 상태 조회
-//     *
-//     * @param String  reserveId    예약 발송 요청 조회 시 반환되는 메시지 식별자(requestId)
-//     * @param String  serviceType  취소 타입 지정. 알림톡/친구톡 - 호출 시 클래스 상단에 지정된 타입을 사용하자
-//     */
-//	public HashMap<String, Object> getReserveState(String reserveId, String serviceType) {
-//		boolean isSuccess = false;
-//		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-//
-//		String hostNameUrl = "https://sens.apigw.ntruss.com";
-//        String requestUrl= "/" + serviceType + "/v2/services/";
-//        String requestUrlSub = "/reservations/" + reserveId + "/reserve-status";
-//        String method = "GET";
-//        String timestamp = Long.toString(System.currentTimeMillis());
-//
-//        requestUrl += serviceId + requestUrlSub;
-//
-//        String apiUrl = hostNameUrl + requestUrl;
-//
-//        try {
-//            URL url = new URL(apiUrl);
-//
-//            HttpURLConnection con = (HttpURLConnection)url.openConnection();
-//            con.setUseCaches(false);
-//            con.setDoOutput(true);
-//            con.setDoInput(true);
-//            con.setRequestProperty("content-type", "application/json");
-//            con.setRequestProperty("x-ncp-apigw-timestamp", timestamp);
-//            con.setRequestProperty("x-ncp-iam-access-key", accessKey);
-//            con.setRequestProperty("x-ncp-apigw-signature-v2", makeSignature(requestUrl, timestamp, method));
-//            con.setRequestMethod(method);
-//            con.setDoOutput(true);
-//
-//            int responseCode = con.getResponseCode();
-//            BufferedReader br;
-//
-//            if(responseCode == 200) {
-//                // 정상 호출
-//                br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//            } else {
-//                // 에러 발생
-//                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
-//            }
-//
-//            String inputLine;
-//            StringBuffer response = new StringBuffer();
-//            while ((inputLine = br.readLine()) != null) {
-//                response.append(inputLine);
-//            }
-//
-//            br.close();
-//
-//            con.disconnect();
-//            isSuccess = true;
-//			resultMap.put("responseCode", responseCode);
-//	        resultMap.put("response", response);
-//			resultMap.put("isSuccess", isSuccess);
-//
-//	    } catch (Exception e) {
-//	    	logger.error(e.getMessage());
-//	    }
-//
-//	    return resultMap;
-//    }
-//
 //	/**
 //     * 예약 메시지 취소
 //     *
