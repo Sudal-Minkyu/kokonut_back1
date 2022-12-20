@@ -1,4 +1,4 @@
-package com.app.kokonut.refactor.email.entity;
+package com.app.kokonut.email.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
