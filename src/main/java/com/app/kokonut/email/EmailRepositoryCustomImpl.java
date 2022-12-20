@@ -2,7 +2,7 @@ package com.app.kokonut.email;
 
 import com.app.kokonut.email.entity.Email;
 import com.app.kokonut.email.dto.EmailListDto;
-import com.app.kokonut.refactor.email.entity.QEmail;
+import com.app.kokonut.email.entity.QEmail;
 import com.app.kokonut.refactor.emailGroup.entity.QEmailGroup;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
@@ -58,6 +58,4 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         final List<EmailListDto> emailListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(emailListDtos, pageable, query.fetchCount());
     }
-
-
 }
