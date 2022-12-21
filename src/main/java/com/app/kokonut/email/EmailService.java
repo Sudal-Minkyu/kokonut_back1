@@ -26,9 +26,8 @@ public class EmailService {
     }
 
     /**
-     * 이메일 발송내역 리스트
+     * 이메일 목록 조회
      */
-    @Transactional
     public ResponseEntity<Map<String,Object>> getEmail(Pageable pageable){
         log.info("getEmail 호출");
 
@@ -42,7 +41,6 @@ public class EmailService {
      * 이메일 상세보기
      * @param idx email idx
      */
-    @Transactional
     public ResponseEntity<Map<String,Object>> sendEmailDetail(Integer idx){
         log.info("sendEmailDetail 호출");
 
