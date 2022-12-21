@@ -4,7 +4,7 @@ package com.app.kokonut.woody.common;
  * @author Woody
  * Date : 2022-11-07
  * Time :
- * Remark : 에러 응답코드
+ * Remark : 에러 응답코드, 응답내용
  */
 public enum ResponseErrorCode {
 
@@ -39,7 +39,8 @@ public enum ResponseErrorCode {
     KO028("KO028", "예약발송 취소를 실패했습니다."),
     KO029("KO029", "해당 친구톡 메세지를 찾을 수 없습니다."),
     KO030("KO030", "친구톡 이미지 업로드를 실패했습니다."),
-
+    KO031("KO031", "이메일 상세정보 ID 값이 존재하지 않습니다."),
+    KO032("KO032", "이메일 정보가 존재 하지 않습니다."),
     ;
 
     private String code;

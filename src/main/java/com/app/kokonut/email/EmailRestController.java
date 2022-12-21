@@ -26,6 +26,7 @@ public class EmailRestController {
     public ResponseEntity<Map<String,Object>> getEmail(@RequestBody Pageable pageable) {
          return emailService.getEmail(pageable);
     }
+
     @ApiOperation(value="이메일 상세보기", notes="메일 상세 내용 조회")
     @GetMapping("/sendEmail/detail/{idx}") // 메일 상세보기
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})

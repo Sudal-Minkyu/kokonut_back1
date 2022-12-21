@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -70,6 +71,6 @@ public class Email implements Serializable {
      */
     @ApiModelProperty("등록일")
     @Column(name = "REGDATE", nullable = false)
-    private Date regdate;
+    private LocalDateTime regdate; // Date 에서 LocalDateTime으로 모두 바꿀 예정이라 이렇게하고 작업해주세요
 
 }
