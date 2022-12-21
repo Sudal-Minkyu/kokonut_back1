@@ -35,7 +35,7 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
         // SQL Query
 //        select
 //        a.IDX, a.COMPANY_IDX, a.ADMIN_IDX, a.ACTIVITY_IDX, a.ACTIVITY_DETAIL,
-//                CASE
+//                CASE[
 //        WHEN CHAR_LENGTH(b.NAME) > 2
 //        THEN
 //        CONCAT(

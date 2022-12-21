@@ -23,6 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Woody
+ * Date : 2022-12-16
+ * Time :
+ * Remark : KakaoChannel Service
+ */
 @Slf4j
 @Service
 public class KakaoChannelService {

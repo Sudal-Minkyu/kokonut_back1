@@ -1,5 +1,6 @@
 package com.app.kokonut.bizMessage.alimtalkTemplate;
 
+import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkMessageTemplateInfoListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateInfoListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSearchDto;
@@ -20,5 +21,8 @@ public interface AlimtalkTemplateRepositoryCustom {
 
     // state = "1"일 경우 status 값 : "ACCEPT - 수락 REGISTER - 등록 INSPECT - 검수중" 만 조회
     List<AlimtalkTemplateInfoListDto> findByAlimtalkTemplateInfoList(int companyIdx, String channelId, String state);
+
+    // 알림톡 메세지의 템플릿조회용
+    List<AlimtalkMessageTemplateInfoListDto> findByAlimtalkMessageTemplateInfoList(int companyIdx, String channelId);
 
 }
