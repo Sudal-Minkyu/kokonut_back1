@@ -1,5 +1,6 @@
 package com.app.kokonut.bizMessage.alimtalkTemplate;
 
+import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkMessageTemplateInfoListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateInfoListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSearchDto;
@@ -91,5 +92,29 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
 
         return query.fetch();
     }
+
+    @Override
+    public List<AlimtalkMessageTemplateInfoListDto> findByAlimtalkMessageTemplateInfoList(int companyIdx, String channelId) {
+
+        QAlimtalkTemplate alimtalkTemplate = QAlimtalkTemplate.alimtalkTemplate;
+        QCompany company = QCompany.company;
+
+        JPQLQuery<AlimtalkMessageTemplateInfoListDto> query = from(alimtalkTemplate)
+                .innerJoin(company).on(company.idx.eq(companyIdx))
+                .where(alimtalkTemplate.channelId.eq(channelId).and(alimtalkTemplate.companyIdx.eq(company.idx)))
+                .select(Projections.constructor(AlimtalkMessageTemplateInfoListDto.class,
+                        alimtalkTemplate.templateCode,
+                        alimtalkTemplate.messageType,
+                        alimtalkTemplate.extraContent,
+                        alimtalkTemplate.adContent,
+                        alimtalkTemplate.emphasizeType,
+                        alimtalkTemplate.emphasizeTitle,
+                        alimtalkTemplate.emphasizeSubTitle
+                ));
+
+        return query.fetch();
+    }
+
+
 
 }

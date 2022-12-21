@@ -2,6 +2,7 @@ package com.app.kokonut.bizMessage.alimtalkMessage;
 
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageInfoListDto;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageListDto;
+import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageResultDetailDto;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSearchDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,5 +20,7 @@ public interface AlimtalkMessageRepositoryCustom {
     Page<AlimtalkMessageListDto> findByAlimtalkMessagePage(AlimtalkMessageSearchDto alimtalkMessageSearchDto, int companyIdx, Pageable pageable);
 
     List<AlimtalkMessageInfoListDto> findByAlimtalkMessageInfoList(int companyIdx, String state); // state 값이 "1" 일 경우 status 성공, 실패, 발송취소, 발송요청성공, 발송요청실패 일 경우만 조회
+
+    AlimtalkMessageResultDetailDto findByAlimtalkMessageResultDetail(String requestId);
 
 }

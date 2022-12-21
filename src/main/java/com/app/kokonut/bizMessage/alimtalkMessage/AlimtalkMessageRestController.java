@@ -1,7 +1,7 @@
 package com.app.kokonut.bizMessage.alimtalkMessage;
 
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSearchDto;
-import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSearchDto;
+import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSendDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class AlimtalkMessageRestController {
         this.alimtalkMessageService = alimtalkMessageService;
     }
 
-    // 알림톰 메세지 리스트 조회
+    // 알림톡 메세지 리스트 조회
     @PostMapping(value = "/alimTalkMessageList")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageList(@RequestBody AlimtalkMessageSearchDto alimtalkTemplateSearchDto, Pageable pageable) {
@@ -38,81 +38,48 @@ public class AlimtalkMessageRestController {
     }
 
     // 알림톡 메세지 발송요청의 템플릿 리스트 조회 -> 선택한 채널ID의 템플릿 코드리스트를 반환한다.
-    @PostMapping(value = "/alimTalkMessageTemplateList")
+    @GetMapping(value = "/alimTalkMessageTemplateList")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
-    public ResponseEntity<Map<String,Object>> alimTalkMessageTemplateList(@RequestParam(name="channelId", defaultValue = "") String channelId,
-                                                                          @RequestParam(name="templateCode", defaultValue = "") String templateCode) {
+    public ResponseEntity<Map<String,Object>> alimTalkMessageTemplateList(@RequestParam(name="channelId") String channelId,
+                                                                          @RequestParam(name="templateCode", defaultValue = "") String templateCode) throws Exception {
         return alimtalkMessageService.alimTalkMessageTemplateList(channelId, templateCode);
     }
 
-//    /***
-//     * 알림톡 메시지 발송 요청
-//     */
-//    @RequestMapping(value = "/postMessages", method = RequestMethod.POST)
-//    @ResponseBody
-//    public HashMap<String, Object> postMessages(@RequestBody HashMap<String,Object> paramMap, @AuthorizedUser AuthUser authUser) {
-//        HashMap<String, Object> returnMap = new HashMap<String, Object>();
-//        returnMap.put("isSuccess", "false");
-//        returnMap.put("errorCode", "ERROR_UNKNOWN");
-//
-//        String email = authUser.getUser().getEmail();
-//        if(email.equals("test@kokonut.me")){
-//            System.out.println("체험하기모드는 할 수 없습니다.");
-//            returnMap.put("errorCode", "ERROR_EXPERIENCE");
-//            return returnMap;
-//        }
-//
-//        do {
-//            if(!paramMap.containsKey("templateCode")) {
-//                returnMap.put("errorCode", "ERROR_NOT_FOUND_TEMPLATE_CODE");
-//                break;
-//            }
-//            if(!paramMap.containsKey("plusFriendId")) {
-//                returnMap.put("errorCode", "ERROR_NOT_FOUND_PLUS_FRIEND_ID");
-//                break;
-//            }
-//            if(!paramMap.containsKey("recipients")) {
-//                returnMap.put("errorCode", "ERROR_NOT_FOUND_RECIPIENTS");
-//                break;
-//            }
-//            if(!paramMap.containsKey("content")) {
-//                returnMap.put("errorCode", "ERROR_NOT_FOUND_CONTENT");
-//                break;
-//            }
-//
-//            HashMap<String, Object> result = naverCloudPlatformService.postMessages(paramMap);
-//            if(result.get("responseCode").toString().equals("202")) {
-//                // 채널 등록 정보 INSERT
-//                int companyIdx = authUser.getUser().getCompanyIdx();
-//                paramMap.put("companyIdx", companyIdx);
-//                HashMap<String,Object> response = Utils.convertJSONstringToMap(result.get("response").toString());
-//                paramMap.put("requestId", response.get("requestId").toString());
-//                paramMap.put("channelId", paramMap.get("plusFriendId"));
-//                paramMap.put("transmitType", paramMap.get("transmitDateType"));
-//
-//                if(paramMap.get("transmitDateType").toString().equals("reservation"))
-//                    paramMap.put("reservationDate", paramMap.get("reservationDate"));
-//
-//                alimTalkMessageService.InsertAlimTalkMessage(paramMap);
-//
-//                alimTalkMessageService.InsertAlimTalkMessageRecipient(paramMap);
-//                returnMap.put("isSuccess", "true");
-//                returnMap.put("errorCode", "ERROR_SUCCESS");
-//            } else {
-//                returnMap.put("errorCode", result.get("responseCode").toString());
-//            }
-//
-//            returnMap.put("result", result);
-//
-//        } while(false);
-//
-//        return returnMap;
-//    }
+    // 알림톡 메시지 발송 요청
+    @GetMapping(value = "/postMessages")
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    public ResponseEntity<Map<String,Object>> postMessages(@RequestBody AlimtalkMessageSendDto alimtalkMessageSendDto) {
+        return alimtalkMessageService.postMessages(alimtalkMessageSendDto);
+    }
 
+    // 알림톡 메시지 결과 상세정보
+    @GetMapping(value = "/alimTalkMessageResultDetail") // -> 기존의 코코넛 호출 메서드명 : alimTalkTemplateStatusDescPopup
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    public ResponseEntity<Map<String,Object>> alimTalkMessageResultDetail(@RequestParam(name="requestId") String requestId) {
+        return alimtalkMessageService.alimTalkMessageResultDetail(requestId);
+    }
 
+    // 알림톡 메시지 보낼 유저 리스트조회
+    @GetMapping(value = "/alimTalkMessageRecipientList") // -> 기존의 코코넛 호출 메서드명 : /recipient/list
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    public ResponseEntity<Map<String,Object>> alimTalkMessageRecipientList(@RequestParam(name="searchText", defaultValue = "") String searchText, Pageable pageable) {
+        return alimtalkMessageService.alimTalkMessageRecipientList(searchText, pageable);
+    }
 
+    // 알림톡 메시지 예약발송 취소
+    @PostMapping(value = "/alimTalkMessageReserveCancel") // -> 기존의 코코넛 호출 메서드명 : /reserve/cancel
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    public ResponseEntity<Map<String,Object>> alimTalkMessageReserveCancel(@RequestParam(name="requestId") String requestId,
+                                                                           @RequestParam(name="requestId", defaultValue = "alimtalk") String type) {
+        return alimtalkMessageService.alimTalkMessageReserveCancel(requestId, type);
+    }
 
-
-
+    // 알림톡 메시지 반려됬을 경우 상태 조회
+    @RequestMapping(value = "/alimTalkTemplateStatusConfimInfo", method = RequestMethod.POST) // -> 기존의 코코넛 호출 메서드명 : /alimTalkTemplateStatusConfimPopup
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    public ResponseEntity<Map<String,Object>> alimTalkTemplateStatusConfimInfo(@RequestParam(name="channelId") String channelId,
+                                                          @RequestParam(name="templateCode") String templateCode) throws Exception {
+        return alimtalkMessageService.alimTalkTemplateStatusConfimInfo(channelId, templateCode);
+    }
 
 }

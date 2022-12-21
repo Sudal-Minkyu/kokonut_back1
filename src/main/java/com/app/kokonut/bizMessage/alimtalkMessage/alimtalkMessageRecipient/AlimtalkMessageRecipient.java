@@ -1,4 +1,4 @@
-package com.app.kokonut.refactor.alimtalkMessageRecipient;
+package com.app.kokonut.bizMessage.alimtalkMessage.alimtalkMessageRecipient;
 
 import lombok.Data;
 

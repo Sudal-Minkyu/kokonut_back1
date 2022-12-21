@@ -1,4 +1,4 @@
-package com.app.kokonut.refactor.friendtalkMessageRecipient.entity;
+package com.app.kokonut.bizMessage.friendtalkMessage.friendtalkMessageRecipient;
 
 import lombok.Data;
 

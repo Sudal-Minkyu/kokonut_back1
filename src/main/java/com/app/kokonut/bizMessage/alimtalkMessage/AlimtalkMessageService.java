@@ -2,25 +2,31 @@ package com.app.kokonut.bizMessage.alimtalkMessage;
 
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.auth.jwt.util.SecurityUtil;
-import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageInfoListDto;
-import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageListDto;
-import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSearchDto;
-import com.app.kokonut.bizMessage.alimtalkMessage.entity.AlimtalkMessage;
+import com.app.kokonut.bizMessage.alimtalkMessage.alimtalkMessageRecipient.AlimtalkMessageRecipient;
+import com.app.kokonut.bizMessage.alimtalkMessage.alimtalkMessageRecipient.AlimtalkMessageRecipientRepository;
+import com.app.kokonut.bizMessage.alimtalkMessage.dto.*;
+import com.app.kokonut.bizMessage.alimtalkTemplate.AlimtalkTemplateRepository;
+import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkMessageTemplateInfoListDto;
 import com.app.kokonut.bizMessage.navercloud.NaverCloudPlatformResultDto;
 import com.app.kokonut.bizMessage.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
+import com.app.kokonut.woody.common.component.Utils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -38,14 +44,20 @@ public class AlimtalkMessageService {
     private final AdminRepository adminRepository;
 
     private final AlimtalkMessageRepository alimtalkMessageRepository;
+    private final AlimtalkMessageRecipientRepository alimtalkMessageRecipientRepository;
+
+    private final AlimtalkTemplateRepository alimtalkTemplateRepository;
 
     @Autowired
-    public AlimtalkMessageService(NaverCloudPlatformService naverCloudPlatformService, AdminRepository adminRepository, AlimtalkMessageRepository alimtalkMessageRepository) {
+    public AlimtalkMessageService(NaverCloudPlatformService naverCloudPlatformService, AdminRepository adminRepository, AlimtalkMessageRepository alimtalkMessageRepository, AlimtalkMessageRecipientRepository alimtalkMessageRecipientRepository, AlimtalkTemplateRepository alimtalkTemplateRepository) {
         this.naverCloudPlatformService = naverCloudPlatformService;
         this.adminRepository = adminRepository;
         this.alimtalkMessageRepository = alimtalkMessageRepository;
+        this.alimtalkMessageRecipientRepository = alimtalkMessageRecipientRepository;
+        this.alimtalkTemplateRepository = alimtalkTemplateRepository;
     }
 
+    // 알림톡 메세지 리스트 조회
     @Transactional
     @SuppressWarnings("unchecked")
     public ResponseEntity<Map<String, Object>> alimTalkMessageList(AlimtalkMessageSearchDto alimtalkMessageSearchDto, Pageable pageable) {
@@ -57,17 +69,17 @@ public class AlimtalkMessageService {
 
         // 해당 이메일을 통해 회사 IDX 조회
         int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
-        List<AlimtalkMessageInfoListDto> alimTalkMessageList = alimtalkMessageRepository.findByAlimtalkMessageInfoList(companyIdx, "1");
+        List<AlimtalkMessageInfoListDto> alimtalkMessageInfoListDtos = alimtalkMessageRepository.findByAlimtalkMessageInfoList(companyIdx, "1");
 
         List<AlimtalkMessage> alimtalkMessageList = new ArrayList<>();
-        for(int i = 0; i < alimTalkMessageList.size(); i++) {
+        for(AlimtalkMessageInfoListDto alimtalkMessageInfoListDto : alimtalkMessageInfoListDtos) {
 
             NaverCloudPlatformResultDto result;
 
-            int idx = alimTalkMessageList.get(i).getIdx();
-            String requestId = alimTalkMessageList.get(i).getRequestId();
-            String transmitType = alimTalkMessageList.get(i).getTransmitType();
-            String status = alimTalkMessageList.get(i).getStatus();
+            int idx = alimtalkMessageInfoListDto.getIdx();
+            String requestId = alimtalkMessageInfoListDto.getRequestId();
+            String transmitType = alimtalkMessageInfoListDto.getTransmitType();
+            String status = alimtalkMessageInfoListDto.getStatus();
             String updateSatus;
 
             log.info("status 현재 상태 : "+status);
@@ -116,148 +128,281 @@ public class AlimtalkMessageService {
         return ResponseEntity.ok(res.ResponseEntityPage(alimtalkMessageListDtos));
     }
 
-
-    public ResponseEntity<Map<String, Object>> alimTalkMessageTemplateList(String channelId, String templateCode) {
+    // 알림톡 메세지 발송요청의 템플릿 리스트 조회 -> 선택한 채널ID의 템플릿 코드리스트를 반환한다.
+    public ResponseEntity<Map<String, Object>> alimTalkMessageTemplateList(String channelId, String templateCode) throws Exception {
         log.info("alimTalkMessageTemplateList 조회");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
         String email = SecurityUtil.getCurrentUserEmail();
+        int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
 
         log.info("channelId : "+channelId);
         log.info("templateCode : "+templateCode);
 
+        List<HashMap<String, Object>> templates = new ArrayList<>();
+        List<HashMap<String, Object>> template = new ArrayList<>();
 
+        List<AlimtalkMessageTemplateInfoListDto> alimtalkMessageTemplateInfoListDtos = alimtalkTemplateRepository.findByAlimtalkMessageTemplateInfoList(companyIdx, channelId);
 
-        data.put("data", "ㅇㅇㅇ");
+        for(AlimtalkMessageTemplateInfoListDto alimtalkMessageTemplateInfoListDto : alimtalkMessageTemplateInfoListDtos) {
+
+            if(templateCode == null) {
+                templateCode = alimtalkMessageTemplateInfoListDto.getTemplateCode();
+            }
+
+            NaverCloudPlatformResultDto result = naverCloudPlatformService.getTemplates(channelId, templateCode, "");
+
+            if(result.getResultCode().equals(200)) {
+                ObjectMapper mapper = new ObjectMapper();
+                template = mapper.readValue(result.getResultText(), new TypeReference<>() {});
+
+                String messageType = alimtalkMessageTemplateInfoListDto.getTemplateCode();
+                template.get(0).put("messageType", messageType);
+
+                if("EX".equals(messageType) || "MI".equals(messageType) ) {
+                    String extraContent = alimtalkMessageTemplateInfoListDto.getExtraContent();
+                    template.get(0).put("extraContent", extraContent);
+                }
+                if("AD".equals(messageType) || "MI".equals(messageType) ) {
+                    String adContent = alimtalkMessageTemplateInfoListDto.getAdContent();
+                    template.get(0).put("adContent", adContent);
+                }
+
+                String emphasizeType = alimtalkMessageTemplateInfoListDto.getEmphasizeType();
+                template.get(0).put("emphasizeType", emphasizeType);
+
+                if("TEXT".equals(emphasizeType)) {
+                    String emphasizeTitle = alimtalkMessageTemplateInfoListDto.getEmphasizeTitle();
+                    String emphasizeSubTitle = alimtalkMessageTemplateInfoListDto.getEmphasizeSubTitle();
+                    template.get(0).put("emphasizeTitle", emphasizeTitle);
+                    template.get(0).put("emphasizeSubTitle", emphasizeSubTitle);
+                }
+                templates.add(template.get(0));
+            }
+        }
+
+        data.put("templates", templates);
 
         return ResponseEntity.ok(res.success(data));
     }
 
-//        List<HashMap<String, Object>> templates = new ArrayList<>();
-//        List<HashMap<String, Object>> template = new ArrayList<>();
-//        try{
-//            String channelId = paramMap.get("channelId").toString();
-//            int companyIdx = authUser.getUser().getCompanyIdx();
-//            paramMap.put("companyIdx", companyIdx);
-//
-//            List<HashMap<String, Object>> templateList = alimTalkMessageService.SelectAlimTalkTemplateList(paramMap);
-//            for(int j = 0; j < templateList.size(); j++) {
-//
-//                String templateCode = "";
-//                if(paramMap.containsKey("templateCode")) {
-//                    templateCode = paramMap.get("templateCode").toString();
-//                } else {
-//                    templateCode = templateList.get(j).get("TEMPLATE_CODE").toString();
-//                }
-//
-//                HashMap<String, Object> result = naverCloudPlatformService.getTemplates(channelId, templateCode, "");
-//
-//                if(result.get("responseCode").toString().equals("200")) {
-//                    ObjectMapper mapper = new ObjectMapper();
-//                    template = mapper.readValue(result.get("response").toString(), new TypeReference<List<HashMap<String, Object>>>(){});
-//
-//                    String messageType = templateList.get(j).get("MESSAGE_TYPE").toString();
-//                    template.get(0).put("messageType", messageType);
-//
-//                    if("EX".equals(messageType) || "MI".equals(messageType) ) {
-//                        String extraContent = templateList.get(j).get("EXTRA_CONTENT").toString();
-//                        template.get(0).put("extraContent", extraContent);
-//                    }
-//                    if("AD".equals(messageType) || "MI".equals(messageType) ) {
-//                        String adContent = templateList.get(j).get("AD_CONTENT").toString();
-//                        template.get(0).put("adContent", adContent);
-//                    }
-//
-//                    String emphasizeType = templateList.get(j).get("EMPHASIZE_TYPE").toString();
-//                    template.get(0).put("emphasizeType", emphasizeType);
-//
-//                    if("TEXT".equals(emphasizeType)) {
-//                        String emphasizeTitle = templateList.get(j).get("EMPHASIZE_TITLE").toString();
-//                        String emphasizeSubTitle = templateList.get(j).get("EMPHASIZE_SUB_TITLE").toString();
-//                        template.get(0).put("emphasizeTitle", emphasizeTitle);
-//                        template.get(0).put("emphasizeSubTitle", emphasizeSubTitle);
-//                    }
-//
-//                    templates.add(template.get(0));
-//                }
-//            }
-//
-//            returnMap.put("templates", templates);
-//        } catch (Exception e) {
-//            logger.error(e.getMessage());
-//        }
-//
-//        returnMap.put("isSuccess", "true");
-//        returnMap.put("errorCode", "ERROR_SUCCESS");
-//
-//    } while(false);
-//
-//        return returnMap;
+    // 알림톡 메시지 발송 요청
+    @Transactional
+    public ResponseEntity<Map<String, Object>> postMessages(AlimtalkMessageSendDto alimtalkMessageSendDto) {
+        log.info("postMessages 조회");
 
-//    /***
-//     * 알림톡 메시지 발송 요청
-//     */
-//    @RequestMapping(value = "/postMessages", method = RequestMethod.POST)
-//    @ResponseBody
-//    public HashMap<String, Object> postMessages(@RequestBody HashMap<String,Object> paramMap, @AuthorizedUser AuthUser authUser) {
-//        HashMap<String, Object> returnMap = new HashMap<String, Object>();
-//        returnMap.put("isSuccess", "false");
-//        returnMap.put("errorCode", "ERROR_UNKNOWN");
-//
-//        String email = authUser.getUser().getEmail();
-//        if(email.equals("test@kokonut.me")){
-//            System.out.println("체험하기모드는 할 수 없습니다.");
-//            returnMap.put("errorCode", "ERROR_EXPERIENCE");
-//            return returnMap;
-//        }
-//
-//        do {
-//            if(!paramMap.containsKey("templateCode")) {
-//                returnMap.put("errorCode", "ERROR_NOT_FOUND_TEMPLATE_CODE");
-//                break;
-//            }
-//            if(!paramMap.containsKey("plusFriendId")) {
-//                returnMap.put("errorCode", "ERROR_NOT_FOUND_PLUS_FRIEND_ID");
-//                break;
-//            }
-//            if(!paramMap.containsKey("recipients")) {
-//                returnMap.put("errorCode", "ERROR_NOT_FOUND_RECIPIENTS");
-//                break;
-//            }
-//            if(!paramMap.containsKey("content")) {
-//                returnMap.put("errorCode", "ERROR_NOT_FOUND_CONTENT");
-//                break;
-//            }
-//
-//            HashMap<String, Object> result = naverCloudPlatformService.postMessages(paramMap);
-//            if(result.get("responseCode").toString().equals("202")) {
-//                // 채널 등록 정보 INSERT
-//                int companyIdx = authUser.getUser().getCompanyIdx();
-//                paramMap.put("companyIdx", companyIdx);
-//                HashMap<String,Object> response = Utils.convertJSONstringToMap(result.get("response").toString());
-//                paramMap.put("requestId", response.get("requestId").toString());
-//                paramMap.put("channelId", paramMap.get("plusFriendId"));
-//                paramMap.put("transmitType", paramMap.get("transmitDateType"));
-//
-//                if(paramMap.get("transmitDateType").toString().equals("reservation"))
-//                    paramMap.put("reservationDate", paramMap.get("reservationDate"));
-//
-//                alimTalkMessageService.InsertAlimTalkMessage(paramMap);
-//
-//                alimTalkMessageService.InsertAlimTalkMessageRecipient(paramMap);
-//                returnMap.put("isSuccess", "true");
-//                returnMap.put("errorCode", "ERROR_SUCCESS");
-//            } else {
-//                returnMap.put("errorCode", result.get("responseCode").toString());
-//            }
-//
-//            returnMap.put("result", result);
-//
-//        } while(false);
-//
-//        return returnMap;
-//    }
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        String email = SecurityUtil.getCurrentUserEmail();
+
+        // 수신자가 아무도 없을 경우
+        if(alimtalkMessageSendDto.getAlimtalkMessageSendSubDtoList().size() == 0) {
+            log.error("발송할 수신자를 선택해주세요.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO025.getCode(), ResponseErrorCode.KO025.getDesc()));
+        }
+
+        // 예약발송 일 경우 -> 발송시간설정은 필수값임
+        if(alimtalkMessageSendDto.getTransmitType().equals("reservation") && alimtalkMessageSendDto.getReservationDate() == null) {
+            log.error("예약발송일 경우 보낼시간을 설정해주세요.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO024.getCode(), ResponseErrorCode.KO024.getDesc()));
+        }
+
+        NaverCloudPlatformResultDto result = naverCloudPlatformService.postMessages(alimtalkMessageSendDto);
+        if(result.getResultCode().equals(200)) {
+            log.info("발송성공후 알림톡 메세지 등록 정보 INSERT");
+
+            int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+            int adminIdx = adminRepository.findByCompanyInfo(email).getAdminIdx();
+
+            HashMap<String, Object> response = Utils.convertJSONstringToMap(result.getResultText());
+
+            AlimtalkMessage alimTalkMessage = new AlimtalkMessage();
+            alimTalkMessage.setCompanyIdx(companyIdx);
+            alimTalkMessage.setRequestId(response.get("requestId").toString());
+            alimTalkMessage.setChannelId(alimtalkMessageSendDto.getChannelId());
+            alimTalkMessage.setTransmitType(alimtalkMessageSendDto.getTransmitType());
+            if(alimtalkMessageSendDto.getTransmitType().equals("reservation")) {
+                String reservationDateStr = alimtalkMessageSendDto.getReservationDate();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+                LocalDateTime reservationDate = LocalDateTime.parse(reservationDateStr, formatter);
+                log.info("예약발송시간 : "+reservationDate);
+
+                alimTalkMessage.setReservationDate(reservationDate);
+            }
+            alimTalkMessage.setRegIdx(adminIdx);
+            alimTalkMessage.setRegdate(LocalDateTime.now());
+
+            AlimtalkMessage saveAlimtalkMessage = alimtalkMessageRepository.save(alimTalkMessage);
+            log.info("알림톡 메세지 인서트 성공");
+
+            List<AlimtalkMessageRecipient> alimtalkMessageRecipients = new ArrayList<>();
+
+            for(AlimtalkMessageSendSubDto alimtalkMessageSendSubDto : alimtalkMessageSendDto.getAlimtalkMessageSendSubDtoList()){
+                AlimtalkMessageRecipient alimtalkMessageRecipient = new AlimtalkMessageRecipient();
+                alimtalkMessageRecipient.setAlimtalkMessageIdx(saveAlimtalkMessage.getIdx());
+                alimtalkMessageRecipient.setEmail(alimtalkMessageSendSubDto.getEmail());
+                alimtalkMessageRecipient.setName(alimtalkMessageSendSubDto.getUserName());
+                alimtalkMessageRecipient.setPhoneNumber(alimtalkMessageSendSubDto.getPhoneNumber());
+                alimtalkMessageRecipients.add(alimtalkMessageRecipient);
+            }
+
+            alimtalkMessageRecipientRepository.saveAll(alimtalkMessageRecipients);
+            log.info("알림톡 메세지 발송인 인서트 성공");
+
+            log.info("알림톡 발송을 성공했습니다.");
+        } else {
+            log.error("알림톡 발송을 실패했습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO026.getCode(), ResponseErrorCode.KO026.getDesc()));
+        }
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+    // 알림톡 메시지 결과 상세정보
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<Map<String, Object>> alimTalkMessageResultDetail(String requestId) {
+        log.info("alimTalkMessageResultDetail 조회");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        log.info("결과 호출 requestId : "+requestId);
+
+        String email = SecurityUtil.getCurrentUserEmail();
+
+        AlimtalkMessageResultDetailDto alimtalkMessage = alimtalkMessageRepository.findByAlimtalkMessageResultDetail(requestId);
+        if(alimtalkMessage == null){
+            log.error("알림톡메세지 결과정보가 존재하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO027.getCode(), ResponseErrorCode.KO027.getDesc()));
+        }
+        else {
+            if(!email.equals("test@kokonut.me")){
+
+                NaverCloudPlatformResultDto result = naverCloudPlatformService.getMessages(requestId, NaverCloudPlatformService.typeAlimTalk);
+
+                if(result.getResultCode().equals(200)) {
+                    int totalCount = 0;
+                    int successCount = 0;
+                    int failCount = 0;
+                    int processingCount = 0;
+                    int reservedCount = 0;
+                    int canceledCount = 0;
+
+                    HashMap<String,Object> response = Utils.convertJSONstringToMap(result.getResultText());
+
+                    List<HashMap<String, Object>> messages = (List<HashMap<String, Object>>) response.get("messages");
+
+                    for(HashMap<String, Object> message : messages) {
+                        String messageStatusName = message.get("messageStatusName").toString();
+                        if("success".equals(messageStatusName) || "done".equals(messageStatusName)) {
+                            successCount++;
+                        } else if("fail".equals(messageStatusName) || "stale".equals(messageStatusName)) {
+                            failCount++;
+                        } else if("processing".equals(messageStatusName)) {
+                            processingCount++;
+                        } else if("reserved".equals(messageStatusName)) {
+                            reservedCount++;
+                        } else if("canceled".equals(messageStatusName)) {
+                            canceledCount++;
+                        }
+                        totalCount++;
+                    }
+
+                    data.put("result", response);
+                    data.put("totalCount", totalCount);
+                    data.put("successCount", successCount);
+                    data.put("failCount", failCount);
+                    data.put("processingCount", processingCount);
+                    data.put("reservedCount", reservedCount);
+                    data.put("canceledCount", canceledCount);
+                    data.put("experience", false);
+                }
+            }
+            else{
+                // 체험하기 값 보내주기
+                HashMap<String, Object> message = new HashMap<>();
+                message.put("to","01022223334");
+                message.put("requestStatusDesc","성공");
+                message.put("messageStatusDesc","정상 발송");
+                message.put("content","안녕하세요. 체험하기 모드입니다.");
+
+                data.put("result", message);
+
+                Random random = new Random();
+                data.put("experience", true);
+                data.put("totalCount", random.nextInt(6)+random.nextInt(6));
+                data.put("successCount", random.nextInt(6));
+                data.put("failCount", random.nextInt(4));
+                data.put("processingCount", random.nextInt(2));
+                data.put("reservedCount", random.nextInt(2));
+                data.put("canceledCount", random.nextInt(2));
+            }
+
+            data.put("alimtalkMessage", alimtalkMessage);
+        }
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+    // 알림톡 메시지 보낼 유저 리스트조회 -> 유저정보 조회해오는거 완료되면 시작할 것 - 2022/12/20 to.woody
+    public ResponseEntity<Map<String, Object>> alimTalkMessageRecipientList(String searchText, Pageable pageable) {
+        log.info("alimTalkMessageRecipientList 조회");
+
+        AjaxResponse res = new AjaxResponse();
+
+        log.info("조회내용 searchText : "+searchText);
+
+        String email = SecurityUtil.getCurrentUserEmail();
+        String businessNumber = adminRepository.findByCompanyInfo(email).getBusinessNumber();
+
+        log.info("호출 할 유저리스트의 기업번호 : "+businessNumber);
+
+//        Page<Dto> listDtos = dynamicUserService.SelectRecipientList(searchText, businessNumber, pageable);
+
+//        return ResponseEntity.ok(res.ResponseEntityPage(listDtos));
+        return null;
+
+    }
+
+    // 알림톡 메시지 예약발송 취소
+    public ResponseEntity<Map<String, Object>> alimTalkMessageReserveCancel(String requestId, String type) {
+        log.info("alimTalkMessageReserveCancel 조회");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        log.info("예약취소 할 requestId : "+requestId);
+
+        NaverCloudPlatformResultDto result = naverCloudPlatformService.reserveMessage(requestId, type);
+
+        if(result.getResultCode().equals(200)) {
+            return ResponseEntity.ok(res.success(data));
+        }
+        else {
+            log.error("예약발송 취소를 실패했습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO028.getCode(), ResponseErrorCode.KO028.getDesc()));
+        }
+    }
+
+    // 알림톡 메시지 반려됬을 경우 상태 조회
+    public ResponseEntity<Map<String, Object>> alimTalkTemplateStatusConfimInfo(String channelId, String templateCode) throws Exception {
+        log.info("alimTalkTemplateStatusConfimInfo 조회");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        NaverCloudPlatformResultDto result = naverCloudPlatformService.getTemplates(channelId, templateCode, "");
+
+        if(result.getResultCode().equals(200)) {
+            List<Map<String, Object>> response = new ObjectMapper().readValue(result.getResultText(), new TypeReference<>() {});
+            Object comments = response.get(0).get("comments");
+            data.put("comments", comments);
+        }
+
+        return ResponseEntity.ok(res.success(data));
+    }
 
 }
