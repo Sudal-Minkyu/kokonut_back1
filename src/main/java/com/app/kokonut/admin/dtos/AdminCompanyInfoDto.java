@@ -15,6 +15,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdminCompanyInfoDto {
 
+    private Integer adminIdx;
+
     private Integer companyIdx;
+
+    private String businessNumber;
 
 }

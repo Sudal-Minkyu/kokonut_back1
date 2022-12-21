@@ -41,7 +41,7 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         return query.fetchOne();
     }
 
-    // Admin Company 정보 단일조회
+    // Admin 및 Company 정보 단일조회
     @Override
     public AdminCompanyInfoDto findByCompanyInfo(String email) {
 
@@ -52,7 +52,9 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
                 .innerJoin(company).on(company.idx.eq(admin.companyIdx))
                 .where(admin.email.eq(email))
                 .select(Projections.constructor(AdminCompanyInfoDto.class,
-                        company.idx
+                        admin.idx,
+                        company.idx,
+                        company.businessNumber
                 ));
 
         return query.fetchOne();

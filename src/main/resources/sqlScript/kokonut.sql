@@ -219,6 +219,7 @@ CREATE TABLE `alimtalk_message` (
   `TRANSMIT_TYPE` varchar(32) DEFAULT 'immediate' COMMENT '발송타입-즉시발송(immediate),예약발송(reservation)',
   `RESERVATION_DATE` timestamp NULL DEFAULT '0000-00-00 00:00:00' COMMENT '예약발송일시',
   `STATUS` varchar(32) DEFAULT 'init' COMMENT '발송상태(init-초기상태,[메시지발송요청조회]success-성공,processing-발송중,reserved-예약중,scheduled-스케줄중,fail-실패 [예약메시지]ready-발송 대기,processing-발송 요청중,canceled-발송 취소,fail-발송 요청 실패,done-발송 요청 성공,stale-발송 요청 실패 (시간 초과))',
+  `REGIDX` int(11) NOT NULL COMMENT '등록자',
   `REGDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
   `MODIFY_DATE` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '업데이트일시',
   PRIMARY KEY (`IDX`)
@@ -499,6 +500,7 @@ CREATE TABLE `friendtalk_message` (
   `TRANSMIT_TYPE` varchar(32) DEFAULT 'immediate' COMMENT '발송타입-즉시발송(immediate),예약발송(reservation)',
   `RESERVATION_DATE` timestamp NULL DEFAULT '0000-00-00 00:00:00' COMMENT '예약발송일시',
   `STATUS` varchar(32) DEFAULT 'init' COMMENT '발송상태(init-초기상태,[메시지발송요청조회]success-성공,processing-발송중,reserved-예약중,scheduled-스케줄중,fail-실패 [예약메시지]ready-발송 대기,processing-발송 요청중,canceled-발송 취소,fail-발송 요청 실패,done-발송 요청 성공,stale-발송 요청 실패 (시간 초과))',
+  `REGIDX` int(11) NOT NULL COMMENT '등록자',
   `REGDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
   `MODIFY_DATE` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '업데이트일시',
   PRIMARY KEY (`IDX`)

@@ -1,4 +1,4 @@
-package com.app.kokonut.bizMessage.alimtalkTemplate.dto;
+package com.app.kokonut.bizMessage.alimtalkMessage.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,18 +8,18 @@ import java.time.LocalDateTime;
 
 /**
  * @author Woody
- * Date : 2022-12-15
+ * Date : 2022-12-19
  * Time :
- * Remark : 알림톡 템플릿 검색 Dto
+ * Remark : 알림톡 메세지 검색 Dto
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlimtalkTemplateSearchDto {
+public class AlimtalkMessageSearchDto {
 
     private String status; // 검수 상태
 
-    private String templateName; // 템플릿명
+    private String searchText; // templateCode + requestId
 
     private LocalDateTime stimeStart; // 시작 날짜
 

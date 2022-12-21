@@ -1,9 +1,5 @@
 package com.app.kokonut.bizMessage.kakaoChannel;
 
-import com.app.kokonut.admin.entity.QAdmin;
-import com.app.kokonut.apiKey.QApiKey;
-import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
-import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelByChannelIdListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelSearchDto;
@@ -11,7 +7,6 @@ import com.app.kokonut.bizMessage.kakaoChannel.entity.KakaoChannel;
 import com.app.kokonut.bizMessage.kakaoChannel.entity.QKakaoChannel;
 import com.app.kokonut.refactor.company.entity.QCompany;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.data.domain.Page;
@@ -20,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
 

@@ -1,6 +1,15 @@
 package com.app.kokonut.woody.common.component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Utils {
 //	public static String getToday()
@@ -85,34 +94,34 @@ public class Utils {
 //
 //		return false;
 //	}
-//
-//	public static HashMap<String,Object> convertJSONstringToMap(String json){
-//		ObjectMapper mapper = new ObjectMapper();
-//		HashMap<String, Object> map = new HashMap<String, Object>();
-//		try {
-//			map = mapper.readValue(json, new TypeReference <Map<String, Object>>() {});
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			e.printStackTrace();
-//		}
-//		return map;
-//	}
-//
-//	public static File convertMultipartFileToFile(MultipartFile mfile) {
-//		File file = new File(mfile.getOriginalFilename());
-//		try {
-//			file.createNewFile();
-//			FileOutputStream fos = new FileOutputStream(file);
-//			fos.write(mfile.getBytes());
-//			fos.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		return file;
-//	}
-//
+
+	public static HashMap<String,Object> convertJSONstringToMap(String json){
+		ObjectMapper mapper = new ObjectMapper();
+		HashMap<String, Object> map = new HashMap<>();
+		try {
+			map = (HashMap<String, Object>) mapper.readValue(json, new TypeReference<Map<String, Object>>() {});
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return map;
+	}
+
+	public static File convertMultipartFileToFile(MultipartFile mfile) {
+		File file = new File(mfile.getOriginalFilename());
+		try {
+			file.createNewFile();
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(mfile.getBytes());
+			fos.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return file;
+	}
+
 //	/**
 //	 * 엑셀 Formula injection 검사
 //	 * @param contents
