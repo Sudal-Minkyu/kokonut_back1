@@ -1,6 +1,7 @@
 package com.app.kokonut.admin;
 
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
+import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
@@ -57,6 +58,19 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
                         company.businessNumber
                 ));
 
+        return query.fetchOne();
+    }
+
+    @Override
+    public AdminEmailInfoDto findByEmailInfo(Integer idx) {
+        QAdmin admin = QAdmin.admin;
+
+        JPQLQuery<AdminEmailInfoDto> query = from(admin)
+                .where(admin.idx.eq(idx))
+                .select(Projections.constructor(AdminEmailInfoDto.class,
+                        admin.idx,
+                        admin.email
+                ));
         return query.fetchOne();
     }
 
