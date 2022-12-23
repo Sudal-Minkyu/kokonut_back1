@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 public class EmailDetailDto {
 
     // email 테이블
-    @ApiModelProperty("키")
-    private Integer idx;
+    @ApiModelProperty("보내는 관리자 키(시스템 관리자 고정)")
+    private Integer senderAdminIdx;
 
     @ApiModelProperty("받는사람 타입(I:개별,G:그룹)")
     private String receiverType;

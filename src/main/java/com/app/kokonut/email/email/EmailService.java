@@ -1,5 +1,6 @@
 package com.app.kokonut.email.email;
 
+import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.auth.jwt.util.SecurityUtil;
 
 import com.app.kokonut.admin.AdminRepository;
@@ -10,6 +11,7 @@ import com.app.kokonut.email.email.dto.EmailListDto;
 import com.app.kokonut.email.emailGroup.EmailGroupRepository;
 
 import com.app.kokonut.email.emailGroup.dto.EmailGroupAdminInfoDto;
+import com.app.kokonut.joy.email.MailSender;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -34,15 +37,16 @@ public class EmailService {
     private String hostUrl;
     private final EmailGroupRepository emailGroupRepository;
     private final AdminRepository adminRepository;
-
     private final EmailRepository emailRepository;
+    private final MailSender mailSender;
 
     public EmailService(EmailRepository emailRepository,
                         AdminRepository adminRepository,
-                        EmailGroupRepository emailGroupRepository) {
+                        EmailGroupRepository emailGroupRepository, MailSender mailSender) {
         this.emailRepository = emailRepository;
         this.adminRepository = adminRepository;
         this.emailGroupRepository = emailGroupRepository;
+        this.mailSender = mailSender;
     }
 
     /**
@@ -64,8 +68,16 @@ public class EmailService {
     public ResponseEntity<Map<String,Object>> sendEmail(EmailDetailDto emailDetailDto){
         log.info("### sendEmail 호출");
         AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
         // 접속한 사용자 이메일
         String email = SecurityUtil.getCurrentUserEmail();
+
+        // 접속한 사용자 인덱스
+        Admin admin = adminRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
+        emailDetailDto.setSenderAdminIdx(admin.getIdx());
+
         // 이메일 전송을 위한 전처리
         String title = ReqUtils.filter(emailDetailDto.getTitle());
         String originContents = ReqUtils.filter(emailDetailDto.getContents()); // ReqUtils.filter 처리 <p> -- > &lt;p&gt;, html 태그를 DB에 저장하기 위해 이스케이프문자로 치환
@@ -91,7 +103,6 @@ public class EmailService {
             // 그룹 선택으로 메일을 발송한 경우
             Integer emailGroupIdx = emailDetailDto.getEmailGroupIdx();
             // 메일 그룹 조회 쿼리 동작
-
             EmailGroupAdminInfoDto emailGroupAdminInfoDto;
             emailGroupAdminInfoDto = emailGroupRepository.findEmailGroupAdminInfoByIdx(emailGroupIdx);
             adminIdxList = emailGroupAdminInfoDto.getAdminIdxList();
@@ -103,26 +114,29 @@ public class EmailService {
         for(String tok : toks){
             AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByEmailInfo(Integer.valueOf(tok));
             if(adminEmailInfoDto != null){
-                String reciverEmail =  adminEmailInfoDto.getEmail();
-            }
-        }
-        for(int i = 0; i < toks.length; i++) {
-            String tok = toks[i];
-            AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByEmailInfo(Integer.valueOf(tok)); // TODO name 도 받아오는걸로 쿼리 수정하기
+                String reciverEmail = adminEmailInfoDto.getEmail();
+                String reciverName = adminEmailInfoDto.getName();
 
-            if(adminEmailInfoDto != null){
-                // String email = adminEmailInfoDto.getEmail();
-                // String name  = adminEmailInfoDto.getName();
-                // mailSender.sendMail(email, name, title, contents);
+                log.info("### 이메일 전송 시작");
+                log.info("### "+email+" --> "+ reciverEmail);
+                mailSender.sendMail(reciverEmail, reciverName, title, contents);
             }else{
-                // TODO 일부가 탈퇴하고 일부는 이메일 정보가 있을때 처리. 만약 이렇게 되면 바로 리턴이 되버림.
-                log.error("### 이메일 정보가 존재 하지 않습니다. : " + tok);
+                // TODO 일부가 탈퇴하고 일부는 이메일 정보가 있을때 처리.
+                log.error("### 전송 받을 이메일 정보를 찾을 수 없습니다. : " + tok);
                 // return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
             }
         }
         // 전송 이력 저장 처리 - originContents로 DB 저장
-
-        return null;
+        emailDetailDto.setContents(originContents);
+        if(emailRepository.saveEmail(emailDetailDto) > 0){
+            log.info("### 이메일 전송 이력 저장 시작");
+            data.put("isSuccess", "true");
+            data.put("errorCode", "ERROR_SUCCESS");
+            return ResponseEntity.ok(res.success(data));
+        }else{
+            log.error("### 이메일 전송 이력 저장에 실패했습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+        }
     }
 
 
