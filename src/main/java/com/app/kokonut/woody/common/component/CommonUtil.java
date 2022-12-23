@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 public class CommonUtil {
 
     public static String getDomain(HttpServletRequest request) {
@@ -355,40 +357,37 @@ public class CommonUtil {
 //		String pre = "KMGTPE".charAt(exp-1) + "";
 //		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 //	}
-//
-//
-//	/**
-//	 * 접속한 서버 ip 확인
-//	 */
-//	public static String getServerIp() {
-//		InetAddress local = null;
-//		try {
-//			local = InetAddress.getLocalHost();
-//		} catch ( UnknownHostException e ) {
-//			logger.error(e.getMessage());
-//		}
-//
-//		if( local == null ) {
-//			return "";
-//		} else {
-//			String ip = local.getHostAddress();
-//			return ip;
-//		}
-//	}
-//
-//	/***
-//	 * 랜덤 문자열 생성
-//	 */
-//	public static String makeRandomChar(int length) {
-//		String randomChar = "";
-//		for (int i = 1; i <= length; i++) {
-//			char ch = (char) ((Math.random() * 26) + 97);
-//			randomChar += ch;
-//	    }
-//
-//		return randomChar;
-//	}
-//
+
+	/**
+	 * 접속한 서버 ip 확인
+	 */
+	public static String getServerIp() {
+		InetAddress local = null;
+		try {
+			local = InetAddress.getLocalHost();
+		} catch ( UnknownHostException e ) {
+			log.error(" 접속한 서버 ip UnknownHostException : "+e.getMessage());
+		}
+
+		if( local == null ) {
+			return "";
+		} else {
+			return local.getHostAddress();
+		}
+	}
+
+	/***
+	 * 랜덤 문자열 생성
+	 */
+	public static String makeRandomChar(int length) {
+		StringBuilder randomChar = new StringBuilder();
+		for (int i = 1; i <= length; i++) {
+			char ch = (char) ((Math.random() * 26) + 97);
+			randomChar.append(ch);
+	    }
+
+		return randomChar.toString();
+	}
 
 	/***
 	 * JSON String -> HashMap 변환

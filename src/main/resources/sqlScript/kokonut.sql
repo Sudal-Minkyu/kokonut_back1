@@ -105,7 +105,6 @@ CREATE TABLE `admin` (
   `IDX` int(11) NOT NULL AUTO_INCREMENT COMMENT '키',
   `COMPANY_IDX` int(11) DEFAULT NULL COMMENT 'COMPANY IDX',
   `MASTER_IDX` int(11) DEFAULT NULL COMMENT '마스터IDX(마스터는 0):관리자로 등록한 마스터의 키',
-  `ADMIN_LEVEL_IDX` int(1) DEFAULT NULL COMMENT 'SYSTEM:0,나머지는 레벨 IDX',
   `USER_TYPE` int(11) DEFAULT NULL COMMENT '회원타입(1:사업자,2:개인)',
   `EMAIL` varchar(128) DEFAULT NULL COMMENT '이메일',
   `PASSWORD` varchar(256) DEFAULT NULL COMMENT '비밀번호',
@@ -913,6 +912,22 @@ CREATE TABLE `total_db_download` (
   `REGDATE` timestamp NULL DEFAULT NULL COMMENT '요청일시',
   PRIMARY KEY (`IDX`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `company_file`;
+
+CREATE TABLE IF NOT EXISTS `company_file` (
+  `IDX` int(11) NOT NULL AUTO_INCREMENT,
+  `COMPANY_IDX` int(11) NOT NULL,
+  `CF_PATH` varchar(255) DEFAULT NULL COMMENT 'S3 파일 경로',
+  `CF_FILENAME` varchar(255) DEFAULT NULL COMMENT 'S3 파일 명',
+  `CF_ORIGINAL_FILENAME` varchar(255) DEFAULT NULL COMMENT '원래 파일명',
+  `CF_VOLUME` bigint(20) DEFAULT NULL COMMENT '용량',
+  `REGIDX` int(11) DEFAULT NULL,
+  `REGDATE` datetime DEFAULT NULL,
+  `MODIFYIDX` int(11) DEFAULT NULL,
+  `MODIFYDATE` datetime DEFAULT NULL,
+  PRIMARY KEY (`IDX`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='사업자등록증 이미지 파일테이블';
 
 /*Data for the table `total_db_download` */
 

@@ -7,8 +7,8 @@ import com.app.kokonut.bizMessage.alimtalkMessage.alimtalkMessageRecipient.Alimt
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.*;
 import com.app.kokonut.bizMessage.alimtalkTemplate.AlimtalkTemplateRepository;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkMessageTemplateInfoListDto;
-import com.app.kokonut.bizMessage.navercloud.NaverCloudPlatformResultDto;
-import com.app.kokonut.bizMessage.navercloud.NaverCloudPlatformService;
+import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
+import com.app.kokonut.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import com.app.kokonut.woody.common.component.Utils;

@@ -1,10 +1,9 @@
 package com.app.kokonut.auth;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.auth.AuthService;
-import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
 import com.app.kokonut.auth.jwt.config.GoogleOTP;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
@@ -24,6 +23,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -118,7 +118,7 @@ class AuthServiceTest {
 
     @Test
     @DisplayName("사업자 회원가입 성공 테스트 - 회원가입이후 조회 및 검증")
-    public void signUpTest1() {
+    public void signUpTest1() throws IOException {
 
         // given
         AuthRequestDto.SignUp signUp = new AuthRequestDto.SignUp();
@@ -126,7 +126,7 @@ class AuthServiceTest {
         signUp.setPassword(password);
 
         // when
-        ResponseEntity<Map<String,Object>> response =  authService.signUp(signUp);
+        ResponseEntity<Map<String,Object>> response =  authService.signUp(signUp, null, null);
 
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'Admin' 입니다."));
@@ -142,7 +142,7 @@ class AuthServiceTest {
 
     @Test
     @DisplayName("사업자 회원가입 실패 테스트 - 이메일이 이미 존재 할 경우")
-    public void signUpTest2() {
+    public void signUpTest2() throws IOException {
 
         // given
         AuthRequestDto.SignUp signUp = new AuthRequestDto.SignUp();
@@ -150,7 +150,7 @@ class AuthServiceTest {
         signUp.setPassword(password);
 
         // when
-        ResponseEntity<Map<String,Object>> response = authService.signUp(signUp);
+        ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, null, null);
 
         // then
         assertEquals(ResponseErrorCode.KO005.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
@@ -216,13 +216,13 @@ class AuthServiceTest {
 
     @Test
     @DisplayName("로그인, OTP값 JWT토큰 발급 실패 테스트 - OtpValue 값이 존재하지 않을 경우(Null 값인 경우)")
-    public void authTokenTest3_1(){
+    public void authTokenTest3_1() throws IOException {
 
         // given
         AuthRequestDto.SignUp signUp = new AuthRequestDto.SignUp();
         signUp.setEmail(email);
         signUp.setPassword(password);
-        authService.signUp(signUp);
+        authService.signUp(signUp, null, null);
 
         // given
         AuthRequestDto.Login login = new AuthRequestDto.Login();
@@ -240,13 +240,13 @@ class AuthServiceTest {
 
     @Test
     @DisplayName("로그인, OTP값 JWT토큰 발급 실패 테스트 - 발급받은 OtpKey 가 존재하지 않을 경우")
-    public void authTokenTest3_2(){
+    public void authTokenTest3_2() throws IOException {
 
         // given
         AuthRequestDto.SignUp signUp = new AuthRequestDto.SignUp();
         signUp.setEmail(email);
         signUp.setPassword(password);
-        authService.signUp(signUp);
+        authService.signUp(signUp, null, null);
 
         // given
         AuthRequestDto.Login login = new AuthRequestDto.Login();

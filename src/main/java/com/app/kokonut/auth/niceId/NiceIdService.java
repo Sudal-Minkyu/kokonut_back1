@@ -34,16 +34,16 @@ public class NiceIdService {
 	private final AjaxResponse res = new AjaxResponse();
 	private final HashMap<String, Object> data = new HashMap<>();
 
-	@Value("${kokonut_nice_id}")
+	@Value("${kokonut.nice.id}")
 	public String clientId;
 	
-	@Value("${kokonut_nice_secret}")
+	@Value("${kokonut.nice.secret}")
 	public String clientSecret;
 
-	@Value("${kokonut_nice_product}")
+	@Value("${kokonut.nice.product}")
 	public String productId;
 
-	@Value("${kokonut_nice_access}")
+	@Value("${kokonut.nice.access}")
 	public String accessToken;
 
 	/*** 

@@ -5,12 +5,11 @@ import com.app.kokonut.activity.ActivityRepository;
 import com.app.kokonut.activityHistory.ActivityHistory;
 import com.app.kokonut.activityHistory.ActivityHistoryRepository;
 import com.app.kokonut.activityHistory.ActivityHistoryService;
-import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.refactor.adminLevel.AdminLevel;
+import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.company.Company;
+import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.refactor.adminLevel.AdminLevelRepository;
-import com.app.kokonut.refactor.company.entity.Company;
-import com.app.kokonut.refactor.company.repository.CompanyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,15 +63,9 @@ class ActivityHistoryServiceTest {
         Company saveCompany = companyRepository.save(company);
         System.out.println("저장된 saveCompany : "+saveCompany);
 
-        AdminLevel adminLevel = new AdminLevel();
-        adminLevel.setRegdate(systemDate);
-        AdminLevel saveAdminLevel = adminLevelRepository.save(adminLevel);
-        System.out.println("저장된 adminLevel : "+adminLevel);
-
         Admin admin = new Admin();
         admin.setCompanyIdx(saveCompany.getIdx());
         admin.setName("사용자");
-        admin.setAdminLevelIdx(saveAdminLevel.getIdx());
         Admin saveAdmin = adminRepository.save(admin);
         System.out.println("저장된 saveAdmin : "+saveAdmin);
 

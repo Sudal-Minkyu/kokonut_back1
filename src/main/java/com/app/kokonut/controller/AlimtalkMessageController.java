@@ -21,7 +21,7 @@ public class AlimtalkMessageController {
 
     // 카카오톡 채널 관리 화면
     @RequestMapping(value = "/kakaoTalkChannelManagement")
-//    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+//    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public void kakaoTalkChannelManagement(Model model){
 
         log.info("카카오 채널 관리 화면이동");

@@ -61,6 +61,9 @@ dependencies {
 	implementation group: 'org.json', name: 'json', version: '20220924' // json Object 쓰기위함
 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10' // google gson 쓰기위함
 
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.369' // AWS S3 SDK 쓰기위함
+	implementation group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2' // 이미지 썸네일 쓰기위함
+
 	// ~
 
 
