@@ -1,7 +1,7 @@
-package com.app.kokonut.email;
+package com.app.kokonut.email.email;
 
-import com.app.kokonut.email.dto.EmailDto;
-import com.app.kokonut.email.dto.EmailListDto;
+import com.app.kokonut.email.email.dto.EmailDetailDto;
+import com.app.kokonut.email.email.dto.EmailListDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,5 +17,5 @@ public interface EmailRepositoryCustom {
     Page<EmailListDto> findByEmailPage(Pageable pageable);
 
     // 이메일 상세 조회 -> 기존 코코넛 메서드 : SelectEmailByIdx
-    EmailDto findEmailByIdx(Integer id);
+    EmailDetailDto findEmailByIdx(Integer idx);
 }

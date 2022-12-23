@@ -1,4 +1,4 @@
-package com.app.kokonut.email.dto;
+package com.app.kokonut.email.email.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

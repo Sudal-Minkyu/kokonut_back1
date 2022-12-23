@@ -1,10 +1,10 @@
-package com.app.kokonut.email;
+package com.app.kokonut.email.email;
 
-import com.app.kokonut.email.dto.EmailDto;
-import com.app.kokonut.email.dto.EmailListDto;
-import com.app.kokonut.email.entity.Email;
-import com.app.kokonut.email.entity.QEmail;
-import com.app.kokonut.refactor.emailGroup.entity.QEmailGroup;
+import com.app.kokonut.email.email.dto.EmailDetailDto;
+import com.app.kokonut.email.email.dto.EmailListDto;
+import com.app.kokonut.email.email.dto.entity.QEmail;
+import com.app.kokonut.email.email.entity.Email;
+import com.app.kokonut.email.emailGroup.entity.QEmailGroup;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -44,7 +44,6 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
                 .leftJoin(emailGroup).on(emailGroup.idx.eq(email.emailGroupIdx))
                 .select(Projections.constructor(EmailListDto.class,
                         email.idx,
-                        email.senderAdminIdx,
                         email.receiverType,
                         email.receiverAdminIdxList,
                         email.emailGroupIdx,
@@ -63,45 +62,29 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
     // 이메일 상세 조회
     // param : Integer idx
     @Override
-    public EmailDto findEmailByIdx(Integer idx) {
+    public EmailDetailDto findEmailByIdx(Integer idx) {
         /*
          * SELECT `IDX`
-         *      , `SENDER_ADMIN_IDX`,
          * 		, `RECEIVER_TYPE`,
          * 		, `RECEIVER_ADMIN_IDX_LIST`,
          * 		, `EMAIL_GROUP_IDX`,
          * 		, `TITLE`,
-         * 		, `CONTENTS`,
-         * 		, DATE_FORMAT(`REGDATE`, '%Y-%m-%d %H:%i:%s') AS `REGDATE`
+         * 		, `CONTENTS`
          *   FROM `email`
          * 	WHERE `IDX`=#{idx}
          */
 
         QEmail email = QEmail.email;
-        QEmailGroup emailGroup  = QEmailGroup.emailGroup;
 
-        // 포맷 TODO 확인해야함. -> 할 필요 없어요 LocalDateTime 자체로 받아요
-//        DateTemplate formattedDate = Expressions.dateTemplate(
-//                Date.class
-//                , "DATE_FORMAT({0},{1})"
-//                , email.regdate,
-//                ConstantImpl.create("%Y-%m-%d %H:%i:%s"));
-
-        JPQLQuery<EmailDto> query = from(email)
-                .leftJoin(emailGroup).on(emailGroup.idx.eq(email.emailGroupIdx))
+        JPQLQuery<EmailDetailDto> query = from(email)
                 .where(email.idx.eq(idx))
-                .select(Projections.constructor(EmailDto.class,
+                .select(Projections.constructor(EmailDetailDto.class,
                         email.idx,
-//                        email.senderAdminIdx, Dtd에 선언되있지 않음
                         email.receiverType,
                         email.receiverAdminIdxList,
                         email.emailGroupIdx,
                         email.title,
-                        email.contents,
-                        email.regdate,
-                        emailGroup.name,
-                        emailGroup.desc
-//                        formattedDate
+                        email.contents
                 ));
 
         return query.fetchOne();

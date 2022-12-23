@@ -1,6 +1,6 @@
-package com.app.kokonut.refactor.emailHistory.repository;
+package com.app.kokonut.email.emailHistory;
 
-import com.app.kokonut.refactor.emailHistory.entity.EmailHistory;
+import com.app.kokonut.email.emailHistory.entity.EmailHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
