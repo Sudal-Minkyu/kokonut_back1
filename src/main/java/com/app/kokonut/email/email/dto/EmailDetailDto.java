@@ -1,24 +1,22 @@
-package com.app.kokonut.email.dto;
+package com.app.kokonut.email.email.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * @author Joy
  * Date : 2022-12-19
  * Time :
- * Remark : Email 단일조회 Dto
+ * Remark : Email 단일조회 Dto, Email 전송 저장용 Dto
  */
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailDto {
+public class EmailDetailDto {
 
     // email 테이블
     @ApiModelProperty("키")
@@ -39,10 +37,4 @@ public class EmailDto {
     @ApiModelProperty("내용")
     private String contents;
 
-    @ApiModelProperty("등록일")
-    private LocalDateTime regdate;
-
-    // email_group 테이블
-    private String name;
-    private String desc;
 }
