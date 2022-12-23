@@ -5,7 +5,7 @@ import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
-import com.app.kokonut.company.entity.QCompany;
+import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -68,8 +68,8 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         JPQLQuery<AdminEmailInfoDto> query = from(admin)
                 .where(admin.idx.eq(idx))
                 .select(Projections.constructor(AdminEmailInfoDto.class,
-                        admin.idx,
-                        admin.email
+                        admin.email,
+                        admin.name
                 ));
         return query.fetchOne();
     }

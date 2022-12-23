@@ -15,4 +15,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdminEmailInfoDto {
     private String email;
+    private String name;
 }
