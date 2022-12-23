@@ -112,55 +112,6 @@ public class Company implements Serializable {
     private Date payDate;
 
     /**
-     * 카드이름
-     */
-    @ApiModelProperty("카드이름")
-    @Column(name = "CARD_NAME")
-    private String cardName;
-
-    /**
-     * 카드코드
-     */
-    @ApiModelProperty("카드코드")
-    @Column(name = "CARD_CODE")
-    private Integer cardCode;
-
-    /**
-     * 카드번호
-     */
-    @ApiModelProperty("카드번호")
-    @Column(name = "CARD_NUMBER")
-    private String cardNumber;
-
-    /**
-     * 카드유효기간
-     */
-    @Column(name = "EXPIRY")
-    @ApiModelProperty("카드유효기간")
-    private String expiry;
-
-    /**
-     * 카드 생년월일(사업자등록번호)
-     */
-    @Column(name = "BIRTH")
-    @ApiModelProperty("카드 생년월일(사업자등록번호)")
-    private String birth;
-
-    /**
-     * 카드 비밀번호 앞 두자리 XX
-     */
-    @Column(name = "PWD_2DIGIT")
-    @ApiModelProperty("카드 비밀번호 앞 두자리 XX")
-    private String pwd2digit;
-
-    /**
-     * 카드(빌링키)와 1:1로 대응하는 값
-     */
-    @Column(name = "CUSTOMER_UID")
-    @ApiModelProperty("카드(빌링키)와 1:1로 대응하는 값")
-    private String customerUid;
-
-    /**
      * 자동결제(1:자동결제안함, 2:첫결제신청, 3: 해제, 4:첫결제 이후 재결제, 6:강제해제)
      */
     @Column(name = "IS_AUTO_PAY")

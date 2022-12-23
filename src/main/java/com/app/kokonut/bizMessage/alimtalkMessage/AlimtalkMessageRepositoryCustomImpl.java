@@ -4,7 +4,7 @@ import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageInfoListDto
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageListDto;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageResultDetailDto;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSearchDto;
-import com.app.kokonut.company.entity.QCompany;
+import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;

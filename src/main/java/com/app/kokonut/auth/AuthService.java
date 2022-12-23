@@ -152,22 +152,22 @@ public class AuthService {
         }
 
         // 비밀번호 일치한지 체크
-        if (signUp.getPassword().equals(signUp.getPasswordConfirm())) {
+        if (!signUp.getPassword().equals(signUp.getPasswordConfirm())) {
             log.error("입력한 비밀번호가 서로 일치하지 않습니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO036.getCode(), ResponseErrorCode.KO036.getDesc()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO037.getCode(), ResponseErrorCode.KO037.getDesc()));
         }
 
         MultipartFile multipartFile = signUp.getMultipartFile();
         // 사업자등록증을 올렸는지 체크
-        if(multipartFile.isEmpty()) {
+        if(multipartFile == null) {
             log.error("사업자등록증을 업로드해주세요.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO037.getCode(), ResponseErrorCode.KO037.getDesc()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO038.getCode(), ResponseErrorCode.KO038.getDesc()));
         }
 
         // 이메일 인증번호 생성
         while(true) {
             // 해당 emailAuthNumber로 가입된 회원이 존재한다면 재생성
-            if(adminRepository.existsByEmailAuthNumber(emailAuthNumber)) {
+            if(!adminRepository.existsByEmailAuthNumber(emailAuthNumber)) {
                 break;
             } else {
                 emailAuthNumber = CommonUtil.makeRandomChar(15);
@@ -179,8 +179,8 @@ public class AuthService {
         Company company = new Company();
 
         // 저장할 KMS 암호화키, 복호화키 생성
-        String encryptText = "";
-        String dataKey = "";
+        String encryptText;
+        String dataKey;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String currDate = formatter.format(new Date());
         String encKey = currDate + businessNumber;

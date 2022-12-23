@@ -3,7 +3,7 @@ package com.app.kokonut.bizMessage.friendtalkMessage;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageInfoListDto;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageListDto;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageSearchDto;
-import com.app.kokonut.company.entity.QCompany;
+import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
