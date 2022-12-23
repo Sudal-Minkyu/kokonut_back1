@@ -46,13 +46,6 @@ public class Admin implements UserDetails {
     private Integer masterIdx;
 
     /**
-     * SYSTEM:0,나머지는 레벨 IDX
-     */
-    @Column(name = "ADMIN_LEVEL_IDX")
-    @ApiModelProperty("SYSTEM:0,나머지는 레벨 IDX")
-    private Integer adminLevelIdx;
-
-    /**
      * 회원타입(1:사업자,2:개인)
      */
     @Column(name = "USER_TYPE")

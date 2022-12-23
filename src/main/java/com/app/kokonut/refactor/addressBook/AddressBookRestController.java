@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/AddressBook")
 public class AddressBookRestController {
 
-    @Value("${kokonut_mail_host}")
+    @Value("${kokonut.mail.host}")
     public String hostUrl;
 
     private final AddressBookService addressBookService;

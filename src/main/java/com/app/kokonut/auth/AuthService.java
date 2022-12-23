@@ -1,19 +1,30 @@
 package com.app.kokonut.auth;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
 import com.app.kokonut.auth.jwt.config.GoogleOTP;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;
+import com.app.kokonut.awsKmsHistory.AwsKmsHistory;
+import com.app.kokonut.awsKmsHistory.AwsKmsHistoryRepository;
+import com.app.kokonut.awsKmsHistory.dto.AwsKmsResultDto;
+import com.app.kokonut.company.Company;
+import com.app.kokonut.company.CompanyRepository;
+import com.app.kokonut.companyFile.CompanyFile;
+import com.app.kokonut.companyFile.CompanyFileRepository;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import com.app.kokonut.woody.common.component.AriaUtil;
+import com.app.kokonut.woody.common.component.AwsKmsUtil;
+import com.app.kokonut.woody.common.component.AwsS3Util;
+import com.app.kokonut.woody.common.component.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,12 +34,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
+import java.io.IOException;
+import java.text.Normalizer;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -42,10 +58,21 @@ import java.util.regex.Pattern;
 @Service
 public class AuthService {
 
-    private final AjaxResponse res = new AjaxResponse();
-    private final HashMap<String, Object> data = new HashMap<>();
+    @Value("${kokonut.aws.s3.businessS3Folder}")
+    private String businessS3Folder;
+
+    @Value("${kokonut.aws.s3.bucket}")
+    private String AWSBUCKET;
+
+    private final AwsS3Util awsS3Util;
+    private final AwsKmsUtil awsKmsUtil;
 
     private final AdminRepository adminRepository;
+
+    private final CompanyRepository companyRepository;
+    private final CompanyFileRepository companyFileRepository;
+    private final AwsKmsHistoryRepository awsKmsHistoryRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -53,8 +80,16 @@ public class AuthService {
     private final GoogleOTP googleOTP;
 
     @Autowired
-    public AuthService(AdminRepository adminRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, StringRedisTemplate redisTemplate, GoogleOTP googleOTP) {
+    public AuthService(AwsS3Util awsS3Util, AdminRepository adminRepository, AwsKmsUtil awsKmsUtil, CompanyRepository companyRepository, CompanyFileRepository companyFileRepository,
+                       AwsKmsHistoryRepository awsKmsHistoryRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
+                       AuthenticationManagerBuilder authenticationManagerBuilder,
+                       StringRedisTemplate redisTemplate, GoogleOTP googleOTP) {
+        this.awsS3Util = awsS3Util;
         this.adminRepository = adminRepository;
+        this.awsKmsUtil = awsKmsUtil;
+        this.companyRepository = companyRepository;
+        this.companyFileRepository = companyFileRepository;
+        this.awsKmsHistoryRepository = awsKmsHistoryRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
@@ -63,22 +98,216 @@ public class AuthService {
     }
 
     // 회원가입 기능
-    public ResponseEntity<Map<String,Object>> signUp(AuthRequestDto.SignUp signUp) {
+    @Transactional
+    public ResponseEntity<Map<String,Object>> signUp(AuthRequestDto.SignUp signUp, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("signUp 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
 
         if (adminRepository.existsByEmail(signUp.getEmail())) {
             log.error("이미 회원가입된 이메일입니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO005.getCode(), ResponseErrorCode.KO005.getDesc()));
         }
 
-        Admin admin = Admin.builder()
-                .email(signUp.getEmail())
-                .password(passwordEncoder.encode(signUp.getPassword()))
-                .roleName(AuthorityRole.ROLE_MASTER)
-                .regdate(LocalDateTime.now())
-                .build();
+        log.info("회원가입 시작");
+        log.info("받아온 값 signUp : "+signUp);
 
-        adminRepository.save(admin);
+//        String fileGroupId = "FATT_" + Calendar.getInstance().getTimeInMillis();
+//        String fileGroupId = "FATT_" + UUID.randomUUID();  // 파일그룹ID? 바뀔수도..
+        String phoneNumber = signUp.getPhoneNumber(); // 휴대폰번호
+        String emailAuthNumber = CommonUtil.makeRandomChar(15); // 이메일인증 코드
+        String businessNumber = signUp.getBusinessNumber(); // 사업자등록번호
+
+        /* NICEID를 통해 휴대폰 인증을 완료했는 지 확인 */
+        String mobileno = "";
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null) {
+            log.info("현재 쿠키값들 : "+ Arrays.toString(cookies));
+            for(Cookie c : cookies) {
+                if(c.getName().equals("mobileno") ) {
+                    mobileno = c.getValue();
+                    log.info("본인인증 된 핸드폰번호 : "+mobileno);
+                }
+            }
+        }
+
+        // 본인인증 체크
+        if(!phoneNumber.equals(mobileno)) {
+            log.info("본인인증으로 입력된 핸드폰 번호가 아닙니다. 본인인증을 완료해주세요.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO033.getCode(), ResponseErrorCode.KO033.getDesc()));
+        }
+
+        // 중복체크 로직
+        // 핸드폰번호 중복 체크
+        if (adminRepository.existsByPhoneNumber(phoneNumber)) {
+            log.error("이미 회원가입된 핸드폰번호 입니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO034.getCode(), ResponseErrorCode.KO034.getDesc()));
+        }
+
+        // 사업자번호 중복 체크
+        if (companyRepository.existsByBusinessNumber(businessNumber)) {
+            log.error("이미 회원가입된 사업자등록번호 입니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO035.getCode(), ResponseErrorCode.KO035.getDesc()));
+        }
+
+        // 비밀번호 일치한지 체크
+        if (signUp.getPassword().equals(signUp.getPasswordConfirm())) {
+            log.error("입력한 비밀번호가 서로 일치하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO036.getCode(), ResponseErrorCode.KO036.getDesc()));
+        }
+
+        MultipartFile multipartFile = signUp.getMultipartFile();
+        // 사업자등록증을 올렸는지 체크
+        if(multipartFile.isEmpty()) {
+            log.error("사업자등록증을 업로드해주세요.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO037.getCode(), ResponseErrorCode.KO037.getDesc()));
+        }
+
+        // 이메일 인증번호 생성
+        while(true) {
+            // 해당 emailAuthNumber로 가입된 회원이 존재한다면 재생성
+            if(adminRepository.existsByEmailAuthNumber(emailAuthNumber)) {
+                break;
+            } else {
+                emailAuthNumber = CommonUtil.makeRandomChar(15);
+            }
+        }
+
+
+        log.info("Company 저장(Insert) 로직 시작");
+        Company company = new Company();
+
+        // 저장할 KMS 암호화키, 복호화키 생성
+        String encryptText = "";
+        String dataKey = "";
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String currDate = formatter.format(new Date());
+        String encKey = currDate + businessNumber;
+        AwsKmsResultDto awsKmsResultDto = awsKmsUtil.encrypt(encKey);
+        if(awsKmsResultDto.getResult().equals("success")) {
+            encryptText = awsKmsResultDto.getEncryptText();
+            dataKey = awsKmsResultDto.getDataKey();
+        }
+        else {
+            // 리턴처리를 어떻게해야 할지 내용 정하기 - 2022/12/22 to.woody
+            log.error("암호화 키 생성 실패");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO036.getCode(), ResponseErrorCode.KO036.getDesc()));
+        }
+
+        company.setCompanyName(signUp.getCompanyName());
+        company.setRepresentative(signUp.getRepresentative());
+        company.setCompanyTel(signUp.getCompanyTel());
+        company.setBusinessType(signUp.getBusinessType());
+        company.setBusinessNumber(businessNumber);
+        company.setCompanyAddress(signUp.getCompanyAddress());
+        company.setCompanyAddressNumber(signUp.getCompanyAddressNumber());
+        company.setCompanyAddressDetail(signUp.getCompanyAddressDetail());
+        company.setEncryptText(encryptText);
+        company.setDataKey(dataKey);
+
+        Company saveCompany = companyRepository.save(company);
+        log.info("기업 정보 저장 saveCompany : "+saveCompany.getIdx());
+
+        log.info("KMS 발급 이력 저장(Insert) 로직 시작");
+        AwsKmsHistory awsKmsHistory = new AwsKmsHistory();
+        awsKmsHistory.setType("ENC");
+        awsKmsHistory.setRegdate(LocalDateTime.now());
+        AwsKmsHistory saveAwsKmsHistory =  awsKmsHistoryRepository.save(awsKmsHistory);
+        log.info("KMS 이력 저장 saveAwsKmsHistory : "+saveAwsKmsHistory.getIdx());
+
+        log.info("Admin 저장(Insert) 로직 시작");
+        // 회원가입 사업자 Defalut 값
+        Integer userType = 1; // "1"일 경우 사업자, "2"일 경우 관리자
+        Integer state = 1; // 0:정지(권한해제), 1:사용, 2:로그인제한(비번5회오류), 3:탈퇴, 4:휴면계정
+
+        Admin admin = new Admin();
+        admin.setEmail(signUp.getEmail());
+        admin.setPassword(passwordEncoder.encode(signUp.getPassword()));
+        admin.setCompanyIdx(saveCompany.getIdx());
+        admin.setMasterIdx(0); // 사업자는 0, 관리자가 등록한건 관리자IDX ?
+        admin.setName(signUp.getName());
+        admin.setPhoneNumber(signUp.getPhoneNumber());
+        admin.setState(state);
+        admin.setUserType(userType);
+        admin.setRoleName(AuthorityRole.ROLE_MASTER);
+        admin.setRegdate(LocalDateTime.now());
+        Admin saveAdmin = adminRepository.save(admin);
+        log.info("사용자 정보 저장 saveAdmin : "+saveAdmin.getIdx());
+
+        log.info("사업자등록증 업로드 시작 multipartFile : "+multipartFile);
+        log.info("CompanyFile 저장(Insert) 로직 시작");
+
+        CompanyFile companyFile = new CompanyFile();
+        companyFile.setCompanyIdx(saveCompany.getIdx());
+
+        // 파일 오리지널 Name
+        String originalFilename = Normalizer.normalize(Objects.requireNonNull(multipartFile.getOriginalFilename()), Normalizer.Form.NFC);
+        log.info("originalFilename : "+originalFilename);
+        companyFile.setCfOriginalFilename(originalFilename);
+
+        // 파일 Size
+        long fileSize = multipartFile.getSize();
+        log.info("fileSize : "+fileSize);
+        companyFile.setCfVolume(fileSize);
+
+        // 확장자
+        String ext;
+        ext = '.'+originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        log.info("ext : "+ext);
+
+        // 파일 중복명 처리
+        String fileName = UUID.randomUUID().toString().replace("-", "")+ext;
+        log.info("fileName : "+fileName);
+        companyFile.setCfFilename(fileName);
+
+        // S3에 저장 할 파일주소
+        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
+        businessS3Folder = businessS3Folder + date.format(new Date());
+        log.info("filePath : "+AWSBUCKET+businessS3Folder);
+
+        companyFile.setCfPath(AWSBUCKET+businessS3Folder+"/");
+        String storedFileName = awsS3Util.imageFileUpload(multipartFile, fileName, businessS3Folder);
+
+        companyFile.setRegIdx(saveAdmin.getIdx());
+        companyFile.setRegDate(LocalDateTime.now());
+
+        if(storedFileName == null) {
+            log.error("이미지 업로드를 실패했습니다. -관리자에게 문의해주세요-");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO039.getCode(), ResponseErrorCode.KO039.getDesc()));
+        } else {
+            companyFileRepository.save(companyFile);
+        }
+
+        // 메일보내는 로직
+        // 메일 서비스 완료되면 할 것 - 2022/12/23 to.woody
+//        List<HashMap<String, Object>> systemAdminList = adminService.SelectSystemAdminList();
+        List<String> systemAdminList = new ArrayList<>();
+//            try {
+//                String mailData = URLEncoder.encode(parameter.get("email").toString(), "UTF-8");
+//                String title = "사업자 회원가입 승인요청";
+//                String contents = mailSender.getHTML2("/mail/emailForm/" + Integer.toString(MailController.EmailFormType.REQ_AGREE_BIZ_MEM_JOIN.ordinal()) + "?data=" + mailData);
+//
+//                for(HashMap<String, Object> systemAdmin : systemAdminList) {
+//                    if(systemAdmin.containsKey("EMAIL") && systemAdmin.containsKey("NAME")) {
+//                        String toEmail = systemAdmin.get("EMAIL").toString();
+//                        String toName = systemAdmin.get("NAME").toString();
+//
+//                        mailSender.sendMail(toEmail, toName, title, contents);
+//                    } else {
+//                        logger.error("not found system admin info.");
+//                    }
+//                }
+//            } catch (IOException e) {
+//                logger.error(e.getMessage());
+//            }
+
+        /* NICEID 본인인증 핸드폰 번호 쿠키 삭제 */
+        Cookie cookie = new Cookie("mobileno", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        data.put("email", saveAdmin.getEmail());
 
         return ResponseEntity.ok(res.success(data));
     }
@@ -87,6 +316,9 @@ public class AuthService {
     public ResponseEntity<Map<String,Object>> authToken(AuthRequestDto.Login login) {
         log.info("authToken 호출");
 
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+        
         // 이메일이 test@kokonut.me 체크하는 로직추가
         String email = login.getEmail();
 
@@ -163,6 +395,9 @@ public class AuthService {
     public ResponseEntity<Map<String,Object>> reissue(AuthRequestDto.Reissue reissue) {
         log.info("reissue 호출");
 
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+        
         // Refresh Token 검증
         if (!jwtTokenProvider.validateToken(reissue.getRefreshToken())) {
             log.error("유효하지 않은 토큰정보임");
@@ -211,6 +446,9 @@ public class AuthService {
     public ResponseEntity<Map<String,Object>> logout(AuthRequestDto.Logout logout) {
         log.info("logout 호출");
 
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+        
         // Access Token 검증
         if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
             log.error("유효하지 않은 토큰정보임");
@@ -237,6 +475,9 @@ public class AuthService {
     public ResponseEntity<Map<String, Object>> otpQRcode(String email) {
         log.info("otpQRcode 호출");
 
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+        
 //        String userEmail = SecurityUtil.getCurrentUserEmail();
 //        if(userEmail.equals("anonymousUser")){
 //            log.error("사용하실 수 없는 토큰정보 입니다. 다시 로그인 해주세요.");
@@ -272,6 +513,9 @@ public class AuthService {
     public ResponseEntity<Map<String,Object>> checkOTP(AdminGoogleOTPDto.GoogleOtpCertification googleOtpCertification) {
         log.info("checkOTP 호출");
 
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+        
         Pattern pattern = Pattern.compile("[+-]?\\d+");
         if(!pattern.matcher(googleOtpCertification.getOtpValue()).matches()) {
             log.error("OTP는 숫자 형태로 입력하세요.");
@@ -297,6 +541,9 @@ public class AuthService {
     public ResponseEntity<Map<String, Object>> saveOTP(AdminGoogleOTPDto.GoogleOtpSave googleOtpSave) {
         log.info("saveOTP 호출");
 
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+        
         Optional<Admin> optionalAdmin = adminRepository.findByEmail(googleOtpSave.getEmail());
 
         if (optionalAdmin.isEmpty()) {

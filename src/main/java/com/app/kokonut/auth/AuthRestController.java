@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -32,12 +35,14 @@ public class AuthRestController {
     // 회원가입
     @PostMapping("/signUp")
     @ApiOperation(value = "사업자 회원가입" , notes = "" +
-            "1. Param 값으로 이메일과, 비밀번호를 받는다." +
-            "2. 해당 값을 통해 회원가입을 완료한다." +
-            "현재는 미완성...")
-    public ResponseEntity<Map<String,Object>> signUp(@Validated AuthRequestDto.SignUp signUp) {
+            "1. Param 값으로 유저정보와 기업정보를 받는다." +
+            "2. 유니크 값 중복체크를 한다." +
+            "3. 기업정보를 저장한다." +
+            "4. 사업자등록증, KMS인증키 등을 발급받는다.")
+    public ResponseEntity<Map<String,Object>> signUp(@ModelAttribute AuthRequestDto.SignUp signUp,
+                                                     HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("사업자 회원가입 API 호출");
-        return authService.signUp(signUp);
+        return authService.signUp(signUp, request, response);
     }
 
     // 로그인 성공 이후 JWT Token 발급 및 업데이트

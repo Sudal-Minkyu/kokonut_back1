@@ -32,14 +32,14 @@ public class AlimtalkMessageRestController {
 
     // 알림톡 메세지 리스트 조회
     @PostMapping(value = "/alimTalkMessageList")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageList(@RequestBody AlimtalkMessageSearchDto alimtalkTemplateSearchDto, Pageable pageable) {
         return alimtalkMessageService.alimTalkMessageList(alimtalkTemplateSearchDto, pageable);
     }
 
     // 알림톡 메세지 발송요청의 템플릿 리스트 조회 -> 선택한 채널ID의 템플릿 코드리스트를 반환한다.
     @GetMapping(value = "/alimTalkMessageTemplateList")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageTemplateList(@RequestParam(name="channelId") String channelId,
                                                                           @RequestParam(name="templateCode", defaultValue = "") String templateCode) throws Exception {
         return alimtalkMessageService.alimTalkMessageTemplateList(channelId, templateCode);
@@ -47,28 +47,28 @@ public class AlimtalkMessageRestController {
 
     // 알림톡 메시지 발송 요청
     @GetMapping(value = "/postMessages")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> postMessages(@RequestBody AlimtalkMessageSendDto alimtalkMessageSendDto) {
         return alimtalkMessageService.postMessages(alimtalkMessageSendDto);
     }
 
     // 알림톡 메시지 결과 상세정보
     @GetMapping(value = "/alimTalkMessageResultDetail") // -> 기존의 코코넛 호출 메서드명 : alimTalkTemplateStatusDescPopup
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageResultDetail(@RequestParam(name="requestId") String requestId) {
         return alimtalkMessageService.alimTalkMessageResultDetail(requestId);
     }
 
     // 알림톡 메시지 보낼 유저 리스트조회
     @GetMapping(value = "/alimTalkMessageRecipientList") // -> 기존의 코코넛 호출 메서드명 : /recipient/list
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageRecipientList(@RequestParam(name="searchText", defaultValue = "") String searchText, Pageable pageable) {
         return alimtalkMessageService.alimTalkMessageRecipientList(searchText, pageable);
     }
 
     // 알림톡 메시지 예약발송 취소
     @PostMapping(value = "/alimTalkMessageReserveCancel") // -> 기존의 코코넛 호출 메서드명 : /reserve/cancel
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageReserveCancel(@RequestParam(name="requestId") String requestId,
                                                                            @RequestParam(name="requestId", defaultValue = "alimtalk") String type) {
         return alimtalkMessageService.alimTalkMessageReserveCancel(requestId, type);
@@ -76,7 +76,7 @@ public class AlimtalkMessageRestController {
 
     // 알림톡 메시지 반려됬을 경우 상태 조회
     @RequestMapping(value = "/alimTalkTemplateStatusConfimInfo", method = RequestMethod.POST) // -> 기존의 코코넛 호출 메서드명 : /alimTalkTemplateStatusConfimPopup
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkTemplateStatusConfimInfo(@RequestParam(name="channelId") String channelId,
                                                           @RequestParam(name="templateCode") String templateCode) throws Exception {
         return alimtalkMessageService.alimTalkTemplateStatusConfimInfo(channelId, templateCode);

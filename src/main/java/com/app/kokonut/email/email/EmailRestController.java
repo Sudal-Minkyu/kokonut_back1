@@ -28,7 +28,7 @@ public class EmailRestController {
 
     @ApiOperation(value="이메일 목록 조회", notes="발송 메일 목록 조회")
     @GetMapping(value = "/getEmail")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> getEmail(@RequestBody Pageable pageable) {
          return emailService.getEmail(pageable);
     }
@@ -42,7 +42,7 @@ public class EmailRestController {
 
     @ApiOperation(value="이메일 상세보기", notes="메일 상세 내용 조회")
     @GetMapping("/sendEmail/detail/{idx}") // 메일 상세보기
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> sendEmailDetail(@PathVariable("idx") Integer idx) {
         return emailService.sendEmailDetail(idx);
     }

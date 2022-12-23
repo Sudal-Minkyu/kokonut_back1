@@ -34,14 +34,14 @@ public class FriendtalkMessageRestController {
 
     // 친구톡 메시지 리스트 조회
     @PostMapping(value = "/friendTalkMessageList")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> friendTalkMessageList(@RequestBody FriendtalkMessageSearchDto friendtalkMessageSearchDto, Pageable pageable) {
         return friendtalkMessageService.friendTalkMessageList(friendtalkMessageSearchDto, pageable);
     }
 
     // 친구톡 메시지 발송
     @PostMapping(value = "/postFriendMessages")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> postFriendMessages(@ModelAttribute FriendtalkMessageSendDto friendtalkMessageSendDto, HttpServletRequest request) {
         return friendtalkMessageService.postFriendMessages(friendtalkMessageSendDto, request);
     }
