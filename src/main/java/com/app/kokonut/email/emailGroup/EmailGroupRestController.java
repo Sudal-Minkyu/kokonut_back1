@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "")
 @Validated
 @RestController
-@RequestMapping("/emailGroup")
+@RequestMapping("/api/EmailGroup")
 public class EmailGroupRestController {
     private final EmailGroupService emailGroupService;
 
