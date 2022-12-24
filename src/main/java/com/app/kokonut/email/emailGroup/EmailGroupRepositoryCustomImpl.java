@@ -1,13 +1,22 @@
 package com.app.kokonut.email.emailGroup;
 
+import com.app.kokonut.email.email.dto.EmailListDto;
+import com.app.kokonut.email.email.entity.QEmail;
 import com.app.kokonut.email.emailGroup.dto.EmailGroupAdminInfoDto;
+import com.app.kokonut.email.emailGroup.dto.EmailGroupListDto;
 import com.app.kokonut.email.emailGroup.entity.EmailGroup;
 import com.app.kokonut.email.emailGroup.entity.QEmailGroup;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author joy
@@ -44,5 +53,33 @@ public class EmailGroupRepositoryCustomImpl extends QuerydslRepositorySupport im
                 ));
 
         return query.fetchOne();
+    }
+
+    @Override
+    public Page<EmailGroupListDto> findEmailGroupPage(Pageable pageable) {
+        /* SELECT 'IDX'
+                , 'ADMIN_IDX_LIST'
+                , 'NAME'
+                , 'DESC'
+             FROM 'email_group'
+            WHERE 1 = 1
+              AND `USE_YN` = 'Y'
+            ORDER BY `REGDATE` DESC
+         */
+
+        QEmailGroup emailGroup  = QEmailGroup.emailGroup;
+
+        JPQLQuery<EmailGroupListDto> query = from(emailGroup)
+                .where(emailGroup.useYn.eq("Y"))
+                .select(Projections.constructor(EmailGroupListDto.class,
+                                emailGroup.idx,
+                                emailGroup.adminIdxList,
+                                emailGroup.name,
+                                emailGroup.desc
+                ));
+        query.orderBy(emailGroup.regdate.desc());
+
+        final List<EmailGroupListDto> emailGroupListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
+        return new PageImpl<>(emailGroupListDtos, pageable, query.fetchCount());
     }
 }
