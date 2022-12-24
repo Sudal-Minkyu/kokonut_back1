@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "")
 @Validated
 @RestController
-@RequestMapping("/emailHistory")
-public class EmailHistoryController {
+@RequestMapping("/api/EmailHistory")
+public class EmailHistoryRestController {
+
+
+    private final EmailHistoryService emailHistoryService;
 
     @Autowired
-    private EmailHistoryService emailHistoryService;
-    
+    public EmailHistoryRestController(EmailHistoryService emailHistoryService) {
+        this.emailHistoryService = emailHistoryService;
+    }
 }

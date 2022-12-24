@@ -14,13 +14,6 @@ public class EmailHistoryDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 키
-     */
-    @ApiModelProperty("키")
-    private Integer idx;
-
-
-    /**
      * 보내는 사람 이메일
      */
     @ApiModelProperty("보내는 사람 이메일")
@@ -60,12 +53,5 @@ public class EmailHistoryDto implements Serializable {
      */
     @ApiModelProperty("내용")
     private String contents;
-
-
-    /**
-     * 발송일시
-     */
-    @ApiModelProperty("발송일시")
-    private Date regdate;
 
 }
