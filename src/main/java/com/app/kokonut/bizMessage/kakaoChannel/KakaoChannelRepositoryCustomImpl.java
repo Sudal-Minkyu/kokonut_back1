@@ -5,7 +5,7 @@ import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelSearchDto;
 import com.app.kokonut.bizMessage.kakaoChannel.entity.KakaoChannel;
 import com.app.kokonut.bizMessage.kakaoChannel.entity.QKakaoChannel;
-import com.app.kokonut.company.entity.QCompany;
+import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;

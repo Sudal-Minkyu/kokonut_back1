@@ -1,7 +1,7 @@
 package com.app.kokonut.auth.jwt.dto;
 
-import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +17,9 @@ import javax.validation.constraints.Pattern;
  */
 public class AuthRequestDto {
 
-    @Data
+    @Getter
+    @Setter
+    @NoArgsConstructor
     public static class SignUp {
 
         @NotBlank(message = "이메일은 필수 입력값 입니다.")

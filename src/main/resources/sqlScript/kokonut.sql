@@ -344,13 +344,6 @@ CREATE TABLE `company` (
   `SERVICE` varchar(16) DEFAULT NULL COMMENT '상품(PREMIUM, STANDARD, BASIC)',
   `PAY_DAY` int(11) DEFAULT NULL COMMENT '결제일(5일,10일 등 일자)',
   `PAY_DATE` timestamp NULL DEFAULT NULL COMMENT '결제등록일',
-  `CARD_NAME` varchar(128) DEFAULT NULL COMMENT '카드이름',
-  `CARD_CODE` int(11) DEFAULT NULL COMMENT '카드코드',
-  `CARD_NUMBER` varchar(256) DEFAULT NULL COMMENT '카드번호',
-  `EXPIRY` varchar(256) DEFAULT NULL COMMENT '카드유효기간',
-  `BIRTH` varchar(256) DEFAULT NULL COMMENT '카드 생년월일(사업자등록번호)',
-  `PWD_2DIGIT` varchar(256) DEFAULT NULL COMMENT '카드 비밀번호 앞 두자리 XX',
-  `CUSTOMER_UID` varchar(128) DEFAULT NULL COMMENT '카드(빌링키)와 1:1로 대응하는 값',
   `IS_AUTO_PAY` int(11) DEFAULT NULL COMMENT '자동결제(1:자동결제안함, 2:첫결제신청, 3: 해제, 4:첫결제 이후 재결제, 6:강제해제)',
   `STOP_SERVICE_PRICE` int(11) DEFAULT NULL COMMENT '서비스 결제 X 강제 해지시 결제 안한 금액',
   `NOT_AUTO_PAY_DATE` timestamp NULL DEFAULT NULL COMMENT '자동결제 해지일시',
@@ -537,24 +530,6 @@ CREATE TABLE `kakao_channel` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `kakao_channel` */
-
-/*Table structure for table `log4j_history` */
-
-DROP TABLE IF EXISTS `log4j_history`;
-
-CREATE TABLE `log4j_history` (
-  `IDX` int(11) NOT NULL AUTO_INCREMENT COMMENT '키',
-  `REGDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '발생일시',
-  `API_KEY_IDX` int(11) DEFAULT NULL COMMENT 'API_KEY 키',
-  `IP` varchar(32) DEFAULT NULL COMMENT 'IP',
-  `TYPE` varchar(8) DEFAULT NULL COMMENT '유형(CREATE, READ, UPDATE, DELETE, DOWNLOAD)',
-  `LEVEL` varchar(8) DEFAULT NULL COMMENT '로그 레벨(FATAL, ERROR, WARN, INFO, DEBUG, TRACE)',
-  `MESSAGE` varchar(2048) DEFAULT NULL COMMENT '내용',
-  `LOGGER` varchar(128) DEFAULT NULL COMMENT 'Logger 이름',
-  PRIMARY KEY (`IDX`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `log4j_history` */
 
 /*Table structure for table `notice` */
 
