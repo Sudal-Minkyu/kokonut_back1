@@ -14,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.List;
 import java.util.Objects;
 
@@ -92,9 +90,9 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         return query.fetchOne();
     }
 
-    @Override
+/*    @Override
     public Integer saveEmail(EmailDetailDto emailDetailDto) {
-        /*
+        *//*
          * INSERT INTO `email` (
          *             `SENDER_ADMIN_IDX'
          * 		     , `RECEIVER_TYPE`,
@@ -105,7 +103,7 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
          *      ) VALUES (
          *         ...
          *      )
-         */
+         *//*
 
         EntityManager em = getEntityManager();
         StringBuilder sb = new StringBuilder();
@@ -170,5 +168,5 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         query.setParameter("contents", emailDetailDto.getContents());
 
         return query.executeUpdate();
-    }
+    }*/
 }

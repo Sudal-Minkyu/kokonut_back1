@@ -20,5 +20,5 @@ public interface EmailRepositoryCustom {
     EmailDetailDto findEmailByIdx(Integer idx);
 
     // 이메일 발송 내역 저장 -> 기존 코코넛 메서드 : InsertEmail
-    Integer saveEmail(EmailDetailDto emailDetailDto);
+    //Integer saveEmail(EmailDetailDto emailDetailDto);
 }
