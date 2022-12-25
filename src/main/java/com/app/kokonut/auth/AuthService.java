@@ -61,8 +61,8 @@ public class AuthService {
     @Value("${kokonut.aws.s3.businessS3Folder}")
     private String businessS3Folder;
 
-    @Value("${kokonut.aws.s3.bucket}")
-    private String AWSBUCKET;
+    @Value("${kokonut.aws.s3.url}")
+    private String AWSURL;
 
     private final AwsS3Util awsS3Util;
     private final AwsKmsUtil awsKmsUtil;
@@ -263,15 +263,15 @@ public class AuthService {
 
         // S3에 저장 할 파일주소
         SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
-        businessS3Folder = businessS3Folder + date.format(new Date());
-        log.info("filePath : "+AWSBUCKET+businessS3Folder);
-
-        companyFile.setCfPath(AWSBUCKET+businessS3Folder+"/");
-        String storedFileName = awsS3Util.imageFileUpload(multipartFile, fileName, businessS3Folder);
+        String filePath = AWSURL+businessS3Folder+date.format(new Date());
+        log.info("filePath : "+filePath);
+        companyFile.setCfPath(filePath);
 
         companyFile.setRegIdx(saveAdmin.getIdx());
         companyFile.setRegDate(LocalDateTime.now());
 
+        // S3 파일업로드
+        String storedFileName = awsS3Util.imageFileUpload(multipartFile, fileName, businessS3Folder+date.format(new Date()));
         if(storedFileName == null) {
             log.error("이미지 업로드를 실패했습니다. -관리자에게 문의해주세요-");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO039.getCode(), ResponseErrorCode.KO039.getDesc()));
