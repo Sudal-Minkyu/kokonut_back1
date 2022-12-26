@@ -35,7 +35,7 @@ public class EmailGroupService {
         HashMap<String, Object> data = new HashMap<>();
         if(idx == null){
             log.error("### 해당 메일 그룹을 찾을 수 없습니다. : "+idx);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO042.getCode(), ResponseErrorCode.KO042.getCode()));
         }else{
             EmailGroupAdminInfoDto emailGroupAdminInfoDto = emailGroupRepository.findEmailGroupAdminInfoByIdx(idx);
             data.put("adminIdxList", emailGroupAdminInfoDto.getAdminIdxList());
@@ -90,7 +90,7 @@ public class EmailGroupService {
 
         if(idx == null){
             log.error("### 삭제할 이메일 그룹의 idx가 존재하지 않습니다. : "+idx);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO042.getCode(), ResponseErrorCode.KO042.getCode()));
         } else {
             log.info("### 이메일 그룹 삭제");
             EmailGroup deleteEmailGroup =  new EmailGroup();

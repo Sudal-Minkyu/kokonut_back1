@@ -110,7 +110,7 @@ public class EmailService {
             adminIdxList = emailGroupAdminInfoDto.getAdminIdxList();
         }else{
             log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getCode()));
         }
 
         // mailSender 실질적인 이메일 전송 부분
@@ -174,7 +174,7 @@ public class EmailService {
             return ResponseEntity.ok(res.success(data));
         }else{
             log.error("### 이메일 이력 저장에 실패했습니다. : "+sendEmail.getIdx());
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO041.getCode(), ResponseErrorCode.KO041.getCode()));
         }
 
     }
@@ -210,7 +210,7 @@ public class EmailService {
                     adminIdxList = emailGroupAdminInfoDto.getAdminIdxList();
                 }else{
                     log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getCode()));
                 }
 
                 // 받는 사람 이메일 문자열 조회
