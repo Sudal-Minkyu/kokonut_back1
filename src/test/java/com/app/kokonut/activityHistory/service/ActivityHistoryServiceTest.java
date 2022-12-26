@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -59,7 +60,7 @@ class ActivityHistoryServiceTest {
 
         Company company = new Company();
         company.setCompanyName("기업명");
-        company.setRegdate(systemDate);
+        company.setRegdate(LocalDateTime.now());
         Company saveCompany = companyRepository.save(company);
         System.out.println("저장된 saveCompany : "+saveCompany);
 

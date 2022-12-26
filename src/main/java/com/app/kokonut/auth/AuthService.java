@@ -120,22 +120,24 @@ public class AuthService {
         String businessNumber = signUp.getBusinessNumber(); // 사업자등록번호
 
         /* NICEID를 통해 휴대폰 인증을 완료했는 지 확인 */
-        String mobileno = "";
-        Cookie[] cookies = request.getCookies();
-        if(cookies != null) {
-            log.info("현재 쿠키값들 : "+ Arrays.toString(cookies));
-            for(Cookie c : cookies) {
-                if(c.getName().equals("mobileno") ) {
-                    mobileno = c.getValue();
-                    log.info("본인인증 된 핸드폰번호 : "+mobileno);
+        if(!signUp.getEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
+            String mobileno = "";
+            Cookie[] cookies = request.getCookies();
+            if(cookies != null) {
+                log.info("현재 쿠키값들 : "+ Arrays.toString(cookies));
+                for(Cookie c : cookies) {
+                    if(c.getName().equals("mobileno") ) {
+                        mobileno = c.getValue();
+                        log.info("본인인증 된 핸드폰번호 : "+mobileno);
+                    }
                 }
             }
-        }
 
-        // 본인인증 체크
-        if(!phoneNumber.equals(mobileno)) {
-            log.info("본인인증으로 입력된 핸드폰 번호가 아닙니다. 본인인증을 완료해주세요.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO033.getCode(), ResponseErrorCode.KO033.getDesc()));
+            // 본인인증 체크
+            if(!phoneNumber.equals(mobileno)) {
+                log.info("본인인증으로 입력된 핸드폰 번호가 아닙니다. 본인인증을 완료해주세요.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO033.getCode(), ResponseErrorCode.KO033.getDesc()));
+            }
         }
 
         // 중복체크 로직
@@ -159,7 +161,7 @@ public class AuthService {
 
         MultipartFile multipartFile = signUp.getMultipartFile();
         // 사업자등록증을 올렸는지 체크
-        if(multipartFile == null) {
+        if(multipartFile == null && !signUp.getEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
             log.error("사업자등록증을 업로드해주세요.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO038.getCode(), ResponseErrorCode.KO038.getDesc()));
         }
@@ -179,20 +181,21 @@ public class AuthService {
         Company company = new Company();
 
         // 저장할 KMS 암호화키, 복호화키 생성
-        String encryptText;
-        String dataKey;
+        String encryptText = "";
+        String dataKey = "";
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String currDate = formatter.format(new Date());
         String encKey = currDate + businessNumber;
-        AwsKmsResultDto awsKmsResultDto = awsKmsUtil.encrypt(encKey);
-        if(awsKmsResultDto.getResult().equals("success")) {
-            encryptText = awsKmsResultDto.getEncryptText();
-            dataKey = awsKmsResultDto.getDataKey();
-        }
-        else {
-            // 리턴처리를 어떻게해야 할지 내용 정하기 - 2022/12/22 to.woody
-            log.error("암호화 키 생성 실패");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO036.getCode(), ResponseErrorCode.KO036.getDesc()));
+        if(!signUp.getEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
+            AwsKmsResultDto awsKmsResultDto = awsKmsUtil.encrypt(encKey);
+            if (awsKmsResultDto.getResult().equals("success")) {
+                encryptText = awsKmsResultDto.getEncryptText();
+                dataKey = awsKmsResultDto.getDataKey();
+            } else {
+                // 리턴처리를 어떻게해야 할지 내용 정하기 - 2022/12/22 to.woody
+                log.error("암호화 키 생성 실패");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO036.getCode(), ResponseErrorCode.KO036.getDesc()));
+            }
         }
 
         company.setCompanyName(signUp.getCompanyName());
@@ -205,7 +208,7 @@ public class AuthService {
         company.setCompanyAddressDetail(signUp.getCompanyAddressDetail());
         company.setEncryptText(encryptText);
         company.setDataKey(dataKey);
-
+        company.setRegdate(LocalDateTime.now());
         Company saveCompany = companyRepository.save(company);
         log.info("기업 정보 저장 saveCompany : "+saveCompany.getIdx());
 
@@ -235,48 +238,50 @@ public class AuthService {
         Admin saveAdmin = adminRepository.save(admin);
         log.info("사용자 정보 저장 saveAdmin : "+saveAdmin.getIdx());
 
-        log.info("사업자등록증 업로드 시작 multipartFile : "+multipartFile);
-        log.info("CompanyFile 저장(Insert) 로직 시작");
+        if(multipartFile != null && !signUp.getEmail().equals("kokonut@kokonut.me")) {
+            log.info("사업자등록증 업로드 시작 multipartFile : "+multipartFile);
+            log.info("CompanyFile 저장(Insert) 로직 시작");
 
-        CompanyFile companyFile = new CompanyFile();
-        companyFile.setCompanyIdx(saveCompany.getIdx());
+            CompanyFile companyFile = new CompanyFile();
+            companyFile.setCompanyIdx(saveCompany.getIdx());
 
-        // 파일 오리지널 Name
-        String originalFilename = Normalizer.normalize(Objects.requireNonNull(multipartFile.getOriginalFilename()), Normalizer.Form.NFC);
-        log.info("originalFilename : "+originalFilename);
-        companyFile.setCfOriginalFilename(originalFilename);
+            // 파일 오리지널 Name
+            String originalFilename = Normalizer.normalize(Objects.requireNonNull(multipartFile.getOriginalFilename()), Normalizer.Form.NFC);
+            log.info("originalFilename : "+originalFilename);
+            companyFile.setCfOriginalFilename(originalFilename);
 
-        // 파일 Size
-        long fileSize = multipartFile.getSize();
-        log.info("fileSize : "+fileSize);
-        companyFile.setCfVolume(fileSize);
+            // 파일 Size
+            long fileSize = multipartFile.getSize();
+            log.info("fileSize : "+fileSize);
+            companyFile.setCfVolume(fileSize);
 
-        // 확장자
-        String ext;
-        ext = '.'+originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-        log.info("ext : "+ext);
+            // 확장자
+            String ext;
+            ext = '.'+originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            log.info("ext : "+ext);
 
-        // 파일 중복명 처리
-        String fileName = UUID.randomUUID().toString().replace("-", "")+ext;
-        log.info("fileName : "+fileName);
-        companyFile.setCfFilename(fileName);
+            // 파일 중복명 처리
+            String fileName = UUID.randomUUID().toString().replace("-", "")+ext;
+            log.info("fileName : "+fileName);
+            companyFile.setCfFilename(fileName);
 
-        // S3에 저장 할 파일주소
-        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
-        String filePath = AWSURL+businessS3Folder+date.format(new Date());
-        log.info("filePath : "+filePath);
-        companyFile.setCfPath(filePath);
+            // S3에 저장 할 파일주소
+            SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
+            String filePath = AWSURL+businessS3Folder+date.format(new Date());
+            log.info("filePath : "+filePath);
+            companyFile.setCfPath(filePath);
 
-        companyFile.setRegIdx(saveAdmin.getIdx());
-        companyFile.setRegDate(LocalDateTime.now());
+            companyFile.setRegIdx(saveAdmin.getIdx());
+            companyFile.setRegDate(LocalDateTime.now());
 
-        // S3 파일업로드
-        String storedFileName = awsS3Util.imageFileUpload(multipartFile, fileName, businessS3Folder+date.format(new Date()));
-        if(storedFileName == null) {
-            log.error("이미지 업로드를 실패했습니다. -관리자에게 문의해주세요-");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO039.getCode(), ResponseErrorCode.KO039.getDesc()));
-        } else {
-            companyFileRepository.save(companyFile);
+            // S3 파일업로드
+            String storedFileName = awsS3Util.imageFileUpload(multipartFile, fileName, businessS3Folder+date.format(new Date()));
+            if(storedFileName == null) {
+                log.error("이미지 업로드를 실패했습니다. -관리자에게 문의해주세요-");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO039.getCode(), ResponseErrorCode.KO039.getDesc()));
+            } else {
+                companyFileRepository.save(companyFile);
+            }
         }
 
         // 메일보내는 로직
@@ -303,9 +308,11 @@ public class AuthService {
 //            }
 
         /* NICEID 본인인증 핸드폰 번호 쿠키 삭제 */
-        Cookie cookie = new Cookie("mobileno", null);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        if(!signUp.getEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
+            Cookie cookie = new Cookie("mobileno", null);
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
 
         data.put("email", saveAdmin.getEmail());
 

@@ -9,6 +9,8 @@ import com.app.kokonut.auth.jwt.config.GoogleOTP;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;
+import com.app.kokonut.company.Company;
+import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import org.apache.commons.codec.binary.Base32;
 import org.junit.jupiter.api.AfterEach;
@@ -21,6 +23,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.IOException;
@@ -46,9 +50,29 @@ class AuthServiceTest {
 
     private final String testemail = "testkokonut@kokonut.me";
 
+    private final String testphoneNumber = "01022223355";
+
     private final String email = "kokonut@kokonut.me";
 
     private final String password = "kokonut123!!";
+
+    private final String phoneNumber = "01022223344";
+
+    private final AuthRequestDto.SignUp signUp = AuthRequestDto.SignUp.builder()
+            .email(email)
+            .password(password)
+            .passwordConfirm(password)
+            .businessNumber("11112222")
+            .companyTel("01022223333")
+            .phoneNumber(phoneNumber)
+            .representative("테스트1")
+            .name("테스트명")
+            .businessType("Woody Test")
+            .companyName("회사명")
+            .companyAddressNumber("우편주소")
+            .companyAddress("주소")
+            .companyAddressDetail("상세주소")
+            .build();
 
     private String testAccessToken = "";
     private String testRefreshAccessToken = "";
@@ -66,25 +90,29 @@ class AuthServiceTest {
     private AdminRepository adminRepository;
 
     @Autowired
+    private CompanyRepository companyRepository;
+
+    @Autowired
     private GoogleOTP googleOTP;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    MockHttpServletRequest servletRequest;
+    MockHttpServletResponse servletResponse;
+
     @BeforeEach
     @SuppressWarnings("unchecked")
     void testDataInsert() throws NoSuchAlgorithmException, InvalidKeyException {
-        AuthRequestDto.SignUp signUp = new AuthRequestDto.SignUp();
-        signUp.setEmail(testemail);
-        signUp.setPassword(password);
-
-//        authService.signUp(signUp);
+        servletRequest = new MockHttpServletRequest();
+        servletResponse = new MockHttpServletResponse();
 
         GoogleOtpGenerateDto googleOtpGenerateDto = googleOTP.generate(testemail);
 
         Admin admin = Admin.builder()
-                .email(signUp.getEmail())
-                .password(passwordEncoder.encode(signUp.getPassword()))
+                .email(testemail)
+                .password(passwordEncoder.encode(password))
+                .phoneNumber(testphoneNumber)
                 .otpKey(googleOtpGenerateDto.getOtpKey())
                 .roleName(AuthorityRole.ROLE_MASTER)
                 .regdate(LocalDateTime.now())
@@ -92,9 +120,14 @@ class AuthServiceTest {
 
         adminRepository.save(admin);
 
+        Company company = new Company();
+        company.setBusinessNumber("123456");
+        company.setRegdate(LocalDateTime.now());
+        companyRepository.save(company);
+
         AuthRequestDto.Login login = new AuthRequestDto.Login();
-        login.setEmail(signUp.getEmail());
-        login.setPassword(signUp.getPassword());
+        login.setEmail(testemail);
+        login.setPassword(password);
 
         Base32 codec = new Base32();
         byte[] decodedKey = codec.decode(googleOtpGenerateDto.getOtpKey());
@@ -114,6 +147,7 @@ class AuthServiceTest {
     @AfterEach
     void testDataDelete() {
         adminRepository.deleteAll();
+        companyRepository.deleteAll();
     }
 
     @Test
@@ -121,12 +155,10 @@ class AuthServiceTest {
     public void signUpTest1() throws IOException {
 
         // given
-        AuthRequestDto.SignUp signUp = new AuthRequestDto.SignUp();
-        signUp.setEmail(email);
-        signUp.setPassword(password);
+        // signUp -> final 변수로 선언
 
         // when
-        ResponseEntity<Map<String,Object>> response =  authService.signUp(signUp, null, null);
+        ResponseEntity<Map<String,Object>> response =  authService.signUp(signUp, servletRequest, servletResponse);
 
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'Admin' 입니다."));
@@ -145,15 +177,64 @@ class AuthServiceTest {
     public void signUpTest2() throws IOException {
 
         // given
-        AuthRequestDto.SignUp signUp = new AuthRequestDto.SignUp();
         signUp.setEmail(testemail);
-        signUp.setPassword(password);
 
         // when
-        ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, null, null);
+        ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, servletRequest, servletResponse);
 
         // then
         assertEquals(ResponseErrorCode.KO005.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
+        assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
+        assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
+
+    }
+
+    @Test
+    @DisplayName("사업자 회원가입 실패 테스트 - 이미 회원가입된 핸드폰번호 일 경우")
+    public void signUpTest3() throws IOException {
+
+        // given
+        signUp.setPhoneNumber(testphoneNumber);
+
+        // when
+        ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, servletRequest, servletResponse);
+
+        // then
+        assertEquals(ResponseErrorCode.KO034.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
+        assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
+        assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
+
+    }
+
+    @Test
+    @DisplayName("사업자 회원가입 실패 테스트 - 비밀번호가 서로 일치하지 않을 일 경우")
+    public void signUpTest4() throws IOException {
+
+        // given
+        signUp.setPasswordConfirm("test");
+
+        // when
+        ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, servletRequest, servletResponse);
+
+        // then
+        assertEquals(ResponseErrorCode.KO037.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
+        assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
+        assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
+
+    }
+
+    @Test
+    @DisplayName("사업자 회원가입 실패 테스트 - 이미 가입된 사업자등록번호 일 경우")
+    public void signUpTest5() throws IOException {
+
+        // given
+        signUp.setBusinessNumber("123456");
+
+        // when
+        ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, servletRequest, servletResponse);
+
+        // then
+        assertEquals(ResponseErrorCode.KO035.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
         assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
         assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
 
@@ -219,10 +300,7 @@ class AuthServiceTest {
     public void authTokenTest3_1() throws IOException {
 
         // given
-        AuthRequestDto.SignUp signUp = new AuthRequestDto.SignUp();
-        signUp.setEmail(email);
-        signUp.setPassword(password);
-        authService.signUp(signUp, null, null);
+        authService.signUp(signUp, servletRequest, servletResponse);
 
         // given
         AuthRequestDto.Login login = new AuthRequestDto.Login();
@@ -243,10 +321,7 @@ class AuthServiceTest {
     public void authTokenTest3_2() throws IOException {
 
         // given
-        AuthRequestDto.SignUp signUp = new AuthRequestDto.SignUp();
-        signUp.setEmail(email);
-        signUp.setPassword(password);
-        authService.signUp(signUp, null, null);
+        authService.signUp(signUp, servletRequest, servletResponse);
 
         // given
         AuthRequestDto.Login login = new AuthRequestDto.Login();

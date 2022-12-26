@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,12 +53,11 @@ class ApiKeyServiceTest {
     // 테스트하기 사전데이터 넣기
     @BeforeEach
     void testDataInsert(){
-        Date systemDate = new Date(System.currentTimeMillis());
-        System.out.println("현재 날짜 : "+systemDate);
+        System.out.println("현재 날짜 : "+ LocalDateTime.now());
 
         Company company = new Company();
         company.setCompanyName("기업명");
-        company.setRegdate(systemDate);
+        company.setRegdate(LocalDateTime.now());
         Company saveCompany = companyRepository.save(company);
 //        System.out.println("저장된 saveCompany : "+saveCompany);
 
@@ -90,7 +90,7 @@ class ApiKeyServiceTest {
             apiKey.setState(state);
             apiKey.setUseAccumulate(useAccumulate);
             apiKey.setKey(key);
-            apiKey.setRegdate(systemDate);
+            apiKey.setRegdate(LocalDateTime.now());
             apiKey.setUseYn("Y");
 
             apiKeyList.add(apiKey);
