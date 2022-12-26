@@ -55,8 +55,8 @@ public class EmailService {
     /**
      * 이메일 목록 조회
      */
-    public ResponseEntity<Map<String,Object>> getEmail(Pageable pageable){
-        log.info("### getEmail 호출");
+    public ResponseEntity<Map<String,Object>> emailList(Pageable pageable){
+        log.info("### emailList 호출");
 
         AjaxResponse res = new AjaxResponse();
         Page<EmailListDto> emailListDtos = emailRepository.findByEmailPage(pageable);
@@ -69,8 +69,8 @@ public class EmailService {
      */
     @Transactional
     public ResponseEntity<Map<String,Object>> sendEmail(EmailDetailDto emailDetailDto){
-
         log.info("### sendEmail 호출");
+
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
@@ -97,7 +97,7 @@ public class EmailService {
             contents = sb.toString();
         }
 
-        // 이메일 전송을 위한 준비 - reciverType에 따른 receadminIdxList 구하기
+        // 이메일 전송을 위한 준비 - reciverType에 따른 adminIdxList 구하기
         String receiverType = emailDetailDto.getReceiverType();
         String adminIdxList = "";
 
