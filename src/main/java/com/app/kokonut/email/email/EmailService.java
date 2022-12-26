@@ -12,6 +12,7 @@ import com.app.kokonut.email.email.entity.Email;
 import com.app.kokonut.email.emailGroup.EmailGroupRepository;
 
 import com.app.kokonut.email.emailGroup.dto.EmailGroupAdminInfoDto;
+import com.app.kokonut.email.emailGroup.dto.EmailGroupListDto;
 import com.app.kokonut.joy.email.MailSender;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
@@ -29,6 +30,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -242,5 +246,26 @@ public class EmailService {
         }
     }
 
-
+//    /**
+//     * 이메일 발송 대상 목록 조회하기
+//     */
+//    public ResponseEntity<Map<String, Object>> emailTargetList(Pageable pageable) {
+//        log.info("### emailTargetList 호출");
+//
+//        AjaxResponse res = new AjaxResponse();
+//        Page<EmailGroupListDto> emailGroupListDto = emailGroupRepository.findEmailGroupPage(pageable);
+//        for (EmailGroupListDto emailGroup : emailGroupListDto){
+//            String adminIdxs = emailGroup.getAdminIdxList();
+//            String adminIdxList[] = adminIdxs.split(",");
+//            // 해당 그룹에 속하는 회원의 이메일 목록
+//            List<String> emailList = new ArrayList<>();
+//            for (String adminIdx : adminIdxList) {
+//                String adminEmail = adminRepository.findByEmailInfo(Integer.parseInt(adminIdx)).getEmail();
+//                emailList.add(adminEmail);
+//            }
+//            List<> returnList = emailGroupListDto.stream().collect(Collectors.toList());
+//
+//        }
+//    return ResponseEntity.ok(res.ResponseEntityPage(emailGroupListDto));
+//    }
 }

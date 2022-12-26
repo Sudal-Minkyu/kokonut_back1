@@ -42,6 +42,13 @@ public class EmailRestController {
     public ResponseEntity<Map<String,Object>> sendEmailDetail(@PathVariable("idx") Integer idx) {
         return emailService.sendEmailDetail(idx);
     }
+//
+//    @ApiOperation(value="이메일 발송 대상 조회", notes="메일 발송 대상 선택을 위한 조회, 개인 또는 그룹")
+//    @GetMapping("/emailTargetList") // -> 기존의 코코넛 호출 메서드명 : selectEmailTargetPopup
+//    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
+//    public ResponseEntity<Map<String,Object>> emailTargetList(Pageable pageable) {
+//        return emailService.emailTargetList(pageable);
+//    }
     // 기존 코코넛 컨트롤러
     // 이동 mappingValue : /emailManagement, view : /System/Email/EmailManagementUI
     // 로직 mappingValue : /getEmail
