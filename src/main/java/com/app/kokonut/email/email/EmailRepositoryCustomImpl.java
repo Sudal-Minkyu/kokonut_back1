@@ -2,8 +2,8 @@ package com.app.kokonut.email.email;
 
 import com.app.kokonut.email.email.dto.EmailDetailDto;
 import com.app.kokonut.email.email.dto.EmailListDto;
-import com.app.kokonut.email.email.dto.entity.QEmail;
 import com.app.kokonut.email.email.entity.Email;
+import com.app.kokonut.email.email.entity.QEmail;
 import com.app.kokonut.email.emailGroup.entity.QEmailGroup;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
@@ -64,7 +64,7 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
     @Override
     public EmailDetailDto findEmailByIdx(Integer idx) {
         /*
-         * SELECT `IDX`
+         * SELECT `SENDER_ADMIN_IDX'
          * 		, `RECEIVER_TYPE`,
          * 		, `RECEIVER_ADMIN_IDX_LIST`,
          * 		, `EMAIL_GROUP_IDX`,
@@ -79,7 +79,7 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         JPQLQuery<EmailDetailDto> query = from(email)
                 .where(email.idx.eq(idx))
                 .select(Projections.constructor(EmailDetailDto.class,
-                        email.idx,
+                        email.senderAdminIdx,
                         email.receiverType,
                         email.receiverAdminIdxList,
                         email.emailGroupIdx,
@@ -89,4 +89,84 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
 
         return query.fetchOne();
     }
+
+/*    @Override
+    public Integer saveEmail(EmailDetailDto emailDetailDto) {
+        *//*
+         * INSERT INTO `email` (
+         *             `SENDER_ADMIN_IDX'
+         * 		     , `RECEIVER_TYPE`,
+         * 		     , `RECEIVER_ADMIN_IDX_LIST`,
+         * 		     , `EMAIL_GROUP_IDX`,
+         * 		     , `TITLE`,
+         * 		     , `CONTENTS`
+         *      ) VALUES (
+         *         ...
+         *      )
+         *//*
+
+        EntityManager em = getEntityManager();
+        StringBuilder sb = new StringBuilder();
+
+        // 네이티브 쿼리문
+        sb.append("INSERT INTO email (\n");
+        sb.append("'SENDER_ADMIN_IDX', \n");
+        sb.append("'RECEIVER_TYPE', \n");
+        // 조건에 따른 분기 처리
+        if(emailDetailDto.getReceiverType().equals("I")
+                && emailDetailDto.getReceiverAdminIdxList() != null
+                && emailDetailDto.getReceiverAdminIdxList().equals("")){
+            sb.append("'RECEIVER_ADMIN_IDX_LIST', \n");
+        }
+        // 조건에 따른 분기 처리
+        if(emailDetailDto.getReceiverType().equals("G")
+                && emailDetailDto.getEmailGroupIdx() != null
+                && !emailDetailDto.getEmailGroupIdx().equals(0)){
+            sb.append("'EMAIL_GROUP_IDX', \n");
+        }
+        sb.append("'TITLE',\n");
+        sb.append("'CONTENTS'\n");
+        sb.append(") VALUES (\n");
+        sb.append(":senderAdminIdx, \n");
+        sb.append(":receiverType, \n");
+        // 조건에 따른 분기 처리
+        if(emailDetailDto.getReceiverType().equals("I")
+                && emailDetailDto.getReceiverAdminIdxList() != null
+                && emailDetailDto.getReceiverAdminIdxList().equals("")){
+            sb.append(":receiverAdminIdxList, \n");
+        }
+        // 조건에 따른 분기 처리
+        if(emailDetailDto.getReceiverType().equals("G")
+                && emailDetailDto.getEmailGroupIdx() != null
+                && !emailDetailDto.getEmailGroupIdx().equals(0)){
+            sb.append(":emailGroupIdx, \n");
+        }
+        sb.append(":title, \n");
+        sb.append(":contents, \n");
+        sb.append(")");
+
+
+        // 쿼리 생성
+        Query query = em.createNativeQuery(sb.toString());
+
+        // 쿼리 파라미터 세팅
+        query.setParameter("senderAdminIdx", emailDetailDto.getSenderAdminIdx());
+        query.setParameter("receiverType", emailDetailDto.getReceiverType());
+
+        if(emailDetailDto.getReceiverType().equals("I")
+                && emailDetailDto.getReceiverAdminIdxList() != null
+                && emailDetailDto.getReceiverAdminIdxList().equals("")){
+            query.setParameter("receiverAdminIdxList", emailDetailDto.getReceiverAdminIdxList());
+        }
+        if(emailDetailDto.getReceiverType().equals("G")
+                && emailDetailDto.getEmailGroupIdx() != null
+                && !emailDetailDto.getEmailGroupIdx().equals(0)){
+            query.setParameter("emailGroupIdx", emailDetailDto.getEmailGroupIdx());
+        }
+
+        query.setParameter("title", emailDetailDto.getTitle());
+        query.setParameter("contents", emailDetailDto.getContents());
+
+        return query.executeUpdate();
+    }*/
 }

@@ -25,7 +25,7 @@ public class EmailRestController {
 
     // TODO 메일 관리 페이지 이동 컨트롤러 /emailManagement, /System/Email/EmailManagementUI
     // TODO 메일 보내기 페이지 이동 컨트롤러 /sendEmail, /System/Email/SendEmailUI
-
+    // TODO reciver 회원 선택 팝업 페이지 이동 컨트롤러 /selectEmailTargetPopup, /System/Email/Popup/SelectEmailTargetPopup
     @ApiOperation(value="이메일 목록 조회", notes="발송 메일 목록 조회")
     @GetMapping(value = "/getEmail")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})

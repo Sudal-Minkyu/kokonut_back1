@@ -1,12 +1,19 @@
 package com.app.kokonut.joy.email;
 
 
+import com.app.kokonut.email.emailHistory.EmailHistoryService;
+import com.app.kokonut.email.emailHistory.dto.EmailHistoryDto;
+import com.app.kokonut.navercloud.NaverCloudPlatformService;
+import com.app.kokonut.navercloud.dto.NCloudPlatformMailRequest;
+import com.app.kokonut.navercloud.dto.RecipientForRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 @Slf4j
 @Service
@@ -18,12 +25,15 @@ public class MailSender {
 	@Value("${otp.hostUrl}")
     public String myHost;
 
-    //@Autowired
-	//NCloudPlatform naverCloudPlatform; // TODO 우디가 만들어준다고 함
-    
-    //@Autowired
-    //EmailHistoryService emailHistoryService;
-    
+	private final  NaverCloudPlatformService naverCloudPlatformService;
+	private final EmailHistoryService emailHistoryService;
+
+	@Autowired
+	public MailSender(NaverCloudPlatformService naverCloudPlatformService, EmailHistoryService emailHistoryService) {
+		this.naverCloudPlatformService = naverCloudPlatformService;
+		this.emailHistoryService = emailHistoryService;
+	}
+
 	public boolean sendMail(String toEmail, String toName, String title, String contents) {
 		return sendMail(emailHost, "kokonut", toEmail, toName, title, contents);
 	}
@@ -33,45 +43,54 @@ public class MailSender {
 	}
 
 	public boolean sendMail(String fromEmail, String fromName, String toEmail, String toName, String title, String contents) {
+		log.info("### MailSender.sendMail 시작");
+		// 수신자 정보 세팅
 		List<RecipientForRequest> recipients = new ArrayList<RecipientForRequest>();
 		RecipientForRequest recipient = new RecipientForRequest();
 		recipient.setAddress(toEmail);
+
 		if(toName != null && !toName.isEmpty()) {
 			recipient.setName(toName);
 		}
+
 		recipient.setType("R");
 		recipients.add(recipient);
 
-//		NCloudPlatformMailRequest req = new NCloudPlatformMailRequest();
-//		req.setSenderAddress(fromEmail);
-//		req.setSenderName(fromName);
-//		req.setTitle(title);
-//		req.setBody(contents);
-//		req.setRecipients(recipients);
-//		req.setUnsubscribeMessage("광고 수신 문구");
-//		req.setIndividual(true);
-//		req.setAdvertising(false);
-		
-//		boolean result = naverCloudPlatform.SendMail(req);
-//		if(result) {
-//			logger.info("naver mail send success.");
-			
-//			// 이메일 전송 이력 저장
-//			HashMap<String, Object> historyInsertMap = new HashMap<String, Object>();
-//			historyInsertMap.put("from", fromEmail);
-//			historyInsertMap.put("fromName", fromName);
-//			historyInsertMap.put("to", toEmail);
-//			historyInsertMap.put("toName", toName);
-//			historyInsertMap.put("title", title);
-//			historyInsertMap.put("contents", contents);
-			
-//			if(!emailHistoryService.insert(historyInsertMap)) {
-//				logger.error("failed to insert email history.: {}", historyInsertMap.toString());
-//			}
-//		} else {
-//			logger.error("naver mail send fail.");
-//		}
-		return true; // result;
+		// 발신자 정보 세팅
+		NCloudPlatformMailRequest req = new NCloudPlatformMailRequest();
+		req.setSenderAddress(fromEmail);
+		req.setSenderName(fromName);
+		req.setTitle(title);
+		req.setBody(contents);
+		req.setRecipients(recipients);
+		req.setUnsubscribeMessage("광고 수신 문구");
+		req.setIndividual(true);
+		req.setAdvertising(false);
+
+		log.info("### 네이버 클라우드 플랫폼 서비스 sendMail 시작");
+		boolean result = naverCloudPlatformService.sendMail(req);
+		if(result) {
+			log.info("### 네이버 클라우드 플랫폼 서비스 sendMail 성공");
+			log.info("### emailHistory 발송성공 메일 내역 저장 시작");
+
+			EmailHistoryDto emailHistoryDto = new EmailHistoryDto();
+			emailHistoryDto.setFrom(fromEmail);
+			emailHistoryDto.setFromName(fromName);
+			emailHistoryDto.setTo(toEmail);
+			emailHistoryDto.setToName(toName);
+			emailHistoryDto.setTitle(title);
+			emailHistoryDto.setContents(contents);
+			result = emailHistoryService.saveEmailHistory(emailHistoryDto);
+			if(result) {
+				log.info("### emailHistory 발송성공 메일 내역 저장 성공");
+			}else{
+				log.info("### emailHistory 발송성공 메일 내역 저장 시작 실패");
+			}
+
+		}else {
+			log.info("### 네이버 클라우드 플랫폼 서비스 sendMail 실패");
+		}
+		return result;
 	}
 
 //	코코넛 기존 소스
