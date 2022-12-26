@@ -39,6 +39,7 @@ public class MailSender {
 		return sendMail(emailHost, "kokonut", toEmail, toName, title, contents);
 	}
 
+	// 기존 코코넛 inquiryController에서 사용 중, 해당 기능 아직 리팩토링 전. 추후 변경 예정.
 	public boolean inquirySendMail(String toEmail, String toName, String title, String contents) {
 		return sendMail(toEmail, toName, emailHost, "kokonut", title, contents);
 	}
