@@ -71,8 +71,7 @@ public class MailSender {
 		boolean result = naverCloudPlatformService.sendMail(req);
 		if(result) {
 			log.info("### 네이버 클라우드 플랫폼 서비스 sendMail 성공");
-			log.info("### emailHistory 발송성공 메일 내역 저장 시작");
-
+			log.info("### 이메일 발송 내역 저장");
 			EmailHistoryDto emailHistoryDto = new EmailHistoryDto();
 			emailHistoryDto.setFrom(fromEmail);
 			emailHistoryDto.setFromName(fromName);
@@ -82,13 +81,13 @@ public class MailSender {
 			emailHistoryDto.setContents(contents);
 			result = emailHistoryService.saveEmailHistory(emailHistoryDto);
 			if(result) {
-				log.info("### emailHistory 발송성공 메일 내역 저장 성공");
+				log.info("### 이메일 발송 내역 저장 성공");
 			}else{
-				log.info("### emailHistory 발송성공 메일 내역 저장 시작 실패");
+				log.error("### 이메일 발송 내역 저장 실패");
 			}
 
 		}else {
-			log.info("### 네이버 클라우드 플랫폼 서비스 sendMail 실패");
+			log.error("### 네이버 클라우드 플랫폼 서비스 sendMail 실패");
 		}
 		return result;
 	}
