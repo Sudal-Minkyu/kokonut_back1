@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import javax.xml.bind.DatatypeConverter;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +68,7 @@ public class ApiKeyService {
         apiKey.setState(state);
         apiKey.setUseAccumulate(useAccumulate);
         apiKey.setKey(key);
-        apiKey.setRegdate(systemDate);
+        apiKey.setRegdate(LocalDateTime.now());
         apiKey.setUseYn("Y");
 
         if(type != null && type.equals(2)){
@@ -114,7 +115,7 @@ public class ApiKeyService {
 
         apiKey.setModifierIdx(modifierIdx);
         apiKey.setModifierName(modifierName);
-        apiKey.setModifyDate(systemDate);
+        apiKey.setModifyDate(LocalDateTime.now());
 
         apiKeyRepository.save(apiKey);
     }

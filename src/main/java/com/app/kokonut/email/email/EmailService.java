@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,14 +73,12 @@ public class EmailService {
      * 이메일 보내기
      */
     @Transactional
-    public ResponseEntity<Map<String,Object>> sendEmail(EmailDetailDto emailDetailDto){
+    public ResponseEntity<Map<String,Object>> sendEmail(String email, EmailDetailDto emailDetailDto){
         log.info("### sendEmail 호출");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-        // 접속한 사용자 이메일
-        String email = SecurityUtil.getCurrentUserEmail();
         // 접속한 사용자 인덱스
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
@@ -130,10 +129,11 @@ public class EmailService {
                 boolean mailSenderResult = mailSender.sendMail(reciverEmail, reciverName, title, contents);
                 if(mailSenderResult){
                     // mailSender 성공
-                    log.error("### 해당 idx에 해당하는 회원 이메일을 찾을 수 없습니다. reciver admin idx : "+ tok);
+                    log.error("### 메일전송 성공했습니다.. reciver admin idx : "+ tok);
                 }else{
                     // mailSender 실패
                     log.error("### 해당 메일 전송에 실패했습니다. 관리자에게 문의하세요. reciver admin idx : "+ tok+", reciverEmail : "+ reciverEmail);
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO041.getCode(), ResponseErrorCode.KO041.getCode()));
                 }
             }else{
                 // TODO 일부가 탈퇴하고 일부는 이메일 정보가 있을때 처리에 대한 고민
@@ -152,18 +152,15 @@ public class EmailService {
         reciveEmail.setContents(emailDetailDto.getContents());
 
         // 조건에 따른 분기 처리
-        if(emailDetailDto.getReceiverType().equals("I")
-                && emailDetailDto.getReceiverAdminIdxList() != null
-                && emailDetailDto.getReceiverAdminIdxList().equals("")){
+        if(emailDetailDto.getReceiverType().equals("I") && emailDetailDto.getReceiverAdminIdxList() != null) {
             reciveEmail.setReceiverAdminIdxList(emailDetailDto.getReceiverAdminIdxList());
         }
+
         // 조건에 따른 분기 처리
-        if(emailDetailDto.getReceiverType().equals("G")
-                && emailDetailDto.getEmailGroupIdx() != null
-                && !emailDetailDto.getEmailGroupIdx().equals(0)){
+        if(emailDetailDto.getReceiverType().equals("G") && emailDetailDto.getEmailGroupIdx() != null) {
             reciveEmail.setEmailGroupIdx(emailDetailDto.getEmailGroupIdx());
         }
-
+        reciveEmail.setRegdate(LocalDateTime.now());
 
         // save or update
         Email sendEmail = emailRepository.save(reciveEmail);

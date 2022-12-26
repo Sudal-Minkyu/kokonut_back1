@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -20,8 +21,8 @@ import java.util.List;
 @Service
 public class MailSender {
 
-	@Value("contact@kokonut.me") // TODO ncloud.email.host=contact@kokonut.me 공통 properties 로 추가
-	public String emailHost;
+	@Value("${kokonut.mail.host}") // TODO ncloud.email.host=contact@kokonut.me 공통 properties 로 추가
+	public String emailHost; // 보내는 사람의 이메일
 
 	@Value("${otp.hostUrl}")
     public String myHost;
@@ -82,7 +83,7 @@ public class MailSender {
 			emailHistory.setToName(toName);
 			emailHistory.setTitle(title);
 			emailHistory.setContents(contents);
-
+			emailHistory.setRegdate(new Date());
 			emailHistoryRepository.save(emailHistory);
 			log.info("### 이메일 발송 내역 저장 성공");
 		}else {

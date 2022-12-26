@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @EqualsAndHashCode(of = "idx")
@@ -109,7 +109,7 @@ public class Company implements Serializable {
      */
     @Column(name = "PAY_DATE")
     @ApiModelProperty("결제등록일")
-    private Date payDate;
+    private LocalDateTime payDate;
 
     /**
      * 자동결제(1:자동결제안함, 2:첫결제신청, 3: 해제, 4:첫결제 이후 재결제, 6:강제해제)
@@ -130,21 +130,21 @@ public class Company implements Serializable {
      */
     @ApiModelProperty("자동결제 해지일시")
     @Column(name = "NOT_AUTO_PAY_DATE")
-    private Date notAutoPayDate;
+    private LocalDateTime notAutoPayDate;
 
     /**
      * 회원권 시작일
      */
     @ApiModelProperty("회원권 시작일")
     @Column(name = "VALID_START")
-    private Date validStart;
+    private LocalDateTime validStart;
 
     /**
      * 회원권 종료일
      */
     @Column(name = "VALID_END")
     @ApiModelProperty("회원권 종료일")
-    private Date validEnd;
+    private LocalDateTime validEnd;
 
     /**
      * 결제요청UID
@@ -172,7 +172,7 @@ public class Company implements Serializable {
      */
     @ApiModelProperty("등록일")
     @Column(name = "REGDATE", nullable = false)
-    private Date regdate;
+    private LocalDateTime regdate;
 
     /**
      * 수정자
@@ -193,7 +193,7 @@ public class Company implements Serializable {
      */
     @ApiModelProperty("수정일자")
     @Column(name = "MODIFY_DATE")
-    private Date modifyDate;
+    private LocalDateTime modifyDate;
 
     /**
      * 암호화한 키

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -66,7 +67,7 @@ public class ApiKey implements Serializable {
      */
     @ApiModelProperty("등록일시")
     @Column(name = "REGDATE", nullable = false)
-    private Date regdate;
+    private LocalDateTime regdate;
 
     /**
      * 타입(1:일반,2:테스트)
@@ -143,7 +144,7 @@ public class ApiKey implements Serializable {
      */
     @ApiModelProperty("수정일자")
     @Column(name = "MODIFY_DATE")
-    private Date modifyDate;
+    private LocalDateTime modifyDate;
 
 
 }

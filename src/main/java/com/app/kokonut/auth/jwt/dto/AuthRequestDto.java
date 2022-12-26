@@ -1,5 +1,6 @@
 package com.app.kokonut.auth.jwt.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,7 +48,6 @@ public class AuthRequestDto {
         @NotBlank(message = "사업자등록번호는 필수 입력값 입니다.")
         private String businessNumber;
 
-        @NotBlank(message = "사업자등록증은 필수입니다.")
         private MultipartFile multipartFile; // 사업자등록등 -> 기존 Kokonut에선 file이라는 변수로 받아옴.
 
         @NotBlank(message = "업태/업종은 필수 입력값 입니다.")
@@ -64,6 +64,25 @@ public class AuthRequestDto {
 
         private String companyAddressDetail;
 
+        @Builder
+        public SignUp(String email, String companyName, String representative, String name, String phoneNumber, String password,
+                      String passwordConfirm, String businessNumber, MultipartFile multipartFile, String businessType, String companyTel,
+                      String companyAddressNumber, String companyAddress, String companyAddressDetail) {
+            this.email = email;
+            this.companyName = companyName;
+            this.representative = representative;
+            this.name = name;
+            this.phoneNumber = phoneNumber;
+            this.password = password;
+            this.passwordConfirm = passwordConfirm;
+            this.businessNumber = businessNumber;
+            this.multipartFile = multipartFile;
+            this.businessType = businessType;
+            this.companyTel = companyTel;
+            this.companyAddressNumber = companyAddressNumber;
+            this.companyAddress = companyAddress;
+            this.companyAddressDetail = companyAddressDetail;
+        }
     }
 
     @Getter

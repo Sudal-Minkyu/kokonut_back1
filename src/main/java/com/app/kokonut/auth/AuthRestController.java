@@ -44,13 +44,8 @@ public class AuthRestController {
             "2. 유니크 값 중복체크를 한다." +
             "3. 기업정보를 저장한다." +
             "4. 사업자등록증, KMS인증키 등을 발급받는다.")
-    public ResponseEntity<Map<String,Object>> signUp(
-            @Parameter(
-                    description = "multipart/form-data 형식의 이미지 리스트를 input으로 받습니다. 이때 key 값은 multipartFile 입니다.",
-                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-            )
-            @ModelAttribute AuthRequestDto.SignUp signUp,
-                                                     HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<Map<String,Object>> signUp(@Parameter(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+            @Validated AuthRequestDto.SignUp signUp, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("사업자 회원가입 API 호출");
         return authService.signUp(signUp, request, response);
     }
