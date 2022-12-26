@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class MailSender {
 		return sendMail(toEmail, toName, emailHost, "kokonut", title, contents);
 	}
 
+	@Transactional
 	public boolean sendMail(String fromEmail, String fromName, String toEmail, String toName, String title, String contents) {
 		log.info("### MailSender.sendMail 시작");
 		// 수신자 정보 세팅

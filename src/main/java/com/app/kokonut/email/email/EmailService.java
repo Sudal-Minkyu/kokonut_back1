@@ -142,7 +142,7 @@ public class EmailService {
         Email reciveEmail = new Email();
 
         emailDetailDto.setContents(originContents);
-        reciveEmail.setEmailGroupIdx(emailDetailDto.getSenderAdminIdx());
+        reciveEmail.setSenderAdminIdx(emailDetailDto.getSenderAdminIdx());
         reciveEmail.setReceiverType(emailDetailDto.getReceiverType());
         reciveEmail.setTitle(emailDetailDto.getTitle());
         reciveEmail.setContents(emailDetailDto.getContents());
