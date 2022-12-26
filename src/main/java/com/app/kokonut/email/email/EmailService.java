@@ -110,7 +110,7 @@ public class EmailService {
             adminIdxList = emailGroupAdminInfoDto.getAdminIdxList();
         }else{
             log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getCode()));
         }
 
         // mailSender 실질적인 이메일 전송 부분
@@ -123,15 +123,22 @@ public class EmailService {
 
                 log.info("### mailSender을 통해 건별 이메일 전송 시작");
                 log.info("### reciver idx : "+tok + ", senderEmail : " +email+", reciverEmail : "+ reciverEmail);
-                mailSender.sendMail(reciverEmail, reciverName, title, contents);
+                boolean mailSenderResult = mailSender.sendMail(reciverEmail, reciverName, title, contents);
+                if(mailSenderResult){
+                    // mailSender 성공
+                    log.error("### 해당 idx에 해당하는 회원 이메일을 찾을 수 없습니다. reciver admin idx : "+ tok);
+                }else{
+                    // mailSender 실패
+                    log.error("### 해당 메일 전송에 실패했습니다. 관리자에게 문의하세요. reciver admin idx : "+ tok+", reciverEmail : "+ reciverEmail);
+                }
             }else{
                 // TODO 일부가 탈퇴하고 일부는 이메일 정보가 있을때 처리에 대한 고민
-                log.error("### 전송 받을 이메일 정보를 찾을 수 없습니다. reciver idx : "+ tok);
+                log.error("### 해당 idx에 해당하는 회원 이메일을 찾을 수 없습니다. reciver admin idx : "+ tok);
             }
         }
 
         // 전송 이력 저장 처리 - originContents로 DB 저장
-        log.info("### 이메일 전송 이력 저장 처리");
+        log.info("### 이메일 이력 저장 처리");
         Email reciveEmail = new Email();
 
         emailDetailDto.setContents(originContents);
@@ -153,19 +160,21 @@ public class EmailService {
             reciveEmail.setEmailGroupIdx(emailDetailDto.getEmailGroupIdx());
         }
 
+
         // save or update
         Email sendEmail = emailRepository.save(reciveEmail);
-        log.info("### 이메일 전송 이력 저장 처리 완료");
 
-        // TODO 정상적으로 저장된 경우를 확인하는 방법 알아보기. save 처리가 되던 update처리가 되던 결과적으로 해당 인덱스는 존재함.
-        // TODO 쿼리 자체가 실패한게 아니라면 아래의 방법으로 어려울까..?
+        log.info("### 이메일 이력 저장 처리 완료");
+
+        // TODO 정상적으로 저장된 경우를 확인하는 방법 알아보기. save 처리가 되던 update 처리가 되던 결과적으로 해당 인덱스는 존재함.
+        // sendEamil 객체에서 reciverType에 따라 어드민 인덱스를 조회, 해당 인덱스로 어드민 이메일을 확인한 다음 해당 이메일로 받는 내역을 조회한 다음. 해당 건수가 존재하면 받은걸로 친다고하기엔.
+        // 하지만 이런 방법으로 할 경우 이전
         if(emailRepository.existsById(sendEmail.getIdx())){
-            log.info("### 이메일 전송에 성공했습니다. : "+sendEmail.getIdx());
-            // TODO jsp화면에서 리턴 받는거 있는지 확인.
+            log.info("### 이메일 이력 저장에 성공했습니다. : "+sendEmail.getIdx());
             return ResponseEntity.ok(res.success(data));
         }else{
-            log.info("### 이메일 전송에 실패했습니다. : "+sendEmail.getIdx());
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            log.error("### 이메일 이력 저장에 실패했습니다. : "+sendEmail.getIdx());
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO041.getCode(), ResponseErrorCode.KO041.getCode()));
         }
 
     }
@@ -201,7 +210,7 @@ public class EmailService {
                     adminIdxList = emailGroupAdminInfoDto.getAdminIdxList();
                 }else{
                     log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getCode()));
                 }
 
                 // 받는 사람 이메일 문자열 조회

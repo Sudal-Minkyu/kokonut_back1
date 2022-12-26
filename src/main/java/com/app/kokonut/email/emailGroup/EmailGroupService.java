@@ -29,13 +29,13 @@ public class EmailGroupService {
      * @param idx - email_group IDX
      * 기존 코코넛 서비스 SelectEmailGroupByIdx
      */
-    public ResponseEntity<Map<String,Object>> findEmailGroupAdminIdxByIdx(Integer idx){
+    public ResponseEntity<Map<String,Object>> emailGroupDetail(Integer idx){
         log.info("### findEmailGroupAdminIdxByIdx 호출");
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         if(idx == null){
-            log.error("해당 메일 그룹을 찾을 수 없습니다. : "+idx);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            log.error("### 해당 메일 그룹을 찾을 수 없습니다. : "+idx);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO042.getCode(), ResponseErrorCode.KO042.getCode()));
         }else{
             EmailGroupAdminInfoDto emailGroupAdminInfoDto = emailGroupRepository.findEmailGroupAdminInfoByIdx(idx);
             data.put("adminIdxList", emailGroupAdminInfoDto.getAdminIdxList());
@@ -48,8 +48,8 @@ public class EmailGroupService {
      * 메일 그룹 목록 조회
      * 기존 코코넛 서비스 SelectEmailGroupList
      */
-    public ResponseEntity<Map<String,Object>> findEmailGroupPage(Pageable pageable){
-        log.info("### findEmailGroupList 호출");
+    public ResponseEntity<Map<String,Object>> emailGroupList(Pageable pageable){
+        log.info("### emailGroupList 호출");
 
         AjaxResponse res = new AjaxResponse();
         Page<EmailGroupListDto> emailGroupListDto = emailGroupRepository.findEmailGroupPage(pageable);
@@ -90,7 +90,7 @@ public class EmailGroupService {
 
         if(idx == null){
             log.error("### 삭제할 이메일 그룹의 idx가 존재하지 않습니다. : "+idx);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO042.getCode(), ResponseErrorCode.KO042.getCode()));
         } else {
             log.info("### 이메일 그룹 삭제");
             EmailGroup deleteEmailGroup =  new EmailGroup();
@@ -123,4 +123,5 @@ public class EmailGroupService {
         return ResponseEntity.ok(res.success(data));
 
     }
+
 }
