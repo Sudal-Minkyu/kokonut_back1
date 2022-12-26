@@ -22,15 +22,11 @@ public class EmailRestController {
     public EmailRestController(EmailService emailService) {
         this.emailService = emailService;
     }
-
-    // TODO 메일 관리 페이지 이동 컨트롤러 /emailManagement, /System/Email/EmailManagementUI
-    // TODO 메일 보내기 페이지 이동 컨트롤러 /sendEmail, /System/Email/SendEmailUI
-    // TODO reciver 회원 선택 팝업 페이지 이동 컨트롤러 /selectEmailTargetPopup, /System/Email/Popup/SelectEmailTargetPopup
     @ApiOperation(value="이메일 목록 조회", notes="발송 메일 목록 조회")
-    @GetMapping(value = "/getEmail")
+    @GetMapping(value = "/emailList") // -> 기존의 코코넛 호출 메서드명 : getEmail
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
-    public ResponseEntity<Map<String,Object>> getEmail(@RequestBody Pageable pageable) {
-         return emailService.getEmail(pageable);
+    public ResponseEntity<Map<String,Object>> emailList(@RequestBody Pageable pageable) {
+         return emailService.emailList(pageable);
     }
 
     @ApiOperation(value="이메일 보내기", notes="이메일 전송")
@@ -41,12 +37,18 @@ public class EmailRestController {
     }
 
     @ApiOperation(value="이메일 상세보기", notes="메일 상세 내용 조회")
-    @GetMapping("/sendEmail/detail/{idx}") // 메일 상세보기
+    @GetMapping("/sendEmail/detail/{idx}") // -> 기존의 코코넛 호출 메서드명 : getEmail
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> sendEmailDetail(@PathVariable("idx") Integer idx) {
         return emailService.sendEmailDetail(idx);
     }
-
-
-
+    // 기존 코코넛 컨트롤러
+    // 이동 mappingValue : /emailManagement, view : /System/Email/EmailManagementUI
+    // 로직 mappingValue : /getEmail
+    // 이동 mappingValue : /sendEmail, view : /System/Email/SendEmailUI
+    // 이동 mappingValue : /sendEmail
+    // 이동, 로직 mappingValue : /sendEmail/detail/{idx}, view : /System/Email/SendEmailUI
+    // 이동, 로직 mappingValue : /selectEmailTargetPopup, view : /System/Email/Popup/SelectEmailTargetPopup
+    // 이동 mappingValue : /adminMemberEmailManagement, view : /System/Email/EmailManagementUI
+    // 이동 mappingValue : /adminMemberPrivacyNotice, view : /System/Email/AdminPrivacyNoticeUI
 }
