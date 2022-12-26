@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -20,13 +21,17 @@ public class EmailListDto implements Serializable {
     // email 테이블
     private Integer idx;
 
+    private String receiverType;
+
+    private String receiverAdminIdxList;
+
     private Integer emailGroupIdx;
 
     private String title;
 
     private String contents;
 
-    private Date regdate;
+    private LocalDateTime regdate;
 
     // email_group 테이블
     private String name;

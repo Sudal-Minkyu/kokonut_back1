@@ -4,6 +4,9 @@ import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
 
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * @author Woody
  * Date : 2022-12-22
@@ -11,5 +14,43 @@ import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
  * Remark : 기존의 코코넛 프로젝트의 Company Sql 쿼리호출
  */
 public interface CompanyRepositoryCustom {
+
+//    public void InsertCompany(HashMap<String, Object> paramMap);
+//
+//    public void UpdateCompany(HashMap<String, Object> paramMap);
+//
+//    public void UpdateAdminIdxOfCompany(HashMap<String, Object> paramMap);
+//
+//    public int SelectCompanyCountByBusinessNumber(HashMap<String, Object> paramMap);
+//
+//    public HashMap<String, Object> SelectCompanyByIdx(int idx);
+//
+//    public List<HashMap<String, Object>> SelectCompanyList(HashMap<String, Object> paramMap);
+//
+//    public void UpdateEncryptOfCompany(HashMap<String, Object> paramMap);
+//
+//    public int SelectCompanyListCount(HashMap<String, Object> paramMap);
+//
+//    public void UpdatePaymentInfo(HashMap<String, Object> paramMap);
+//
+//    public String SelectCustomUid(HashMap<String, Object> paramMap);
+//
+//    public void UpdatePaymentCancel(HashMap<String, Object> paramMap);
+//
+//    public void UpdatePaymentAutoInfo(HashMap<String, Object> paramMap);
+//
+//    public HashMap<String, Object> SelectCompanyByName(String companyName);
+//
+//    public void UpdateDormantAccumulate(HashMap<String, Object> paramMap);
+//
+//    public void DeleteByCompanyIdx(int companyIdx);
+//
+//    public void UpdateStopService(HashMap<String, Object> paramMap);
+//
+//    public void UpdateValidEndThreeDays(int idx);
+//
+//    public List<HashMap<String, Object>> SelectCompanySendMessageList(HashMap<String, Object> paramMap);
+//
+//    public int SelectCompanySendMessageListCount(HashMap<String, Object> paramMap);
 
 }

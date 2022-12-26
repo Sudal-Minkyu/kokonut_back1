@@ -31,6 +31,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -186,7 +187,7 @@ public class AuthService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String currDate = formatter.format(new Date());
         String encKey = currDate + businessNumber;
-        if(!signUp.getEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
+//        if(!signUp.getEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
             AwsKmsResultDto awsKmsResultDto = awsKmsUtil.encrypt(encKey);
             if (awsKmsResultDto.getResult().equals("success")) {
                 encryptText = awsKmsResultDto.getEncryptText();
@@ -196,7 +197,7 @@ public class AuthService {
                 log.error("암호화 키 생성 실패");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO036.getCode(), ResponseErrorCode.KO036.getDesc()));
             }
-        }
+//        }
 
         company.setCompanyName(signUp.getCompanyName());
         company.setRepresentative(signUp.getRepresentative());
