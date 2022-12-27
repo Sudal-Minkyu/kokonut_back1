@@ -1,9 +1,11 @@
 package com.app.kokonut.apiKey;
 
-import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
+import com.app.kokonutuser.common.CommonRepositoryCustom;
+import com.app.kokonutuser.common.dto.CommonFieldDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,14 +32,13 @@ public class ApiKeyService {
 
     private final ApiKeyRepository apiKeyRepository;
 
+    private final CommonRepositoryCustom commonRepositoryCustom;
+
     @Autowired
-    public ApiKeyService(ApiKeyRepository apiKeyRepository){
+    public ApiKeyService(ApiKeyRepository apiKeyRepository, CommonRepositoryCustom commonRepositoryCustom){
         this.apiKeyRepository = apiKeyRepository;
+        this.commonRepositoryCustom = commonRepositoryCustom;
     }
-
-//	private DBLogger dblogger = new DBLogger(ApiKeyService.class);
-
-
 
     /**
      * Api Key Insert
@@ -149,6 +150,9 @@ public class ApiKeyService {
 //		return dao.SelectApiKeyList(paramMap);
 //	}
     public List<ApiKeyListAndDetailDto> findByApiKeyList(ApiKeyMapperDto apiKeyMapperDto) {
+        List<CommonFieldDto> commonFieldDtos = commonRepositoryCustom.selectCommonUserTable();
+        log.info("commonFieldDtos : "+commonFieldDtos);
+
         log.info("findByApiKeyList 호출");
         return apiKeyRepository.findByApiKeyList(apiKeyMapperDto);
     }

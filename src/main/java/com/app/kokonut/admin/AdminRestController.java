@@ -1,5 +1,6 @@
 package com.app.kokonut.admin;
 
+import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.woody.common.AjaxResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -39,7 +40,10 @@ public class AdminRestController {
     @ApiOperation(value = "JWT토큰 테스트" , notes = "JWT 토큰이 유효한지 테스트하는 메서드")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> authorityCheck() {
-        return adminService.authorityCheck();
+        // SecurityContext에 담겨 있는 authentication userEamil 정보
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+
+        return adminService.authorityCheck(userEmail);
     }
 
     // 사업자 호출

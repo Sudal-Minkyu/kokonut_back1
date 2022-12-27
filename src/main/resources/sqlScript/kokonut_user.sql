@@ -55,7 +55,7 @@ CREATE TABLE `3488101536` (
   `ID` varchar(128) NOT NULL COMMENT '아이디(기본적용,수정불가)',
   `PASSWORD` varchar(256) NOT NULL COMMENT '비밀번호(암호화,기본적용,수정불가)',
   `PERSONAL_INFO_AGREE` varchar(1) DEFAULT 'N' COMMENT '개인정보 동의(기본적용,수정불가)',
-  `STATE` bigint(20) NOT NULL DEFAULT 1 COMMENT '상태(기본적용,수정불가) - [0:탈퇴, 1:사용, 2:휴면]',
+  `STATE` int(11) NOT NULL DEFAULT 1 COMMENT '상태(기본적용,수정불가) - [0:탈퇴, 1:사용, 2:휴면]',
   `EMAIL` varchar(280) NOT NULL COMMENT '이메일(기본적용,수정불가)',
   `LAST_LOGIN_DATE` timestamp NULL DEFAULT NULL COMMENT '최종 로그인 일시(기본적용,수정불가)',
   `MODIFY_DATE` timestamp NULL DEFAULT NULL COMMENT '수정 일시(기본적용,수정불가)',

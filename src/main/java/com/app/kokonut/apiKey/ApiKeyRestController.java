@@ -3,6 +3,8 @@ package com.app.kokonut.apiKey;
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dtos.ApiKeySetDto;
 import com.app.kokonut.woody.common.AjaxResponse;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,7 @@ public class ApiKeyRestController {
     @PostMapping("list")
     @ApiOperation(value = "ApiKey 리스트 호출 API", notes = "" +
             "시스템 관리자 > API 관리 > API key 리스트")
-//    public String ApiKeyList(@RequestBody HashMap<String,Object> paramMap) {
+//    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> ApiKeyList(@RequestBody ApiKeySetDto apiKeySetDto){
 
         log.info("API key 리스트 호출");

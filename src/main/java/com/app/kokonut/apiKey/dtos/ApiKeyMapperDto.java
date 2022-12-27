@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -22,7 +23,7 @@ public class ApiKeyMapperDto {
     private String beInUse;
     private String searchText;
     private Integer type; // 타입(1:일반,2:테스트)
-    private Date stimeStart;
-    private Date stimeEnd;
+    private LocalDateTime stimeStart;
+    private LocalDateTime stimeEnd;
 
 }

@@ -34,11 +34,8 @@ public class AdminService {
     }
 
     // 유저의 권한 및 jwt 토큰확인
-    public ResponseEntity<Map<String,Object>> authorityCheck() {
+    public ResponseEntity<Map<String,Object>> authorityCheck(String userEmail) {
         log.info("authorityCheck 호출");
-
-        // SecurityContext에 담겨 있는 authentication userEamil 정보
-        String userEmail = SecurityUtil.getCurrentUserEmail();
 
         if(userEmail.equals("anonymousUser")){
             log.error("사용하실 수 없는 토큰정보 입니다. 다시 로그인 해주세요.");
