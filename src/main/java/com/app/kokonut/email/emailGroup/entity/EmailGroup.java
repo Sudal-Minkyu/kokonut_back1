@@ -5,7 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -49,7 +49,7 @@ public class EmailGroup implements Serializable {
      */
     @ApiModelProperty("등록일")
     @Column(name = "REGDATE", nullable = false)
-    private Date regdate;
+    private LocalDateTime regdate;
 
     /**
      * 사용여부
@@ -57,5 +57,13 @@ public class EmailGroup implements Serializable {
     @ApiModelProperty("사용여부")
     @Column(name = "USE_YN", nullable = false)
     private String useYn;
+
+    /**
+     * 관리자 이메일 목록 (문자열, 구분자: ',')
+     * 영속성 제외, db 컬럼 아님.
+     * 엔티티 매핑 무시
+     */
+    @Transient
+    private String adminEmailList;
 
 }
