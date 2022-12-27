@@ -52,8 +52,6 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
                 .leftJoin(emailGroup).on(emailGroup.idx.eq(email.emailGroupIdx))
                 .select(Projections.constructor(EmailListDto.class,
                         email.idx,
-                        email.receiverType,
-                        email.receiverAdminIdxList,
                         email.emailGroupIdx,
                         email.title,
                         email.contents,
