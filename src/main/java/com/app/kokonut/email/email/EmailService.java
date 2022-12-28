@@ -13,7 +13,6 @@ import com.app.kokonut.email.emailGroup.EmailGroupRepository;
 import com.app.kokonut.email.emailGroup.dto.EmailGroupAdminInfoDto;
 import com.app.kokonut.email.emailGroup.dto.EmailGroupListDto;
 import com.app.kokonut.email.emailGroup.entity.EmailGroup;
-import com.app.kokonut.email.emailHistory.EmailHistoryRepository;
 import com.app.kokonut.joy.email.MailSender;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
@@ -104,9 +103,9 @@ public class EmailService {
         String receiverType = emailDetailDto.getReceiverType();
         String adminIdxList = "";
 
-        if(receiverType.equals("I")){
+        if("I".equals(receiverType)){
             adminIdxList = emailDetailDto.getReceiverAdminIdxList().toString();
-        }else if(receiverType.equals("G")){
+        }else if(("G").equals(receiverType)){
             Integer emailGroupIdx = emailDetailDto.getEmailGroupIdx();
             EmailGroupAdminInfoDto emailGroupAdminInfoDto;
             emailGroupAdminInfoDto = emailGroupRepository.findEmailGroupAdminInfoByIdx(emailGroupIdx);
@@ -152,12 +151,12 @@ public class EmailService {
         reciveEmail.setContents(emailDetailDto.getContents());
 
         // 조건에 따른 분기 처리
-        if(emailDetailDto.getReceiverType().equals("I") && emailDetailDto.getReceiverAdminIdxList() != null) {
+        if("I".equals(emailDetailDto.getReceiverType()) && emailDetailDto.getReceiverAdminIdxList() != null) {
             reciveEmail.setReceiverAdminIdxList(emailDetailDto.getReceiverAdminIdxList());
         }
 
         // 조건에 따른 분기 처리
-        if(emailDetailDto.getReceiverType().equals("G") && emailDetailDto.getEmailGroupIdx() != null) {
+        if("G".equals(emailDetailDto.getReceiverType()) && emailDetailDto.getEmailGroupIdx() != null) {
             reciveEmail.setEmailGroupIdx(emailDetailDto.getEmailGroupIdx());
         }
         reciveEmail.setRegdate(LocalDateTime.now());
@@ -200,10 +199,10 @@ public class EmailService {
             if(emailDetailDto != null){
                 String receiverType = emailDetailDto.getReceiverType();
                 String adminIdxList = "";
-                if(receiverType.equals("I")){
+                if("I".equals(receiverType)){
                     // 개별 선택으로 발송한 경우
                     adminIdxList = emailDetailDto.getReceiverAdminIdxList().toString();
-                }else if(receiverType.equals("G")){
+                }else if("G".equals(receiverType)){
                     // 그룹 선택으로 메일을 발송한 경우
                     Integer emailGroupIdx = emailDetailDto.getEmailGroupIdx();
                     // 메일 그룹 조회 쿼리 동작
