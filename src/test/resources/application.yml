@@ -1,9 +1,25 @@
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    username: sa
-    url: jdbc:h2:mem:testdb;MODE=MYSQL
-    password: ''
+    kokonut:
+      driver-class-name: org.h2.Driver
+      username: sa
+      url: jdbc:h2:mem:testdb;MODE=MYSQL
+      password: ''
+    kokonut-user:
+      driver-class-name: org.h2.Driver
+      username: sa
+      url: jdbc:h2:mem:testdb;MODE=MYSQL
+      password: ''
+    kokonut-dormant:
+      driver-class-name: org.h2.Driver
+      username: sa
+      url: jdbc:h2:mem:testdb;MODE=MYSQL
+      password: ''
+    kokonut-remove:
+      driver-class-name: org.h2.Driver
+      username: sa
+      url: jdbc:h2:mem:testdb;MODE=MYSQL
+      password: ''
   h2:
     console:
       enabled: 'true'
@@ -45,6 +61,7 @@ kokonut:
       secret: ${KOKONUT_AWS_S3_SECRET}
       # S3 버킷 폴더
       businessS3Folder: /test/
+      qnaS3Folder: /test/
 
     # AWS KMS
     kms:
