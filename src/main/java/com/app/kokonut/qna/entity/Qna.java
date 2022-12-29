@@ -5,7 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -70,7 +70,7 @@ public class Qna implements Serializable {
      */
     @ApiModelProperty("질문등록일시")
     @Column(name = "REGDATE", nullable = false)
-    private Date regdate;
+    private LocalDateTime regdate;
 
     /**
      * 상태(0:답변대기,1:답변완료)
@@ -98,6 +98,6 @@ public class Qna implements Serializable {
      */
     @ApiModelProperty("답변일")
     @Column(name = "ANSWER_DATE")
-    private Date answerDate;
+    private LocalDateTime answerDate;
 
 }
