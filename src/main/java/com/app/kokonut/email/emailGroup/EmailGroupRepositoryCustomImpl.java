@@ -1,7 +1,5 @@
 package com.app.kokonut.email.emailGroup;
 
-import com.app.kokonut.email.email.dto.EmailListDto;
-import com.app.kokonut.email.email.entity.QEmail;
 import com.app.kokonut.email.emailGroup.dto.EmailGroupAdminInfoDto;
 import com.app.kokonut.email.emailGroup.dto.EmailGroupListDto;
 import com.app.kokonut.email.emailGroup.entity.EmailGroup;
@@ -82,4 +80,22 @@ public class EmailGroupRepositoryCustomImpl extends QuerydslRepositorySupport im
         final List<EmailGroupListDto> emailGroupListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(emailGroupListDtos, pageable, query.fetchCount());
     }
+
+    // EmailGroupList 조회 페이징 처리를 위한 pageable를 포함하지 않는다.
+    @Override
+    public List<EmailGroupListDto> findEmailGroupDetails() {
+        QEmailGroup emailGroup  = QEmailGroup.emailGroup;
+        JPQLQuery<EmailGroupListDto> query = from(emailGroup)
+                .where(emailGroup.useYn.eq("Y"))
+                .select(Projections.constructor(EmailGroupListDto.class,
+                        emailGroup.idx,
+                        emailGroup.adminIdxList,
+                        emailGroup.name,
+                        emailGroup.desc
+                ));
+        query.orderBy(emailGroup.regdate.desc());
+
+        return query.fetch();
+    }
+
 }

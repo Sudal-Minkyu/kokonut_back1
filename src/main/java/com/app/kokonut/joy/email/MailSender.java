@@ -7,11 +7,16 @@ import com.app.kokonut.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.navercloud.dto.NCloudPlatformMailRequest;
 import com.app.kokonut.navercloud.dto.RecipientForRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -90,6 +95,18 @@ public class MailSender {
 			log.error("### 네이버 클라우드 플랫폼 서비스 sendMail 실패");
 		}
 		return result;
+	}
+
+	// TODO 메일 유형에 따라 발송시 HTML 화면으로 만들어줌.
+	public String getHTML2(String viewURL) throws IOException {
+		log.info("viewURL : "+viewURL);
+		String mailViewURL = "http://"+myHost + viewURL;
+		log.info("mailViewURL : "+mailViewURL);
+
+		URL url = new URL(mailViewURL);
+		URLConnection conn = url.openConnection();
+		InputStream is = conn.getInputStream();
+		return IOUtils.toString(is);
 	}
 
 }
