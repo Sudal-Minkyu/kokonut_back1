@@ -5,12 +5,15 @@ import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
+import com.app.kokonut.admin.entity.enums.AuthorityRole;
 import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Woody
@@ -72,6 +75,19 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
                         admin.name
                 ));
         return query.fetchOne();
+    }
+
+    // 시스템관리자 목록 (이름, 이메일) 조회
+    @Override
+    public List<AdminEmailInfoDto> findSystemAdminEmailInfo() {
+        QAdmin admin = QAdmin.admin;
+        JPQLQuery<AdminEmailInfoDto> query = from(admin)
+                .where(admin.state.eq(1), admin.roleName.eq(AuthorityRole.ROLE_SYSTEM))
+                .select(Projections.constructor(AdminEmailInfoDto.class,
+                        admin.email,
+                        admin.name
+                ));
+        return query.fetch();
     }
 
 }
