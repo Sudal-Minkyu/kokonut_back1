@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -22,7 +23,7 @@ public class ApiKeyListAndDetailDto {
     private Integer companyIdx;
     private Integer adminIdx;
     private String key;
-    private Date regdate;
+    private LocalDateTime regdate;
 
     private Integer type;
     private String note;
@@ -37,7 +38,7 @@ public class ApiKeyListAndDetailDto {
     private String reason;
     private Integer modifierIdx;
     private String modifierName;
-    private Date modifyDate;
+    private LocalDateTime modifyDate;
 
     private String name;
     private String companyName;

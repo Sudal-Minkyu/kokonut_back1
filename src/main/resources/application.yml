@@ -4,10 +4,26 @@ server:
 # JPA Setting
 spring:
   datasource: #DB
-    driver-class-name: org.mariadb.jdbc.Driver
-    username: ${DOCKER_DB_USERNAME}
-    url: jdbc:mariadb://${DOCKER_DB_HOST}:${DOCKER_DB_PORT}/${KOKONUT_DB_DBNAME}
-    password: ${DOCKER_DB_PASSWORD}
+    kokonut:
+      url: jdbc:mariadb://${DOCKER_DB_HOST}:${DOCKER_DB_PORT}/${KOKONUT_DB_DBNAME}
+      driver-class-name: org.mariadb.jdbc.Driver
+      username: ${DOCKER_DB_USERNAME}
+      password: ${DOCKER_DB_PASSWORD}
+    kokonut-user:
+      url: jdbc:mariadb://${DOCKER_DB_HOST}:${DOCKER_DB_PORT}/${KOKONUT_DB_USER}
+      driver-class-name: org.mariadb.jdbc.Driver
+      username: ${DOCKER_DB_USERNAME}
+      password: ${DOCKER_DB_PASSWORD}
+    kokonut-dormant:
+      url: jdbc:mariadb://${DOCKER_DB_HOST}:${DOCKER_DB_PORT}/${KOKONUT_DB_DORMANT}
+      driver-class-name: org.mariadb.jdbc.Driver
+      username: ${DOCKER_DB_USERNAME}
+      password: ${DOCKER_DB_PASSWORD}
+    kokonut-remove:
+      url: jdbc:mariadb://${DOCKER_DB_HOST}:${DOCKER_DB_PORT}/${KOKONUT_DB_REMOVE}
+      driver-class-name: org.mariadb.jdbc.Driver
+      username: ${DOCKER_DB_USERNAME}
+      password: ${DOCKER_DB_PASSWORD}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -18,6 +34,7 @@ spring:
     redis:
       repositories:
         enabled: false
+
 
 # JWT_SECRET_STRING : echo 'spring-boot-security-jwt-tutorial-jiwoon-spring-boot-security-jwt-tutorial' | base64
 jwt:
@@ -38,7 +55,8 @@ kokonut:
       secret: ${KOKONUT_AWS_S3_SECRET}
       # S3 버킷 폴더
       businessS3Folder: ${KOKONUT_AWS_S3_BUSINESSS3FOLDER}
-
+      qnaS3Folder: ${KOKONUT_AWS_S3_QNAS3FOLDER}
+      
     # AWS KMS
     kms:
       secret: ${KOKONUT_AWS_KMS_SECRET}
