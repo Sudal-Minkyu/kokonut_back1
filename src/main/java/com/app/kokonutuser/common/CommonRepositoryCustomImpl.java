@@ -34,7 +34,7 @@ public class CommonRepositoryCustomImpl extends QuerydslRepositorySupport implem
         StringBuilder sb = new StringBuilder();
 
         // 네이티브 쿼리문
-        sb.append("SHOW FULL COLUMNS FROM kokonut_user.common; \n");
+        sb.append("SHOW FULL COLUMNS FROM common;");
 
         // 쿼리조건 선언부
         Query query = em.createNativeQuery(sb.toString());

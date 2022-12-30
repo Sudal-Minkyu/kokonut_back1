@@ -32,12 +32,9 @@ public class ApiKeyService {
 
     private final ApiKeyRepository apiKeyRepository;
 
-    private final CommonRepositoryCustom commonRepositoryCustom;
-
     @Autowired
-    public ApiKeyService(ApiKeyRepository apiKeyRepository, CommonRepositoryCustom commonRepositoryCustom){
+    public ApiKeyService(ApiKeyRepository apiKeyRepository){
         this.apiKeyRepository = apiKeyRepository;
-        this.commonRepositoryCustom = commonRepositoryCustom;
     }
 
     /**
@@ -150,9 +147,6 @@ public class ApiKeyService {
 //		return dao.SelectApiKeyList(paramMap);
 //	}
     public List<ApiKeyListAndDetailDto> findByApiKeyList(ApiKeyMapperDto apiKeyMapperDto) {
-        List<CommonFieldDto> commonFieldDtos = commonRepositoryCustom.selectCommonUserTable();
-        log.info("commonFieldDtos : "+commonFieldDtos);
-
         log.info("findByApiKeyList 호출");
         return apiKeyRepository.findByApiKeyList(apiKeyMapperDto);
     }

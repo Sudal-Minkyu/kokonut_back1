@@ -243,7 +243,7 @@ class AuthServiceTest {
     @Test
     @DisplayName("로그인, OTP JWT토큰 발급 성공 테스트 - 발급받은 accessToken 확인")
     @SuppressWarnings("unchecked")
-    public void authTokenTest1() throws NoSuchAlgorithmException, InvalidKeyException {
+    public String authTokenTest1() throws NoSuchAlgorithmException, InvalidKeyException {
 
         // given
         Admin admin = adminRepository.findByEmail(testemail)
@@ -273,6 +273,8 @@ class AuthServiceTest {
         assertTrue(result);
         assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
         assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
+
+        return tokenInfo.getAccessToken();
     }
 
     @Test

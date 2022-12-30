@@ -19,6 +19,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@EqualsAndHashCode(of = "idx")
 @Table(name="admin")
 public class Admin implements UserDetails {
 

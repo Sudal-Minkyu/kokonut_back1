@@ -1,7 +1,5 @@
 package com.app.kokonutuser.common.dto;
 
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +11,6 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class CommonFieldDto {
 
     private String tableField;
@@ -33,5 +30,17 @@ public class CommonFieldDto {
     private String tablePrivileges;
 
     private String tableComment;
+
+    public CommonFieldDto(String tableField, String tableType, String tableCollation, String tableNull, String tableKey, String tableDefault, String tableExtra, String tablePrivileges, String tableComment) {
+        this.tableField = tableField;
+        this.tableType = tableType;
+        this.tableCollation = tableCollation;
+        this.tableNull = tableNull;
+        this.tableKey = tableKey;
+        this.tableDefault = tableDefault;
+        this.tableExtra = tableExtra;
+        this.tablePrivileges = tablePrivileges;
+        this.tableComment = tableComment;
+    }
 
 }

@@ -1,12 +1,11 @@
 package com.app.kokonut.bizMessage.alimtalkTemplate;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.*;
 import com.app.kokonut.bizMessage.kakaoChannel.KakaoChannelRepository;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelByChannelIdListDto;
-import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
 import com.app.kokonut.navercloud.NaverCloudPlatformService;
+import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,13 +47,11 @@ public class AlimtalkTemplateService {
     }
 
     @Transactional
-    public ResponseEntity<Map<String, Object>> alimTalkTemplateList(AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, Pageable pageable) throws Exception {
+    public ResponseEntity<Map<String, Object>> alimTalkTemplateList(String email, AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, Pageable pageable) throws Exception {
 
         log.info("alimTalkTemplateList 조회");
 
         AjaxResponse res = new AjaxResponse();
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         // 해당 이메일을 통해 회사 IDX 조회
         int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
@@ -106,7 +103,7 @@ public class AlimtalkTemplateService {
     }
 
     @Transactional
-    public ResponseEntity<Map<String,Object>> saveAlimTalkTemplate(AlimtalkTemplateSaveAndUpdateDto alimtalkTemplateSaveAndUpdateDto) {
+    public ResponseEntity<Map<String,Object>> saveAlimTalkTemplate(String email, AlimtalkTemplateSaveAndUpdateDto alimtalkTemplateSaveAndUpdateDto) {
 
         log.info("saveAlimTalkTemplate 호출");
 
@@ -119,8 +116,6 @@ public class AlimtalkTemplateService {
 
         if(result.getResultCode().equals(200)) {
             log.info("템플릿 저장성공 후 DB 인서트");
-
-            String email = SecurityUtil.getCurrentUserEmail();
 
             // 해당 이메일을 통해 회사 IDX 조회
             int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
@@ -155,7 +150,7 @@ public class AlimtalkTemplateService {
     }
 
     @Transactional
-    public ResponseEntity<Map<String, Object>> modifyAlimTalkTemplate(AlimtalkTemplateSaveAndUpdateDto alimtalkTemplateSaveAndUpdateDto) {
+    public ResponseEntity<Map<String, Object>> modifyAlimTalkTemplate(String email, AlimtalkTemplateSaveAndUpdateDto alimtalkTemplateSaveAndUpdateDto) {
         log.info("modifyAlimTalkTemplate 호출");
 
         log.info("alimtalkTemplateSaveAndUpdateDto : "+ alimtalkTemplateSaveAndUpdateDto);
@@ -168,7 +163,6 @@ public class AlimtalkTemplateService {
         if(result.getResultCode().equals(200)) {
             log.info("템플릿 수정 성공 후 DB 수정시작");
 
-            String email = SecurityUtil.getCurrentUserEmail();
 
             // 해당 이메일을 통해 회사 IDX 조회
             int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
@@ -206,15 +200,13 @@ public class AlimtalkTemplateService {
     }
 
     @Transactional
-    public ResponseEntity<Map<String, Object>> deleteAlimTalkTemplates(AlimtalkTemplateDeleteDto alimtalkTemplateDeleteDto) {
+    public ResponseEntity<Map<String, Object>> deleteAlimTalkTemplates(String email, AlimtalkTemplateDeleteDto alimtalkTemplateDeleteDto) {
         log.info("deleteAlimTalkTemplates 호출");
 
         log.info("alimtalkTemplateDeleteDto : "+ alimtalkTemplateDeleteDto);
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         // 해당 이메일을 통해 회사 IDX 조회
         int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();

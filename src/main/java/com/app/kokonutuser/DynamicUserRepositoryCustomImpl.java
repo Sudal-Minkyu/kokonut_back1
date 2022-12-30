@@ -1,4 +1,4 @@
-package com.app.kokonutuser.repository;
+package com.app.kokonutuser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -60,12 +60,10 @@ public class AlimtalkMessageService {
     // 알림톡 메세지 리스트 조회
     @Transactional
     @SuppressWarnings("unchecked")
-    public ResponseEntity<Map<String, Object>> alimTalkMessageList(AlimtalkMessageSearchDto alimtalkMessageSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String, Object>> alimTalkMessageList(String email, AlimtalkMessageSearchDto alimtalkMessageSearchDto, Pageable pageable) {
         log.info("alimTalkMessageList 조회");
 
         AjaxResponse res = new AjaxResponse();
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         // 해당 이메일을 통해 회사 IDX 조회
         int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
@@ -129,13 +127,12 @@ public class AlimtalkMessageService {
     }
 
     // 알림톡 메세지 발송요청의 템플릿 리스트 조회 -> 선택한 채널ID의 템플릿 코드리스트를 반환한다.
-    public ResponseEntity<Map<String, Object>> alimTalkMessageTemplateList(String channelId, String templateCode) throws Exception {
+    public ResponseEntity<Map<String, Object>> alimTalkMessageTemplateList(String email, String channelId, String templateCode) throws Exception {
         log.info("alimTalkMessageTemplateList 조회");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-        String email = SecurityUtil.getCurrentUserEmail();
         int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
 
         log.info("channelId : "+channelId);
@@ -190,13 +187,11 @@ public class AlimtalkMessageService {
 
     // 알림톡 메시지 발송 요청
     @Transactional
-    public ResponseEntity<Map<String, Object>> postMessages(AlimtalkMessageSendDto alimtalkMessageSendDto) {
+    public ResponseEntity<Map<String, Object>> postMessages(String email, AlimtalkMessageSendDto alimtalkMessageSendDto) {
         log.info("postMessages 조회");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         // 수신자가 아무도 없을 경우
         if(alimtalkMessageSendDto.getAlimtalkMessageSendSubDtoList().size() == 0) {
@@ -263,15 +258,13 @@ public class AlimtalkMessageService {
 
     // 알림톡 메시지 결과 상세정보
     @SuppressWarnings("unchecked")
-    public ResponseEntity<Map<String, Object>> alimTalkMessageResultDetail(String requestId) {
+    public ResponseEntity<Map<String, Object>> alimTalkMessageResultDetail(String email, String requestId) {
         log.info("alimTalkMessageResultDetail 조회");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
         log.info("결과 호출 requestId : "+requestId);
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         AlimtalkMessageResultDetailDto alimtalkMessage = alimtalkMessageRepository.findByAlimtalkMessageResultDetail(requestId);
         if(alimtalkMessage == null){
@@ -348,14 +341,13 @@ public class AlimtalkMessageService {
     }
 
     // 알림톡 메시지 보낼 유저 리스트조회 -> 유저정보 조회해오는거 완료되면 시작할 것 - 2022/12/20 to.woody
-    public ResponseEntity<Map<String, Object>> alimTalkMessageRecipientList(String searchText, Pageable pageable) {
+    public ResponseEntity<Map<String, Object>> alimTalkMessageRecipientList(String email, String searchText, Pageable pageable) {
         log.info("alimTalkMessageRecipientList 조회");
 
         AjaxResponse res = new AjaxResponse();
 
         log.info("조회내용 searchText : "+searchText);
 
-        String email = SecurityUtil.getCurrentUserEmail();
         String businessNumber = adminRepository.findByCompanyInfo(email).getBusinessNumber();
 
         log.info("호출 할 유저리스트의 기업번호 : "+businessNumber);

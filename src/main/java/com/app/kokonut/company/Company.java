@@ -1,18 +1,19 @@
 package com.app.kokonut.company;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 @Entity
 @EqualsAndHashCode(of = "idx")
-@Data
-@NoArgsConstructor
 @Table(name="company")
 public class Company implements Serializable {
 

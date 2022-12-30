@@ -33,7 +33,9 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         // JWT 필터 및 권한 제외 url
         return (web) -> web.ignoring().antMatchers("/favicon.ico","/swagger*/**","/v2/api-docs","/webjars/**",
-                "/api/Auth/**", "/api/NiceId/**", "/api/ApiKey/**");
+                "/api/Auth/**", "/api/NiceId/**"
+                // 임시로 해둔 API들
+                , "/api/ApiKey/**", "/api/Qna/**");
     }
 
     @Bean
@@ -53,8 +55,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/", "/swagger-ui/index.html/**", "/api/AlimtalkTemplate/**").permitAll()
                 .antMatchers("/api/Admin/masterTest", "/api/Admin/**", "/api/AlimtalkMessage/**"
-                        , "/api/AlimtalkTemplate/**", "/api/KakaoChannel/**").hasAnyAuthority("ROLE_MASTER", "ROLE_SYSTEM")
-                .antMatchers("/api/Admin/adminTest").hasAnyAuthority("ROLE_ADMIN","ROLE_SYSTEM")
+                        , "/api/AlimtalkTemplate/**", "/api/KakaoChannel/**", "/api/DynamicUser/**").hasAnyAuthority("MASTER", "SYSTEM")
+                .antMatchers("/api/Admin/adminTest").hasAnyAuthority("ADMIN","SYSTEM")
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
