@@ -2,9 +2,13 @@ package com.app.kokonut.qna;
 
 import com.app.kokonut.qna.dto.QnaListDto;
 import com.app.kokonut.qna.dto.QnaDetailDto;
+import com.app.kokonut.qna.dto.QnaSchedulerDto;
 import com.app.kokonut.qna.dto.QnaSearchDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author joy
@@ -17,4 +21,5 @@ public interface QnaRepositoryCustom {
     // 기존 코코넛 서비스 메서드 SelectQnaList
     Page<QnaListDto> findQnaPage(QnaSearchDto qnaSearchDto, Pageable pageable);
     QnaDetailDto findQnaByIdx(Integer idx);
+    List<QnaSchedulerDto> findNoneAnswerQnaByRegDate(LocalDateTime compareDate);
 }

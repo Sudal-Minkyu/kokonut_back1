@@ -68,7 +68,7 @@ public class QnaDto implements Serializable {
      * 질문등록일시
      */
     @ApiModelProperty("질문등록일시")
-    private Date regdate;
+    private LocalDateTime regdate;
 
 
     /**
