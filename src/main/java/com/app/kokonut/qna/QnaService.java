@@ -12,6 +12,7 @@ import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import com.app.kokonut.woody.common.component.AwsS3Util;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -36,11 +37,11 @@ public class QnaService {
     private final QnaFileRepository qnaFileRepository;
 
     // 파일 등록
-    // @Value("${kokonut.aws.s3.qnaS3Folder}")
-    private String qnaS3Folder = "/qna-images/";
+    @Value("${kokonut.aws.s3.qnaS3Folder}")
+    private String qnaS3Folder;
 
-    //@Value("${kokonut.aws.s3.url}")
-    private String AWSURL = "https://kokonut-dev-server.s3.ap-northeast-2.amazonaws.com";
+    @Value("${kokonut.aws.s3.url}")
+    private String AWSURL;
     private final AwsS3Util awsS3Util;
 
     private final QnaRepository qnaRepository;

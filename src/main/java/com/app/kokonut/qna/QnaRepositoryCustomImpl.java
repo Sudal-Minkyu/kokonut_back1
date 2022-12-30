@@ -3,6 +3,7 @@ package com.app.kokonut.qna;
 import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.qna.dto.QnaDetailDto;
 import com.app.kokonut.qna.dto.QnaListDto;
+import com.app.kokonut.qna.dto.QnaSchedulerDto;
 import com.app.kokonut.qna.dto.QnaSearchDto;
 import com.app.kokonut.qna.entity.QQna;
 import com.app.kokonut.qna.entity.Qna;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -149,6 +151,21 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         query.leftJoin(adminQ).on(qna.adminIdx.eq(adminQ.idx)); // 질문자 이름을 구하기 위한 조인
         query.where(qna.idx.eq(idx));
         return query.fetchOne();
+    }
+
+    @Override
+    public List<QnaSchedulerDto> findNoneAnswerQnaByRegDate(LocalDateTime compareDate) {
+        QQna qna  = QQna.qna;
+        JPQLQuery<QnaSchedulerDto> query = from(qna)
+                .select(Projections.constructor(QnaSchedulerDto.class,
+                        qna.idx,
+                        qna.title,
+                        qna.regdate));
+        query.where(qna.regdate.loe(compareDate),
+                qna.answer.isNull(),
+                qna.answerDate.isNull());
+
+        return query.fetch();
     }
 
 //    @Override
