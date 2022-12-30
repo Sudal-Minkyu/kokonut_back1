@@ -5,11 +5,10 @@ import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.enums.AuthorityRole;
 import com.app.kokonut.email.email.dto.EmailDetailDto;
 import com.app.kokonut.email.email.entity.Email;
+import com.app.kokonut.email.emailGroup.EmailGroupRepository;
+import com.app.kokonut.email.emailGroup.EmailGroupService;
 import com.app.kokonut.woody.common.ResponseErrorCode;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -35,10 +32,16 @@ class EmailServiceTest {
     private EmailService emailService;
 
     @Autowired
+    private EmailGroupService emailGroupService;
+
+    @Autowired
     private EmailRepository emailRepository;
 
     @Autowired
     private AdminRepository adminRepository;
+
+    @Autowired
+    private EmailGroupRepository emailGroupRepository;
 
     @BeforeEach
     void testDataInsert() {
@@ -51,7 +54,27 @@ class EmailServiceTest {
                 .regdate(LocalDateTime.now())
                 .build();
 
+
+
+        // 테스트용 admin2
+        Admin admin2 = Admin.builder()
+                .email("joy@kokonut.me")
+                .password("test")
+                .roleName(AuthorityRole.ROLE_MASTER)
+                .regdate(LocalDateTime.now())
+                .build();
+
+        // 테스트용 admin3
+        Admin admin3 = Admin.builder()
+                .email("test@kokonut.me")
+                .password("test")
+                .roleName(AuthorityRole.ROLE_MASTER)
+                .regdate(LocalDateTime.now())
+                .build();
         saveAdminIdx = adminRepository.save(admin).getIdx();
+        Integer saveAdminIdx2 = adminRepository.save(admin2).getIdx();
+        Integer saveAdminIdx3 = adminRepository.save(admin3).getIdx();
+
 
         Email saveEmail = new Email();
         saveEmail.setTitle("테스트제목");
@@ -60,8 +83,28 @@ class EmailServiceTest {
         saveEmail.setReceiverType("I");
         saveEmail.setReceiverAdminIdxList("1");
         saveEmail.setRegdate(LocalDateTime.now());
-
         saveEmailIdx = emailRepository.save(saveEmail).getIdx();
+//
+//        // 테스트용 그룹 1
+//        EmailGroup saveEmailGroup1 = new EmailGroup();
+//        saveEmailGroup1.setIdx(1);
+//        saveEmailGroup1.setName("테스트용 그룹 1");
+//        saveEmailGroup1.setDesc("이메일 그룹 테스트를 위한 이메일 그룹");
+//        saveEmailGroup1.setUseYn("Y");
+//        saveEmailGroup1.setRegdate(LocalDateTime.now());
+//        saveEmailGroup1.setAdminIdxList("1,2");
+//
+//        // 테스트용 그룹 2
+//        EmailGroup saveEmailGroup2 = new EmailGroup();
+//        saveEmailGroup2.setIdx(2);
+//        saveEmailGroup2.setName("테스트용 그룹 2");
+//        saveEmailGroup2.setDesc("이메일 그룹 테스트를 위한 이메일 그룹");
+//        saveEmailGroup2.setUseYn("Y");
+//        saveEmailGroup2.setRegdate(LocalDateTime.now());
+//        saveEmailGroup2.setAdminIdxList("2,3");
+//
+//        Integer saveEmailGroupIdx1 = emailGroupRepository.save(saveEmailGroup1).getIdx();
+//        Integer saveEmailGroupIdx2 = emailGroupRepository.save(saveEmailGroup2).getIdx();
 
     }
 
@@ -69,6 +112,7 @@ class EmailServiceTest {
     void testDataDelete() {
         adminRepository.deleteAll();
         emailRepository.deleteAll();
+        emailGroupRepository.deleteAll();
     }
 
     @Test
@@ -95,8 +139,8 @@ class EmailServiceTest {
         ResponseEntity<Map<String,Object>> response =  emailService.emailList(pageable);
 
         // then
-        assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
-        assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
+        Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
 
     }
 
@@ -116,8 +160,8 @@ class EmailServiceTest {
         ResponseEntity<Map<String,Object>> response =  emailService.sendEmail(email, emailDetailDto);
 
         // then
-        assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
-        assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
+        Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
 
     }
 
@@ -137,9 +181,9 @@ class EmailServiceTest {
         ResponseEntity<Map<String,Object>> response =  emailService.sendEmail(email, emailDetailDto);
 
         // then
-        assertEquals(ResponseErrorCode.KO040.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
-        assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
-        assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
+        Assertions.assertEquals(ResponseErrorCode.KO040.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
+        Assertions.assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
 
     }
 
@@ -158,11 +202,11 @@ class EmailServiceTest {
         String contents = String.valueOf(sendData.get("contents"));
 
         // then
-        assertEquals(email, emailList);
-        assertEquals("테스트제목", title);
-        assertEquals("테스트내용", contents);
-        assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
-        assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
+        Assertions.assertEquals(email, emailList);
+        Assertions.assertEquals("테스트제목", title);
+        Assertions.assertEquals("테스트내용", contents);
+        Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
 
     }
 
@@ -174,9 +218,9 @@ class EmailServiceTest {
         ResponseEntity<Map<String,Object>> response =  emailService.sendEmailDetail(null);
 
         // then
-        assertEquals(ResponseErrorCode.KO031.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
-        assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
-        assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
+        Assertions.assertEquals(ResponseErrorCode.KO031.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
+        Assertions.assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
 
     }
 
@@ -188,12 +232,26 @@ class EmailServiceTest {
         ResponseEntity<Map<String,Object>> response =  emailService.sendEmailDetail(2);
 
         // then
-        assertEquals(ResponseErrorCode.KO031.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
-        assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
-        assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
+        Assertions.assertEquals(ResponseErrorCode.KO031.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
+        Assertions.assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
 
     }
 
+    @Test
+    @DisplayName("그룹목록 조회 성공테스트")
+    public void emailGroupListTest1() {
 
+        // given
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        // when
+        ResponseEntity<Map<String,Object>> response = emailService.emailTargetGroupList(pageable);
+
+        // then
+        Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
+
+    }
 
 }

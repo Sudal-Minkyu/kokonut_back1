@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @ApiModel("")
@@ -45,7 +45,7 @@ public class EmailGroupDto implements Serializable {
      * 등록일
      */
     @ApiModelProperty("등록일")
-    private Date regdate;
+    private LocalDateTime regdate;
 
 
     /**
