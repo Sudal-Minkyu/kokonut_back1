@@ -1,5 +1,7 @@
 package com.app.kokonut.bizMessage.alimtalkTemplate;
 
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
+import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateDeleteDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSaveAndUpdateDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSearchDto;
@@ -35,28 +37,32 @@ public class AlimtalkTemplateRestController {
     @PostMapping(value = "/alimTalkTemplateList")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkTemplateList(@RequestBody AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, Pageable pageable) throws Exception {
-        return alimtalkTemplateService.alimTalkTemplateList(alimtalkTemplateSearchDto, pageable);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return alimtalkTemplateService.alimTalkTemplateList(jwtFilterDto.getEmail(), alimtalkTemplateSearchDto, pageable);
     }
 
     // 알림톡 템플릿 등록
     @PostMapping(value = "/saveAlimTalkTemplate")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> saveAlimTalkTemplate(@RequestBody AlimtalkTemplateSaveAndUpdateDto alimtalkTemplateSaveAndUpdateDto) {
-        return alimtalkTemplateService.saveAlimTalkTemplate(alimtalkTemplateSaveAndUpdateDto);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return alimtalkTemplateService.saveAlimTalkTemplate(jwtFilterDto.getEmail(), alimtalkTemplateSaveAndUpdateDto);
     }
 
     // 알림톡 템플릿 수정
     @PostMapping(value = "/modifyAlimTalkTemplate")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> modifyAlimTalkTemplate(@RequestBody AlimtalkTemplateSaveAndUpdateDto alimtalkTemplateSaveAndUpdateDto) {
-        return alimtalkTemplateService.modifyAlimTalkTemplate(alimtalkTemplateSaveAndUpdateDto);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return alimtalkTemplateService.modifyAlimTalkTemplate(jwtFilterDto.getEmail(), alimtalkTemplateSaveAndUpdateDto);
     }
 
     // 알림톡 템플릿 삭제
     @PostMapping(value = "/deleteAlimTalkTemplates")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> deleteAlimTalkTemplates(@RequestBody AlimtalkTemplateDeleteDto alimtalkTemplateDeleteDto) {
-        return alimtalkTemplateService.deleteAlimTalkTemplates(alimtalkTemplateDeleteDto);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return alimtalkTemplateService.deleteAlimTalkTemplates(jwtFilterDto.getEmail(), alimtalkTemplateDeleteDto);
     }
 
 }

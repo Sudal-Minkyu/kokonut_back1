@@ -1,5 +1,7 @@
 package com.app.kokonut.bizMessage.alimtalkMessage;
 
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
+import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSearchDto;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSendDto;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,7 +36,8 @@ public class AlimtalkMessageRestController {
     @PostMapping(value = "/alimTalkMessageList")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageList(@RequestBody AlimtalkMessageSearchDto alimtalkTemplateSearchDto, Pageable pageable) {
-        return alimtalkMessageService.alimTalkMessageList(alimtalkTemplateSearchDto, pageable);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return alimtalkMessageService.alimTalkMessageList(jwtFilterDto.getEmail(), alimtalkTemplateSearchDto, pageable);
     }
 
     // 알림톡 메세지 발송요청의 템플릿 리스트 조회 -> 선택한 채널ID의 템플릿 코드리스트를 반환한다.
@@ -42,28 +45,32 @@ public class AlimtalkMessageRestController {
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageTemplateList(@RequestParam(name="channelId") String channelId,
                                                                           @RequestParam(name="templateCode", defaultValue = "") String templateCode) throws Exception {
-        return alimtalkMessageService.alimTalkMessageTemplateList(channelId, templateCode);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return alimtalkMessageService.alimTalkMessageTemplateList(jwtFilterDto.getEmail(), channelId, templateCode);
     }
 
     // 알림톡 메시지 발송 요청
     @GetMapping(value = "/postMessages")
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> postMessages(@RequestBody AlimtalkMessageSendDto alimtalkMessageSendDto) {
-        return alimtalkMessageService.postMessages(alimtalkMessageSendDto);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return alimtalkMessageService.postMessages(jwtFilterDto.getEmail(), alimtalkMessageSendDto);
     }
 
     // 알림톡 메시지 결과 상세정보
     @GetMapping(value = "/alimTalkMessageResultDetail") // -> 기존의 코코넛 호출 메서드명 : alimTalkTemplateStatusDescPopup
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageResultDetail(@RequestParam(name="requestId") String requestId) {
-        return alimtalkMessageService.alimTalkMessageResultDetail(requestId);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return alimtalkMessageService.alimTalkMessageResultDetail(jwtFilterDto.getEmail(), requestId);
     }
 
     // 알림톡 메시지 보낼 유저 리스트조회
     @GetMapping(value = "/alimTalkMessageRecipientList") // -> 기존의 코코넛 호출 메서드명 : /recipient/list
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> alimTalkMessageRecipientList(@RequestParam(name="searchText", defaultValue = "") String searchText, Pageable pageable) {
-        return alimtalkMessageService.alimTalkMessageRecipientList(searchText, pageable);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return alimtalkMessageService.alimTalkMessageRecipientList(jwtFilterDto.getEmail(), searchText, pageable);
     }
 
     // 알림톡 메시지 예약발송 취소

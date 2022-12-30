@@ -1,5 +1,6 @@
 package com.app.kokonut.email.email;
 
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.email.email.dto.EmailDetailDto;
 import io.swagger.annotations.ApiImplicitParam;
@@ -36,9 +37,9 @@ public class EmailRestController {
     public ResponseEntity<Map<String,Object>> sendEmail(@RequestBody EmailDetailDto emailDetailDto) {
 
         // 접속한 사용자 이메일
-        String email = SecurityUtil.getCurrentUserEmail();
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
 
-        return emailService.sendEmail(email, emailDetailDto);
+        return emailService.sendEmail(jwtFilterDto.getEmail(), emailDetailDto);
     }
 
     @ApiOperation(value="이메일 상세보기", notes="메일 상세 내용 조회")

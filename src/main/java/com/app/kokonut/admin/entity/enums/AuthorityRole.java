@@ -8,10 +8,10 @@ package com.app.kokonut.admin.entity.enums;
  */
 public enum AuthorityRole {
 
-    ROLE_SYSTEM("ROLE_SYSTEM", "시스템관리자"),
-    ROLE_ADMIN("ROLE_ADMIN", "관리자"),
-    ROLE_MASTER("ROLE_MASTER", "사업자"),
-    ROLE_USER("ROLE_USER", "유저");
+    ROLE_SYSTEM("ROLE_SYSTEM", "SYSTEM"),
+    ROLE_ADMIN("ROLE_ADMIN", "ADMIN"),
+    ROLE_MASTER("ROLE_MASTER", "MASTER"),
+    ROLE_USER("ROLE_USER", "USER");
 
     private final String code;
     private final String desc;

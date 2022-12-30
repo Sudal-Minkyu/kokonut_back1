@@ -1,13 +1,12 @@
 package com.app.kokonut.bizMessage.kakaoChannel;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.bizMessage.alimtalkTemplate.AlimtalkTemplateRepository;
-import com.app.kokonut.bizMessage.kakaoChannel.entity.KakaoChannel;
-import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
-import com.app.kokonut.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelSearchDto;
+import com.app.kokonut.bizMessage.kakaoChannel.entity.KakaoChannel;
+import com.app.kokonut.navercloud.NaverCloudPlatformService;
+import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -48,13 +47,11 @@ public class KakaoChannelService {
     }
 
     @Transactional
-    public ResponseEntity<Map<String,Object>> kakaoTalkChannelList(KakaoChannelSearchDto kakaoChannelSearchDto, Pageable pageable) throws Exception {
+    public ResponseEntity<Map<String,Object>> kakaoTalkChannelList(String email, KakaoChannelSearchDto kakaoChannelSearchDto, Pageable pageable) throws Exception {
 
         log.info("kakaoTalkChannelList 호출");
 
         AjaxResponse res = new AjaxResponse();
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         // 해당 이메일을 통해 회사 IDX 조회
         int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
@@ -88,14 +85,12 @@ public class KakaoChannelService {
     }
 
 
-    public ResponseEntity<Map<String, Object>> postKakaoTalkChannels(String channelId, String adminTelNo) throws Exception {
+    public ResponseEntity<Map<String, Object>> postKakaoTalkChannels(String email, String channelId, String adminTelNo) throws Exception {
 
         log.info("postKakaoTalkChannels 호출");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         if(email.equals("test@kokonut.me")){
             System.out.println("체험하기모드는 할 수 없습니다.");
@@ -120,14 +115,12 @@ public class KakaoChannelService {
     }
 
     @Transactional
-    public ResponseEntity<Map<String, Object>> kakaoTalkchannelToken(String channelId, String token) throws Exception {
+    public ResponseEntity<Map<String, Object>> kakaoTalkchannelToken(String email, String channelId, String token) throws Exception {
 
         log.info("postKakaoTalkChannels 호출");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         if(email.equals("test@kokonut.me")){
             System.out.println("체험하기모드는 할 수 없습니다.");
@@ -173,14 +166,12 @@ public class KakaoChannelService {
     }
 
     @Transactional
-    public ResponseEntity<Map<String, Object>> deleteKakaoTalkChannels(String channelId) throws Exception {
+    public ResponseEntity<Map<String, Object>> deleteKakaoTalkChannels(String email, String channelId) throws Exception {
 
         log.info("deleteKakaoTalkChannels 호출");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         if(email.equals("test@kokonut.me")){
             System.out.println("체험하기모드는 할 수 없습니다.");

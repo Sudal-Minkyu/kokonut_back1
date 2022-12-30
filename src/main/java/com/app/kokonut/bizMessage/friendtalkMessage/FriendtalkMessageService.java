@@ -1,12 +1,11 @@
 package com.app.kokonut.bizMessage.friendtalkMessage;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.*;
 import com.app.kokonut.bizMessage.friendtalkMessage.friendtalkMessageRecipient.FriendtalkMessageRecipient;
 import com.app.kokonut.bizMessage.friendtalkMessage.friendtalkMessageRecipient.FriendtalkMessageRecipientRepository;
-import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
 import com.app.kokonut.navercloud.NaverCloudPlatformService;
+import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import com.app.kokonut.woody.common.component.Utils;
@@ -50,12 +49,10 @@ public class FriendtalkMessageService {
     // 친구톡 메시지 리스트 조회
     @Transactional
     @SuppressWarnings("unchecked")
-    public ResponseEntity<Map<String, Object>> friendTalkMessageList(FriendtalkMessageSearchDto friendtalkMessageSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String, Object>> friendTalkMessageList(String email, FriendtalkMessageSearchDto friendtalkMessageSearchDto, Pageable pageable) {
         log.info("friendTalkMessageList 조회");
 
         AjaxResponse res = new AjaxResponse();
-
-        String email = SecurityUtil.getCurrentUserEmail();
 
         // 해당 이메일을 통해 회사 IDX 조회
         int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
@@ -120,13 +117,12 @@ public class FriendtalkMessageService {
 
     // 친구톡 메시지 발송
     @Transactional
-    public ResponseEntity<Map<String, Object>> postFriendMessages(FriendtalkMessageSendDto friendtalkMessageSendDto, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> postFriendMessages(String email, FriendtalkMessageSendDto friendtalkMessageSendDto, HttpServletRequest request) {
         log.info("friendTalkMessageList 조회");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-        String email = SecurityUtil.getCurrentUserEmail();
         if(email.equals("test@kokonut.me")){
             log.error("FriendtalkMessageService - 체험하기모드는 이용할 수 없습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO000.getCode(), ResponseErrorCode.KO000.getDesc()));

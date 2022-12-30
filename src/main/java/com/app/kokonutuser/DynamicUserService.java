@@ -1,19 +1,29 @@
 package com.app.kokonutuser;
 
-import com.app.kokonut.company.CompanyService;
-import com.app.kokonutuser.common.CommonRepositoryCustom;
-import com.app.kokonutuser.common.dto.CommonFieldDto;
+import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
+import com.app.kokonut.company.CompanyRepository;
+import com.app.kokonut.woody.common.AjaxResponse;
+import com.app.kokonut.woody.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * @author Woody
+ * Date : 2022-12-28
+ * Time :
+ * Remark : DynamicUserService -> DynamicUserRestController 에서 호출하는 서비스
+ */
 @Slf4j
 @Service
 public class DynamicUserService {
+
 	private static final String USER_DB_NAME = "kokonut_user";
 	private static final String REMOVE_DB_NAME = "kokonut_remove";
 	private static final String DORMANT_DB_NAME = "kokonut_dormant";
@@ -24,43 +34,19 @@ public class DynamicUserService {
 //    @Autowired
 //    DynamicDormantUserDao dynamicDormantUserDao;
 
-	private final CompanyService companyService;
-
-	private final CommonRepositoryCustom commonRepositoryCustom;
-//	private final DynamicUserRepositoryCustom dynamicUserRepositoryCustom;
+	private final AdminRepository adminRepository;
+	private final CompanyRepository companyRepository;
+	private final KokonutUserService kokonutUserService;
 
 //	@Autowired
 //	ExcelService excelService;
 
 	@Autowired
-	public DynamicUserService(CompanyService companyService, CommonRepositoryCustom commonRepositoryCustom){
-		this.companyService = companyService;
-		this.commonRepositoryCustom = commonRepositoryCustom;
-//		this.dynamicUserRepositoryCustom = dynamicUserRepositoryCustom;
-	}
+	public DynamicUserService(AdminRepository adminRepository, CompanyRepository companyRepository, KokonutUserService kokonutUserService) {
+		this.adminRepository = adminRepository;
+		this.companyRepository = companyRepository;
+		this.kokonutUserService = kokonutUserService;
 
-
-	public class EncryptedPasswordData {
-		private String encryptedPassword;
-		private String salt;
-
-		public EncryptedPasswordData(String encryptedPassword, String salt) {
-			this.encryptedPassword = encryptedPassword;
-			this.salt = salt;
-		}
-
-		public String getEncryptedPassword() {
-			return encryptedPassword;
-		}
-		public void setEncryptedPassword(String encryptedPassword) {
-			this.encryptedPassword = encryptedPassword;
-		}
-		public String getSalt() {
-			return salt;
-		}
-		public void setSalt(String salt) {
-			this.salt = salt;
-		}
 	}
 
 	/**
@@ -76,86 +62,109 @@ public class DynamicUserService {
 	//====================================================================//
 	/**
 	 * 동적테이블 생성
-	 * @param businessNumber : 사업자번호(고유값)
+	 * @param email : 이메일
 	 * @return
 	 */
-	@Transactional(value="secondTransactionManager", rollbackFor= {Exception.class})
-	public boolean CreateDynamicTable(String businessNumber) {
-		log.info("CreateDynamicTable 호출");
+//	@Transactional(value="secondTransactionManager", rollbackFor= {Exception.class})
+	@Transactional
+	public ResponseEntity<Map<String,Object>> createTable(String email) {
+		log.info("createTable 호출");
 
-		boolean isSuccess = false;
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
 
-		try {
-//			List<HashMap<String, Object>> commonTable = SelectCommonUserTable();
 
-			List<CommonFieldDto> commonTable = commonRepositoryCustom.selectCommonUserTable();
-			log.info("commonTable : "+commonTable);
+		// 해당 이메일을 통해 회사 IDX 조회
+		AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 
-//
-//			StringBuffer sb = new StringBuffer();
-//
-//			sb.append("SET sql_mode = '';");
-//			sb.append("CREATE TABLE " + "`" + businessNumber + "` ( ");
-//
-//			int num = 0;
-//			for (HashMap<String, Object> column : commonTable) {
-//				String query = "";
-//				String Field = column.get("Field").toString();
-//				String Type = column.get("Type").toString();
-//				String Null = column.get("Null").toString();
-//				String Extra = column.get("Extra").toString();
-//				String Key = column.get("Key").toString();
-//				String Default = "";
-//
-//				if(column.containsKey("Default")) {
-//					Default = column.get("Default").toString();
-//				}
-//
-//				if(Extra.equals("auto_increment") && Key.equals("PRI")) {
-//					query += "`"+ Field +"` bigint(20) NOT NULL PRIMARY KEY AUTO_INCREMENT";
-//				} else {
-//					query += "`"+ Field +"` "+ Type;
-//					if(Null.equals("NO")) {
-//						query += " NOT NULL";
-//					} else {
-//						query += " NULL";
-//					}
-//					if(!Default.equals(""))
-//						if(Type.contains("varchar")) {
-//							query += " DEFAULT " + "'" + Default + "'";
-//						} else {
-//							query += " DEFAULT " + Default;
-//						}
-//
-//				}
-//				String Comment = "";
-//				if(column.containsKey("Comment")) {
-//					Comment = column.get("Comment").toString();;
-//					query += " COMMENT "  + "'" + Comment + "'";
-//				}
-//
-//				if (num < commonTable.size() - 1) {
-//					query +=",";
-//				}
-//
-//				sb.append(query);
-//				num++;
-//			}
-//
-//			sb.append(")");
-//			String createQuery = sb.toString();
-//
-//			HashMap<String, Object> paramMap = new HashMap<String, Object>();
-//			paramMap.put("sql", createQuery);
-////			companyService.CreateDynamicTable(paramMap);
-//
-//			isSuccess = true;
-		} catch (Exception e) {
-        	e.printStackTrace();
-        	TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		int adminIdx;
+		int companyIdx;
+		String businessNumber;
+
+		if(adminCompanyInfoDto == null) {
+			log.error("이메일 정보가 존재하지 않습니다.");
+			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(), "해당 이메일의 정보가 "+ResponseErrorCode.KO004.getDesc()));
+		}
+		else {
+			adminIdx = adminCompanyInfoDto.getAdminIdx();
+			companyIdx = adminCompanyInfoDto.getCompanyIdx();
+			businessNumber = adminCompanyInfoDto.getBusinessNumber();
 		}
 
-		return isSuccess;
+		log.info("adminIdx : "+adminIdx);
+		log.info("companyIdx : "+companyIdx);
+		log.info("businessNumber : "+businessNumber);
+
+		/* 활동이력 추가 */
+//			String reason = "테이블 생성" + "(테이블명 :" + businessNumber + ")";
+//            activityHistory = activityHistoryService.InsertActivityHistory(2, companyIdx, adminIdx, 16, "", reason, CommonUtil.clientIp(), 0);
+
+		// 사업자번호가 정상적으로 등록되어 있는지 확인
+		if (!companyRepository.existsByBusinessNumber(businessNumber)) {
+			log.error("등록되지 않는 사업자번호입니다.");
+			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO000.getCode(), ResponseErrorCode.KO000.getDesc()));
+		}
+
+//			if(dynamicUserService.ExistTable(businessNumber) || dynamicRemoveService.ExistTable(businessNumber) || dynamicDormantService.ExistTable(businessNumber)) {
+//				logger.info("### Duplicate kokonut_user DB Table : " + businessNumber);
+//				returnMap.put("isSuccess", "false");
+//				returnMap.put("errorMsg", "유저 테이블 생성에 실패했습니다.");
+//				break;
+//			}
+
+		// 회원DB 생성 (유저 테이블)
+//		boolean result = kokonutUserService.createTableKokonutUser(businessNumber);
+//		log.info("result : "+result);
+
+//			if(!dynamicUserService.CreateDynamicTable(businessNumber)) {
+//				logger.info("###[회원DB 항목 관리] Create Table Field. Database : kokonut_user, Table : " + businessNumber);
+//				returnMap.put("isSuccess", "false");
+//				returnMap.put("errorMsg", "유저 테이블 생성에 실패했습니다.");
+//				break;
+//			}
+
+		// 회원DB 생성 (삭제, 탈퇴용 테이블)
+//			if(!dynamicRemoveService.CreateDynamicTable(businessNumber)) {
+//				// RollBack
+//				dynamicUserService.DeleteDynamicTable(businessNumber);
+//
+//				logger.info("###[회원DB 항목 관리] Create Table Field. Database : kokonut_remove, Table : " + businessNumber);
+//				returnMap.put("isSuccess", "false");
+//				returnMap.put("errorMsg", "탈퇴용 테이블 생성에 실패했습니다.");
+//				break;
+//			}
+		// 회원DB 생성 (휴면용 테이블)
+//			if(!dynamicDormantService.CreateDynamicTable(businessNumber)) {
+//				// RollBack
+//				dynamicRemoveService.DeleteDynamicTable(businessNumber);
+//				dynamicUserService.DeleteDynamicTable(businessNumber);
+//
+//				logger.info("###[회원DB 항목 관리] Create Table Field. Database : kokonut_dormant, Table : " + businessNumber);
+//				returnMap.put("isSuccess", "false");
+//				returnMap.put("errorMsg", "휴면용 테이블 생성에 실패했습니다.");
+//				break;
+//			}
+
+		/* 활동이력 정상으로 변경 */
+//            int activityHistoryIdx = Integer.parseInt(activityHistory.get("idx").toString());
+//            activityHistoryService.UpdateActivityHistory(activityHistoryIdx, "", reason, 1);
+
+//			returnMap.put("isSuccess", "true");
+
+
+//        // break로 처리 중단시 활동이력에 사유입력
+//        String isSuccess = returnMap.get("isSuccess").toString();
+//        String errorMsg = returnMap.get("errorMsg").toString();
+//        if(isSuccess.equals("false")) {
+//            int activityHistoryIdx = Integer.parseInt(activityHistory.get("idx").toString());
+//            activityHistoryService.UpdateActivityHistory(activityHistoryIdx, "", errorMsg, 0);
+//        }
+
+//		return null;
+
+
+
+		return ResponseEntity.ok(res.success(data));
 	}
 
 }
