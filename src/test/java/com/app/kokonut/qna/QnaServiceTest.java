@@ -60,12 +60,12 @@ class QnaServiceTest {
     MockHttpServletResponse servletResponse;
     MockMvc mvc;
     @BeforeEach
-    void testDataInsert() {
-        servletRequest = new MockHttpServletRequest();
-        servletResponse = new MockHttpServletResponse();
+        void testDataInsert() {
+            servletRequest = new MockHttpServletRequest();
+            servletResponse = new MockHttpServletResponse();
 
-        // 테스트용 masterAdmin
-        Admin masterAdmin = Admin.builder()
+            // 테스트용 masterAdmin
+            Admin masterAdmin = Admin.builder()
                 .email(masterEmail)
                 .password("test")
                 .roleName(AuthorityRole.ROLE_MASTER)
@@ -179,7 +179,7 @@ class QnaServiceTest {
     void qnaDetailSuccess() {
         // given - none
         // when
-        ResponseEntity<Map<String,Object>> response =  qnaService.qnaDetail(savedQnaIdx01);
+        ResponseEntity<Map<String,Object>> response =  qnaService.qnaDetail("[SYSTEM]", "joy@kokonut.me", savedQnaIdx01);
 
         // then
         Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
@@ -191,7 +191,7 @@ class QnaServiceTest {
     void qnaDetailFail() {
         // given - none
         // when
-        ResponseEntity<Map<String,Object>> response =  qnaService.qnaDetail(3);
+        ResponseEntity<Map<String,Object>> response =  qnaService.qnaDetail("[SYSTEM]", "joy@kokonut.me",3);
 
         // then
         Assertions.assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
@@ -213,7 +213,7 @@ class QnaServiceTest {
         qnaQuestionSaveDto.setMultipartFiles(multipartFiles);
 
         // when
-        ResponseEntity<Map<String,Object>> response =  qnaService.questionSave(masterEmail, qnaQuestionSaveDto, servletRequest, servletResponse);
+        ResponseEntity<Map<String,Object>> response =  qnaService.questionSave("[SYSTEM]",masterEmail, qnaQuestionSaveDto, servletRequest, servletResponse);
 
         // then
         Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
@@ -258,7 +258,7 @@ class QnaServiceTest {
         qnaQuestionSaveDto.setMultipartFiles(multipartFiles);
 
         // when
-        ResponseEntity<Map<String,Object>> response =  qnaService.questionSave(masterEmail, qnaQuestionSaveDto, servletRequest, servletResponse);
+        ResponseEntity<Map<String,Object>> response =  qnaService.questionSave("[SYSTEM]",masterEmail, qnaQuestionSaveDto, servletRequest, servletResponse);
 
         // then
         Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
@@ -274,7 +274,7 @@ class QnaServiceTest {
         qnaAnswerSaveDto.setAnswer("    >>    !!!!!!!!!답변입니다..");
 
         // when
-        ResponseEntity<Map<String,Object>> response =  qnaService.answerSave(systemEmail, qnaAnswerSaveDto);
+        ResponseEntity<Map<String,Object>> response =  qnaService.answerSave("[SYSTEM]",systemEmail, qnaAnswerSaveDto);
 
         // then
         Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
