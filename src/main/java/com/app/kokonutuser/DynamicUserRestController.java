@@ -56,14 +56,14 @@ public class DynamicUserRestController {
 	 * 회원DB 생성 
 	 */
 	@PostMapping(value = "/createUserDatabase")
-	@ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
-	public ResponseEntity<Map<String,Object>> createUserDatabase() {
-		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+//	@ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
+	public ResponseEntity<Map<String,Object>> createUserDatabase(@RequestParam(name="email", defaultValue = "") String email) {
+//		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
 
-		log.info("jwtFilterDto.getEmail() : "+jwtFilterDto.getEmail());
-		log.info("jwtFilterDto.getRole() : "+jwtFilterDto.getRole());
+//		log.info("jwtFilterDto.getEmail() : "+jwtFilterDto.getEmail());
+//		log.info("jwtFilterDto.getRole() : "+jwtFilterDto.getRole());
 
-		return dynamicUserService.createTable(jwtFilterDto.getEmail());
+		return dynamicUserService.createTable(email);
 	}
 	
 	
