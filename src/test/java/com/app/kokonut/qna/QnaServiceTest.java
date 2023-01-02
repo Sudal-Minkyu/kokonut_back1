@@ -3,6 +3,7 @@ package com.app.kokonut.qna;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.qna.dto.QnaAnswerSaveDto;
 import com.app.kokonut.qna.dto.QnaQuestionSaveDto;
 import com.app.kokonut.qna.dto.QnaSearchDto;
@@ -37,6 +38,9 @@ class QnaServiceTest {
 
     private Integer masterIdx;
     private Integer systemIdx;
+
+    private String masterRole;
+    private String systemRole;
 
     private Integer savedQnaIdx01;
     private Integer savedQnaIdx02;
@@ -80,8 +84,14 @@ class QnaServiceTest {
                 .state(1)
                 .build();
 
-        masterIdx = adminRepository.save(masterAdmin).getIdx();
-        systemIdx = adminRepository.save(systemAdmin).getIdx();
+        Admin master = adminRepository.save(masterAdmin);
+        Admin system = adminRepository.save(systemAdmin);
+
+        masterIdx = master.getIdx();
+        systemIdx = system.getIdx();
+
+        masterRole = master.getRoleName().name();
+        systemRole = system.getRoleName().getCode();
 
         // 테스트용 1:1 문의 내용 등록
         // 첨부파일 없는 문의글
@@ -152,8 +162,12 @@ class QnaServiceTest {
         qnaSearchDto.setState(1);
         qnaSearchDto.setSearchText("결제");
 
+        // 시스템 관리자 접근
+        String userRole = systemRole;
+        String userEmail = systemEmail;
+        // 마스터 관리자 접근 String userRole = masterRole;
         // when
-        ResponseEntity<Map<String,Object>> response =  qnaService.qnaList(qnaSearchDto,pageable);
+        ResponseEntity<Map<String,Object>> response =  qnaService.qnaList(userRole, userEmail, qnaSearchDto,pageable);
 
         // then
         Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));

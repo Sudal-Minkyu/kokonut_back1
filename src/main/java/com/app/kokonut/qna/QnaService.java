@@ -3,6 +3,7 @@ package com.app.kokonut.qna;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.joy.email.MailSender;
 import com.app.kokonut.qna.dto.*;
 import com.app.kokonut.qna.entity.Qna;
@@ -57,8 +58,11 @@ public class QnaService {
         this.mailSender = mailSender;
     }
 
-    public ResponseEntity<Map<String, Object>> qnaList(QnaSearchDto qnaSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String, Object>> qnaList(String userRole, String email, QnaSearchDto qnaSearchDto, Pageable pageable) {
         log.info("qnaList 호출");
+        log.info("### userRole : " + userRole);
+        log.info("### email : " + email);
+
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         Page<QnaListDto> qnaListDtos = qnaRepository.findQnaPage(qnaSearchDto, pageable);

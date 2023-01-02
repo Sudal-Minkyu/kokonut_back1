@@ -42,9 +42,9 @@ public class QnaRestController {
     @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
     public ResponseEntity<Map<String,Object>> qnaList(@RequestBody QnaSearchDto qnaSearchDto, Pageable pageable) {
         // TODO 토큰에서 받아온 권한 정보 확인. 권한에 따라서 내가 문의한 문의 내역 조회, 혹은 전체 문의 내역
-        // 접속한 사용자 이메일
-        String email = SecurityUtil.getCurrentUserEmail();
-        return qnaService.qnaList(qnaSearchDto, pageable);
+        String email = SecurityUtil.getCurrentJwt().getEmail();
+        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        return qnaService.qnaList(userRole, email, qnaSearchDto, pageable);
     }
     @ApiOperation(value="QnA 내용 조회", notes="QnA 문의 내용 조회")
     @GetMapping(value = "/qnaDetail/{idx}") // -> 기존의 코코넛 호출 메서드명 : detailView - SystemQnaController, MemberQnaController
@@ -62,7 +62,7 @@ public class QnaRestController {
             @Validated QnaQuestionSaveDto qnaQuestionSaveDto, HttpServletRequest request, HttpServletResponse response) throws IOException {
         // TODO 토큰에서 받아온 권한 정보 확인 (시스템 관리자는 질문 등록 못함)
         // 접속한 사용자 이메일
-        String email = SecurityUtil.getCurrentUserEmail();
+        String email = SecurityUtil.getCurrentJwt().getEmail();
         return qnaService.questionSave(email, qnaQuestionSaveDto, request, response);
     }
 
@@ -72,7 +72,7 @@ public class QnaRestController {
     public ResponseEntity<Map<String,Object>> answerSave(@RequestBody QnaAnswerSaveDto qnaAnswerSaveDto) throws IOException {
         // TODO 토큰에서 받아온 권한 정보 확인 (시스템 관리자만 답변 등록 가능)
         // 접속한 사용자 이메일
-        String email = SecurityUtil.getCurrentUserEmail();
+        String email = SecurityUtil.getCurrentJwt().getEmail();
         return qnaService.answerSave(email, qnaAnswerSaveDto);
     }
 
