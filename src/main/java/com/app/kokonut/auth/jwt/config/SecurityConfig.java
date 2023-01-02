@@ -35,7 +35,7 @@ public class SecurityConfig {
         return (web) -> web.ignoring().antMatchers("/favicon.ico","/swagger*/**","/v2/api-docs","/webjars/**",
                 "/api/Auth/**", "/api/NiceId/**"
                 // 임시로 해둔 API들
-                , "/api/ApiKey/**", "/api/Qna/**");
+                , "/api/ApiKey/**", "/api/Qna/**", "/api/DynamicUser/**");
     }
 
     @Bean
@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/", "/swagger-ui/index.html/**", "/api/AlimtalkTemplate/**").permitAll()
                 .antMatchers("/api/Admin/masterTest", "/api/Admin/**", "/api/AlimtalkMessage/**"
-                        , "/api/AlimtalkTemplate/**", "/api/KakaoChannel/**", "/api/DynamicUser/**").hasAnyAuthority("MASTER", "SYSTEM")
+                        , "/api/AlimtalkTemplate/**", "/api/KakaoChannel/**").hasAnyAuthority("MASTER", "SYSTEM")
                 .antMatchers("/api/Admin/adminTest").hasAnyAuthority("ADMIN","SYSTEM")
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
                 .and()

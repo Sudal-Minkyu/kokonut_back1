@@ -8,6 +8,7 @@ import com.app.kokonut.woody.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,8 @@ public class DynamicUserService {
 //    @Autowired
 //    DynamicDormantUserDao dynamicDormantUserDao;
 
+	private final PasswordEncoder passwordEncoder;
+
 	private final AdminRepository adminRepository;
 	private final CompanyRepository companyRepository;
 	private final KokonutUserService kokonutUserService;
@@ -42,7 +45,8 @@ public class DynamicUserService {
 //	ExcelService excelService;
 
 	@Autowired
-	public DynamicUserService(AdminRepository adminRepository, CompanyRepository companyRepository, KokonutUserService kokonutUserService) {
+	public DynamicUserService(PasswordEncoder passwordEncoder, AdminRepository adminRepository, CompanyRepository companyRepository, KokonutUserService kokonutUserService) {
+		this.passwordEncoder = passwordEncoder;
 		this.adminRepository = adminRepository;
 		this.companyRepository = companyRepository;
 		this.kokonutUserService = kokonutUserService;
@@ -112,9 +116,69 @@ public class DynamicUserService {
 //				break;
 //			}
 
-		// 회원DB 생성 (유저 테이블)
+//		@@@@@@@@@@ - KokonutUserService 테스트 - @@@@@@@@@@@@
+
+		// 회원DB 생성 (유저 테이블) - 테스트완료 woody
 //		boolean result = kokonutUserService.createTableKokonutUser(businessNumber);
 //		log.info("result : "+result);
+
+		//회원DB 중복체크 - 테스트완료 woody
+//		int check = kokonutUserService.selectExistTable(businessNumber);
+//		log.info("check : "+check);
+
+		// 회원DB 삭제 (유저 테이블) - 테스트완료 woody
+//		String result = kokonutUserService.deleteTableKokonutUser(businessNumber);
+//		log.info("result : "+result);
+
+		// 회원DB 필드값 추가 - 테스트완료 woody
+//		boolean result = kokonutUserService.alterAddColumnTableQuery(businessNumber, "test", "VARCHAR", 50, true, "");
+//		log.info("result : "+result);
+
+		// 회원DB 필드정보 수정 - 테스트완료 woody
+//		boolean result = kokonutUserService.alterChangeColumnTableQuery(businessNumber, "test", "testchange", "VARCHAR", 50, true, "수정테스트", "기본값");
+//		log.info("result : "+result);
+
+		// 회원DB 필드 코멘트 수정 - 테스트완료 woody
+//		boolean result = kokonutUserService.alterModifyColumnCommentQuery(businessNumber, "testchange", "VARCHAR", 50, true, "코멘트수정완료", "기본값");
+//		log.info("result : "+result);
+
+		// 회원DB 필드 삭제 - 테스트완료 woody
+//		boolean result = kokonutUserService.alterDropColumnTableQuery(businessNumber, "testchangee");
+//		log.info("result : "+result);
+
+		// 회원DB 회원리스트 조회 - 테스트완료 woody
+//		List<Map<String, Object>> result = kokonutUserService.selectUserList(businessNumber);
+//		log.info("result : "+result);
+
+		// 회원DB 회원 수 조회 - 테스트완료 woody
+//		int result = kokonutUserService.selectUserListCount(businessNumber);
+//		log.info("result : "+result);
+
+		// 회원DB 회원등록 조회 - 테스트중 woody -> 인서트 쿼리문은 DynamicUserService 부분에서 직정 가공하여 호출
+//		String nameString = "(`NAME`, `GENDER`, `BIRTH`, `PHONE_NUMBER`, `REGDATE`, `ID`, `PASSWORD`, `PERSONAL_INFO_AGREE`, `STATE`, `EMAIL`)";
+//		String valueString = "('테스트임다','0','19910101','01012123344','2022-11-09 15:00:00','test10', '"+passwordEncoder.encode("123456")+"' ,'Y',1,'test10@kkn.me')";
+//		boolean result = kokonutUserService.insertUserTable(businessNumber, nameString, valueString);
+//		log.info("result : "+result);
+
+		// 회원DB 회원등록 조회 - 테스트완료 woody -> 인서트 쿼리문은 DynamicUserService 부분에서 직정 가공하여 호출
+//		String nameString = "(`NAME`, `GENDER`, `BIRTH`, `PHONE_NUMBER`, `REGDATE`, `ID`, `PASSWORD`, `PERSONAL_INFO_AGREE`, `STATE`, `EMAIL`)";
+//		String valueString = "('테스트임다','0','19910101','01012123344','2022-11-09 15:00:00','test10', '"+passwordEncoder.encode("123456")+"' ,'Y',1,'test10@kkn.me')";
+//		boolean result = kokonutUserService.insertUserTable(businessNumber, nameString, valueString);
+//		log.info("result : "+result);
+
+		// 회원DB 수정 - 테스트완료 woody -> 업데이트 쿼리문은 DynamicUserService 부분에서 직정 가공하여 호출
+//		String queryString = "NAME = '이름변경', ID='idchange'";
+//		boolean result = kokonutUserService.updateUserTable(businessNumber, 8, queryString);
+//		log.info("result : "+result);
+
+		// 회원DB 삭제 - 테스트완료 woody
+//		boolean result = kokonutUserService.deleteUserTable(businessNumber, 8);
+//		log.info("result : "+result);
+
+
+
+
+//		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 //			if(!dynamicUserService.CreateDynamicTable(businessNumber)) {
 //				logger.info("###[회원DB 항목 관리] Create Table Field. Database : kokonut_user, Table : " + businessNumber);
