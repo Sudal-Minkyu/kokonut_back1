@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -59,21 +60,21 @@ public class FaqDto implements Serializable {
      * 등록일자
      */
     @ApiModelProperty("등록일자")
-    private Date regdate;
+    private LocalDateTime regdate;
 
 
     /**
      * 게시시작일자
      */
     @ApiModelProperty("게시시작일자")
-    private Date registStartDate;
+    private LocalDateTime registStartDate;
 
 
     /**
      * 게시종료일자
      */
     @ApiModelProperty("게시종료일자")
-    private Date registEndDate;
+    private LocalDateTime registEndDate;
 
 
     /**
@@ -94,7 +95,7 @@ public class FaqDto implements Serializable {
      * 수정일자
      */
     @ApiModelProperty("수정일자")
-    private Date modifyDate;
+    private LocalDateTime modifyDate;
 
 
     /**
@@ -115,6 +116,6 @@ public class FaqDto implements Serializable {
      * 게시중지 일자
      */
     @ApiModelProperty("게시중지 일자")
-    private Date stopDate;
+    private LocalDateTime stopDate;
 
 }

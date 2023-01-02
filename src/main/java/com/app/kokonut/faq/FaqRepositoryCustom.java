@@ -1,5 +1,11 @@
 package com.app.kokonut.faq;
 
+import com.app.kokonut.faq.dto.FaqDetailDto;
+import com.app.kokonut.faq.dto.FaqSearchDto;
+import com.app.kokonut.faq.dto.FaqListDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * @author joy
  * Date : 2022-12-27
@@ -7,4 +13,9 @@ package com.app.kokonut.faq;
  * Remark : 기존의 코코넛 프로젝트의 FaqDao 쿼리호출
  */
 public interface FaqRepositoryCustom {
+    // Faq 목록 조회 - 기존 SelectFaqList, SelectFaqListCount
+    Page<FaqListDto> findFaqPage(String userRole, FaqSearchDto faqSearchDto, Pageable pageable);
+    // Faq 상세 조회 - 기존 SelectFaqByIdx
+    FaqDetailDto findFaqByIdx(Integer idx);
+
 }

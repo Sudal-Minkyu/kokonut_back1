@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -63,21 +64,21 @@ public class Faq implements Serializable {
      */
     @Column(name = "REGDATE")
     @ApiModelProperty("등록일자")
-    private Date regdate;
+    private LocalDateTime regdate;
 
     /**
      * 게시시작일자
      */
     @ApiModelProperty("게시시작일자")
     @Column(name = "REGIST_START_DATE")
-    private Date registStartDate;
+    private LocalDateTime registStartDate;
 
     /**
      * 게시종료일자
      */
     @ApiModelProperty("게시종료일자")
     @Column(name = "REGIST_END_DATE")
-    private Date registEndDate;
+    private LocalDateTime registEndDate;
 
     /**
      * 수정자
@@ -98,7 +99,7 @@ public class Faq implements Serializable {
      */
     @ApiModelProperty("수정일자")
     @Column(name = "MODIFY_DATE")
-    private Date modifyDate;
+    private LocalDateTime modifyDate;
 
     /**
      * 조회수
@@ -119,6 +120,6 @@ public class Faq implements Serializable {
      */
     @Column(name = "STOP_DATE")
     @ApiModelProperty("게시중지 일자")
-    private Date stopDate;
+    private LocalDateTime stopDate;
 
 }
