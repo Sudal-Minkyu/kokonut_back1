@@ -19,7 +19,7 @@ import java.util.List;
 public interface QnaRepositoryCustom {
     // qna 목록 조회
     // 기존 코코넛 서비스 메서드 SelectQnaList
-    Page<QnaListDto> findQnaPage(QnaSearchDto qnaSearchDto, Pageable pageable);
+    Page<QnaListDto> findQnaPage(String userRole, QnaSearchDto qnaSearchDto, Pageable pageable);
     QnaDetailDto findQnaByIdx(Integer idx);
     List<QnaSchedulerDto> findNoneAnswerQnaByRegDate(LocalDateTime compareDate);
 }

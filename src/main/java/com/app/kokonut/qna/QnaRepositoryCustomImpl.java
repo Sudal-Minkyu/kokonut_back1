@@ -37,7 +37,7 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 
     // qna 목록 조회
     @Override
-    public Page<QnaListDto> findQnaPage(QnaSearchDto qnaSearchDto, Pageable pageable) {
+    public Page<QnaListDto> findQnaPage(String userRole, QnaSearchDto qnaSearchDto, Pageable pageable) {
         /*
          *
         SELECT A.`IDX`
@@ -79,7 +79,7 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         if(qnaSearchDto.getType() != null){
             query.where(qna.type.eq(qnaSearchDto.getType()));
         }
-        if(qnaSearchDto.getAdminIdx() != null){
+        if((qnaSearchDto.getAdminIdx() != null) &&(!"[SYSTEM]".equals(userRole))){
             query.where(qna.adminIdx.eq(qnaSearchDto.getAdminIdx()));
         }
         if(qnaSearchDto.getStimeStart() != null){
@@ -88,11 +88,6 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         if(qnaSearchDto.getStimeEnd() != null){
             query.where(qna.regdate.loe(qnaSearchDto.getStimeEnd()));
         }
-
-        // AS-IS
-        // 오늘, 최근 일주일, 최근 한달 ... 등 화면단에서 기간을 정해서 dateType으로 넘긴 다음,
-        // 해당 dateType에 따른 기간을 where 조건으로 추가함. 조회일자를 가져오는 부분이 있기 때문에 해당 부분은 필요하지 않다고 판단하여 구현하지 않음.
-        // 추후 프론트에서 넘기더라도 타입에 따라서 화면에서 시작일자 종료일자를 넘기는 형태로 구현 가능
 
         query.orderBy(qna.regdate.desc());
 
