@@ -2,6 +2,7 @@ package com.app.kokonut.faq;
 
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.faq.dto.FaqAnswerListDto;
 import com.app.kokonut.faq.dto.FaqDetailDto;
 import com.app.kokonut.faq.dto.FaqListDto;
 import com.app.kokonut.faq.dto.FaqSearchDto;
@@ -31,46 +32,50 @@ public class FaqService {
         this.adminRepository = adminRepository;
     }
     public ResponseEntity<Map<String, Object>> faqList(String userRole, FaqSearchDto faqSearchDto, Pageable pageable) {
-        log.info("faqList 호출");
+        log.info("faqList 호출, userRole : "+ userRole);
         AjaxResponse res = new AjaxResponse();
-        HashMap<String, Object> data = new HashMap<>();
-        log.info("자주 묻는 질문 목록 조회 userRole : " + userRole);
-        Page<FaqListDto> faqListDtos = faqRepository.findFaqPage(userRole, faqSearchDto, pageable);
-        data.put("faqListDtos", faqListDtos);
-        return ResponseEntity.ok(res.ResponseEntityPage(faqListDtos));
+        if("[SYSTEM]".equals(userRole)){
+            log.info("자주묻는 질문 목록 조회");
+            Page<FaqListDto> faqListDtos = faqRepository.findFaqPage(faqSearchDto, pageable);
+            return ResponseEntity.ok(res.ResponseEntityPage(faqListDtos));
+        }else{
+            log.info("자주묻는 질문 목록(질문+답변, 게시중) 조회");
+            Page<FaqAnswerListDto> faqListDtos = faqRepository.findFaqAnswerPage(pageable);
+            return ResponseEntity.ok(res.ResponseEntityPage(faqListDtos));
+        }
     }
 
     public ResponseEntity<Map<String, Object>> faqDetail(String userRole, Integer idx) {
-        log.info("faqDetail 호출");
+        log.info("faqDetail 호출, userRole : "+ userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         if("[SYSTEM]".equals(userRole)){
             if(idx != null){
-                log.info("자주 묻는 질문 상세보기 idx: " + idx);
+                log.info("자주묻는 질문 상세 조회, idx : " + idx);
                 FaqDetailDto faqDetailDto = faqRepository.findFaqByIdx(idx);
                 if(faqDetailDto != null){
                     // 조회 성공
-                    log.info("자주 묻는 질문 상세보기 조회 성공 idx: " + faqDetailDto.getIdx() + ", " + faqDetailDto.getQuestion());
+                    log.info("자주묻는 질문 상세 조회 성공, idx : " + faqDetailDto.getIdx() + ", Question : " + faqDetailDto.getQuestion());
                     data.put("faqDetailDto",  faqDetailDto);
                     return ResponseEntity.ok(res.success(data));
                 }else{
                     // 조회 실패
-                    log.error("해당 idx의 자주 묻는 질문 게시글을 조회할 수 없습니다. idx : "+idx);
+                    log.error("자주묻는 질문 상세 조회 실패, idx : " +idx);
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
                 }
             }else{
-                log.error("idx 값을 찾을 수 없습니다.");
+                log.error("idx 값을 확인 할 수 없습니다.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
             }
         }else{
-            log.error("접근권한이 없습니다. 권한 : " + userRole);
+            log.error("접근권한이 없습니다. userRole : " + userRole);
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
         }
     }
 
     @Transactional
     public ResponseEntity<Map<String, Object>> faqSave(String userRole, String email, FaqDetailDto faqDetailDto) {
-        log.info("faqSave 호출");
+        log.info("faqSave 호출, userRole : "+userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         if("[SYSTEM]".equals(userRole)){
@@ -81,7 +86,7 @@ public class FaqService {
             String adminName = admin.getName();
 
             if(faqDetailDto.getIdx() != null){
-                log.info("자주 묻는 질문 등록");
+                log.info("자주묻는 질문 등록");
                 FaqDetailDto insertDetailDto = faqDetailDto;
                 log.info("등록자, 등록일시, 내용 세팅");
                 Faq insertFaq = new Faq();
@@ -95,9 +100,9 @@ public class FaqService {
                 insertFaq.setType(insertDetailDto.getType());
 
                 Integer savedIdx = faqRepository.save(insertFaq).getIdx();
-                log.info("자주 묻는 질문 등록 완료. idx : " + savedIdx);
+                log.info("자주묻는 질문 등록 완료. idx : " + savedIdx);
             }else{
-                log.info("자주 묻는 질문 수정 idx : " + faqDetailDto.getIdx());
+                log.info("자주묻는 질문 수정, idx : " + faqDetailDto.getIdx());
                 FaqDetailDto updateDetailDto = faqRepository.findFaqByIdx(faqDetailDto.getIdx());
                 log.info("수정자, 수정일시, 내용 세팅");
                 Faq updateFaq = new Faq();
@@ -113,32 +118,32 @@ public class FaqService {
                 updateFaq.setType(updateDetailDto.getType());
 
                 Integer updatedIdx = faqRepository.save(updateFaq).getIdx();
-                log.info("자주 묻는 질문 수정 완료. idx : " + updatedIdx);
+                log.info("자주묻는 질문 수정 완료. idx : " + updatedIdx);
             }
             return ResponseEntity.ok(res.success(data));
         }else{
-            log.error("접근권한이 없습니다. 권한 : " + userRole);
+            log.error("접근권한이 없습니다. userRole : " + userRole);
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
         }
 
     }
 
     public ResponseEntity<Map<String, Object>> faqDelete(String userRole, String email, Integer idx) {
-        log.info("faqDelete 호출");
+        log.info("faqDelete 호출, userRole : " +userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         if("[SYSTEM]".equals(userRole)){
             if(idx != null){
-                log.info("자주 묻는 질문 삭제 시작.");
+                log.info("자주묻는 질문 삭제 시작.");
                 faqRepository.deleteById(idx);
-                log.info("자주 묻는 질문 삭제 완료. idx : "+idx);
+                log.info("자주묻는 질문 삭제 완료. idx : "+idx);
                 return ResponseEntity.ok(res.success(data));
             }else{
-                log.error("idx를 확인해 주세요.");
+                log.error("idx 값을 확인 할 수 없습니다.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
             }
         }else {
-            log.error("접근권한이 없습니다. 권한 : " + userRole);
+            log.error("접근권한이 없습니다. userRole : " + userRole);
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
         }
     }

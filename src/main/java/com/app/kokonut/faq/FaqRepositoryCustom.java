@@ -1,5 +1,6 @@
 package com.app.kokonut.faq;
 
+import com.app.kokonut.faq.dto.FaqAnswerListDto;
 import com.app.kokonut.faq.dto.FaqDetailDto;
 import com.app.kokonut.faq.dto.FaqSearchDto;
 import com.app.kokonut.faq.dto.FaqListDto;
@@ -14,7 +15,11 @@ import org.springframework.data.domain.Pageable;
  */
 public interface FaqRepositoryCustom {
     // Faq 목록 조회 - 기존 SelectFaqList, SelectFaqListCount
-    Page<FaqListDto> findFaqPage(String userRole, FaqSearchDto faqSearchDto, Pageable pageable);
+    Page<FaqListDto> findFaqPage(FaqSearchDto faqSearchDto, Pageable pageable);
+
+    // Faq 목록(질문+답변) 조회 - 기존 SelectFaqList, SelectFaqListCount
+    Page<FaqAnswerListDto> findFaqAnswerPage(Pageable pageable);
+
     // Faq 상세 조회 - 기존 SelectFaqByIdx
     FaqDetailDto findFaqByIdx(Integer idx);
 

@@ -1,5 +1,6 @@
 package com.app.kokonut.faq;
 
+import com.app.kokonut.faq.dto.FaqAnswerListDto;
 import com.app.kokonut.faq.dto.FaqDetailDto;
 import com.app.kokonut.faq.dto.FaqListDto;
 import com.app.kokonut.faq.dto.FaqSearchDto;
@@ -7,7 +8,6 @@ import com.app.kokonut.faq.entity.Faq;
 import com.app.kokonut.faq.entity.QFaq;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
-import io.swagger.annotations.ApiModelProperty;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,7 +34,7 @@ public class FaqRepositoryCustomImpl extends QuerydslRepositorySupport implement
     }
 
     @Override
-    public Page<FaqListDto> findFaqPage(String userRole, FaqSearchDto faqSearchDto, Pageable pageable) {
+    public Page<FaqListDto> findFaqPage(FaqSearchDto faqSearchDto, Pageable pageable) {
         /*
            SELECT `IDX`
 	            , `QUESTION`
@@ -71,16 +70,34 @@ public class FaqRepositoryCustomImpl extends QuerydslRepositorySupport implement
         if(faqSearchDto.getSearchText() != null){
             query.where(faq.question.contains(faqSearchDto.getSearchText()));
         }
-        if(!userRole.equals("[SYSTEM]")){
-            // 시스템사용자 접근이 아니라면 게시중 상태의 게시글만 조회
-            query.where(faq.state.eq(1));
-        }
         query.orderBy(faq.regdate.desc());
 
         final List<FaqListDto> FaqListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(FaqListDtos, pageable, query.fetchCount());
     }
+    @Override
+    public Page<FaqAnswerListDto> findFaqAnswerPage(Pageable pageable) {
+        /*
+           SELECT `QUESTION`
+	            , `ANSWER`
+             FROM `faq`
+            WHERE 1 = 1
+	          AND STATE = #{state}
+            ORDER BY `REGDATE` DESC
+         */
+        QFaq faq  = QFaq.faq;
+        JPQLQuery<FaqAnswerListDto> query = from(faq)
+                .select(Projections.constructor(FaqAnswerListDto.class,
+                        faq.question,
+                        faq.answer
+                ));
+        // 조건에 따른 where 절 추가
+        query.where(faq.state.eq(1));
+        query.orderBy(faq.regdate.desc());
 
+        final List<FaqAnswerListDto> FaqAnswerListDto = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
+        return new PageImpl<>(FaqAnswerListDto, pageable, query.fetchCount());
+    }
     @Override
     public FaqDetailDto findFaqByIdx(Integer idx) {
         /*
