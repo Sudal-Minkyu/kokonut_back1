@@ -58,7 +58,6 @@ public class NoticeRepositoryCustomImpl extends QuerydslRepositorySupport implem
                         notice.idx,
                         notice.isNotice,
                         notice.title,
-                        notice.content,
                         notice.viewCount,
                         notice.registDate,
                         notice.regdate,
@@ -99,7 +98,6 @@ public class NoticeRepositoryCustomImpl extends QuerydslRepositorySupport implem
         QNotice notice = QNotice.notice;
         JPQLQuery<NoticeContentListDto> query = from(notice)
                 .select(Projections.constructor(NoticeContentListDto.class,
-                        notice.isNotice,
                         notice.title,
                         notice.content,
                         notice.registDate

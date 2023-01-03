@@ -1,14 +1,15 @@
 package com.app.kokonut.notice.dto;
 
-
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
-@ApiModel("")
+@NoArgsConstructor
+@AllArgsConstructor
 public class NoticeStateDto implements Serializable {
     private static final long serialVersionUID = 1L;
 

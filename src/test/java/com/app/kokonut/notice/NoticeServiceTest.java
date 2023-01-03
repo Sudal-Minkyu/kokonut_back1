@@ -1,0 +1,180 @@
+package com.app.kokonut.notice;
+
+import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.notice.dto.NoticeSearchDto;
+import com.app.kokonut.notice.entity.Notice;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+@AutoConfigureMockMvc
+@SpringBootTest
+class NoticeServiceTest {
+    /* 공지사항 서비스 테스트 코드
+     *  1. 공지사항 목록 조회 성공 테스트    - 사용자 권한에 따른 목록 조회
+     *  2. 공지사항 상세 조회 성공 테스트    - 사용자 권한에 따른 접근여부 확인. (시스템 권한의 경우에만 상세 조회 가능)
+     *  3. 공지사항 등록 성공 테스트 1     - idx 값에 따라 신규 등록
+     *  4. 공지사항 등록 성공 테스트 2     - idx 값에 따라 내용 수정
+     *  5. 공지사항 삭제 성공 테스트
+     *  ...
+     */
+
+    // Service 목록
+    @Autowired
+    private NoticeService noticeService;
+
+    // Repository 목록
+    @Autowired
+    private NoticeRepository noticeRepository;
+    @Autowired
+    private AdminRepository adminRepository;
+
+    // 변수 목록
+    private Integer masterUserIdx;
+    private Integer systemUserIdx;
+
+    private String masterUserRole = "[MASTER]";
+    private String systemUserRole = "[SYSTEM]";
+
+    private String masterUserName;
+    private String systemUserName;
+
+    @BeforeEach
+    void testDataInsert() {
+        // 테스트용 masterAdmin
+        Admin masterAdmin = Admin.builder()
+                .email("master@kokonut.me")
+                .name("코코넛 마스터관리자")
+                .password("test")
+                .roleName(AuthorityRole.ROLE_MASTER)
+                .regdate(LocalDateTime.now())
+                .state(1)
+                .build();
+
+        // 테스트용 systemAdmin
+        Admin systemAdmin = Admin.builder()
+                .email("system@kokonut.me")
+                .name("코코넛 시스템관리자")
+                .password("test")
+                .roleName(AuthorityRole.ROLE_SYSTEM)
+                .regdate(LocalDateTime.now())
+                .state(1)
+                .build();
+
+
+        Admin master = adminRepository.save(masterAdmin);
+        Admin system = adminRepository.save(systemAdmin);
+
+        masterUserIdx = master.getIdx();
+        systemUserIdx = system.getIdx();
+
+        masterUserName = master.getName();
+        systemUserName = system.getName();
+
+        // 테스트용 공지사항 게시글 등록
+        Notice savedNotice = new Notice();
+        savedNotice.setIdx(1);
+
+        savedNotice.setTitle("[공지]코코넛 보안 관련 공지사항 입니다.");
+        savedNotice.setContent("코코넛 공지사항 내용 입니다.");
+        savedNotice.setIsNotice(0); // 0:일반,1:상단공지
+        savedNotice.setState(1);    // 0:게시중지,1:게시중,2:게시대기
+        savedNotice.setViewCount(0);
+        savedNotice.setRegistDate(LocalDateTime.now());
+
+        savedNotice.setAdminIdx(systemUserIdx);
+        savedNotice.setRegdate(LocalDateTime.now());
+        savedNotice.setRegisterName(systemAdmin.getName());
+    }
+
+    @AfterEach
+    void testDataDelete() {
+        adminRepository.deleteAll();
+        noticeRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("공지사항 목록 조회 성공 테스트")
+    void noticeList() {
+        List<Notice> notices = new ArrayList<>();
+        for(int i=2; i<10; i++) {
+            Notice saveNotice = new Notice();
+            saveNotice.setIdx(i);
+            saveNotice.setTitle("[공지] 2022년 " +i +"월 코코넛 주요 보안 이슈에 대한 공지사항 입니다.");
+            saveNotice.setContent( i +"월 코코넛 주요 이슈 공지사항 내용 입니다.");
+            saveNotice.setIsNotice(0); // 0:일반,1:상단공지
+            saveNotice.setState(1);    // 0:게시중지,1:게시중,2:게시대기
+            saveNotice.setViewCount(0);
+            saveNotice.setRegistDate(LocalDateTime.now());
+            saveNotice.setAdminIdx(systemUserIdx);
+            saveNotice.setRegdate(LocalDateTime.now());
+            saveNotice.setRegisterName(systemUserName);
+            notices.add(saveNotice);
+        }
+        noticeRepository.saveAll(notices);
+
+        notices.clear();
+        for(int i=10; i<13; i++) {
+            Notice saveNotice = new Notice();
+            saveNotice.setIdx(i);
+            saveNotice.setTitle("[공지] 2022년 " +i +"월 코코넛 주요 보안 이슈에 대한 공지사항 입니다.");
+            saveNotice.setContent( i +"월 코코넛 주요 이슈 공지사항 내용 입니다.");
+            saveNotice.setIsNotice(0); // 0:일반,1:상단공지
+            saveNotice.setState(0);    // 0:게시중지,1:게시중,2:게시대기
+            saveNotice.setViewCount(0);
+            saveNotice.setRegistDate(LocalDateTime.now());
+            saveNotice.setAdminIdx(systemUserIdx);
+            saveNotice.setRegdate(LocalDateTime.now());
+            saveNotice.setRegisterName(systemUserName);
+            notices.add(saveNotice);
+        }
+        noticeRepository.saveAll(notices);
+
+        // given
+        PageRequest pageable = PageRequest.of(0, 10);
+        NoticeSearchDto search = new NoticeSearchDto();
+        //search.setSearchText("12월");
+        //search.setIsNotice(0);
+        //search.setIsNotice(1);
+        //search.setState(0);
+
+        // when
+        ResponseEntity<Map<String,Object>> response =
+                noticeService.noticeList(masterUserRole, search, pageable);
+
+        System.out.println("################ " + response.getBody().get("total_rows") + "건 조회");
+        System.out.println(response.getBody().get("datalist"));
+        System.out.println("################ ");
+
+        // then
+        Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
+    }
+
+    @Test
+    void noticeDetail() {
+    }
+
+    @Test
+    void noticeSave() {
+    }
+
+    @Test
+    void noticeDelete() {
+    }
+
+    @Test
+    void noticeState() {
+    }
+}
