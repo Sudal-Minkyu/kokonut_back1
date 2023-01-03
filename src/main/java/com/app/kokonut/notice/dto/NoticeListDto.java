@@ -1,0 +1,36 @@
+package com.app.kokonut.notice.dto;
+
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+@Data
+@ApiModel("")
+public class NoticeListDto implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @ApiModelProperty("키")
+    private Integer idx;
+
+    @ApiModelProperty("상단공지여부(0:일반,1:상단공지)")
+    private Integer isNotice;
+
+    @ApiModelProperty("제목")
+    private String title;
+
+    @ApiModelProperty("조회수(사용여부확인필요)")
+    private Integer viewCount;
+
+    @ApiModelProperty("게시일자")
+    private LocalDateTime registDate;
+
+    @ApiModelProperty("등록일자")
+    private LocalDateTime regdate;
+
+    @ApiModelProperty("0:게시중지,1:게시중,2:게시대기")
+    private Integer state;
+}
