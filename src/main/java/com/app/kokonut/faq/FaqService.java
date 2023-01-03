@@ -113,6 +113,7 @@ public class FaqService {
                 updateFaq.setModifierName(adminName);
                 updateFaq.setModifyDate(LocalDateTime.now());
 
+                // TODO null 에 대해 테스트 코드 확인 후 수정
                 updateFaq.setQuestion(updateDetailDto.getQuestion());
                 updateFaq.setAnswer(updateDetailDto.getAnswer());
                 updateFaq.setType(updateDetailDto.getType());
