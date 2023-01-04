@@ -23,7 +23,8 @@ import java.util.Objects;
 class NoticeServiceTest {
     /* 공지사항 서비스 테스트 코드
      *  1. 공지사항 목록 조회 성공 테스트    - 사용자 권한에 따른 목록 조회
-     *  2. 공지사항 상세 조회 성공 테스트    - 사용자 권한에 따른 접근여부 확인. (시스템 권한의 경우에만 상세 조회 가능)
+     *  2. 공지사항 상세 조회 실패 테스트    - 사용자 권한에 따른 접근여부 확인. (시스템 권한의 경우에만 상세 조회 가능)
+     *     공지사항 상세 조회 성공 테스트    - 사용자 권한에 따른 접근여부 확인, 조회, 카운트 증가
      *  3. 공지사항 등록 성공 테스트 1     - idx 값에 따라 신규 등록
      *  4. 공지사항 등록 성공 테스트 2     - idx 값에 따라 내용 수정
      *  5. 공지사항 삭제 성공 테스트
@@ -96,6 +97,10 @@ class NoticeServiceTest {
         savedNotice.setAdminIdx(systemUserIdx);
         savedNotice.setRegdate(LocalDateTime.now());
         savedNotice.setRegisterName(systemAdmin.getName());
+
+        noticeRepository.save(savedNotice);
+
+
     }
 
     @AfterEach
@@ -163,7 +168,29 @@ class NoticeServiceTest {
     }
 
     @Test
-    void noticeDetail() {
+    @DisplayName("공지사항 목록 조회 실패 테스트")
+    void noticeDetail_1() {
+        // given
+        // when
+        ResponseEntity<Map<String,Object>> response =
+                noticeService.noticeDetail(masterUserRole, 1);
+        // then
+        Assertions.assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
+    }
+
+    @Test
+    @DisplayName("공지사항 상세 조회 성공 테스트")
+    void noticeDetail_2() {
+        // given
+        // when
+        ResponseEntity<Map<String,Object>> response =
+                noticeService.noticeDetail(systemUserRole, 1);
+        System.out.println("####### "+noticeRepository.findById(1).get().getViewCount());
+        System.out.println(response.getBody().get("sendData"));
+        // then
+        Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
     }
 
     @Test

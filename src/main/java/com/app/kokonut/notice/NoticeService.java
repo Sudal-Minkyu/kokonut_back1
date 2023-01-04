@@ -56,7 +56,7 @@ public class NoticeService {
                     // viewCount 증가
                     Notice notice = noticeRepository.findById(idx)
                             .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'Admin' 입니다."));
-                    notice.setIdx(notice.getIdx()+1);
+                    notice.setViewCount(notice.getViewCount()+1);
                     noticeRepository.save(notice);
 
                     return ResponseEntity.ok(res.success(data));
