@@ -17,7 +17,7 @@ import java.util.Map;
  * @author Joy
  * Date : 2023-01-04
  * Time :
- * Remark : CollectInfomationService 개인정보 처리방침 - 개인정보 수집 및 이용 서비스
+ * Remark : CollectInfomationService 개인정보 처리방침 - 개인정보 수집 및 이용 안내 서비스
  */
 @Slf4j
 @Service

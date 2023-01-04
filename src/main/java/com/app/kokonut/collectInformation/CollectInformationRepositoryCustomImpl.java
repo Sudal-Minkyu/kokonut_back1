@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Joy
  * Date : 2023-01-04
  * Time :
- * Remark : CollectInformationRepository 개인정보 처리방침 - 개인정보 수집 및 이용 쿼리 선언부
+ * Remark : CollectInformationRepository 개인정보 처리방침 - 개인정보 수집 및 이용 안내 쿼리 선언부
  */
 @Repository
 public class CollectInformationRepositoryCustomImpl extends QuerydslRepositorySupport implements CollectInformationRepositoryCustom {
