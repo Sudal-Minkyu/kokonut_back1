@@ -84,4 +84,21 @@ public class CollectInformationRepositoryCustomImpl extends QuerydslRepositorySu
         query.where(collectInfo.idx.eq(idx));
         return query.fetchOne();
     }
+
+//    @Override
+//    public List findCollectInfoIdxByCompayId(Integer companyIdx) {
+//        /*
+//           SELECT `IDX`
+//             FROM `collect_information`
+//            WHERE 1 = 1
+//	          AND `COMPANY_IDX` = #{companyIdx}
+//         */
+//        QCollectInformation collectInfo = QCollectInformation.collectInformation;
+//        JPQLQuery<Integer> query = from(collectInfo)
+//                .select(Projections.constructor(Integer.class,
+//                        collectInfo.idx
+//                ));
+//        query.where(collectInfo.companyIdx.eq(companyIdx));
+//        return query.fetchAll().fetch();
+//    }
 }

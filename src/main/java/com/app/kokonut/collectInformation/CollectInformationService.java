@@ -6,6 +6,7 @@ import com.app.kokonut.collectInformation.dto.CollectInfoDetailDto;
 import com.app.kokonut.collectInformation.dto.CollectInfoListDto;
 import com.app.kokonut.collectInformation.dto.CollectInfoSearchDto;
 import com.app.kokonut.collectInformation.entity.CollectInformation;
+import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,14 +32,17 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class CollectInformationService {
+    private final CompanyRepository companyRepository;
     private final AjaxResponse res = new AjaxResponse();
     private final HashMap<String, Object> data = new HashMap<>();
 
     private final CollectInformationRepository collectInfoRepository;
     private final AdminRepository adminRepository;
-    public CollectInformationService(CollectInformationRepository collectInfoRepository, AdminRepository adminRepository) {
+    public CollectInformationService(CollectInformationRepository collectInfoRepository, AdminRepository adminRepository,
+                                     CompanyRepository companyRepository) {
         this.collectInfoRepository = collectInfoRepository;
         this.adminRepository = adminRepository;
+        this.companyRepository = companyRepository;
     }
 
     public ResponseEntity<Map<String, Object>> collectInfoList(String userRole, String email, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
@@ -161,4 +166,25 @@ public class CollectInformationService {
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
         }
     }
+
+//    @Transactional
+//    public ResponseEntity<Map<String, Object>> collectInfoDeleteAll(Integer companyIdx) {
+//        log.info("collectInfoDeleteAll 호출, companyIdx : " + companyIdx);
+//        if(companyIdx != null){
+//            log.info("개인정보 수집 및 이용 안내 전체 삭제 시작.");
+//            List<Integer> collectInfoIdxLists = collectInfoRepository.findCollectInfoIdxByCompayId(companyIdx);
+//            if(!collectInfoIdxLists.isEmpty()){
+//                for(Integer idx : collectInfoIdxLists){
+//                    collectInfoRepository.deleteById(idx);
+//                }
+//                log.info("개인정보 수집 및 이용 안내 전체 삭제 완료. 삭제 건 수 : " +collectInfoIdxLists.size());
+//            }else{
+//                log.info("개인정보 수집 및 이용 안내 전체 삭제 완료. 삭제 건 수 : 0");
+//            }
+//            return ResponseEntity.ok(res.success(data));
+//        }else{
+//            log.error("idx 값을 확인 할 수 없습니다.");
+//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+//        }
+//    }
 }
