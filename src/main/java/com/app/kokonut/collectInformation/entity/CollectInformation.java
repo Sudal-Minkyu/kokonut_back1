@@ -1,11 +1,11 @@
-package com.app.kokonut.refactor.collectInformation.entity;
+package com.app.kokonut.collectInformation.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -63,7 +63,7 @@ public class CollectInformation implements Serializable {
      */
     @ApiModelProperty("등록일")
     @Column(name = "REGDATE", nullable = false)
-    private Date regdate;
+    private LocalDateTime regdate;
 
     /**
      * 수정자
@@ -82,8 +82,8 @@ public class CollectInformation implements Serializable {
     /**
      * 수정자
      */
-    @ApiModelProperty("수정자")
+    @ApiModelProperty("수정일")
     @Column(name = "MODIFY_DATE", nullable = false)
-    private Date modifyDate;
+    private LocalDateTime modifyDate;
 
 }

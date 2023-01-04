@@ -1,16 +1,21 @@
-package com.app.kokonut.refactor.collectInformation.dto;
-
-
-import io.swagger.annotations.ApiModel;
+package com.app.kokonut.collectInformation.dto;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-
+import lombok.NoArgsConstructor;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
+/**
+ * @author Joy
+ * Date : 2023-01-94
+ * Time :
+ * Remark : 기본 DTO
+ */
 @Data
-@ApiModel("")
-public class CollectInformationDTO implements Serializable {
+@NoArgsConstructor
+@AllArgsConstructor
+public class CollectInformationDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -59,7 +64,7 @@ public class CollectInformationDTO implements Serializable {
      * 등록일
      */
     @ApiModelProperty("등록일")
-    private Date regdate;
+    private LocalDateTime regdate;
 
 
     /**
@@ -77,9 +82,9 @@ public class CollectInformationDTO implements Serializable {
 
 
     /**
-     * 수정자
+     * 수정일
      */
-    @ApiModelProperty("수정자")
-    private Date modifyDate;
+    @ApiModelProperty("수정일")
+    private LocalDateTime modifyDate;
 
 }
