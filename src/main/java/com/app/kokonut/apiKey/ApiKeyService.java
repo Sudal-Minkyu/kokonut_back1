@@ -4,8 +4,6 @@ import com.app.kokonut.apiKey.dtos.ApiKeyKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
-import com.app.kokonutuser.common.CommonRepositoryCustom;
-import com.app.kokonutuser.common.dto.CommonFieldDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

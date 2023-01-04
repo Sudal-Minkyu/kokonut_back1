@@ -1,11 +1,12 @@
 package com.app.kokonut.auth.niceId;
 
+import com.app.kokonut.keydata.KeyDataService;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.component.AriaUtil;
 import com.app.kokonut.woody.common.component.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.CookieGenerator;
@@ -34,17 +35,25 @@ public class NiceIdService {
 	private final AjaxResponse res = new AjaxResponse();
 	private final HashMap<String, Object> data = new HashMap<>();
 
-	@Value("${kokonut.nice.id}")
-	public String clientId;
+//	@Value("${kokonut.nice.id}")
+	public final String clientId;
 	
-	@Value("${kokonut.nice.secret}")
-	public String clientSecret;
+//	@Value("${kokonut.nice.secret}")
+	public final String clientSecret;
 
-	@Value("${kokonut.nice.product}")
-	public String productId;
+//	@Value("${kokonut.nice.product}")
+	public final String productId;
 
-	@Value("${kokonut.nice.access}")
-	public String accessToken;
+//	@Value("${kokonut.nice.access}")
+	public final String accessToken;
+
+	@Autowired
+	public NiceIdService(KeyDataService keyDataService) {
+		this.clientId = keyDataService.findByKeyValue("nice_secret");
+		this.clientSecret = keyDataService.findByKeyValue("nice_id");
+		this.productId = keyDataService.findByKeyValue("nice_product");
+		this.accessToken = keyDataService.findByKeyValue("nice_access");
+	}
 
 	/*** 
 	 * AccessToken 발급 요청(최초 1회 요청)

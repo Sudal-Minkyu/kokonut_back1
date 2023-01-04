@@ -5,6 +5,7 @@ import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSendSubDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSaveAndUpdateDto;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageSendDto;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageSendSubDto;
+import com.app.kokonut.keydata.KeyDataService;
 import com.app.kokonut.navercloud.dto.NCloudPlatformMailRequest;
 import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
 import com.app.kokonut.woody.common.component.Converter;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -33,27 +35,36 @@ import java.util.*;
 @Service
 public class NaverCloudPlatformService {
 
-    @Value("${kokonut.ncloud.serviceId}")
-    public String serviceId;
+//    @Value("${kokonut.ncloud.serviceId}")
+    public final String serviceId;
 
-    @Value("${kokonut.ncloud.accessKey}")
-    public String accessKey;
+//    @Value("${kokonut.ncloud.accessKey}")
+    public final String accessKey;
 
-    @Value("${kokonut.ncloud.secretKey}")
-    public String secretKey;
+//    @Value("${kokonut.ncloud.secretKey}")
+    public final String secretKey;
 
-    @Value("${kokonut.ncloud.primaryKey}")
-    public String primaryKey;
+//    @Value("${kokonut.ncloud.primaryKey}")
+    public final String primaryKey;
 
-    @Value("${kokonut.ncloud.categoryCode}")
-    public String categoryCode;
-   
+//    @Value("${kokonut.ncloud.categoryCode}")
+    public final String categoryCode;
+
     public static final String typeAlimTalk = "alimtalk";
     public static final String typeFriendTalk = "friendtalk";
 
+    @Autowired
+    public NaverCloudPlatformService(KeyDataService keyDataService) {
+        this.serviceId = keyDataService.findByKeyValue("ncloud_serviceid");
+        this.accessKey = keyDataService.findByKeyValue("ncloud_accesskey");
+        this.secretKey = keyDataService.findByKeyValue("ncloud_secretkey");
+        this.primaryKey = keyDataService.findByKeyValue("ncloud_primarykey");
+        this.categoryCode = keyDataService.findByKeyValue("ncloud_categorycode");
+    }
+
     /**
      * 시그니쳐 생성
-     * 
+     *
      * @param url
      * @param timestamp
      * @param method

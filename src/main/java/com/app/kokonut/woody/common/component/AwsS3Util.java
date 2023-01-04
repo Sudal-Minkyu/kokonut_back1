@@ -1,15 +1,16 @@
 package com.app.kokonut.woody.common.component;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.kms.AWSKMSClient;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.app.kokonut.keydata.KeyDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +35,21 @@ import java.util.Objects;
 @Service
 public class AwsS3Util {
 
-    @Value("${kokonut.aws.s3.bucket}")
-    String AWSBUCKET;
+    private final String AWSBUCKET;
 
     private final AmazonS3 s3Client;
 
     @Autowired
-    public AwsS3Util(AmazonS3 s3Client) {
+    public AwsS3Util(KeyDataService keyDataService, AmazonS3 s3Client) {
         this.s3Client = s3Client;
+        this.AWSBUCKET = keyDataService.findByKeyValue("aws_s3_bucket");
     }
 
     // AWS 사진 파일 업로드
     public String imageFileUpload(MultipartFile multipartFile, String storedFileName, String uploadPath) throws IOException {
         log.info("imageFileUpload 호출");
+
+        log.info("AWSBUCKET : "+AWSBUCKET);
 
         ObjectMetadata omd = new ObjectMetadata();
         omd.setContentType(multipartFile.getContentType());

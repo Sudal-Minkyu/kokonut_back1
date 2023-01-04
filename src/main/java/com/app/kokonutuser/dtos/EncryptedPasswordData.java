@@ -1,8 +1,15 @@
-package com.app.kokonutuser.dto;
+package com.app.kokonutuser.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
 
+
+/**
+ * @author Woody
+ * Date : 2023-01-03
+ * Time :
+ * Remark : 아직안쓰는중
+ */
 @Getter
 @Setter
 public class EncryptedPasswordData {

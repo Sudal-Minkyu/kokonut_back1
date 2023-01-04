@@ -1,6 +1,6 @@
 package com.app.kokonutuser.common;
 
-import com.app.kokonutuser.common.dto.CommonFieldDto;
+import com.app.kokonutuser.common.dtos.CommonFieldDto;
 import lombok.extern.slf4j.Slf4j;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
