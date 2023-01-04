@@ -7,7 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
+/**
+ * @author Joy
+ * Date : 2022-01-03
+ * Time :
+ * Remark : 공지사항 목록+내용 조회 시 사용하는 DTO (제목, 내용, 게시일자만 보여주는 간단한 목록 형태)
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
