@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -75,6 +76,7 @@ public class NoticeService {
         }
     }
 
+    @Transactional
     public ResponseEntity<Map<String, Object>> noticeSave(String userRole, String email, NoticeDetailDto noticeDetailDto) {
         log.info("noticeSave 호출, userRole : "+ userRole);
         AjaxResponse res = new AjaxResponse();
@@ -143,6 +145,7 @@ public class NoticeService {
         }
     }
 
+    @Transactional
     public ResponseEntity<Map<String, Object>> noticeDelete(String userRole, String email, Integer idx) {
         log.info("noticeDelete 호출, userRole : " +userRole);
         AjaxResponse res = new AjaxResponse();
@@ -163,6 +166,7 @@ public class NoticeService {
         }
     }
 
+    @Transactional
     public ResponseEntity<Map<String, Object>> noticeState(String userRole, String email, NoticeStateDto noticeStateDto) {
         log.info("noticeDelete 호출, userRole : " +userRole);
         AjaxResponse res = new AjaxResponse();

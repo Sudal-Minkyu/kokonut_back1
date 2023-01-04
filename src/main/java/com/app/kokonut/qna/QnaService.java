@@ -71,6 +71,7 @@ public class QnaService {
         return ResponseEntity.ok(res.ResponseEntityPage(qnaListDtos));
     }
 
+    @Transactional
     public ResponseEntity<Map<String, Object>> qnaDetail(String userRole, String email, Integer idx) {
         log.info("qnaDetail 호출");
         AjaxResponse res = new AjaxResponse();
