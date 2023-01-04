@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 public interface CollectInformationRepositoryCustom {
 
     // 개인정보 처리방침 목록 조회 - 기존 SelectCollectInformationList, SelectCollectInformationListCount
-    Page<CollectInfoListDto> findCollectInfoPage(CollectInfoSearchDto collectInfoSearchDto, Pageable pageable);
+    Page<CollectInfoListDto> findCollectInfoPage(Integer companyIdx, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable);
 
     // 개인정보 처리방침 상세 조회 - 기존 SelectCollectInformationByIdx
     CollectInfoDetailDto findCollectInfoByIdx(Integer idx);

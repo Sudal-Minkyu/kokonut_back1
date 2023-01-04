@@ -6,13 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * @author Joy
  * Date : 2023-01-94
  * Time :
- * Remark : 기본 DTO
+ * Remark : 개인정보 처리방침 - 개인정보 수집 및 이용 안내 상세보기를 위한 DTO
  */
 @Data
 @NoArgsConstructor
@@ -23,31 +22,10 @@ public class CollectInfoDetailDto implements Serializable {
     @ApiModelProperty("주키")
     private Integer idx;
 
-    @ApiModelProperty("회사 IDX")
-    private Integer companyIdx;
-
-    @ApiModelProperty("등록자")
-    private Integer adminIdx;
-
     @ApiModelProperty("제목")
     private String title;
 
     @ApiModelProperty("내용")
     private String content;
-
-    @ApiModelProperty("등록자 이름")
-    private String registerName;
-
-    @ApiModelProperty("등록일")
-    private LocalDateTime regdate;
-
-    @ApiModelProperty("수정자")
-    private Integer modifierIdx;
-
-    @ApiModelProperty("수정자 이름")
-    private String modifierName;
-
-    @ApiModelProperty("수정일")
-    private LocalDateTime modifyDate;
 
 }
