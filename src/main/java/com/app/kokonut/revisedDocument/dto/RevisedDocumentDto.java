@@ -1,71 +1,47 @@
-package com.app.kokonut.refactor.revisedDocument.dto;
+package com.app.kokonut.revisedDocument.dto;
 
-
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
+/**
+ * @author Joy
+ * Date : 2023-01-94
+ * Time :
+ * Remark : 기본 DTO
+ */
 @Data
-@ApiModel("")
-public class RevisedDocumentDTO implements Serializable {
+@NoArgsConstructor
+@AllArgsConstructor
+public class RevisedDocumentDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 키
-     */
     @ApiModelProperty("키")
     private Integer idx;
 
-
-    /**
-     * 회사(Company) 키
-     */
     @ApiModelProperty("회사(Company) 키")
     private Integer companyIdx;
 
-
-    /**
-     * 시행시작일자
-     */
     @ApiModelProperty("시행시작일자")
-    private Date enforceStartDate;
+    private LocalDateTime enforceStartDate;
 
-
-    /**
-     * 시행종료일자
-     */
     @ApiModelProperty("시행종료일자")
-    private Date enforceEndDate;
+    private LocalDateTime enforceEndDate;
 
-
-    /**
-     * 파일그룹아이디
-     */
     @ApiModelProperty("파일그룹아이디")
     private String fileGroupId;
 
-
-    /**
-     * 등록자
-     */
     @ApiModelProperty("등록자")
     private Integer adminIdx;
 
-
-    /**
-     * 등록자이름
-     */
     @ApiModelProperty("등록자이름")
     private String registerName;
 
-
-    /**
-     * 등록일자
-     */
     @ApiModelProperty("등록일자")
-    private Date regdate;
+    private LocalDateTime regdate;
 
 }
