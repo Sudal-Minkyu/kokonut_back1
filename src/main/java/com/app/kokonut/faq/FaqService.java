@@ -134,6 +134,7 @@ public class FaqService {
         }
     }
 
+    @Transactional
     public ResponseEntity<Map<String, Object>> faqDelete(String userRole, String email, Integer idx) {
         log.info("faqDelete 호출, userRole : " +userRole);
         AjaxResponse res = new AjaxResponse();
