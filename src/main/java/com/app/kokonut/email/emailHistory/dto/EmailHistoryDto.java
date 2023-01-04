@@ -6,12 +6,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @ApiModel("")
 public class EmailHistoryDto implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     /**
      * 보내는 사람 이메일

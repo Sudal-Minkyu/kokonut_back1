@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoticeDetailDto implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("키")
     private Integer idx;

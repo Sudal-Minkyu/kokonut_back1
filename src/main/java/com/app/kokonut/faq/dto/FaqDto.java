@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FaqDto implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     /**
      * 키

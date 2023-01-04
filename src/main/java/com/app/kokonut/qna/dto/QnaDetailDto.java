@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QnaDetailDto implements Serializable {
-    private static final long serialVersionUID = 1L;
+
     // Qna Table
     @ApiModelProperty("키")
     private Integer idx;

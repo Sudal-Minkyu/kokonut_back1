@@ -17,7 +17,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CollectInfoDetailDto implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("주키")
     private Integer idx;
