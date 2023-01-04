@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -85,7 +86,7 @@ public class NoticeService {
             Integer adminIdx = admin.getIdx();
             String adminName = admin.getName();
 
-            if(noticeDetailDto.getIdx() != null){
+            if(noticeDetailDto.getIdx() == null){
                 log.info("공지사항 등록");
                 NoticeDetailDto insertDetailDto = noticeDetailDto;
 
@@ -104,25 +105,36 @@ public class NoticeService {
                 log.info("공지사항 등록 완료. idx : " + savedIdx);
             }else{
                 log.info("공지사항 수정, idx : " + noticeDetailDto.getIdx());
+                Optional<Notice> updateNotice = noticeRepository.findById(noticeDetailDto.getIdx());
+                if(updateNotice.isEmpty()){
+                    log.error("공지사항 수정 실패, 게시글을 발견할 수 없습니다. 요청 idx : " + noticeDetailDto.getIdx());
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                }else{
+                    log.info("수정자, 수정일시 세팅 내용 세팅");
+                    updateNotice.get().setModifierIdx(adminIdx);
+                    updateNotice.get().setModifierName(adminName);
+                    updateNotice.get().setModifyDate(LocalDateTime.now());
 
-                NoticeDetailDto updateDetailDto = noticeRepository.findNoticeByIdx(noticeDetailDto.getIdx());
-                Notice updateNotice = new Notice();
-                updateNotice.setIdx(updateDetailDto.getIdx());
+                    log.info("수정 내용 세팅");
+                    if(noticeDetailDto.getIsNotice() != null){
+                        updateNotice.get().setIsNotice(noticeDetailDto.getIsNotice());
+                    }
+                    if(noticeDetailDto.getRegistDate() != null){
+                        updateNotice.get().setRegistDate(noticeDetailDto.getRegistDate());
+                    }
+                    if(noticeDetailDto.getTitle() != null){
+                        updateNotice.get().setTitle(noticeDetailDto.getTitle());
+                    }
+                    if(noticeDetailDto.getContent() != null){
+                        updateNotice.get().setContent(noticeDetailDto.getContent());
+                    }
+                    if(noticeDetailDto.getState() != null){
+                        updateNotice.get().setState(noticeDetailDto.getState());
+                    }
 
-                log.info("수정자, 수정일시, 내용 세팅");
-                updateNotice.setModifierIdx(adminIdx);
-                updateNotice.setModifierName(adminName);
-                updateNotice.setModifyDate(LocalDateTime.now());
-
-                // TODO null 에 대해 테스트 코드 확인 후 수정
-                updateNotice.setIsNotice(noticeDetailDto.getIsNotice());
-                updateNotice.setRegistDate(noticeDetailDto.getRegistDate());
-                updateNotice.setTitle(noticeDetailDto.getTitle());
-                updateNotice.setContent(noticeDetailDto.getContent());
-                updateNotice.setState(noticeDetailDto.getState());
-
-                Integer updatedIdx = noticeRepository.save(updateNotice).getIdx();
-                log.info("공지사항 수정 완료. idx : " + updatedIdx);
+                    Integer updatedIdx = noticeRepository.save(updateNotice.get()).getIdx();
+                    log.info("공지사항 수정 완료. idx : " + updatedIdx);
+                }
             }
             return ResponseEntity.ok(res.success(data));
         }else{

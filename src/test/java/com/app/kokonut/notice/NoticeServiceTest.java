@@ -3,6 +3,7 @@ package com.app.kokonut.notice;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.notice.dto.NoticeDetailDto;
 import com.app.kokonut.notice.dto.NoticeSearchDto;
 import com.app.kokonut.notice.entity.Notice;
 import org.junit.jupiter.api.*;
@@ -13,10 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -90,7 +88,7 @@ class NoticeServiceTest {
         savedNotice.setTitle("[공지]코코넛 보안 관련 공지사항 입니다.");
         savedNotice.setContent("코코넛 공지사항 내용 입니다.");
         savedNotice.setIsNotice(0); // 0:일반,1:상단공지
-        savedNotice.setState(1);    // 0:게시중지,1:게시중,2:게시대기
+        savedNotice.setState(2);    // 0:게시중지,1:게시중,2:게시대기
         savedNotice.setViewCount(0);
         savedNotice.setRegistDate(LocalDateTime.now());
 
@@ -194,7 +192,64 @@ class NoticeServiceTest {
     }
 
     @Test
-    void noticeSave() {
+    @DisplayName("공지사항 등록 성공 테스트 - 등록")
+    void noticeSave_1() {
+        // given
+        NoticeDetailDto saveNotice = new NoticeDetailDto();
+        saveNotice.setTitle("[공지] 2022년 " +2 +"월 코코넛 주요 보안 이슈에 대한 공지사항 입니다.");
+        saveNotice.setContent( 2 +"월 코코넛 주요 이슈 공지사항 내용 입니다.");
+        saveNotice.setIsNotice(0); // 0:일반,1:상단공지
+        saveNotice.setRegistDate(LocalDateTime.now());
+
+        // when
+        ResponseEntity<Map<String,Object>> response =
+                noticeService.noticeSave(systemUserRole, "system@kokonut.me", saveNotice);
+        if(noticeRepository.findById(2).isPresent()) {
+            System.out.println("####### 등록상태 (0:게시중지,1:게시중,2:게시대기) : " + noticeRepository.findById(2).get().getState());
+            System.out.println("####### idx : " + noticeRepository.findById(2).get().getIdx());
+            System.out.println("####### AdminIdx : " + noticeRepository.findById(2).get().getAdminIdx());
+            System.out.println("####### 등록일 : " + noticeRepository.findById(2).get().getRegdate());
+        }
+        // then
+        Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
+    }
+
+    @Test
+    @DisplayName("공지사항 등록 성공 테스트 - 수정")
+    void noticeSave_2() {
+        // given
+        NoticeDetailDto saveNotice = new NoticeDetailDto();
+        saveNotice.setIdx(1);
+        saveNotice.setTitle("[공지] 2022년 1월 코코넛 주요 보안 이슈에 대한 공지사항 입니다.");
+        saveNotice.setContent( "1월 코코넛 주요 이슈 공지사항 내용 입니다.");
+        saveNotice.setIsNotice(1); // 0:일반,1:상단공지
+        saveNotice.setRegistDate(LocalDateTime.now().minusDays(1));
+
+        Optional<Notice> beforeNoti = noticeRepository.findById(1);
+        // when
+        ResponseEntity<Map<String,Object>> response =
+                noticeService.noticeSave(systemUserRole, "system@kokonut.me", saveNotice);
+
+        Optional<Notice> afterNoti = noticeRepository.findById(1);
+
+        System.out.println("###############################################");
+        System.out.println("[변경] title          :: "+ beforeNoti.get().getTitle() +"->" + afterNoti.get().getTitle());
+        System.out.println("[변경] content        :: "+ beforeNoti.get().getContent() +"->" + afterNoti.get().getContent());
+        System.out.println("[변경] isNotice       :: "+ beforeNoti.get().getIsNotice() +"->" + afterNoti.get().getIsNotice());
+        System.out.println("[변경] registDate     :: "+ beforeNoti.get().getRegistDate() +"->" + afterNoti.get().getRegistDate());
+        System.out.println("[변경] modifierIdx    :: "+ beforeNoti.get().getModifierIdx() +"->" + afterNoti.get().getModifierIdx());
+        System.out.println("[변경] modifierName   :: "+ beforeNoti.get().getModifierName() +"->" + afterNoti.get().getModifierName());
+        System.out.println("[변경] modifyDate     :: "+ beforeNoti.get().getModifyDate() +"->" + afterNoti.get().getModifyDate());
+        System.out.println("[유지] adminIdx       :: "+ beforeNoti.get().getAdminIdx() +"->" + afterNoti.get().getAdminIdx());
+        System.out.println("[유지] idx            :: "+ beforeNoti.get().getIdx() +"->" + afterNoti.get().getIdx());
+        System.out.println("[유지] state          :: "+ beforeNoti.get().getState() +"->" + afterNoti.get().getState());
+        System.out.println("[유지] regDate        :: "+ beforeNoti.get().getRegdate() +"->" + afterNoti.get().getRegdate());
+        System.out.println("###############################################");
+
+        // then
+        Assertions.assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
+        Assertions.assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
     }
 
     @Test

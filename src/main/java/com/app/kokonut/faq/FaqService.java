@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -103,30 +104,34 @@ public class FaqService {
                 log.info("자주묻는 질문 등록 완료. idx : " + savedIdx);
             }else{
                 log.info("자주묻는 질문 수정, idx : " + faqDetailDto.getIdx());
-                FaqDetailDto updateDetailDto = faqRepository.findFaqByIdx(faqDetailDto.getIdx());
-                log.info("수정자, 수정일시, 내용 세팅");
-                Faq updateFaq = new Faq();
-
-                updateFaq.setIdx(updateDetailDto.getIdx());
-
-                updateFaq.setModifierIdx(adminIdx);
-                updateFaq.setModifierName(adminName);
-                updateFaq.setModifyDate(LocalDateTime.now());
-
-                // TODO null 에 대해 테스트 코드 확인 후 수정
-                updateFaq.setQuestion(updateDetailDto.getQuestion());
-                updateFaq.setAnswer(updateDetailDto.getAnswer());
-                updateFaq.setType(updateDetailDto.getType());
-
-                Integer updatedIdx = faqRepository.save(updateFaq).getIdx();
-                log.info("자주묻는 질문 수정 완료. idx : " + updatedIdx);
+                Optional<Faq> updateFaq = faqRepository.findById(faqDetailDto.getIdx());
+                if(updateFaq.isEmpty()){
+                    log.error("자주묻는 질문 수정 실패, 게시글을 발견할 수 없습니다. 요청 idx : " + faqDetailDto.getIdx());
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                }else{
+                    log.info("수정자, 수정일시 세팅");
+                    updateFaq.get().setModifierIdx(adminIdx);
+                    updateFaq.get().setModifierName(adminName);
+                    updateFaq.get().setModifyDate(LocalDateTime.now());
+                    log.info("내용 세팅");
+                    if(faqDetailDto.getQuestion() != null){
+                        updateFaq.get().setQuestion(faqDetailDto.getQuestion());
+                    }
+                    if(faqDetailDto.getAnswer() != null){
+                        updateFaq.get().setAnswer(faqDetailDto.getAnswer());
+                    }
+                    if(faqDetailDto.getType() != null){
+                        updateFaq.get().setType(faqDetailDto.getType());
+                    }
+                    Integer updatedIdx = faqRepository.save(updateFaq.get()).getIdx();
+                    log.info("자주묻는 질문 수정 완료. idx : " + updatedIdx);
+                }
             }
             return ResponseEntity.ok(res.success(data));
         }else{
             log.error("접근권한이 없습니다. userRole : " + userRole);
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
         }
-
     }
 
     public ResponseEntity<Map<String, Object>> faqDelete(String userRole, String email, Integer idx) {
