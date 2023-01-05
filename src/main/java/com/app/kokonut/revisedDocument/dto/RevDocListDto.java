@@ -34,9 +34,10 @@ public class RevDocListDto implements Serializable {
     @ApiModelProperty("등록일자")
     private LocalDateTime regdate;
 
-    // TODO 테이블 생성 후 추가, 파일 양식 때문에 좀더 고민 중
-    // revDocFile 테이블
-    //private Integer fileIdx;
-    //private String cfOriginalFilename;
+    // reviseDocumentFile 테이블
+
+//    TODO 공통 키 작업 완료 후 테스트 코드 작성 후 추가 개발
+//    @ApiModelProperty("원래 파일명")
+//    private String cfOriginalFilename;
 
 }

@@ -2,12 +2,20 @@ package com.app.kokonut.revisedDocument;
 
 import com.app.kokonut.revisedDocument.dto.RevDocListDto;
 import com.app.kokonut.revisedDocument.dto.RevDocSearchDto;
+import com.app.kokonut.revisedDocument.entity.QRevisedDocument;
 import com.app.kokonut.revisedDocument.entity.RevisedDocument;
+import com.app.kokonut.revisedDocumentFile.QRevisedDocumentFile;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Joy
@@ -31,18 +39,35 @@ public class RevisedDocumentRepositoryCustomImpl extends QuerydslRepositorySuppo
 	    *      , A.`ENFORCE_END_DATE`
 		*      , A.`REGISTER_NAME`
 	    *      , A.`REGDATE`
-	    *      , B.`IDX` AS `FILE_IDX`,
 	    *      , B.`CF_ORIGINAL_FILENAME`
 	    *   FROM `revised_document` A
-	   LEFT JOIN `rev_doc_file` B
-		      ON A.`IDX` = B.`REV_DOC_IDX`
+	   LEFT JOIN `revise_doc_file` B
+		      ON A.`IDX` = B.`REVISED_DOCUMENT_IDX`
 	  WHERE 1 = 1
 	    AND A.`COMPANY_IDX` = #{companyIdx}
 		AND A.`REGDATE` BETWEEN #{stimeStart} AND #{stimeEnd}
 	  ORDER BY A.`REGDATE` DESC
 	    *
 	    */
+        QRevisedDocument doc  = QRevisedDocument.revisedDocument;
+        QRevisedDocumentFile file  = QRevisedDocumentFile.revisedDocumentFile;
 
-        return null;
+        JPQLQuery<RevDocListDto> query = from(doc)
+                //.leftJoin(file).on(doc.idx.eq(file.revisedDocumentIdx))
+                .select(Projections.constructor(RevDocListDto.class,
+                        doc.idx,
+                        doc.enforceStartDate,
+                        doc.enforceEndDate,
+                        doc.registerName,
+                        doc.regdate
+                        //, file.cfOriginalFilename
+                ));
+        query.where(doc.companyIdx.eq(companyIdx),
+                doc.regdate.between(revDocSearchDto.getStimeStart(), revDocSearchDto.getStimeEnd())
+        );
+
+        query.orderBy(doc.regdate.desc());
+        final List<RevDocListDto> revDocListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
+        return new PageImpl<>(revDocListDtos, pageable, query.fetchCount());
     }
 }

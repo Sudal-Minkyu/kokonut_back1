@@ -28,8 +28,4 @@ public class RevDocSaveDto implements Serializable {
 
     private MultipartFile multipartFile;
 
-    // TODO 테이블 생성 후 추가, 파일 양식 때문에 좀더 고민 중
-    // revDocFile 테이블
-    //private String cfOriginalFilename;
-
 }

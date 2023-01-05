@@ -53,4 +53,12 @@ public class RevisedDocumentRestController {
         String email = SecurityUtil.getCurrentJwt().getEmail();
         return revisedDocumentService.revDocSave(userRole, email, revDocDetailDto, request, response);
     }
+//    @ApiOperation(value="개정문서 삭제", notes="처리방침 개정문서 삭제")
+//    @PostMapping(value = "/revDocDelete") // -> 기존의 코코넛 호출 메서드명 : 서비스만 있음. 호출x,  - MemberRevisedDocumentController
+//    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
+//    public ResponseEntity<Map<String,Object>> revDocDelete(@RequestParam(name="idx") Integer idx) {
+//        String userRole = SecurityUtil.getCurrentJwt().getRole();
+//        String email = SecurityUtil.getCurrentJwt().getEmail();
+//        return revisedDocumentService.revDocDelete(userRole, email, idx);
+//    }
 }
