@@ -1,6 +1,6 @@
 package com.app.kokonutuser.common;
 
-import com.app.kokonutuser.common.dto.CommonFieldDto;
+import com.app.kokonutuser.common.dtos.CommonFieldDto;
 
 import java.util.List;
 

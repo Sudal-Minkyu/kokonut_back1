@@ -16,6 +16,7 @@ import com.app.kokonut.company.Company;
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.companyFile.CompanyFile;
 import com.app.kokonut.companyFile.CompanyFileRepository;
+import com.app.kokonut.keydata.KeyDataService;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import com.app.kokonut.woody.common.component.AriaUtil;
@@ -62,8 +63,8 @@ public class AuthService {
     @Value("${kokonut.aws.s3.businessS3Folder}")
     private String businessS3Folder;
 
-    @Value("${kokonut.aws.s3.url}")
-    private String AWSURL;
+//    @Value("${kokonut.aws.s3.url}")
+    private final String AWSURL;
 
     private final AwsS3Util awsS3Util;
     private final AwsKmsUtil awsKmsUtil;
@@ -81,7 +82,7 @@ public class AuthService {
     private final GoogleOTP googleOTP;
 
     @Autowired
-    public AuthService(AwsS3Util awsS3Util, AdminRepository adminRepository, AwsKmsUtil awsKmsUtil, CompanyRepository companyRepository, CompanyFileRepository companyFileRepository,
+    public AuthService(KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository, AwsKmsUtil awsKmsUtil, CompanyRepository companyRepository, CompanyFileRepository companyFileRepository,
                        AwsKmsHistoryRepository awsKmsHistoryRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
                        StringRedisTemplate redisTemplate, GoogleOTP googleOTP) {
@@ -96,6 +97,7 @@ public class AuthService {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.redisTemplate = redisTemplate;
         this.googleOTP = googleOTP;
+        this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
     }
 
     // 회원가입 기능

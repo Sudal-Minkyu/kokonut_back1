@@ -5,17 +5,17 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kms.AWSKMSClient;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
-import com.amazonaws.services.kms.model.*;
-import com.app.kokonut.awsKmsHistory.AwsKmsHistoryRepository;
+import com.amazonaws.services.kms.model.DataKeySpec;
+import com.amazonaws.services.kms.model.DecryptRequest;
+import com.amazonaws.services.kms.model.GenerateDataKeyRequest;
+import com.amazonaws.services.kms.model.GenerateDataKeyResult;
 import com.app.kokonut.awsKmsHistory.dto.AwsKmsResultDto;
+import com.app.kokonut.keydata.KeyDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 
 /**
  * @author Woody
@@ -26,14 +26,21 @@ import java.util.HashMap;
 @Service
 public class AwsKmsUtil {
 
-    @Value("${kokonut.aws.kms.id}")
-    private String KEY_ID;
+//    @Value("${kokonut.aws.kms.id}")
+    private final String KEY_ID;
 
-    @Value("${kokonut.aws.kms.access}")
-    private String ACCESS_KEY;
+//    @Value("${kokonut.aws.kms.access}")
+    private final String ACCESS_KEY;
 
-    @Value("${kokonut.aws.kms.secret}")
-    private String SECRET_KEY;
+//    @Value("${kokonut.aws.kms.secret}")
+    private final String SECRET_KEY;
+
+    @Autowired
+    public AwsKmsUtil(KeyDataService keyDataService) {
+        this.KEY_ID = keyDataService.findByKeyValue("kms_id");
+        this.ACCESS_KEY = keyDataService.findByKeyValue("kms_access");
+        this.SECRET_KEY = keyDataService.findByKeyValue("kms_secret");
+    }
 
     private AWSKMSClient CreateClient() {
         BasicAWSCredentials credentials = new BasicAWSCredentials(ACCESS_KEY, SECRET_KEY);
@@ -71,7 +78,7 @@ public class AwsKmsUtil {
             ByteBuffer datakeyBf = dataKeyResult.getCiphertextBlob();
             dataKey = java.util.Base64.getEncoder().encodeToString(datakeyBf.array());
 
-            log.error("KMS 키생성 성공 : " + encryptText);
+            log.info("KMS 키생성 성공 encryptText : " + encryptText);
         } catch (Exception e) {
             log.error("KMS 키생성 실패 : " + e.getMessage());
             result = "fail";
@@ -108,7 +115,7 @@ public class AwsKmsUtil {
             decryptText = AesCrypto.decrypt(decodeBase64src, plainTextKey.array());
             plainTextKey.clear(); //메모리 해제
 
-            log.error("KMS 키생성 성공 : " + decryptText);
+            log.info("KMS 키생성 성공 decryptText : " + decryptText);
         } catch (Exception e) {
             log.error("KMS 키생성 실패 : " + e.getMessage());
             result = "fail";

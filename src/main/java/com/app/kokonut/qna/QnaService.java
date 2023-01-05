@@ -4,6 +4,7 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.joy.email.MailSender;
+import com.app.kokonut.keydata.KeyDataService;
 import com.app.kokonut.qna.dto.*;
 import com.app.kokonut.qna.entity.Qna;
 import com.app.kokonut.qnaFile.QnaFile;
@@ -40,21 +41,23 @@ public class QnaService {
     @Value("${kokonut.aws.s3.qnaS3Folder}")
     private String qnaS3Folder;
 
-    @Value("${kokonut.aws.s3.url}")
-    private String AWSURL;
+//    @Value("${kokonut.aws.s3.url}")
+    private final String AWSURL;
+
     private final AwsS3Util awsS3Util;
 
     private final QnaRepository qnaRepository;
     private final AdminRepository adminRepository;
     private final MailSender mailSender;
 
-    public QnaService(AwsS3Util awsS3Util, QnaRepository qnaRepository, AdminRepository adminRepository,
+    public QnaService(KeyDataService keyDataService, AwsS3Util awsS3Util, QnaRepository qnaRepository, AdminRepository adminRepository,
                       QnaFileRepository qnaFileRepository, MailSender mailSender) {
         this.awsS3Util = awsS3Util;
         this.qnaRepository = qnaRepository;
         this.adminRepository = adminRepository;
         this.qnaFileRepository = qnaFileRepository;
         this.mailSender = mailSender;
+        this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
     }
 
     public ResponseEntity<Map<String, Object>> qnaList(String userRole, String email, QnaSearchDto qnaSearchDto, Pageable pageable) {

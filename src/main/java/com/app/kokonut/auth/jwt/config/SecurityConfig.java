@@ -35,7 +35,8 @@ public class SecurityConfig {
         return (web) -> web.ignoring().antMatchers("/favicon.ico","/swagger*/**","/v2/api-docs","/webjars/**",
                 "/api/Auth/**", "/api/NiceId/**"
                 // 임시로 해둔 API들
-                , "/api/ApiKey/**", "/api/Qna/**", "/api/DynamicUser/**");
+                , "/api/ApiKey/**", "/api/Qna/**",
+                "/api/DynamicUser/**", "/api/DynamicRemove/**", "/api/DynamicDormant/**");
     }
 
     @Bean
