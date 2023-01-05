@@ -21,7 +21,7 @@ import java.util.Objects;
  * @author Joy
  * Date : 2023-01-04
  * Time :
- * Remark : RevisedDocumentRepository 개인정보 처리방침 - 개정 문서 쿼리 선언부
+ * Remark : RevisedDocumentRepositoryCustom 개인정보 처리방침 - 개정 문서 쿼리 선언부
  */
 @Repository
 public class RevisedDocumentRepositoryCustomImpl extends QuerydslRepositorySupport implements RevisedDocumentRepositoryCustom {

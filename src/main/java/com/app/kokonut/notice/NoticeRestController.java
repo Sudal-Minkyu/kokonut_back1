@@ -15,14 +15,24 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
+/**
+ * @author Joy
+ * Date : 2022-12-27
+ * Time :
+ * Remark : 공지사항 컨트롤러
+ */
 @Api(tags = "")
 @Validated
 @RestController
 @RequestMapping("/api/Notice")
 public class NoticeRestController {
-    // 기존 코코넛 SystemNoticeController, NoticeController 컨트롤러 리팩토링
-    // 기존 url : /system/notice , 변경 url : /api/Notice
+    /* 기존 컨트롤러
+     * SystemNoticeController  "/system/notice"
+     * NoticeController  "/notice"
+     *
+     * 변경 컨트롤러
+     * NoticeRestController    "/api/Notice"
+     */
 
     private final NoticeService noticeService;
 

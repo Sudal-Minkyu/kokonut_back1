@@ -28,8 +28,13 @@ import java.util.Map;
 @Validated
 @RestController
 @RequestMapping("/api/RevisedDocument")
-// AS-IS MemberRevisedDocumentController 리팩토링, url /member/revisedDocument -> /api/RevisedDocument
 public class RevisedDocumentRestController {
+    /* 기존 컨트롤러
+     * MemberRevisedDocumentController  "/member/revisedDocument"
+     *
+     * 변경 컨트롤러
+     * RevisedDocumentRestController    "/api/RevisedDocument"
+     */
     private final RevisedDocumentService revisedDocumentService;
 
     public RevisedDocumentRestController(RevisedDocumentService revisedDocumentService) {

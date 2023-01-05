@@ -1,7 +1,5 @@
 package com.app.kokonut.revisedDocument;
 
-import com.app.kokonut.qna.dto.QnaListDto;
-import com.app.kokonut.qna.dto.QnaSearchDto;
 import com.app.kokonut.revisedDocument.dto.RevDocListDto;
 import com.app.kokonut.revisedDocument.dto.RevDocSearchDto;
 import org.springframework.data.domain.Page;
