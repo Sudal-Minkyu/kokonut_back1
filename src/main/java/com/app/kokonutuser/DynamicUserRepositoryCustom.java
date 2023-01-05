@@ -1,6 +1,8 @@
 package com.app.kokonutuser;
 
 import com.app.kokonutuser.dtos.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,8 @@ public interface DynamicUserRepositoryCustom {
 
     List<KokonutUserPwInfoDto> findByNowPw(String searchQuery); // 현재 비밀번호 값 호출
 
-    Integer selectCountByThisMonth(String searchQuery); // 금일부터 한달전까지 속해 있는 유저수 조회;
+    Integer selectCountByThisMonth(String searchQuery); // 금일부터 한달전까지 속해 있는 유저수 조회
+
+    Page<KokonutUserListDto> findByUserPage(Pageable pageable); // 유저 리스트 조회
 
 }

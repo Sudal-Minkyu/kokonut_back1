@@ -5,13 +5,13 @@ import java.util.HashMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class DataTables {
-	
-	private Logger logger = LoggerFactory.getLogger(DataTables.class);
-	
+
 	private long total;
 	private HashMap<String, Object> rows;
 	private int pageNumber;
@@ -35,9 +35,11 @@ public class DataTables {
 		ObjectMapper mapper = new ObjectMapper();
 		
 		try {
+			log.info("리스트 데이터 반환");
 			return mapper.writeValueAsString(map);
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			log.info("리스트 데이터 실패");
+			log.error(e.getMessage());
 		}
 
 		return null;

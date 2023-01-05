@@ -2,14 +2,16 @@ package com.app.kokonutuser;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonutuser.dtos.KokonutUserSearchDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Woody
@@ -67,6 +69,13 @@ public class DynamicUserRestController {
 		log.info("jwtFilterDto.getRole() : "+jwtFilterDto.getRole());
 
 		return dynamicUserService.createTable(jwtFilterDto.getEmail());
+	}
+
+	// 유저DB(테이블) 리스트조회 -> 기존 코코넛 URL : /member/user/list
+	@GetMapping(value = "/listUserDatabase")
+	public ResponseEntity<Map<String,Object>> listUserDatabase(@RequestBody KokonutUserSearchDto kokonutUserSearchDto, Pageable pageable) {
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.listUserDatabase(kokonutUserSearchDto, jwtFilterDto.getEmail(), pageable);
 	}
 
 }

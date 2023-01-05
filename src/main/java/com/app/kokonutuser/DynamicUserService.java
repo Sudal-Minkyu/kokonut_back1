@@ -5,19 +5,18 @@ import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
+import com.app.kokonut.woody.common.component.DataTables;
 import com.app.kokonutremove.KokonutRemoveService;
-import com.app.kokonutuser.dtos.KokonutUserFieldInfoDto;
-import com.app.kokonutuser.dtos.KokonutUserRemoveInfoDto;
+import com.app.kokonutuser.dtos.KokonutUserSearchDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Woody
@@ -202,16 +201,13 @@ public class DynamicUserService {
 //			log.info("result : "+result);
 //		}
 
-		// kokonut_user DB 회원의 비밀번호 확인 후 결과의 대해 로그인 접속시간 업데이트 로작 시작 - 테스트완료 woody
+		// kokonut_user DB 회원의 비밀번호 확인 후 결과의 대해 로그인 접속시간 업데이트 로직 시작 - 테스트완료 woody
 //		boolean result = kokonutUserService.updateLastLoginDate(businessNumber, passwordConfirm);
 //		log.info("result : "+result);
 
 		// kokonut_user DB 현재로부터 한달안에 가입한 유저의 수 조회 - 테스트완료 woody
 //		Integer result = kokonutUserService.selectCountByThisMonth(businessNumber);
 //		log.info("result : "+result);
-
-
-
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -232,9 +228,6 @@ public class DynamicUserService {
 		return ResponseEntity.ok(res.success(data));
 	}
 
-	//====================================================================//
-	// TABLE INSERT, UPDATE, DELETE
-	//====================================================================//
 	/**
 	 * 동적테이블 생성
 	 * @param email : 이메일
@@ -340,4 +333,61 @@ public class DynamicUserService {
 		return ResponseEntity.ok(res.success(data));
 	}
 
+
+
+	// 유저DB(테이블) 리스트조회
+	public ResponseEntity<Map<String, Object>> listUserDatabase(KokonutUserSearchDto kokonutUserSearchDto, String email, Pageable pageable) {
+		log.info("listUserDatabase 호출");
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
+
+		log.info("kokonutUserListSearchDto : "+ kokonutUserSearchDto);
+		log.info("email : "+email);
+
+
+		int total = 0;
+		List<HashMap<String, Object>> rows = new ArrayList<HashMap<String, Object>>();
+
+		DataTables dataTables = null;
+
+		// 해당 이메일을 통해 회사 IDX 조회
+		AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+
+		String businessNumber = adminCompanyInfoDto.getBusinessNumber();
+
+		// 정상사용자와 휴면사용자 리스트 조회
+		List<Map<String, Object>> list = kokonutUserService.listUserAndDormant(kokonutUserSearchDto, businessNumber, pageable);
+
+//		try{
+//			HashMap<String, Object> searchMap = null;
+////			if(paramMap.containsKey("searchData")){
+////				searchMap = (HashMap<String, Object>) paramMap.get("searchData");
+////				paramMap.putAll(searchMap);
+////			}
+//
+//
+//			HashMap<String, Object> company = companyService.SelectCompanyByIdx(authUser.getUser().getCompanyIdx());
+//			if(company != null) {
+//				Object businessNumber = company.get("BUSINESS_NUMBER");
+//				paramMap.put("tableName", businessNumber);
+//			}
+//
+//			// 정상, 휴면 상태값 조회
+//			String[] stateList = {"1", "2"};
+//			paramMap.put("stateList", stateList);
+//
+//			rows = userService.SelectUserList(paramMap);
+//			total = userService.SelectUserListCount(paramMap);
+//
+//			dataTables = new DataTables(paramMap, rows, total);
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		dataTables.getJsonString();
+
+
+		return ResponseEntity.ok(res.success(data));
+	}
 }

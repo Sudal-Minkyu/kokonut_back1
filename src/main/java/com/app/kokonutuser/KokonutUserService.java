@@ -6,12 +6,12 @@ import com.app.kokonutuser.common.dtos.CommonFieldDto;
 import com.app.kokonutuser.dtos.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -810,14 +810,23 @@ public class KokonutUserService {
 		return isSuccess;
 	}
 
+	// 정상사용자와 휴면사용자 리스트 조회
+	public List<Map<String, Object>> listUserAndDormant(KokonutUserSearchDto kokonutUserSearchDto, String businessNumber, Pageable pageable) {
+
+		Page<KokonutUserListDto> kokonutUserListDtos = dynamicUserRepositoryCustom.findByUserPage(pageable);
+		log.info("kokonutUserListDtos : "+kokonutUserListDtos);
+		return null;
+	}
+
 	/**
 	 * 휴면설정
 	 * 휴면계정 update state=2 > 휴면계정 insert > 일반계정 delete
-	 * @param tableName 테이블 이름
+	 * @param businessNumber 테이블 이름
 	 * @param Idx 사용자 키
-	 * @return 성공여부 true/false
+	 * @return boolean
+	 * 기존 코코넛 : Restore
 	 */
-//	public Boolean Restore(String tableName, Integer idx) {
+//	public boolean restore(String businessNumber, Integer idx) {
 //		Map<String, Object> map = new HashMap<String, Object>();
 //		List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
 //
