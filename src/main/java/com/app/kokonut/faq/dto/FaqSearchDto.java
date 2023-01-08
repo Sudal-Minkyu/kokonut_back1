@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FaqSearchDto implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     private Integer state;  // 상태(0:게시중지,1:게시중,2:게시대기)
 

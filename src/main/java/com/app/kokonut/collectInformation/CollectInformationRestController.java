@@ -22,8 +22,13 @@ import java.util.Map;
 @Validated
 @RestController
 @RequestMapping("/api/CollectInfomation")
-// AS-IS MemberCollectInformationControlle 리팩토링, url /member/collectInformation -> /api/CollectInfomation
 public class CollectInformationRestController {
+    /* 기존 컨트롤러
+     * MemberCollectInformationControlle  "/member/collectInformation"
+     *
+     * 변경 컨트롤러
+     * CollectInformationRestController    "/api/CollectInfomation"
+     */
 
     private final CollectInformationService collectInformationService;
 

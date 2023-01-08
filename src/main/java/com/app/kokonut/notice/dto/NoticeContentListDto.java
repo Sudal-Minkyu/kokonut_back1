@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoticeContentListDto implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("제목")
     private String title;

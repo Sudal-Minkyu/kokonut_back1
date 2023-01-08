@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoticeSearchDto implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("상단공지여부(0:일반,1:상단공지)")
     private Integer isNotice;

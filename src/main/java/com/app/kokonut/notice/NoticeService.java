@@ -19,6 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * @author Joy
+ * Date : 2022-12-27
+ * Time :
+ * Remark : NoticeService 공지사항 서비스
+ */
 @Slf4j
 @Service
 public class NoticeService {

@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Data
 @ApiModel("")
 public class EmailGroupDto implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     /**
      * 키

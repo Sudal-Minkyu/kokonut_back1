@@ -7,14 +7,11 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class QnaDto implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     /**
      * 키
      */

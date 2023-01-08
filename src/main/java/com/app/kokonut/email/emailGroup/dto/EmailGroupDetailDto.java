@@ -18,7 +18,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailGroupDetailDto implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     /**
      * 키

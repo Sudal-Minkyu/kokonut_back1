@@ -18,7 +18,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailGroupAdminInfoDto implements Serializable {
-    private static final long serialVersionUID = 1L;
+
     /**
      * 관리자 키(문자열, 구분자: ',')
      */
