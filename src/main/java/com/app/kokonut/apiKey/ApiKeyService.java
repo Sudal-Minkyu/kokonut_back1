@@ -4,6 +4,10 @@ import com.app.kokonut.apiKey.dtos.ApiKeyKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,20 @@ public class ApiKeyService {
     @Autowired
     public ApiKeyService(ApiKeyRepository apiKeyRepository){
         this.apiKeyRepository = apiKeyRepository;
+    }
+
+    // ApiKey가 유효한지 검증하는 메서드
+    public boolean validateApiKey(String apikey) {
+        try {
+//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            log.error("apikey : "+apikey);
+
+            return true;
+        } catch (Exception e) {
+            log.error("유효하지않은 APIKey 입니다.");
+            log.error("e : "+e.getMessage());
+        }
+        return false;
     }
 
     /**

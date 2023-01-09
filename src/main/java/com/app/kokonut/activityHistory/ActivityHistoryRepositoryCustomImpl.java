@@ -267,7 +267,7 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
                     activityHistory.idx,
                     activityHistory.companyIdx,
                     activityHistory.adminIdx,
-                    activityHistory.activityIdx,
+                    activityHistory.activityCode,
                     activityHistory.activityDetail,
                     activityHistory.reason,
                     activityHistory.ipAddr,

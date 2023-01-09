@@ -1,23 +1,21 @@
-package com.app.kokonutuser.dtos;
+package com.app.kokonutdormant.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * @author Woody
  * Date : 2023-01-06
  * Time :
- * Remark : 유저 리스트 조회 ListDto
+ * Remark : 휴면 리스트 조회 ListDto
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class KokonutUserListDto {
+public class KokonutDormantListDto {
 
     private Long IDX; // IDX
 
@@ -27,7 +25,7 @@ public class KokonutUserListDto {
 
     private Timestamp LAST_LOGIN_DATE; // 최근 접속 일시
 
-    public KokonutUserListDto(long IDX, String ID, Timestamp REGDATE, Timestamp LAST_LOGIN_DATE) {
+    public KokonutDormantListDto(long IDX, String ID, Timestamp REGDATE, Timestamp LAST_LOGIN_DATE) {
         this.IDX = IDX;
         this.ID = ID;
         this.REGDATE = REGDATE;

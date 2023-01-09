@@ -2,7 +2,7 @@ package com.app.kokonut.setting;
 
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.company.QCompany;
-import com.app.kokonut.refactor.setting.entity.QSetting;
+import com.app.kokonut.setting.entity.QSetting;
 import com.app.kokonut.setting.dto.SettingDetailDto;
 import com.app.kokonut.setting.entity.Setting;
 import com.querydsl.core.types.Projections;
@@ -19,17 +19,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class SettingRepositoryCustomImpl extends QuerydslRepositorySupport implements SettingRepositoryCustom {
-    private final SettingRepository settingRepository;
-    private final CompanyRepository companyRepository;
-    public final JpaResultMapper jpaResultMapper;
 
-    public SettingRepositoryCustomImpl(JpaResultMapper jpaResultMapper,
-                                       CompanyRepository companyRepository,
-                                       SettingRepository settingRepository) {
+    public SettingRepositoryCustomImpl() {
         super(Setting.class);
-        this.jpaResultMapper = jpaResultMapper;
-        this.companyRepository = companyRepository;
-        this.settingRepository = settingRepository;
     }
 
     @Override

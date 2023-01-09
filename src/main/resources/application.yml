@@ -51,8 +51,8 @@ kokonut:
     s3:
 #      url: ${KOKONUT_AWS_S3_URL}
 #      bucket: ${KOKONUT_AWS_S3_BUCKET}
-#      access: "aws_s3_access"
-#      secret: "aws_s3_secret"
+      access: "aws_s3_access"
+      secret: "aws_s3_secret"
 #      access: ${KOKONUT_AWS_S3_ACCESS}
 #      secret: ${KOKONUT_AWS_S3_SECRET}
       # S3 버킷 폴더

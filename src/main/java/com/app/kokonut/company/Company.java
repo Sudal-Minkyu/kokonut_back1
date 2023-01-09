@@ -120,6 +120,13 @@ public class Company implements Serializable {
     private Integer autoPay;
 
     /**
+     * 카드(빌링키)와 1:1로 대응하는 값
+     */
+    @Column(name = "BILLING_KEY")
+    @ApiModelProperty("카드(빌링키)와 1:1로 대응하는 값")
+    private String billingKey;
+
+    /**
      * 서비스 결제 X 강제 해지시 결제 안한 금액
      */
     @Column(name = "STOP_SERVICE_PRICE")

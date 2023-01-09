@@ -35,6 +35,7 @@ public interface DynamicUserRepositoryCustom {
 
     Integer selectCountByThisMonth(String searchQuery); // 금일부터 한달전까지 속해 있는 유저수 조회
 
-    Page<KokonutUserListDto> findByUserPage(Pageable pageable); // 유저 리스트 조회
+    List<KokonutUserListDto> findByUserPage(String searchQuery); // 유저 리스트 조회
 
+    Integer selectUserIdCheck(String searchQuery); // 아이디 존재 유무 확인
 }

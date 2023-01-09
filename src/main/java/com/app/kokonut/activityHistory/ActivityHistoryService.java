@@ -5,6 +5,7 @@ import com.app.kokonut.woody.been.Column;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -101,48 +102,26 @@ public class ActivityHistoryService {
      * 활동내역 insert
      * @param type - 1:고객정보처리, 2:관리자활동, 3:회원DB관리이력
      * @param companyIdx
-     * @param activityIdx - 활동내역(1:로그인,2:회원정보변경,3:회원정보삭제,4:관리자추가,5:관리자권한변경,6:처리이력다운로드,7:활동이력다운로드,8:고객정보 열람,9:고객정보 다운로드,10:고객정보 처리,11:회원정보DB관리 변경,12:회원DB 항목 관리 변경,13:회원 관리 변경)
+     * @param activityCode
      * @param activityDetail - 활동상세내역
      * @param reason - 사유
      * @param ipAddr - 접속IP주소
      * @param state - 0:비정상, 1:정상
-     * @return
+     * @return save IDX
+     * 기존 코코넛 : InsertActivityHistory
      */
-//    public HashMap<String, Object> InsertActivityHistory(int type, int companyIdx, int adminIdx, int activityIdx, String activityDetail, String reason, String ipAddr, int state) {
-//        HashMap<String, Object> returnMap = new HashMap<String, Object>();
-//
-//        try {
-//            HashMap<String, Object> paramMap = new HashMap<String, Object>();
-//            paramMap.put("type", type);
-//            paramMap.put("companyIdx", companyIdx);
-//            paramMap.put("adminIdx", adminIdx);
-//            paramMap.put("activityIdx", activityIdx);
-//            paramMap.put("activityDetail", activityDetail);
-//            paramMap.put("reason", reason);
-//            paramMap.put("ipAddr", ipAddr);
-//            paramMap.put("state", state);
-//
-//            activityHistoryRepository.InsertActivityHistory(paramMap);
-//
-//            returnMap.put("idx", paramMap.get("idx").toString());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return returnMap;
-//    }
-    public Integer insertActivityHistory(int type, int companyIdx, int adminIdx, int activityIdx, String activityDetail, String reason, String ipAddr, int state) {
+    public Integer insertActivityHistory(int type, int companyIdx, int adminIdx, ActivityCode activityCode, String activityDetail, String reason, String ipAddr, int state) {
 
         ActivityHistory activityHistory = new ActivityHistory();
         activityHistory.setType(type);
         activityHistory.setCompanyIdx(companyIdx);
         activityHistory.setAdminIdx(adminIdx);
-        activityHistory.setActivityIdx(activityIdx);
+        activityHistory.setActivityCode(activityCode);
         activityHistory.setActivityDetail(activityDetail);
         activityHistory.setReason(reason);
         activityHistory.setIpAddr(ipAddr);
         activityHistory.setState(state);
-        activityHistory.setRegdate(new Date());
+        activityHistory.setRegdate(LocalDateTime.now());
 
         activityHistory = activityHistoryRepository.save(activityHistory);
 
@@ -155,16 +134,8 @@ public class ActivityHistoryService {
      * @param activityDetail - 활동상세내역
      * @param reason - 사유
      * @param state - 0:비정상, 1:정상
+     * 기존 코코넛 : UpdateActivityHistory
      */
-//    public void UpdateActivityHistory(int idx, String activityDetail, String reason, int state) {
-//        HashMap<String, Object> paramMap = new HashMap<String, Object>();
-//        paramMap.put("idx", idx);
-//        paramMap.put("activityDetail", activityDetail);
-//        paramMap.put("reason", reason);
-//        paramMap.put("state", state);
-//
-//        activityHistoryRepository.UpdateActivityHistory(paramMap);
-//    }
     public void updateActivityHistory(int idx, String activityDetail, String reason, int state) {
 
         ActivityHistory activityHistory = activityHistoryRepository.findById(idx)

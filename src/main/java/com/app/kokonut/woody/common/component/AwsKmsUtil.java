@@ -11,6 +11,7 @@ import com.amazonaws.services.kms.model.GenerateDataKeyRequest;
 import com.amazonaws.services.kms.model.GenerateDataKeyResult;
 import com.app.kokonut.awsKmsHistory.dto.AwsKmsResultDto;
 import com.app.kokonut.keydata.KeyDataService;
+import com.app.kokonut.keydata.dtos.KeyDataKmsDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,20 +27,18 @@ import java.nio.ByteBuffer;
 @Service
 public class AwsKmsUtil {
 
-//    @Value("${kokonut.aws.kms.id}")
     private final String KEY_ID;
 
-//    @Value("${kokonut.aws.kms.access}")
     private final String ACCESS_KEY;
 
-//    @Value("${kokonut.aws.kms.secret}")
     private final String SECRET_KEY;
 
     @Autowired
     public AwsKmsUtil(KeyDataService keyDataService) {
-        this.KEY_ID = keyDataService.findByKeyValue("kms_id");
-        this.ACCESS_KEY = keyDataService.findByKeyValue("kms_access");
-        this.SECRET_KEY = keyDataService.findByKeyValue("kms_secret");
+        KeyDataKmsDto keyDataKmsDto = keyDataService.kms_Key();
+        this.KEY_ID = keyDataKmsDto.getKMSKEYID();
+        this.ACCESS_KEY = keyDataKmsDto.getKMSACCESSKEY();
+        this.SECRET_KEY = keyDataKmsDto.getKMSSECRETKEY();
     }
 
     private AWSKMSClient CreateClient() {

@@ -345,6 +345,7 @@ CREATE TABLE `company` (
   `PAY_DAY` int(11) DEFAULT NULL COMMENT '결제일(5일,10일 등 일자)',
   `PAY_DATE` timestamp NULL DEFAULT NULL COMMENT '결제등록일',
   `IS_AUTO_PAY` int(11) DEFAULT NULL COMMENT '자동결제(1:자동결제안함, 2:첫결제신청, 3: 해제, 4:첫결제 이후 재결제, 6:강제해제)',
+  `BILLING_KEY` varchar(128) DEFAULT NULL COMMENT '카드(빌링키)와 1:1로 대응하는 값',
   `STOP_SERVICE_PRICE` int(11) DEFAULT NULL COMMENT '서비스 결제 X 강제 해지시 결제 안한 금액',
   `NOT_AUTO_PAY_DATE` timestamp NULL DEFAULT NULL COMMENT '자동결제 해지일시',
   `VALID_START` timestamp NULL DEFAULT NULL COMMENT '회원권 시작일',

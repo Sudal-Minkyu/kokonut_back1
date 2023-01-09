@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +89,30 @@ public class KokonutUserService {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * 아이디 존재 유무 확인
+	 * @param businessNumber 테이블 이름
+	 * @param id 아이디
+	 * @return 존재하는 경우 true
+	 */
+	public boolean isExistId(String businessNumber, String id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("businessNumber", businessNumber);
+		map.put("id", id);
+
+		String searchQuery = "SELECT COUNT(*) FROM `" + businessNumber + "` WHERE 1=1 AND `ID`= '"+id+"'";
+		log.info("searchQuery : "+searchQuery);
+
+		Integer count = dynamicUserRepositoryCustom.selectUserIdCheck(searchQuery);
+
+		if(count > 0) {
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 
 	/**
@@ -201,7 +226,7 @@ public class KokonutUserService {
 	public List<KokonutUserFieldDto> selectEncryptColumns(String businessNumber) {
 		log.info("selectEncryptColumns 호출");
 		String searchQuery = "SHOW FULL COLUMNS FROM `"+businessNumber+"` WHERE `COMMENT` REGEXP '(.+)(\\()(.*암호화.*)(\\))'";
-//		log.info("searchQuery : "+searchQuery);
+		log.info("searchQuery : "+searchQuery);
 		return dynamicUserRepositoryCustom.selectColumns(searchQuery);
 	}
 
@@ -810,12 +835,33 @@ public class KokonutUserService {
 		return isSuccess;
 	}
 
-	// 정상사용자와 휴면사용자 리스트 조회
-	public List<Map<String, Object>> listUserAndDormant(KokonutUserSearchDto kokonutUserSearchDto, String businessNumber, Pageable pageable) {
+	// 정상사용자 리스트 조회
+	public List<KokonutUserListDto> listUser(KokonutUserSearchDto kokonutUserSearchDto, String businessNumber) {
+		log.info("listUser 호출");
 
-		Page<KokonutUserListDto> kokonutUserListDtos = dynamicUserRepositoryCustom.findByUserPage(pageable);
-		log.info("kokonutUserListDtos : "+kokonutUserListDtos);
-		return null;
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("SELECT * FROM `").append(businessNumber).append("` WHERE ");
+		if(!kokonutUserSearchDto.getBaseDate().equals("") && kokonutUserSearchDto.getBaseDate() != null) {
+			sb.append("`").append(kokonutUserSearchDto.getBaseDate()).append("` BETWEEN '")
+					.append(kokonutUserSearchDto.getStimeStart()).append("' AND '").append(kokonutUserSearchDto.getStimeEnd()).append("'");
+		} else {
+			sb.append("`REGDATE` BETWEEN '").append(kokonutUserSearchDto.getStimeStart()).append("' AND '").append(kokonutUserSearchDto.getStimeEnd()).append("'");
+		}
+
+		if(kokonutUserSearchDto.getSearchText() != null) {
+			sb.append(" AND `ID` LIKE CONCAT('%','").append(kokonutUserSearchDto.getSearchText()).append("','%')");
+		}
+
+		sb.append(" ORDER BY `REGDATE` DESC");
+
+		String searchQuery = sb.toString();
+		log.info("searchQuery : "+searchQuery);
+
+//		List<KokonutUserListDto> kokonutUserListDtos = dynamicUserRepositoryCustom.findByUserPage(searchQuery);
+//		log.info("kokonutUserListDtos : "+kokonutUserListDtos);
+
+		return dynamicUserRepositoryCustom.findByUserPage(searchQuery);
 	}
 
 	/**

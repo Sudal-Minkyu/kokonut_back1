@@ -19,7 +19,7 @@ public class KokonutUserSearchDto {
 
     private String status; // 상태 : "1" 정상, "2" 휴면
 
-    private String baseDate; // 목록보기 : "" 전체, "REGDATE" 회원가입일순, "LAST_LOGIN_DATE" 최근접속일순
+    private String baseDate; // 목록보기 : "" 전체, "REGISTER_DATE" 회원가입일순, "LAST_LOGIN_DATE" 최근접속일순
 
     private String searchText; // 아이디
 

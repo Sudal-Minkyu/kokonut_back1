@@ -1,5 +1,7 @@
 package com.app.kokonut.company;
 
+import com.app.kokonut.awsKmsHistory.AwsKmsHistory;
+import com.app.kokonut.awsKmsHistory.AwsKmsHistoryRepository;
 import com.app.kokonut.awsKmsHistory.dto.AwsKmsResultDto;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.component.AwsKmsUtil;
@@ -7,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -23,11 +27,12 @@ public class CompanyService {
     private final AwsKmsUtil awsKmsUtil;
 
     private final CompanyRepository companyRepository;
-
+    private final AwsKmsHistoryRepository awsKmsHistoryRepository;
     @Autowired
-    public CompanyService(AwsKmsUtil awsKmsUtil, CompanyRepository companyRepository){
+    public CompanyService(AwsKmsUtil awsKmsUtil, CompanyRepository companyRepository, AwsKmsHistoryRepository awsKmsHistoryRepository){
         this.awsKmsUtil = awsKmsUtil;
         this.companyRepository = companyRepository;
+        this.awsKmsHistoryRepository = awsKmsHistoryRepository;
     }
 
 
@@ -99,6 +104,7 @@ public class CompanyService {
      * ENCRYPT_TEXT, DATA_KEY 복호화후 재등록하고,
      * 최종적으로 복호화한 DATA_KEY를 전달하는 메서드
      */
+    @Transactional
     public String selectCompanyEncryptKey(Integer companyIdx) {
 
         Optional<Company> optionalCompany = companyRepository.findById(companyIdx);
@@ -130,6 +136,13 @@ public class CompanyService {
                     optionalCompany.get().setDataKey(dataKey);
                     companyRepository.save(optionalCompany.get());
                     log.info("KMS 키 업데이트 성공");
+
+                    log.info("KMS 발급 이력 저장(Insert) 로직 시작");
+                    AwsKmsHistory awsKmsHistory = new AwsKmsHistory();
+                    awsKmsHistory.setType("DEC");
+                    awsKmsHistory.setRegdate(LocalDateTime.now());
+                    AwsKmsHistory saveAwsKmsHistory =  awsKmsHistoryRepository.save(awsKmsHistory);
+                    log.info("KMS 이력 저장 saveAwsKmsHistory : "+saveAwsKmsHistory.getIdx());
                 }
 
                 return decryptText;

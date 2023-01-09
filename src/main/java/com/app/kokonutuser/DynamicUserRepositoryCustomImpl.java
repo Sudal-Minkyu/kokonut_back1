@@ -12,9 +12,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -155,38 +158,26 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
         return jdbcTemplate.queryForObject(searchQuery, Integer.class);
     }
 
-    public Page<KokonutUserListDto> findByUserPage(Pageable pageable) {
-//        String rowCountSql = "SELECT count(1) AS row_count " +
-//                "FROM auditing " +
-//                "WHERE module = ? ";
-//        int total =
-//                jdbcTemplate.queryForObject(
-//                        rowCountSql,
-//                        new Object[]{Module.ADMIN_OPERATOR.getModule()}, (rs, rowNum) -> rs.getInt(1)
-//                );
-//
-//        String querySql = "SELECT name, action, operator, operated_at " +
-//                "FROM auditing " +
-//                "WHERE module = ? " +
-//                "LIMIT " + pageable.getPageSize() + " " +
-//                "OFFSET " + pageable.getOffset();
-//        List<KokonutUserListDto> demos = jdbcTemplate.query(
-//                querySql,
-//                new Object[]{Module.ADMIN_OPERATOR.getModule()}, (rs, rowNum) -> Demo.builder()
-//                        .rowNum(rowNum)
-//                        .operatedAt(rs.getTimestamp("operated_at").toLocalDateTime())
-//                        .operator(rs.getString("operator"))
-//                        .action(rs.getString("action"))
-//                        .name(rs.getString("name"))
-//                        .build()
-//        );
+//    SimpleJdbcTemplate template = new SimpleJdbcTemplate(dataSource);
 
-//        return new PageImpl<>(demos, pageable, total);
 
-//        final List<KokonutUserListDto> alimtalkTemplateListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
-//        return new PageImpl<>(alimtalkTemplateListDtos, pageable, total);
-        return null;
+    public List<KokonutUserListDto> findByUserPage(String searchQuery) {
+        return jdbcTemplate.query(
+            searchQuery,
+            (rs, rowNum) ->
+                new KokonutUserListDto(
+                    rs.getLong("IDX"),
+                    rs.getString("ID"),
+                    rs.getTimestamp("REGDATE"),
+                    rs.getTimestamp("LAST_LOGIN_DATE")
+                )
+        );
     }
 
+    // 아이디 존재 유무 확인
+    @Override
+    public Integer selectUserIdCheck(String searchQuery) {
+        return jdbcTemplate.queryForObject(searchQuery, Integer.class);
+    }
 
 }

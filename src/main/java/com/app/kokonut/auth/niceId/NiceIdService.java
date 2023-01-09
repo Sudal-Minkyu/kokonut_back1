@@ -1,6 +1,8 @@
 package com.app.kokonut.auth.niceId;
 
 import com.app.kokonut.keydata.KeyDataService;
+import com.app.kokonut.keydata.dtos.KeyDataNCLOUDDto;
+import com.app.kokonut.keydata.dtos.KeyDataNICEDto;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.component.AriaUtil;
 import com.app.kokonut.woody.common.component.CommonUtil;
@@ -35,24 +37,21 @@ public class NiceIdService {
 	private final AjaxResponse res = new AjaxResponse();
 	private final HashMap<String, Object> data = new HashMap<>();
 
-//	@Value("${kokonut.nice.id}")
 	public final String clientId;
 	
-//	@Value("${kokonut.nice.secret}")
 	public final String clientSecret;
 
-//	@Value("${kokonut.nice.product}")
 	public final String productId;
 
-//	@Value("${kokonut.nice.access}")
 	public final String accessToken;
 
 	@Autowired
 	public NiceIdService(KeyDataService keyDataService) {
-		this.clientId = keyDataService.findByKeyValue("nice_secret");
-		this.clientSecret = keyDataService.findByKeyValue("nice_id");
-		this.productId = keyDataService.findByKeyValue("nice_product");
-		this.accessToken = keyDataService.findByKeyValue("nice_access");
+		KeyDataNICEDto keyDataNICEDto = keyDataService.nice_key();
+		this.clientId = keyDataNICEDto.getNICEID();
+		this.clientSecret = keyDataNICEDto.getNICESECRET();
+		this.productId = keyDataNICEDto.getNICEPRODUCT();
+		this.accessToken = keyDataNICEDto.getNICEACCESS();
 	}
 
 	/*** 
