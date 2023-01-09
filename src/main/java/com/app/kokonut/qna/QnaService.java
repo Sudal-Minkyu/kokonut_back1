@@ -81,13 +81,13 @@ public class QnaService {
         HashMap<String, Object> data = new HashMap<>();
         if(idx == null){
             log.error("idx 값을 찾을 수 없습니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO053.getCode(), ResponseErrorCode.KO053.getDesc()));
         }else{
             log.info("1:1 문의 게시글 상세보기");
             QnaDetailDto qnaDetailDto = qnaRepository.findQnaByIdx(idx);
             if(qnaDetailDto == null){
                 log.error("해당 idx의 1:1 문의 게시글을 조회할 수 없습니다. 문의 게시글 idx : "+idx);
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO054.getCode(), ResponseErrorCode.KO054.getDesc()));
             }else{
                 Admin admin = adminRepository.findByEmail(email)
                         .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
@@ -106,7 +106,7 @@ public class QnaService {
                         return ResponseEntity.ok(res.success(data));
                     }else{
                         log.error("본인이 작성한 문의글만 확인이 가능합니다.");
-                        return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                        return ResponseEntity.ok(res.fail(ResponseErrorCode.KO055.getCode(), ResponseErrorCode.KO055.getDesc()));
                     }
                 }
             }
@@ -121,7 +121,7 @@ public class QnaService {
 
         if("[SYSTEM]".equals(userRole)){
             log.error("시스템관리자는 문의하기를 등록할 수 없습니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO039.getCode(), ResponseErrorCode.KO039.getDesc()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }else{
             // 문의글 내용 등록
             log.info("1:1 문의 게시글 등록 시작");
@@ -225,7 +225,7 @@ public class QnaService {
 
         if(!"[SYSTEM]".equals(userRole)){
             log.error("권한을 확인해주세요. 시스템관리자만 문의 답변 등록이 가능합니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getDesc()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }else{
             // 문의글 답변 내용 등록
             log.info("1:1 문의 게시글 답변 등록 시작");
@@ -240,7 +240,7 @@ public class QnaService {
                 Optional<Qna> savedQna = qnaRepository.findById(qnaAnswerSaveDto.getIdx());
                 if(savedQna.isEmpty()){
                     log.error("해당 문의글을 찾을 수 없습니다. 문의글 idx : " + qnaAnswerSaveDto.getIdx());
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getDesc()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO054.getCode(), ResponseErrorCode.KO054.getDesc()));
                 }else{
                     saveQna.setIdx(qnaAnswerSaveDto.getIdx());
                     // 문의 내용
@@ -266,7 +266,7 @@ public class QnaService {
                 }
             }else{
                 log.error("답변을 등록할 문의글을 확인해주세요.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getDesc()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO053.getCode(), ResponseErrorCode.KO053.getDesc()));
             }
             return ResponseEntity.ok(res.success(data));
         }

@@ -80,7 +80,7 @@ public class RevisedDocumentService {
             return ResponseEntity.ok(res.ResponseEntityPage(revDocListDtos));
         } else {
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -154,12 +154,12 @@ public class RevisedDocumentService {
                 }
             }else{
                 log.error("개정문서 등록 처리 중 문제가 생겼습니다. 관리자에게 문의하세요.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO056.getCode(), ResponseErrorCode.KO056.getDesc()));
             }
                 return ResponseEntity.ok(res.success(data));
         } else {
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -176,11 +176,11 @@ public class RevisedDocumentService {
 //                return ResponseEntity.ok(res.success(data));
 //            }else{
 //                log.error("idx 값을 확인 할 수 없습니다.");
-//                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+//                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
 //            }
 //        }else {
 //            log.error("접근권한이 없습니다. userRole : " + userRole);
-//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
 //        }
 //    }
 }

@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,7 +57,7 @@ public class CollectInformationService {
             return ResponseEntity.ok(res.ResponseEntityPage(collectInfoListDtos));
         } else {
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
     public ResponseEntity<Map<String,Object>> collectInfoDetail(String userRole, Integer idx) {
@@ -76,15 +75,15 @@ public class CollectInformationService {
                 }else{
                     // 조회 실패
                     log.error("개인정보 수집 및 이용 안내 상세 조회 실패, idx : " +idx);
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO052.getCode(), ResponseErrorCode.KO052.getDesc()));
                 }
             }else{
                 log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO051.getCode(), ResponseErrorCode.KO051.getDesc()));
             }
         }else{
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -116,7 +115,7 @@ public class CollectInformationService {
                 Optional<CollectInformation> updateCollectInfo = collectInfoRepository.findById(collectInfoDetailDto.getIdx());
                 if(updateCollectInfo.isEmpty()){
                     log.error("개인정보 수집 및 이용 안내 수정 실패, 게시글을 발견할 수 없습니다. 요청 idx : " + collectInfoDetailDto.getIdx());
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO052.getCode(), ResponseErrorCode.KO052.getDesc()));
                 }else{
                     log.info("수정자, 수정일시 세팅");
                     updateCollectInfo.get().setModifierIdx(adminIdx);
@@ -136,7 +135,7 @@ public class CollectInformationService {
             return ResponseEntity.ok(res.success(data));
         }else{
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -155,15 +154,15 @@ public class CollectInformationService {
                     return ResponseEntity.ok(res.success(data));
                 }else{
                     log.error("개인정보 수집 및 이용 안내 삭제에 실패했습니다. 관리자에게 문의해주세요. idx : " + idx);
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO052.getCode(), ResponseErrorCode.KO052.getDesc()));
                 }
             }else{
                 log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO051.getCode(), ResponseErrorCode.KO051.getDesc()));
             }
         }else{
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -184,7 +183,7 @@ public class CollectInformationService {
 //            return ResponseEntity.ok(res.success(data));
 //        }else{
 //            log.error("idx 값을 확인 할 수 없습니다.");
-//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getDesc()));
 //        }
 //    }
 }

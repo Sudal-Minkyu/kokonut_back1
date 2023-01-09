@@ -112,7 +112,7 @@ public class EmailService {
             adminIdxList = emailGroupAdminInfoDto.getAdminIdxList();
         }else{
             log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getDesc()));
         }
 
         // mailSender 실질적인 이메일 전송 부분
@@ -132,7 +132,7 @@ public class EmailService {
                 }else{
                     // mailSender 실패
                     log.error("### 해당 메일 전송에 실패했습니다. 관리자에게 문의하세요. reciver admin idx : "+ tok+", reciverEmail : "+ reciverEmail);
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO041.getCode(), ResponseErrorCode.KO041.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO041.getCode(), ResponseErrorCode.KO041.getDesc()));
                 }
             }else{
                 // TODO 일부가 탈퇴하고 일부는 이메일 정보가 있을때 처리에 대한 고민
@@ -174,7 +174,7 @@ public class EmailService {
             return ResponseEntity.ok(res.success(data));
         }else{
             log.error("### 이메일 이력 저장에 실패했습니다. : "+sendEmail.getIdx());
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO041.getCode(), ResponseErrorCode.KO041.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO041.getCode(), ResponseErrorCode.KO041.getDesc()));
         }
 
     }
@@ -191,7 +191,7 @@ public class EmailService {
 
         if(idx == null){
             log.error("### 이메일 호출할 idx가 존재 하지 않습니다. : "+idx);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getDesc()));
         } else {
             log.info("### 이메일 상세보기 idx : "+idx);
             // 이메일 인덱스로 이메일 정보 조회
@@ -210,7 +210,7 @@ public class EmailService {
                     adminIdxList = emailGroupAdminInfoDto.getAdminIdxList();
                 }else{
                     log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getDesc()));
                 }
 
                 // 받는 사람 이메일 문자열 조회
@@ -236,7 +236,7 @@ public class EmailService {
                 data.put("contents", emailDetailDto.getContents()); // 내용
             } else {
                 log.error("### 이메일 정보가 존재 하지 않습니다. : "+idx);
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getDesc()));
             }
             return ResponseEntity.ok(res.success(data));
         }

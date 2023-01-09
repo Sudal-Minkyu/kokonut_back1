@@ -62,15 +62,15 @@ public class FaqService {
                 }else{
                     // 조회 실패
                     log.error("자주묻는 질문 상세 조회 실패, idx : " +idx);
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO050.getCode(), ResponseErrorCode.KO050.getDesc()));
                 }
             }else{
                 log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO049.getCode(), ResponseErrorCode.KO049.getDesc()));
             }
         }else{
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -107,7 +107,7 @@ public class FaqService {
                 Optional<Faq> updateFaq = faqRepository.findById(faqDetailDto.getIdx());
                 if(updateFaq.isEmpty()){
                     log.error("자주묻는 질문 수정 실패, 게시글을 발견할 수 없습니다. 요청 idx : " + faqDetailDto.getIdx());
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO050.getCode(), ResponseErrorCode.KO050.getDesc()));
                 }else{
                     log.info("수정자, 수정일시 세팅");
                     updateFaq.get().setModifierIdx(adminIdx);
@@ -130,7 +130,7 @@ public class FaqService {
             return ResponseEntity.ok(res.success(data));
         }else{
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -147,11 +147,11 @@ public class FaqService {
                 return ResponseEntity.ok(res.success(data));
             }else{
                 log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO049.getCode(), ResponseErrorCode.KO049.getDesc()));
             }
         }else {
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 }

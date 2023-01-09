@@ -70,15 +70,15 @@ public class NoticeService {
                     return ResponseEntity.ok(res.success(data));
                 }else{
                     log.error("공지사항 상세 조회 실패, idx : "+idx);
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO048.getCode(), ResponseErrorCode.KO048.getDesc()));
                 }
             }else{
                 log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO047.getCode(), ResponseErrorCode.KO047.getDesc()));
             }
         }else{
             log.error("접근 권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -116,7 +116,7 @@ public class NoticeService {
                 Optional<Notice> updateNotice = noticeRepository.findById(noticeDetailDto.getIdx());
                 if(updateNotice.isEmpty()){
                     log.error("공지사항 수정 실패, 게시글을 발견할 수 없습니다. 요청 idx : " + noticeDetailDto.getIdx());
-                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO048.getCode(), ResponseErrorCode.KO048.getDesc()));
                 }else{
                     log.info("수정자, 수정일시 세팅 내용 세팅");
                     updateNotice.get().setModifierIdx(adminIdx);
@@ -147,7 +147,7 @@ public class NoticeService {
             return ResponseEntity.ok(res.success(data));
         }else{
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -164,11 +164,11 @@ public class NoticeService {
                 return ResponseEntity.ok(res.success(data));
             }else{
                 log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO047.getCode(), ResponseErrorCode.KO047.getDesc()));
             }
         }else {
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
@@ -196,11 +196,11 @@ public class NoticeService {
                 return ResponseEntity.ok(res.success(data));
             }else{
                 log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO047.getCode(), ResponseErrorCode.KO047.getDesc()));
             }
         }else {
             log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 }

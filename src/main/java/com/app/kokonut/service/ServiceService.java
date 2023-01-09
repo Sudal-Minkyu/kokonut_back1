@@ -39,7 +39,7 @@ public class ServiceService {
             return ResponseEntity.ok(res.success(data));
         }else{
             log.error("idx 값을 확인 할 수 없습니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO031.getCode(), ResponseErrorCode.KO031.getCode()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO057.getCode(), ResponseErrorCode.KO057.getDesc()));
         }
     }
 }
