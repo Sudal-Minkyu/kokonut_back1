@@ -22,11 +22,14 @@ public class ActivityHistoryInfoListDto {
     private Integer idx;
     private Integer companyIdx;
     private Integer adminIdx;
-    private Integer activityIdx;
+    private ActivityCode activityCode;
     private String activityDetail;
     private String reason;
     private String ipAddr;
     private Date regdate;
     private Integer state;
 
+    public String getActivityIdx() {
+        return activityCode.getDesc();
+    }
 }

@@ -21,4 +21,10 @@ public class KeyData {
     @Column(name = "key_value")
     private String keyValue;
 
+    @Column(name = "key_group")
+    private String keyGroup;
+
+    @Column(name = "key_description")
+    private String keyDescription;
+
 }

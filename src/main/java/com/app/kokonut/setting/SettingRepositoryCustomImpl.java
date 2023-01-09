@@ -19,17 +19,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class SettingRepositoryCustomImpl extends QuerydslRepositorySupport implements SettingRepositoryCustom {
-    private final SettingRepository settingRepository;
-    private final CompanyRepository companyRepository;
-    public final JpaResultMapper jpaResultMapper;
 
-    public SettingRepositoryCustomImpl(JpaResultMapper jpaResultMapper,
-                                       CompanyRepository companyRepository,
-                                       SettingRepository settingRepository) {
+    public SettingRepositoryCustomImpl() {
         super(Setting.class);
-        this.jpaResultMapper = jpaResultMapper;
-        this.companyRepository = companyRepository;
-        this.settingRepository = settingRepository;
     }
 
     @Override

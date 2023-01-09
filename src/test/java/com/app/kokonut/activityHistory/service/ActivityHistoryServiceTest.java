@@ -1,10 +1,9 @@
 package com.app.kokonut.activityHistory.service;
 
-import com.app.kokonut.activity.Activity;
-import com.app.kokonut.activity.ActivityRepository;
 import com.app.kokonut.activityHistory.ActivityHistory;
 import com.app.kokonut.activityHistory.ActivityHistoryRepository;
 import com.app.kokonut.activityHistory.ActivityHistoryService;
+import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.company.Company;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 @AutoConfigureMockMvc
@@ -37,8 +35,8 @@ class ActivityHistoryServiceTest {
     @Autowired
     private CompanyRepository companyRepository;
 
-    @Autowired
-    private ActivityRepository activityRepository;
+//    @Autowired
+//    private ActivityRepository activityRepository;
 
     @Autowired
     private AdminLevelRepository adminLevelRepository;
@@ -55,7 +53,7 @@ class ActivityHistoryServiceTest {
 //                .createNativeQuery("CREATE ALIAS IF NOT EXISTS DATE_FORMAT FOR \"com.app.kokonut.H2CustomAlias.date_format\"")
 //                .executeUpdate();
 
-        java.sql.Date systemDate = new Date(System.currentTimeMillis());
+        LocalDateTime systemDate = LocalDateTime.now();
         System.out.println("현재 날짜 : "+systemDate);
 
         Company company = new Company();
@@ -70,24 +68,23 @@ class ActivityHistoryServiceTest {
         Admin saveAdmin = adminRepository.save(admin);
         System.out.println("저장된 saveAdmin : "+saveAdmin);
 
-        Activity activity = new Activity();
-        activity.setType(1);
-        activity.setRegdate(systemDate);
-        activity.setModifyDate(systemDate);
-        Activity saveActivity = activityRepository.save(activity);
-        System.out.println("저장된 saveAdmin : "+saveAdmin);
+//        Activity activity = new Activity();
+//        activity.setType(1);
+//        activity.setRegdate(systemDate);
+//        activity.setModifyDate(systemDate);
+//        Activity saveActivity = activityRepository.save(activity);
+//        System.out.println("저장된 saveAdmin : "+saveAdmin);
 
 
         // given
         int adminIdx = saveAdmin.getIdx();
         int companyIdx = saveCompany.getIdx();
-        int activityIdx = saveActivity.getIdx();
+//        int activityIdx = saveActivity.getIdx();
 
         ActivityHistory activityHistory = new ActivityHistory();
 
         activityHistory.setAdminIdx(adminIdx);
         activityHistory.setCompanyIdx(companyIdx);
-        activityHistory.setActivityIdx(activityIdx);
         activityHistory.setType(2);
         activityHistory.setRegdate(systemDate);
 
@@ -101,7 +98,7 @@ class ActivityHistoryServiceTest {
         adminRepository.deleteAll();
         activityHistoryRepository.deleteAll();
         adminLevelRepository.deleteAll();
-        activityRepository.deleteAll();
+//        activityRepository.deleteAll();
     }
 
 //    @Test
@@ -206,13 +203,13 @@ class ActivityHistoryServiceTest {
         int type = 1;
         int companyIdx = 1;
         int adminIdx = 1;
-        int activityIdx = 1;
+        ActivityCode activityCode = ActivityCode.AC_01;
         String activityDetail = "저장테스트";
         String reason = "저장테스트2";
         String ipAddr = "ip테스트";
         int state = 1;
 
-        Integer saveActivityHistoryIdx = activityHistoryService.insertActivityHistory(type, companyIdx, adminIdx, activityIdx, activityDetail, reason, ipAddr, state);
+        Integer saveActivityHistoryIdx = activityHistoryService.insertActivityHistory(type, companyIdx, adminIdx, activityCode, activityDetail, reason, ipAddr, state);
         System.out.println("저장된 IDX : "+saveActivityHistoryIdx);
     }
 

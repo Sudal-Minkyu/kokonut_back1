@@ -6,6 +6,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.app.kokonut.keydata.KeyDataService;
+import com.app.kokonut.keydata.dtos.KeyDataAWSS3Dto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.qlrm.mapper.JpaResultMapper;
@@ -29,16 +30,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-//    @Value("${kokonut.aws.s3.access}")
     private final String AWSS3ACCESSKEY;
 
-//    @Value("${kokonut.aws.s3.secret}")
     private final String AWSS3SECRETKEY;
 
     @Autowired
     public WebConfig(KeyDataService keyDataService) {
-        this.AWSS3ACCESSKEY = keyDataService.findByKeyValue("aws_s3_access");
-        this.AWSS3SECRETKEY = keyDataService.findByKeyValue("aws_s3_secret");
+        KeyDataAWSS3Dto keyDataAWSS3Dto = keyDataService.aws_S3_Key();
+        this.AWSS3ACCESSKEY = keyDataAWSS3Dto.getAWSS3ACCESSKEY();
+        this.AWSS3SECRETKEY = keyDataAWSS3Dto.getAWSS3SECRETKEY();
     }
 
     @Bean

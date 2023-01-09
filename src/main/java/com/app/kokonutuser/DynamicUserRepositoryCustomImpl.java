@@ -1,15 +1,26 @@
 package com.app.kokonutuser;
 
+import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateListDto;
 import com.app.kokonutuser.dtos.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Woody
@@ -144,6 +155,28 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
     // 금일부터 한달전까지 속해 있는 유저수 조회
     @Override
     public Integer selectCountByThisMonth(String searchQuery) {
+        return jdbcTemplate.queryForObject(searchQuery, Integer.class);
+    }
+
+//    SimpleJdbcTemplate template = new SimpleJdbcTemplate(dataSource);
+
+
+    public List<KokonutUserListDto> findByUserPage(String searchQuery) {
+        return jdbcTemplate.query(
+            searchQuery,
+            (rs, rowNum) ->
+                new KokonutUserListDto(
+                    rs.getLong("IDX"),
+                    rs.getString("ID"),
+                    rs.getTimestamp("REGDATE"),
+                    rs.getTimestamp("LAST_LOGIN_DATE")
+                )
+        );
+    }
+
+    // 아이디 존재 유무 확인
+    @Override
+    public Integer selectUserIdCheck(String searchQuery) {
         return jdbcTemplate.queryForObject(searchQuery, Integer.class);
     }
 

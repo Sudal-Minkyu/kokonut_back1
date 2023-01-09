@@ -25,19 +25,14 @@ DROP TABLE IF EXISTS `common`;
 
 CREATE TABLE `common` (
   `IDX` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '인덱스(기본적용,수정불가)',
-  `SALT` varchar(8) DEFAULT NULL COMMENT 'SALT(기본적용,수정불가)',
-  `NAME` varchar(20) NOT NULL COMMENT '이름(기본적용,수정불가)',
-  `GENDER` varchar(1) NOT NULL COMMENT '성별(기본적용,수정불가)',
-  `BIRTH` varchar(100) NOT NULL COMMENT '생년월일(기본적용,수정불가)',
-  `PHONE_NUMBER` varchar(300) NOT NULL COMMENT '핸드폰번호(기본적용,수정불가)',
-  `REGDATE` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '등록 일시(기본적용,수정불가)',
-  `ID` varchar(128) NOT NULL COMMENT '아이디(기본적용,수정불가)',
-  `PASSWORD` varchar(256) NOT NULL COMMENT '비밀번호(암호화,기본적용,수정불가)',
-  `PERSONAL_INFO_AGREE` varchar(1) DEFAULT 'N' COMMENT '개인정보 동의(기본적용,수정불가)',
-  `STATE` bigint(20) NOT NULL DEFAULT 1 COMMENT '상태(기본적용,수정불가) - [0:탈퇴, 1:사용, 2:휴면]',
-  `EMAIL` varchar(280) NOT NULL COMMENT '이메일(기본적용,수정불가)',
-  `LAST_LOGIN_DATE` timestamp NULL DEFAULT NULL COMMENT '최종 로그인 일시(기본적용,수정불가)',
-  `MODIFY_DATE` timestamp NULL DEFAULT NULL COMMENT '수정 일시(기본적용,수정불가)',
+  `ID` varchar(128) NOT NULL DEFAULT 'kokonut_Default' COMMENT '아이디(기본적용,수정불가)',
+  `PASSWORD` varchar(256) NOT NULL DEFAULT 'kokonut_Default' COMMENT '비밀번호(암호화,기본적용,수정불가)',
+  `PERSONAL_INFO_AGREE` varchar(1) NOT NULL DEFAULT 'Y' COMMENT '개인정보 동의(기본적용,수정불가)',
+  `OFFER_INFO_AGREE` varchar(1) DEFAULT 'Y' COMMENT '제3자제공 동의(기본적용,수정불가)',
+  `REGDATE` datetime NOT NULL COMMENT '등록 일시(기본적용,수정불가)',
+  `SEND_MAIL_DATE` datetime DEFAULT NULL COMMENT '이용내역보낸 날짜(기본적용,수정불가)',
+  `LAST_LOGIN_DATE` datetime DEFAULT NULL COMMENT '최종 로그인 일시(기본적용,수정불가)',
+  `MODIFY_DATE` datetime DEFAULT NULL COMMENT '수정 일시(기본적용,수정불가)',
   PRIMARY KEY (`IDX`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
@@ -45,20 +40,15 @@ CREATE TABLE `common` (
 DROP TABLE IF EXISTS `3488101536`;
 
 CREATE TABLE `3488101536` (
-  `IDX` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '인덱스(기본적용,수정불가)',
-  `SALT` varchar(8) DEFAULT NULL COMMENT 'SALT(기본적용,수정불가)',
-  `NAME` varchar(20) NOT NULL COMMENT '이름(기본적용,수정불가)',
-  `GENDER` varchar(1) NOT NULL COMMENT '성별(기본적용,수정불가)',
-  `BIRTH` varchar(100) NOT NULL COMMENT '생년월일(기본적용,수정불가)',
-  `PHONE_NUMBER` varchar(300) NOT NULL COMMENT '핸드폰번호(기본적용,수정불가)',
-  `REGDATE` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '등록 일시(기본적용,수정불가)',
-  `ID` varchar(128) NOT NULL COMMENT '아이디(기본적용,수정불가)',
-  `PASSWORD` varchar(256) NOT NULL COMMENT '비밀번호(암호화,기본적용,수정불가)',
-  `PERSONAL_INFO_AGREE` varchar(1) DEFAULT 'N' COMMENT '개인정보 동의(기본적용,수정불가)',
-  `STATE` int(11) NOT NULL DEFAULT 1 COMMENT '상태(기본적용,수정불가) - [0:탈퇴, 1:사용, 2:휴면]',
-  `EMAIL` varchar(280) NOT NULL COMMENT '이메일(기본적용,수정불가)',
-  `LAST_LOGIN_DATE` timestamp NULL DEFAULT NULL COMMENT '최종 로그인 일시(기본적용,수정불가)',
-  `MODIFY_DATE` timestamp NULL DEFAULT NULL COMMENT '수정 일시(기본적용,수정불가)',
+    `IDX` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '인덱스(기본적용,수정불가)',
+    `ID` varchar(128) NOT NULL DEFAULT 'kokonut_Default' COMMENT '아이디(기본적용,수정불가)',
+    `PASSWORD` varchar(256) NOT NULL DEFAULT 'kokonut_Default' COMMENT '비밀번호(암호화,기본적용,수정불가)',
+    `PERSONAL_INFO_AGREE` varchar(1) NOT NULL DEFAULT 'Y' COMMENT '개인정보 동의(기본적용,수정불가)',
+    `OFFER_INFO_AGREE` varchar(1) DEFAULT 'Y' COMMENT '제3자제공 동의(기본적용,수정불가)',
+    `REGDATE` datetime NOT NULL COMMENT '등록 일시(기본적용,수정불가)',
+    `SEND_MAIL_DATE` datetime DEFAULT NULL COMMENT '이용내역보낸 날짜(기본적용,수정불가)',
+    `LAST_LOGIN_DATE` datetime DEFAULT NULL COMMENT '최종 로그인 일시(기본적용,수정불가)',
+    `MODIFY_DATE` datetime DEFAULT NULL COMMENT '수정 일시(기본적용,수정불가)',
   PRIMARY KEY (`IDX`)
 ) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb3;
 

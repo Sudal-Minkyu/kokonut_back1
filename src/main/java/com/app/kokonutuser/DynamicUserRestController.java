@@ -2,6 +2,7 @@ package com.app.kokonutuser;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonutuser.dtos.KokonutUserSearchDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -68,5 +70,35 @@ public class DynamicUserRestController {
 
 		return dynamicUserService.createTable(jwtFilterDto.getEmail());
 	}
+
+	// 유저DB(테이블) 리스트조회 -> 기존 코코넛 URL : /member/user/list
+	@GetMapping(value = "/userListCall")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
+	public ResponseEntity<Map<String,Object>> userListCall(@RequestBody KokonutUserSearchDto kokonutUserSearchDto) {
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.userListCall(kokonutUserSearchDto, jwtFilterDto.getEmail());
+	}
+
+	// 유저생성(회원생성) -> 기존 코코넛 URL : /member/user/saveUser
+	@PostMapping(value = "/userSaveCall")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
+	public ResponseEntity<Map<String,Object>> userSaveCall(@RequestBody HashMap<String,Object> paramMap) {
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.userSaveCall(paramMap, jwtFilterDto.getEmail());
+	}
+
+
+
+
+
+
+
+
 
 }
