@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 /**
  * @author Joy
- * Date : 2022-01-02
+ * Date : 2023-01-02
  * Time :
  * Remark : 공지사항 상태 변경 시 사용하는 DTO
  */

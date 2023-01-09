@@ -43,8 +43,8 @@ public class RevisedDocumentService {
     private final HashMap<String, Object> data = new HashMap<>();
 
     // 파일 등록
-    // @Value("/revise-doc/")
-    private final String revDocS3Folder = "/revise-doc/";
+    // @Value("/revise-docs/")
+    private final String revDocS3Folder = "/revise-docs/"; // TODO keyData 방식으로 추후 변경
 
     // @Value("${kokonut.aws.s3.url}")
     private final String AWSURL;
@@ -120,6 +120,7 @@ public class RevisedDocumentService {
                     RevisedDocumentFile revDocFile = new RevisedDocumentFile();
                     revDocFile.setRegIdx(adminIdx);
                     revDocFile.setRevisedDocumentIdx(savedIdx);
+
                     // file original name
                     String originalFilename = Normalizer.normalize(Objects.requireNonNull(multipartFile.getOriginalFilename()), Normalizer.Form.NFC);
                     log.info("originalFilename : "+originalFilename);

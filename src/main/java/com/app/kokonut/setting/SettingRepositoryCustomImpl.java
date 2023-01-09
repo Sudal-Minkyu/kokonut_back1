@@ -2,7 +2,7 @@ package com.app.kokonut.setting;
 
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.company.QCompany;
-import com.app.kokonut.refactor.setting.entity.QSetting;
+import com.app.kokonut.setting.entity.QSetting;
 import com.app.kokonut.setting.dto.SettingDetailDto;
 import com.app.kokonut.setting.entity.Setting;
 import com.querydsl.core.types.Projections;

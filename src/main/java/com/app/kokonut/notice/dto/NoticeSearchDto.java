@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 /**
  * @author Joy
- * Date : 2022-01-02
+ * Date : 2023-01-02
  * Time :
  * Remark : 공지사항 검색 시 사용하는 DTO
  */

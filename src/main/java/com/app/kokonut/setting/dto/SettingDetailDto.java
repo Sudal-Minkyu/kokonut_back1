@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 /**
  * @author Joy
- * Date : 2022-01-05
+ * Date : 2023-01-05
  * Time :
  * Remark : SettingDto 관리자 환경설정 조회 Dto
  */
