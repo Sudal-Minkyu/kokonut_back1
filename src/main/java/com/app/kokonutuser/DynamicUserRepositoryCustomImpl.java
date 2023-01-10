@@ -1,26 +1,15 @@
 package com.app.kokonutuser;
 
-import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateListDto;
 import com.app.kokonutuser.dtos.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.Query;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author Woody
@@ -87,11 +76,11 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
         return jdbcTemplate.queryForObject(searchQuery, Integer.class);
     }
 
-    // 유저테이블 단일회원 조회
+    // 삭제할 유저테이블 단일회원 조회
     @Override
-    public List<KokonutUserRemoveInfoDto> selectUserDataByIdx(String searchQuery) {
+    public List<KokonutRemoveInfoDto> selectUserDataByIdx(String searchQuery) {
         return jdbcTemplate.query(searchQuery,
-                new BeanPropertyRowMapper<>(KokonutUserRemoveInfoDto.class));
+                new BeanPropertyRowMapper<>(KokonutRemoveInfoDto.class));
     }
 
     // 1년전에 가입한 회원목록 조회
@@ -103,7 +92,7 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
 
     // 유저 등록여부 조회
     @Override
-    public Integer selectCount(String searchQuery) {
+    public Integer selectUserCount(String searchQuery) {
         return jdbcTemplate.queryForObject(searchQuery, Integer.class);
     }
 
@@ -115,7 +104,7 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
 
     // 유저테이블의 컬럼 조회
     @Override
-    public List<KokonutUserFieldDto> selectColumns(String searchQuery) {
+    public List<KokonutUserFieldDto> selectUserColumns(String searchQuery) {
         return jdbcTemplate.query(searchQuery,
                 new BeanPropertyRowMapper<>(KokonutUserFieldDto.class));
     }
@@ -178,6 +167,12 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
     @Override
     public Integer selectUserIdCheck(String searchQuery) {
         return jdbcTemplate.queryForObject(searchQuery, Integer.class);
+    }
+
+    // 유저 ID를 통해 IDX를 조회
+    @Override
+    public Long selectUserIdx(String searchQuery) {
+        return jdbcTemplate.queryForObject(searchQuery, Long.class);
     }
 
 }

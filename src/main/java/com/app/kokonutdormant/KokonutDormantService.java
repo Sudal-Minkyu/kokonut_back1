@@ -1,12 +1,17 @@
 package com.app.kokonutdormant;
 
 import com.app.kokonutdormant.dtos.KokonutDormantListDto;
+import com.app.kokonutuser.dtos.KokonutRemoveInfoDto;
+import com.app.kokonutuser.dtos.KokonutUserFieldDto;
 import com.app.kokonutuser.dtos.KokonutUserSearchDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Woody
@@ -46,12 +51,127 @@ public class KokonutDormantService {
 		sb.append(" ORDER BY `REGDATE` DESC");
 
 		String searchQuery = sb.toString();
-		log.info("searchQuery : "+searchQuery);
+//		log.info("searchQuery : "+searchQuery);
 
 //		List<KokonutDormantListDto> kokonutDormantListDtos = dynamicDormantRepositoryCustom.findByDormantPage(searchQuery);
 //		log.info("kokonutDormantListDtos : "+kokonutDormantListDtos);
 
 		return dynamicDormantRepositoryCustom.findByDormantPage(searchQuery);
+	}
+
+	// 휴면회원 등록여부 조회
+    public Integer selectDormantCount(String businessNumber, Integer idx) {
+		log.info("selectDormantCount 호출");
+		String searchQuery = "SELECT COUNT(1) FROM "+"`"+businessNumber+"`"+" WHERE `IDX`="+idx;
+		return dynamicDormantRepositoryCustom.selectDormantCount(searchQuery);
+    }
+
+	// 휴면테이블의 아이디 존재 유무 확인
+	public boolean isDormantExistId(String businessNumber, String id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("businessNumber", businessNumber);
+		map.put("id", id);
+
+		String searchQuery = "SELECT COUNT(*) FROM `" + businessNumber + "` WHERE 1=1 AND `ID`= '"+id+"'";
+//		log.info("searchQuery : "+searchQuery);
+
+		Integer count = dynamicDormantRepositoryCustom.selectDormantIdCheck(searchQuery);
+
+		if(count > 0) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	// 휴면테이블의 회원 한명 조회
+	public List<KokonutRemoveInfoDto> selectDormantDataByIdx(String businessNumber, Integer idx) {
+		log.info("selectUserListCount 호출");
+		String searchQuery = "SELECT IDX, ID FROM `" + businessNumber + "` WHERE `IDX`="+idx;
+//		log.info("searchQuery : "+searchQuery);
+		return dynamicDormantRepositoryCustom.selectDormantDataByIdx(searchQuery);
+	}
+
+	/**
+	 * 휴면테이블 회원정보 저장
+	 * @param businessNumber : 테이블 명
+	 * @param nameString 컬럼 리스트
+	 * @param valueString 값 리스트
+	 * @return boolean
+	 * 기존 코코넛 : boolean DeleteRemoveDbUser
+	 */
+	@Transactional
+	public boolean insertDormantTable(String businessNumber, String nameString, String valueString) {
+		log.info("insertDormantTable 호출");
+
+//		log.info("businessNumber : "+businessNumber);
+//		log.info("nameString : "+nameString);
+//		log.info("valueString : "+valueString);
+
+		boolean isSuccess = false;
+
+		try {
+			String insertQuery = "INSERT INTO `" + businessNumber + "` " +
+					nameString +
+					" VALUES " +
+					valueString;
+//			log.info("insertQuery : "+insertQuery);
+			dynamicDormantRepositoryCustom.dormantCommonTable(insertQuery);
+
+			isSuccess = true;
+			log.info("삭제할 유저저장 성공 : "+businessNumber);
+		} catch (Exception e) {
+			log.error("삭제할 유저저장 에러 : "+businessNumber);
+		}
+
+		return isSuccess;
+	}
+
+	// 휴면테이블의 개인정보 수정
+	@Transactional
+	public boolean updateDormantTable(String businessNumber, Long idx, String queryString) {
+		log.info("updateDormantTable 호출");
+
+		log.info("businessNumber : "+businessNumber);
+		log.info("idx : "+idx);
+		log.info("queryString : "+queryString);
+
+		boolean isSuccess = false;
+
+		try {
+			String dormantUpdateQuery = "UPDATE `"+businessNumber+"` set "+queryString+" WHERE `IDX` = "+idx;
+//			log.info("dormantUpdateQuery : "+dormantUpdateQuery);
+			dynamicDormantRepositoryCustom.dormantCommonTable(dormantUpdateQuery);
+
+			log.info("휴면 개인정보 수정 성공 : "+businessNumber);
+			isSuccess = true;
+		} catch (Exception e) {
+			log.error("휴면 개인정보 수정 에러 : "+businessNumber);
+		}
+
+		return isSuccess;
+	}
+
+	// 휴면테이블의 컬럼 목록 조회
+	public List<KokonutUserFieldDto> getDormantColumns(String businessNumber) {
+		log.info("getDormantColumns 호출");
+		String searchQuery = "SHOW FULL COLUMNS FROM `"+businessNumber+"`";
+//		log.info("searchQuery : "+searchQuery);
+		return dynamicDormantRepositoryCustom.selectDormantColumns(searchQuery);
+	}
+
+	/**
+	 * 암호화 속성을 갖는 테이블 컬럼 목록 조회
+	 * @param businessNumber 테이블 이름
+	 * @return Column 객체 리스트 -> KokonutUserFieldDto
+	 * 기존 코코넛 : SelectEncryptColumns
+	 */
+	public List<KokonutUserFieldDto> selectDormantEncryptColumns(String businessNumber) {
+		log.info("selectDormantEncryptColumns 호출");
+		String searchQuery = "SHOW FULL COLUMNS FROM `"+businessNumber+"` WHERE `COMMENT` REGEXP '(.+)(\\()(.*암호화.*)(\\))'";
+//		log.info("searchQuery : "+searchQuery);
+		return dynamicDormantRepositoryCustom.selectDormantColumns(searchQuery);
 	}
 
 }

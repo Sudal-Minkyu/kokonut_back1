@@ -1,6 +1,6 @@
 package com.app.kokonutremove;
 
-import com.app.kokonutuser.dtos.KokonutUserRemoveInfoDto;
+import com.app.kokonutuser.dtos.KokonutRemoveInfoDto;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,6 @@ public interface DynamicRemoveRepositoryCustom {
 
     int selectUserListCount(String businessNumber); // kokonut_user 회원수 조회
 
-    List<KokonutUserRemoveInfoDto> selectUserDataByIdx(String searchQuery); // kokonut_user 단일회원 조회
+    List<KokonutRemoveInfoDto> selectUserDataByIdx(String searchQuery); // kokonut_user 단일회원 조회
 
 }

@@ -93,6 +93,28 @@ public class DynamicUserRestController {
 		return dynamicUserService.userSaveCall(paramMap, jwtFilterDto.getEmail());
 	}
 
+	// 유저정보 수정(회원수정) -> 기존 코코넛 URL : 없음
+	@PostMapping(value = "/userUpdateCall")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
+	public ResponseEntity<Map<String,Object>> userUpdateCall(@RequestBody HashMap<String,Object> paramMap) {
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.userUpdateCall(paramMap, jwtFilterDto.getEmail());
+	}
+
+	// 유저삭제(회원삭제) -> 기존 코코넛 URL : 없음
+	@PostMapping(value = "/userDeleteCall")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
+	public ResponseEntity<Map<String,Object>> userDeleteCall(@RequestParam(name="TYPE", defaultValue = "") String TYPE,
+														   @RequestParam(name="IDX", defaultValue = "") Integer IDX) {
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.userDeleteCall(TYPE, IDX, jwtFilterDto.getEmail());
+	}
 
 
 

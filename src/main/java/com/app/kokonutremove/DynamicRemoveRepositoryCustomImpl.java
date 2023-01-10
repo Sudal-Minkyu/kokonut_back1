@@ -1,7 +1,6 @@
 package com.app.kokonutremove;
 
-import com.app.kokonutuser.DynamicUserRepositoryCustom;
-import com.app.kokonutuser.dtos.KokonutUserRemoveInfoDto;
+import com.app.kokonutuser.dtos.KokonutRemoveInfoDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -77,9 +76,9 @@ public class DynamicRemoveRepositoryCustomImpl implements DynamicRemoveRepositor
 
     // 유저테이블 단일회원 조회
     @Override
-    public List<KokonutUserRemoveInfoDto> selectUserDataByIdx(String searchQuery) {
+    public List<KokonutRemoveInfoDto> selectUserDataByIdx(String searchQuery) {
         return jdbcTemplate.query(searchQuery,
-                new BeanPropertyRowMapper<>(KokonutUserRemoveInfoDto.class));
+                new BeanPropertyRowMapper<>(KokonutRemoveInfoDto.class));
     }
 
 }

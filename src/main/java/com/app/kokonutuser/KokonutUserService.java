@@ -6,8 +6,6 @@ import com.app.kokonutuser.common.dtos.CommonFieldDto;
 import com.app.kokonutuser.dtos.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,13 +95,13 @@ public class KokonutUserService {
 	 * @param id 아이디
 	 * @return 존재하는 경우 true
 	 */
-	public boolean isExistId(String businessNumber, String id) {
+	public boolean isUserExistId(String businessNumber, String id) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("businessNumber", businessNumber);
 		map.put("id", id);
 
 		String searchQuery = "SELECT COUNT(*) FROM `" + businessNumber + "` WHERE 1=1 AND `ID`= '"+id+"'";
-		log.info("searchQuery : "+searchQuery);
+//		log.info("searchQuery : "+searchQuery);
 
 		Integer count = dynamicUserRepositoryCustom.selectUserIdCheck(searchQuery);
 
@@ -123,7 +121,7 @@ public class KokonutUserService {
 		log.info("selectUserList 호출");
 
 		String searchQuery = "SELECT * FROM `"+businessNumber+"` WHERE 1=1";
-		log.info("searchQuery : "+searchQuery);
+//		log.info("searchQuery : "+searchQuery);
 
 		List<Map<String, Object>> result = dynamicUserRepositoryCustom.selectUserList(searchQuery);
 		log.info("result : "+result);
@@ -158,9 +156,9 @@ public class KokonutUserService {
 	 * @return List<KokonutUserRemoveInfoDto> -> 리스트형태의 리턴이지만 단일 조회이기떄문에 result.get(0)으로 받으면 됨
 	 * 기존 코코넛 : int SelectUserDataByIdx
 	 */
-	public List<KokonutUserRemoveInfoDto> selectUserDataByIdx(String businessNumber, Integer idx) {
+	public List<KokonutRemoveInfoDto> selectUserDataByIdx(String businessNumber, Integer idx) {
 		log.info("selectUserListCount 호출");
-		String searchQuery = "SELECT IDX, ID FROM `" + businessNumber + "` WHERE `IDX`="+idx;
+		String searchQuery = "SELECT IDX, ID, REGDATE FROM `" + businessNumber + "` WHERE `IDX`="+idx;
 //		log.info("searchQuery : "+searchQuery);
 		return dynamicUserRepositoryCustom.selectUserDataByIdx(searchQuery);
 	}
@@ -176,21 +174,21 @@ public class KokonutUserService {
 		log.info("selectOneYearAgoRegUserListByTableName 호출");
 		// 기존 조건문 쿼리 : WHERE DATE(`REGDATE`)=DATE(DATE_SUB(NOW(),INTERVAL 1 YEAR))
 		String searchQuery = "SELECT IDX, NAME FROM `" + businessNumber + "` WHERE DATE(`REGDATE`) < DATE(DATE_SUB(NOW(),INTERVAL 1 YEAR))";
-		log.info("searchQuery : "+searchQuery);
+//		log.info("searchQuery : "+searchQuery);
 		return dynamicUserRepositoryCustom.selectOneYearAgoRegUserListByTableName(searchQuery);
 	}
 
 	/**
-	 * 회원 등록여부 조회
+	 * 사용회원 등록여부 조회
 	 * @param businessNumber 테이블 이름
 	 * @param idx 회원 IDX
 	 * @return Integer
 	 * 기존 코코넛 : SelectCount
 	 */
-	public Integer selectCount(String businessNumber, Integer idx) {
-		log.info("selectCount 호출");
+	public Integer selectUserCount(String businessNumber, Integer idx) {
+		log.info("selectUserCount 호출");
 		String searchQuery = "SELECT COUNT(1) FROM "+"`"+businessNumber+"`"+" WHERE `IDX`="+idx;
-		return dynamicUserRepositoryCustom.selectCount(searchQuery);
+		return dynamicUserRepositoryCustom.selectUserCount(searchQuery);
 	}
 
 	/**
@@ -206,15 +204,15 @@ public class KokonutUserService {
 	}
 
 	/**
-	 * 테이블의 컬럼 목록 조회
+	 * 유저테이블의 컬럼 목록 조회
 	 * @param businessNumber 테이블 이름
 	 * @return Column 객체 리스트 -> KokonutUserFieldDto
 	 */
-	public List<KokonutUserFieldDto> getColumns(String businessNumber) {
-		log.info("getColumns 호출");
+	public List<KokonutUserFieldDto> getUserColumns(String businessNumber) {
+		log.info("getUserColumns 호출");
 		String searchQuery = "SHOW FULL COLUMNS FROM `"+businessNumber+"`";
 //		log.info("searchQuery : "+searchQuery);
-		return dynamicUserRepositoryCustom.selectColumns(searchQuery);
+		return dynamicUserRepositoryCustom.selectUserColumns(searchQuery);
 	}
 
 	/**
@@ -223,11 +221,11 @@ public class KokonutUserService {
 	 * @return Column 객체 리스트 -> KokonutUserFieldDto
 	 * 기존 코코넛 : SelectEncryptColumns
 	 */
-	public List<KokonutUserFieldDto> selectEncryptColumns(String businessNumber) {
-		log.info("selectEncryptColumns 호출");
+	public List<KokonutUserFieldDto> selectUserEncryptColumns(String businessNumber) {
+		log.info("selectUserEncryptColumns 호출");
 		String searchQuery = "SHOW FULL COLUMNS FROM `"+businessNumber+"` WHERE `COMMENT` REGEXP '(.+)(\\()(.*암호화.*)(\\))'";
-		log.info("searchQuery : "+searchQuery);
-		return dynamicUserRepositoryCustom.selectColumns(searchQuery);
+//		log.info("searchQuery : "+searchQuery);
+		return dynamicUserRepositoryCustom.selectUserColumns(searchQuery);
 	}
 
 	/**
@@ -289,7 +287,14 @@ public class KokonutUserService {
 		return dynamicUserRepositoryCustom.selectCountByThisMonth(searchQuery);
 	}
 
+	// 유저 ID를 통해 IDX를 조회
+	public Long selectUserIdx(String businessNumber, String id) {
+		log.info("selectUserIdx 호출");
 
+		String searchQuery = "SELECT IDX FROM `" + businessNumber + "` WHERE `ID` = '"+id+"'";
+//		log.info("searchQuery : "+searchQuery);
+		return dynamicUserRepositoryCustom.selectUserIdx(searchQuery);
+	}
 
 
 	// @@@@@@ 끝 - 유저테이블 : 조회 및 중복검사 - 끝 @@@@@@@@@@@@@ //
@@ -633,51 +638,15 @@ public class KokonutUserService {
 		boolean isSuccess = false;
 
 		try {
-//			if(nameList.size() == valueList.size()) {
-//				StringBuilder sb = new StringBuilder();
-//
-//				sb.append("INSERT INTO `").append(businessNumber).append("` (");
-//
-//				for (int i=0; i<nameList.size(); i++) {
-//					if(i == nameList.size()-1){
-//						sb.append("`").append(nameList.get(i)).append("`) VALUES (");
-//					} else {
-//						sb.append("`").append(nameList.get(i)).append("`, ");
-//					}
-//				}
-//
-//				for (int i=0; i<valueList.size(); i++) {
-//					Object value = valueList.get(i);
-//					if(value instanceof Integer || value instanceof Double){
-//						// 값이 정수 또는 소수 일 경우
-//						if(i == valueList.size()-1){
-//							sb.append(value).append(")");
-//						} else {
-//							sb.append(value).append(", ");
-//						}
-//					} else {
-//						// 값이 문자형 일경우
-//						if(i == valueList.size()-1){
-//							sb.append("'").append(valueList.get(i)).append("')");
-//						} else {
-//							sb.append("'").append(valueList.get(i)).append("', ");
-//						}
-//					}
-//				}
-
 			String insertQuery = "INSERT INTO `" + businessNumber + "` " +
 					nameString +
 					" VALUES " +
 					valueString;
-			log.info("insertQuery : "+insertQuery);
+//			log.info("insertQuery : "+insertQuery);
 			dynamicUserRepositoryCustom.userCommonTable(insertQuery);
 
 			isSuccess = true;
 			log.info("유저저장 성공 : "+businessNumber);
-
-//			} else {
-//				log.error("컬럼리스트(nameList)와 값리스트(valueList) 사이즈가 맞지 않습니다.");
-//			}
 		} catch (Exception e) {
 			log.error("유저저장 에러 : "+businessNumber);
 		}
@@ -694,7 +663,7 @@ public class KokonutUserService {
 	 * 기존 코코넛 : UpdateUserTable, UpdateUser
 	 */
 	@Transactional
-	public boolean updateUserTable(String businessNumber, int idx, String queryString) {
+	public boolean updateUserTable(String businessNumber, Long idx, String queryString) {
 		log.info("updateUserTable 호출");
 
 		log.info("businessNumber : "+businessNumber);
@@ -705,7 +674,7 @@ public class KokonutUserService {
 
 		try {
 			String userUpdateQuery = "UPDATE `"+businessNumber+"` set "+queryString+" WHERE `IDX` = "+idx;
-			log.info("userUpdateQuery : "+userUpdateQuery);
+//			log.info("userUpdateQuery : "+userUpdateQuery);
 			dynamicUserRepositoryCustom.userCommonTable(userUpdateQuery);
 
 			log.info("유저수정 성공 : "+businessNumber);
@@ -725,7 +694,7 @@ public class KokonutUserService {
 	 * 기존 코코넛 : DeleteUserTable
 	 */
 	@Transactional
-	public boolean deleteUserTable(String businessNumber, int idx) {
+	public boolean deleteUserTable(String businessNumber, Long idx) {
 		log.info("deleteUserTable 호출");
 
 		log.info("businessNumber : "+businessNumber);
@@ -735,7 +704,7 @@ public class KokonutUserService {
 
 		try {
 			String userDeleteQuery = "DELETE FROM `"+businessNumber+"` WHERE `IDX` = "+idx;
-			log.info("userDeleteQuery : "+userDeleteQuery);
+//			log.info("userDeleteQuery : "+userDeleteQuery);
 			dynamicUserRepositoryCustom.userCommonTable(userDeleteQuery);
 
 			log.info("유저삭제 성공 : "+businessNumber);
@@ -856,7 +825,7 @@ public class KokonutUserService {
 		sb.append(" ORDER BY `REGDATE` DESC");
 
 		String searchQuery = sb.toString();
-		log.info("searchQuery : "+searchQuery);
+//		log.info("searchQuery : "+searchQuery);
 
 //		List<KokonutUserListDto> kokonutUserListDtos = dynamicUserRepositoryCustom.findByUserPage(searchQuery);
 //		log.info("kokonutUserListDtos : "+kokonutUserListDtos);

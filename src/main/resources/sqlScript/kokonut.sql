@@ -767,23 +767,24 @@ CREATE TABLE `revised_document` (
 
 /*Data for the table `revised_document` */
 
-/*Table structure for table `service` */
+/* DROP TABLE IF EXISTS `kn_service`; */
+DROP TABLE IF EXISTS `kn_service`;
+CREATE TABLE `kn_service` (
+  `idx` int(11) NOT NULL AUTO_INCREMENT COMMENT '주키',
+  `ks_service` varchar(64) DEFAULT NULL COMMENT '서비스 이름',
+  `ks_price` int(11) DEFAULT NULL COMMENT '서비스 금액',
+  `ks_per_price` int(11) DEFAULT NULL COMMENT '평균 회원 1명당 금액',
+  `reg_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '등록일',
+  `modify_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp() COMMENT '수정일',
+  PRIMARY KEY (`idx`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+INSERT INTO `kn_service` (`idx`, `ks_service`, `ks_price`, `ks_per_price`, `reg_date`, `modify_date`)
+VALUES
+    (1, 'BASIC', 0, 0, '2021-12-02 13:19:52', '2022-04-14 16:52:09'),
+    (2, 'STANDARD', 0, 20, '2021-12-02 13:20:53', '2022-05-16 15:26:38');
 
-DROP TABLE IF EXISTS `service`;
-
-CREATE TABLE `service` (
-  `IDX` int(11) NOT NULL AUTO_INCREMENT COMMENT '주키',
-  `SERVICE` varchar(64) DEFAULT NULL COMMENT '서비스 이름',
-  `PRICE` int(11) DEFAULT NULL COMMENT '서비스 금액',
-  `PER_PRICE` int(11) DEFAULT NULL COMMENT '평균 회원 1명당 금액',
-  `REGDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
-  `MODIFY_DATE` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일',
-  PRIMARY KEY (`IDX`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-
-/*Data for the table `service` */
-
-insert  into `service`(`IDX`,`SERVICE`,`PRICE`,`PER_PRICE`,`REGDATE`,`MODIFY_DATE`) values (1,'BASIC',0,0,'2021-12-02 13:19:52','2022-04-14 16:52:09'),(2,'STANDARD',0,20,'2021-12-02 13:20:53','2022-05-16 15:26:38');
+select * from `kn_service`;
+commit;
 
 /*Table structure for table `setting` */
 
@@ -904,6 +905,20 @@ CREATE TABLE IF NOT EXISTS `company_file` (
   `MODIFYDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`IDX`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='사업자등록증 이미지 파일테이블';
+
+CREATE TABLE `revised_document_file` (
+ `IDX` int(11) NOT NULL AUTO_INCREMENT,
+ `REVISED_DOCUMENT_IDX` int(11) NOT NULL,
+ `CF_PATH` varchar(255) DEFAULT NULL COMMENT 'S3 파일 경로',
+ `CF_FILENAME` varchar(255) DEFAULT NULL COMMENT 'S3 파일 명',
+ `CF_ORIGINAL_FILENAME` varchar(255) DEFAULT NULL COMMENT '원래 파일명',
+ `CF_VOLUME` bigint(20) DEFAULT NULL COMMENT '용량',
+ `REGIDX` int(11) DEFAULT NULL,
+ `REGDATE` datetime DEFAULT NULL,
+ `MODIFYIDX` int(11) DEFAULT NULL,
+ `MODIFYDATE` datetime DEFAULT NULL,
+ PRIMARY KEY (`IDX`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci COMMENT='개인정보 처리방침 개정문서 파일 테이블';
 
 /*Data for the table `total_db_download` */
 
