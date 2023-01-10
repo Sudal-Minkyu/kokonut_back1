@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "service")
+@Table(name = "kn_service")
 public class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,43 +19,43 @@ public class Service implements Serializable {
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "idx", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idx;
 
     /**
      * 서비스 이름
      */
-    @Column(name = "SERVICE")
     @ApiModelProperty("서비스 이름")
-    private String isService;
+    @Column(name = "ks_service")
+    private String ksService;
 
     /**
      * 서비스 금액
      */
-    @Column(name = "PRICE")
     @ApiModelProperty("서비스 금액")
-    private Integer price;
+    @Column(name = "ks_price")
+    private Integer ksPrice;
 
     /**
      * 평균 회원 1명당 금액
      */
-    @Column(name = "PER_PRICE")
     @ApiModelProperty("평균 회원 1명당 금액")
-    private Integer perPrice;
+    @Column(name = "ks_per_price")
+    private Integer ksPerPrice;
 
     /**
      * 등록일자
      */
-    @Column(name = "REGDATE")
     @ApiModelProperty("등록일자")
-    private LocalDateTime regdate;
+    @Column(name = "reg_date")
+    private LocalDateTime regDate;
 
     /**
      * 수정일자
      */
     @ApiModelProperty("수정일자")
-    @Column(name = "MODIFY_DATE")
+    @Column(name = "modify_date")
     private LocalDateTime modifyDate;
 
 }

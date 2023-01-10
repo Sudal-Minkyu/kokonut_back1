@@ -22,12 +22,12 @@ public class ServiceDto implements Serializable {
     private Integer idx;
 
     @ApiModelProperty("서비스 이름")
-    private String isService;
+    private String ksService;
 
     @ApiModelProperty("서비스 금액")
-    private Integer price;
+    private Integer ksPrice;
 
     @ApiModelProperty("평균 회원 1명당 금액")
-    private Integer perPrice;
+    private Integer ksPerPrice;
 
 }

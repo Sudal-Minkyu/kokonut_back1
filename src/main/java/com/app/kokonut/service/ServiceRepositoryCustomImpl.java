@@ -20,14 +20,11 @@ import java.util.Objects;
  */
 @Repository
 public class ServiceRepositoryCustomImpl extends QuerydslRepositorySupport implements ServiceRepositoryCustom {
-    private final ServiceRepository serviceRepository;
     public final JpaResultMapper jpaResultMapper;
 
-    public ServiceRepositoryCustomImpl(JpaResultMapper jpaResultMapper,
-                                       ServiceRepository serviceRepository) {
+    public ServiceRepositoryCustomImpl(JpaResultMapper jpaResultMapper) {
         super(Setting.class);
         this.jpaResultMapper = jpaResultMapper;
-        this.serviceRepository = serviceRepository;
     }
 
     @Override
@@ -44,9 +41,9 @@ public class ServiceRepositoryCustomImpl extends QuerydslRepositorySupport imple
         JPQLQuery<ServiceDto> query = from(service)
                 .select(Projections.constructor(ServiceDto.class,
                         service.idx,
-                        service.isService,
-                        service.price,
-                        service.perPrice
+                        service.ksService,
+                        service.ksPrice,
+                        service.ksPerPrice
                 ));
         final List<ServiceDto> serviceDtos = Objects.requireNonNull(query.fetchAll()).fetch();
         return serviceDtos;
@@ -67,9 +64,9 @@ public class ServiceRepositoryCustomImpl extends QuerydslRepositorySupport imple
         JPQLQuery<ServiceDto> query = from(service)
                 .select(Projections.constructor(ServiceDto.class,
                         service.idx,
-                        service.isService,
-                        service.price,
-                        service.perPrice
+                        service.ksService,
+                        service.ksPrice,
+                        service.ksPerPrice
                 ));
         query.where(service.idx.eq(idx));
         return query.fetchOne();
