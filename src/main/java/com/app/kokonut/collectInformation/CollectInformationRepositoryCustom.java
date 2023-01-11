@@ -22,9 +22,9 @@ public interface CollectInformationRepositoryCustom {
     // 개인정보 처리방침 상세 조회 - 기존 SelectCollectInformationByIdx
     CollectInfoDetailDto findCollectInfoByIdx(Integer idx);
 
-    // 개인정보 처리방침 전체 삭제 - 기존 DeleteByCompanyIdx
-    // 기존 TotalDeleteService에서 호출해서 처리함.
-    // companyIdx를 기준으로 idx List를 조회한다.
-    // List findCollectInfoIdxByCompayId(Integer companyIdx);
-
+    // 개인정보 처리방침 등록 - 기존 InsertCollectInformation
+    // 개인정보 처리방침 수정 - 기존 UpdateCollectInformation
+    // 개인정보 처리방침 삭제 - 기존 DeleteCollectInformationByIdx
+    // 개인정보 처리방침 전체 조회 - companyIdx를 기준으로 idx List를 조회한다. List findCollectInfoIdxByCompayId(Integer companyIdx);
+    // 개인정보 처리방침 전체 삭제 - 기존 DeleteByCompanyIdx (기존 TotalDeleteService에서 호출해서 처리함.)
 }

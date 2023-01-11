@@ -11,35 +11,13 @@ import java.util.List;
 public interface ServiceRepositoryCustom {
 
     // ServiceDao
-    /**
-     * 서비스(구독권) 목록 조회
-     * AS-IS SelectServiceList
-     **/
+    // 서비스(구독권) 목록 조회 - 기존 SelectServiceList
     List<ServiceDto> findServiceList();
 
-    /**
-     * 서비스(구독권) 상세 보기
-     * AS-IS SelectServiceByIdx
-     **/
+    // 서비스(구독권) 상세 보기 - 기존 SelectServiceByIdx
     ServiceDto findServiceByIdx(Integer idx);
 
-    /**
-     * 서비스(구독권) 등록 하기
-     * AS-IS InsertService
-     **/
-
-    /**
-     * 서비스(구독권) 수정 하기
-     * AS-IS UpdateService
-     **/
-
-    /**
-     * 서비스(구독권) 삭제 하기
-     * AS-IS DeleteServiceByIdx
-     **/
-
-    //public void InsertService(HashMap<String, Object> paramMap);
-    //public void UpdateService(HashMap<String, Object> paramMap);
-    //public void DeleteServiceByIdx(int idx);
-
+    // 서비스(구독권) 등록 하기 - 기존 InsertService
+    // 서비스(구독권) 수정 하기 - 기존 UpdateService
+    // 서비스(구독권) 삭제 하기 - 기존 DeleteServiceByIdx
 }

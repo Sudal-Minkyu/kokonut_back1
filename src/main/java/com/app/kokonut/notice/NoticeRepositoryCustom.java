@@ -14,10 +14,14 @@ import org.springframework.data.domain.Pageable;
  * Remark : 기존의 코코넛 프로젝트의 NoticeDao 쿼리호출
  */
 public interface NoticeRepositoryCustom {
+
+    // Notice 목록 조회 - 기존 SelectNoticeList, SelectNoticeListCount
     Page<NoticeListDto> findNoticePage(NoticeSearchDto noticeSearchDto, Pageable pageable);
 
+    // Notice 제목,내용 목록 조회 - 기존 SelectNoticeList, SelectNoticeListCount
     Page<NoticeContentListDto> findNoticeContentPage(Pageable pageable);
 
+    // Notice 내용 조회 - 기존 SelectNoticeByIdx
     NoticeDetailDto findNoticeByIdx(Integer idx);
 
 }

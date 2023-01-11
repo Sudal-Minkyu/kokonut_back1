@@ -11,25 +11,20 @@ import com.app.kokonut.setting.dto.SettingDetailDto;
  */
 public interface SettingRepositoryCustom {
 
+    // AdminSettingDao
     // 개인별 세선타임을 설정하기 위한 admin_setting 테이블의 사용여부가 결정되지 않아서
     // 현재(22.01.06) 해당 부분 리팩토링 진행하지 않음.
-    // AdminSettingDao
-//    String IsOperation(); // DB스케쥴러 작동여부 조회, 사용 안함
-//    void UpdateOperation(String isOperation); // DB스케줄러 작동여부 업데이트 (Y:작동, N:미작동), 사용안함
-//    Integer SelectLoginSessionTime(); // 로그인 세션타임 시간 조회
-//    void UpdateLoginSessionTime(Integer loginSessionTime); // 로그인 세션타임 시간 업데이트
+
+    // DB 스케줄러 작동 여부 조회, 사용 안함 - 기존 IsOperation
+    // DB 스케줄러 작동여부 업데이트 (Y:작동, N:미작동), 사용안함 - 기존 UpdateOperation
+    // 로그인 세션타임 시간 조회 - 기존 SelectLoginSessionTime
+    // 로그인 세션타임 시간 업데이트 - 기존 UpdateLoginSessionTime
 
     // SettingDao
-    /**
-     * 관리자 환경 설정 상세 조회
-     * AS-IS SelectSettingByCompanyIdx
-     **/
+    // 관리자 환경설정 상세 조회 - 기존 SelectSettingByCompanyIdx
     SettingDetailDto findSettingDetailByCompanyIdx(Integer companyIdx);
 
-//    public void InsertSetting(HashMap<String, Object> paramMap); // 관리자 환경설정 등록
-//
-//    public void UpdateSetting(HashMap<String, Object> paramMap); // 관리자 환경설정 수정
-//
-//    public void DeleteByCompanyIdx(int companyIdx); // 관리자 환경설정 전체 삭제
-//
+    // 관리자 환경설정 등록 - 기존 InsertSetting
+    // 관리자 환경설정 수정 - 기존 UpdateSetting
+    // 관리자 환경설정 전체 삭제 - 기존 DeleteByCompanyIdx
 }
