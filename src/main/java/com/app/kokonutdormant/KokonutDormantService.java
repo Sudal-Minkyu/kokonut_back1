@@ -174,4 +174,135 @@ public class KokonutDormantService {
 		return dynamicDormantRepositoryCustom.selectDormantColumns(searchQuery);
 	}
 
+	// 컬럼(필드) 추가
+	@Transactional
+	public void alterAddColumnTableQuery(String businessNumber, String field, String type, int length, Boolean isNull, String defaultValue, String comment) {
+		log.info("alterAddColumnTableQuery 휴면 호출");
+
+		try {
+
+			String nullStr = "NULL";
+
+			if(!isNull) {
+				nullStr = "NOT NULL";
+			}
+
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("ALTER TABLE `").append(businessNumber).append("`");
+			sb.append(" ADD COLUMN " + "`").append(field).append("`");
+
+			if(length == 0) {
+				sb.append(" ").append(type).append(" ").append(nullStr);
+			} else {
+				sb.append(" ").append(type).append("(").append(length).append(")").append(" ").append(nullStr);
+			}
+
+			if(!defaultValue.equals("")) {
+				if(defaultValue.equals("CURRENT_TIMESTAMP")) {
+					sb.append(" DEFAULT CURRENT_TIMESTAMP");
+				} else {
+					sb.append(" DEFAULT " + "'").append(defaultValue).append("'");
+				}
+			}
+			sb.append(" COMMENT " + "'").append(comment).append("'");
+
+			String updateQuery = sb.toString();
+
+			dynamicDormantRepositoryCustom.dormantCommonTable(updateQuery);
+
+			log.info("휴면테이블 필드추가 성공 : "+businessNumber);
+		} catch (Exception e) {
+			log.error("휴면테이블 필드추가 에러 : "+businessNumber);
+		}
+
+	}
+
+	// 컬럼(필드) 코멘트 변경
+	@Transactional
+	public void alterModifyColumnCommentQuery(String businessNumber, String field, String type, int length, Boolean isNull, String defaultValue, String comment) {
+		log.info("alterModifyColumnCommentQuery 휴면 호출");
+
+		try {
+
+			String nullStr = "NULL";
+			if(!isNull) {
+				nullStr = "NOT NULL";
+			}
+
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("ALTER TABLE `").append(businessNumber).append("`");
+			sb.append(" MODIFY " + "`").append(field).append("`");
+
+			if(length == 0) {
+				sb.append(" ").append(type).append(" ").append(nullStr);
+			} else {
+				sb.append(" ").append(type).append("(").append(length).append(")").append(" ").append(nullStr);
+			}
+
+			if(!defaultValue.equals("")) {
+				if(defaultValue.equals("CURRENT_TIMESTAMP")) {
+					sb.append(" DEFAULT CURRENT_TIMESTAMP");
+				} else {
+					sb.append(" DEFAULT " + "'").append(defaultValue).append("'");
+				}
+			}
+
+			sb.append(" COMMENT " + "'").append(comment).append("'");
+
+			String updateQuery = sb.toString();
+
+			dynamicDormantRepositoryCustom.dormantCommonTable(updateQuery);
+
+			log.info("휴면테이블 필드 코멘트 수정 성공 : "+businessNumber);
+		} catch (Exception e) {
+			log.error("휴면테이블 필드 코멘트 수정 에러 : "+businessNumber);
+		}
+
+	}
+
+	// 컬럼(필드)정보 수정
+	@Transactional
+	public void alterChangeColumnTableQuery(String businessNumber, String beforField, String afterField, String type, int length, Boolean isNull, String defaultValue, String comment)  {
+		log.info("alterChangeColumnTableQuery 휴면 호출");
+
+		try {
+
+			String nullStr = "NULL";
+			if(!isNull)
+				nullStr = "NOT NULL";
+
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("ALTER TABLE `").append(businessNumber).append("`");
+			sb.append(" CHANGE COLUMN " + "`").append(beforField).append("`").append(" ").append("`").append(afterField).append("`");
+
+			if(length == 0) {
+				sb.append(" ").append(type).append(" ").append(nullStr);
+			} else {
+				sb.append(" ").append(type).append("(").append(length).append(")").append(" ").append(nullStr);
+			}
+
+			if(!defaultValue.equals("")) {
+				if(defaultValue.equals("CURRENT_TIMESTAMP")) {
+					sb.append(" DEFAULT CURRENT_TIMESTAMP");
+				} else {
+					sb.append(" DEFAULT " + "'").append(defaultValue).append("'");
+				}
+			}
+
+			sb.append(" COMMENT " + "'").append(comment).append("'");
+
+			String updateQuery = sb.toString();
+
+			dynamicDormantRepositoryCustom.dormantCommonTable(updateQuery);
+
+			log.info("휴면테이블 필드정보 수정 성공 : "+businessNumber);
+		} catch (Exception e) {
+			log.error("휴면테이블 필드정보 수정 에러 : "+businessNumber);
+		}
+
+	}
+
 }

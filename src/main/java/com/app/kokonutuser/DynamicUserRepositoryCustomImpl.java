@@ -175,4 +175,11 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
         return jdbcTemplate.queryForObject(searchQuery, Long.class);
     }
 
+    // 유저테이블의 필드명을 통해 Comment 조회
+    @Override
+    public String selectUserColumnComment(String searchQuery) {
+        return jdbcTemplate.queryForObject(searchQuery, String.class);
+    }
+
+
 }

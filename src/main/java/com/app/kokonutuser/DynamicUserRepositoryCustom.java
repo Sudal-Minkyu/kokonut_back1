@@ -38,4 +38,6 @@ public interface DynamicUserRepositoryCustom {
     Integer selectUserIdCheck(String searchQuery); // 아이디 존재 유무 확인
 
     Long selectUserIdx(String searchQuery); // 유저 ID를 통해 IDX를 조회
+
+    String selectUserColumnComment(String searchQuery); // 유저테이블의 필드명을 통해 Comment 조회
 }

@@ -207,6 +207,7 @@ public class KokonutUserService {
 	 * 유저테이블의 컬럼 목록 조회
 	 * @param businessNumber 테이블 이름
 	 * @return Column 객체 리스트 -> KokonutUserFieldDto
+	 * 기존 코코넛 : SelectUserTable
 	 */
 	public List<KokonutUserFieldDto> getUserColumns(String businessNumber) {
 		log.info("getUserColumns 호출");
@@ -294,6 +295,15 @@ public class KokonutUserService {
 		String searchQuery = "SELECT IDX FROM `" + businessNumber + "` WHERE `ID` = '"+id+"'";
 //		log.info("searchQuery : "+searchQuery);
 		return dynamicUserRepositoryCustom.selectUserIdx(searchQuery);
+	}
+
+	// 유저테이블의 필드명을 통해 Comment 조회
+	public String selectUserColumnComment(String businessNumber, String fieldName) {
+		log.info("selectUserColumnComment 호출");
+
+		String searchQuery = "SELECT COLUMN_COMMENT FROM information_schema.columns where '" + businessNumber + "' AND column_name = '"+fieldName+"' limit 1";
+		log.info("searchQuery : "+searchQuery);
+		return dynamicUserRepositoryCustom.selectUserColumnComment(searchQuery);
 	}
 
 
@@ -423,7 +433,7 @@ public class KokonutUserService {
 	/**
 	 * 컬럼(필드) 추가
 	 *
-	 * @param businessNumber		- 변경할 테이블 명
+	 * @param businessNumber - 추가(수정)할 테이블 명
 	 * @param field 		- 변경 할 컬럼
 	 * @param type 			- 데이터 타입
 	 * @param length		- 데이터 길이
@@ -433,10 +443,8 @@ public class KokonutUserService {
 	 * 기존 코코넛 : AlterAddColumnTableQuery
 	 */
 	@Transactional
-	public boolean alterAddColumnTableQuery(String businessNumber, String field, String type, int length, Boolean isNull, String defaultValue) {
+	public void alterAddColumnTableQuery(String businessNumber, String field, String type, int length, Boolean isNull, String defaultValue, String comment) {
 		log.info("alterAddColumnTableQuery 호출");
-
-		boolean isSuccess = false;
 
 		try {
 
@@ -464,22 +472,21 @@ public class KokonutUserService {
 					sb.append(" DEFAULT " + "'").append(defaultValue).append("'");
 				}
 			}
+			sb.append(" COMMENT " + "'").append(comment).append("'");
 
 			String updateQuery = sb.toString();
 
 			dynamicUserRepositoryCustom.userCommonTable(updateQuery);
 
-			isSuccess = true;
 			log.info("유저테이블 필드추가 성공 : "+businessNumber);
 		} catch (Exception e) {
 			log.error("유저테이블 필드추가 에러 : "+businessNumber);
 		}
 
-		return isSuccess;
 	}
 
 	/**
-	 * 컬럼(필드)정보 변경
+	 * 컬럼(필드)정보 수정
 	 * @param businessNumber		- 변경할 테이블 명
 	 * @param beforField 	- 변경 전 컬럼
 	 * @param afterField 	- 변경 할 컬럼
@@ -490,8 +497,8 @@ public class KokonutUserService {
 	 * 기존 코코넛 : AlterChangeColumnTableQuery
 	 */
 	@Transactional
-	public boolean alterChangeColumnTableQuery(String businessNumber, String beforField, String afterField, String type, int length, Boolean isNull, String comment, String defaultValue)  {
-		log.info("alterChangeColumnTableQuery 호출");
+	public boolean alterChangeColumnTableQuery(String businessNumber, String beforField, String afterField, String type, int length, Boolean isNull, String defaultValue, String comment)  {
+		log.info("alterChangeColumnTableQuery 유저 호출");
 
 		boolean isSuccess = false;
 
@@ -547,16 +554,15 @@ public class KokonutUserService {
 	 * 기존 코코넛 : AlterModifyColumnCommentQuery
 	 */
 	@Transactional
-	public boolean alterModifyColumnCommentQuery(String businessNumber, String field, String type, int length, Boolean isNull, String comment, String defaultValue) {
-		log.info("alterModifyColumnCommentQuery 호출");
-
-		boolean isSuccess = false;
+	public void alterModifyColumnCommentQuery(String businessNumber, String field, String type, int length, Boolean isNull, String defaultValue, String comment) {
+		log.info("alterModifyColumnCommentQuery 유저 호출");
 
 		try {
 
 			String nullStr = "NULL";
-			if(!isNull)
+			if(!isNull) {
 				nullStr = "NOT NULL";
+			}
 
 			StringBuilder sb = new StringBuilder();
 
@@ -583,13 +589,11 @@ public class KokonutUserService {
 
 			dynamicUserRepositoryCustom.userCommonTable(updateQuery);
 
-			isSuccess = true;
 			log.info("유저테이블 필드 코멘트 수정 성공 : "+businessNumber);
 		} catch (Exception e) {
 			log.error("유저테이블 필드 코멘트 수정 에러 : "+businessNumber);
 		}
 
-		return isSuccess;
 	}
 
 	/**

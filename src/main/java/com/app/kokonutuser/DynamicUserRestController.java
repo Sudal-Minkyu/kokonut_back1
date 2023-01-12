@@ -2,6 +2,8 @@ package com.app.kokonutuser;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonutuser.dtos.KokonutColumSaveDto;
+import com.app.kokonutuser.dtos.KokonutColumUpdateDto;
 import com.app.kokonutuser.dtos.KokonutUserSearchDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -9,8 +11,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,7 +70,10 @@ public class DynamicUserRestController {
 
 	// 유저DB(테이블) 생성
 	@PostMapping(value = "/createUserDatabase")
-	@ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
+	@ApiImplicitParams({
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
 	public ResponseEntity<Map<String,Object>> createUserDatabase() {
 		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
 
@@ -115,6 +127,52 @@ public class DynamicUserRestController {
 		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
 		return dynamicUserService.userDeleteCall(TYPE, IDX, jwtFilterDto.getEmail());
 	}
+
+	// 개인정보 일괄등록 - 엑셀파일 양식 다운로드 -> 기존 코코넛 URL : downloadExcelForm
+	@GetMapping(value = "/downloadExcelForm")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
+	public void downloadExcelForm(HttpServletRequest request, HttpServletResponse response) {
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		dynamicUserService.downloadExcelForm(request, response, jwtFilterDto.getEmail());
+	}
+
+	// 개인정보 일괄등록 - 엑셀파일 검사 -> 미리보여주기 기능 - 기존코코넛 메서드 : readUploadExcelFile #일단 보류 woody
+	@PostMapping(value = "/readUploadExcelFile")
+	@ApiImplicitParams({
+//			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+//			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
+	public ResponseEntity<Map<String, Object>> readUploadExcelFile(@RequestParam(name="type", defaultValue = "") String type,
+																   MultipartHttpServletRequest request) {
+//		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.readUploadExcelFile(request, type, "woody2@kokonut.me");
+	}
+
+	// 개인정보 테이블 필드 추가 - 기존코코넛 메서드 : /member/userDB/save
+	@PostMapping(value = "/columSave")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
+	public ResponseEntity<Map<String, Object>> columSave(@RequestBody KokonutColumSaveDto kokonutColumSaveDto) {
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.columSave(kokonutColumSaveDto, jwtFilterDto.getEmail());
+	}
+
+	// 개인정보 테이블 필드 수정 - 기존코코넛 메서드 : 없음
+	@PostMapping(value = "/columUpdate")
+	@ApiImplicitParams({
+//			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+//			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
+	public ResponseEntity<Map<String, Object>> columUpdate(@RequestBody KokonutColumUpdateDto kokonutColumUpdateDto) {
+//		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.columUpdate(kokonutColumUpdateDto, "woody2@kokonut.me");
+	}
+
 
 
 

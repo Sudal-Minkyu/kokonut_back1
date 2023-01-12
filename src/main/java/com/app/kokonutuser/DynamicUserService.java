@@ -10,20 +10,22 @@ import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import com.app.kokonut.woody.common.component.AesCrypto;
 import com.app.kokonut.woody.common.component.CommonUtil;
+import com.app.kokonut.woody.excel.ExcelService;
 import com.app.kokonutdormant.KokonutDormantService;
 import com.app.kokonutdormant.dtos.KokonutDormantListDto;
 import com.app.kokonutremove.KokonutRemoveService;
-import com.app.kokonutuser.dtos.KokonutUserFieldDto;
-import com.app.kokonutuser.dtos.KokonutUserListDto;
-import com.app.kokonutuser.dtos.KokonutRemoveInfoDto;
-import com.app.kokonutuser.dtos.KokonutUserSearchDto;
+import com.app.kokonutuser.dtos.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -49,6 +51,7 @@ public class DynamicUserService {
 	private final AdminRepository adminRepository;
 	private final CompanyRepository companyRepository;
 
+	private final ExcelService excelService;
 	private final KokonutUserService kokonutUserService;
 	private final CompanyService companyService;
 	private final ActivityHistoryService activityHistoryService;
@@ -62,10 +65,11 @@ public class DynamicUserService {
 //	ExcelService excelService;
 
 	@Autowired
-	public DynamicUserService(PasswordEncoder passwordEncoder, AdminRepository adminRepository, CompanyRepository companyRepository, KokonutUserService kokonutUserService, KokonutDormantService kokonutDormantService, CompanyService companyService, ActivityHistoryService activityHistoryService, KokonutRemoveService kokonutRemoveService) {
+	public DynamicUserService(PasswordEncoder passwordEncoder, AdminRepository adminRepository, CompanyRepository companyRepository, ExcelService excelService, KokonutUserService kokonutUserService, KokonutDormantService kokonutDormantService, CompanyService companyService, ActivityHistoryService activityHistoryService, KokonutRemoveService kokonutRemoveService) {
 		this.passwordEncoder = passwordEncoder;
 		this.adminRepository = adminRepository;
 		this.companyRepository = companyRepository;
+		this.excelService = excelService;
 		this.kokonutUserService = kokonutUserService;
 		this.kokonutDormantService = kokonutDormantService;
 		this.companyService = companyService;
@@ -899,13 +903,538 @@ public class DynamicUserService {
 		return ResponseEntity.ok(res.success(data));
 	}
 
+	// 개인정보 등록 - 엑셀파일 양식 다운로드
+	public void downloadExcelForm(HttpServletRequest request, HttpServletResponse response, String email) {
+		log.info("downloadExcelForm 호출");
+
+		// 해당 이메일을 통해 회사 IDX 조회
+		AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+
+		String businessNumber;
+
+		if(adminCompanyInfoDto == null) {
+			log.error("이메일 정보가 존재하지 않습니다.");
+			return;
+		}
+		else {
+			businessNumber = adminCompanyInfoDto.getBusinessNumber(); // tableName
+		}
+
+		try {
+			List<KokonutUserFieldDto> columns = kokonutUserService.getUserColumns(businessNumber);
+
+			List<String> headerList = new ArrayList<>();
+			List<List<String>> dataArrayList = new ArrayList<>();
+
+			for (KokonutUserFieldDto kokonutUserFieldDto : columns) {
+				String comment = kokonutUserFieldDto.getComment();
+
+				// Field 옵션 명 및 암호화 정형화
+				String fieldOptionName = comment;
+
+				if(comment.contains("(")) {
+					String[] fieldOptionNameList = comment.split("\\(");
+					fieldOptionName = fieldOptionNameList[0];
+				}
+
+				// 엑셀 파일 헤더에 제외 할 필드
+				if("인덱스".equals(fieldOptionName)) continue;
+				if("개인정보 동의".equals(fieldOptionName)) continue;
+				if("이용내역보낸 날짜".equals(fieldOptionName)) continue;
+				if("최종 로그인 일시".equals(fieldOptionName)) continue;
+				if("등록 일시".equals(fieldOptionName)) continue;
+				if("수정 일시".equals(fieldOptionName)) continue;
+
+				headerList.add(fieldOptionName);
+			}
+
+			// 보조 설명문 추가
+			List<String> headerInfoList = new ArrayList<>();
+			for (String header : headerList) {
+				if ("비밀번호".equals(header)) {
+					headerInfoList.add("암호화된 데이터가 저장됨");
+				} else if ("제3자제공 동의".equals(header)) {
+					headerInfoList.add("N:동의하지않음 / Y:동의");
+				} else if ("회원가입 날짜".equals(header)) {
+					headerInfoList.add("YYYYMMDD 형식의 값");
+				} else {
+					headerInfoList.add("");
+				}
+			}
+			dataArrayList.add(headerInfoList);
+
+			excelService.download(request, response, "회원 엑셀 양식.xlsx", headerList, dataArrayList);
+			log.error("엑셀 양식파일 다운로드 성공");
+
+		} catch(Exception e) {
+			log.error("엑셀 파일 다운로드 에러");
+			log.error("e : "+e.getMessage());
+		}
+
+	}
+
+	// 개인정보 일괄등록 - 엑셀파일 검사 -> 미리보여주기 기능
+	public ResponseEntity<Map<String, Object>> readUploadExcelFile(MultipartHttpServletRequest request, String type, String email) {
+		log.info("readUploadExcelFile 호출");
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
+
+		log.info("request : "+ request);
+		log.info("type : "+type);
+		log.info("email : "+email);
+
+		try {
+			MultipartFile file = null;
+			Iterator<String> iterator = request.getFileNames();
+			if(iterator.hasNext()) {
+				file = request.getFile(iterator.next());
+			}
+
+			if(file == null) {
+				log.error("검사 할 엑셀파일이 존재 하지 않습니다.");
+				return ResponseEntity.ok(res.fail(ResponseErrorCode.KO061.getCode(), ResponseErrorCode.KO061.getDesc()));
+			}
+
+			List<List<String>> rows = excelService.read(file.getInputStream());
+			if(rows == null) {
+				log.error("읽을 수 없는 엑셀파일 입니다.");
+				return ResponseEntity.ok(res.fail(ResponseErrorCode.KO062.getCode(), ResponseErrorCode.KO062.getDesc()));
+			}
+
+			List<String> headerList = rows.get(0);
+			List<List<String>> rowList = new ArrayList<List<String>>();
+			for(int i = 1; i < rows.size(); i++) {
+				rowList.add(rows.get(i));
+			}
+
+			// 차단 컬럼 검사
+			if(headerList.contains("IDX")) {
+				log.error("IDX 컬럼은 저장할 수 없습니다.");
+				return ResponseEntity.ok(res.fail(ResponseErrorCode.KO063.getCode(), ResponseErrorCode.KO063.getDesc()));
+			}
+
+			// 해당 이메일을 통해 회사 IDX 조회
+			AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+
+			int adminIdx;
+			int companyIdx;
+			String businessNumber;
+
+			if(adminCompanyInfoDto == null) {
+				log.error("이메일 정보가 존재하지 않습니다.");
+				return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(), "해당 이메일의 정보가 "+ResponseErrorCode.KO004.getDesc()));
+			}
+			else {
+				adminIdx = adminCompanyInfoDto.getAdminIdx(); // modifierIdx
+				companyIdx = adminCompanyInfoDto.getCompanyIdx(); // companyIdx
+				businessNumber = adminCompanyInfoDto.getBusinessNumber(); // tableName
+			}
+
+			List<KokonutUserFieldDto> columns;
+			if(type.equals("1")){ // "1"일 경우 User
+				columns = kokonutUserService.getUserColumns(businessNumber);
+			} else { // "2"일 경우 Dormant
+				columns = kokonutDormantService.getDormantColumns(businessNumber);
+			}
+
+			List<List<Map<String, Object>>> dataList = new ArrayList<>();
+
+			// 엑셀파일 내 아이디 중복값 체크
+//			String idDuplicationCheck = "";
+//			for(List<String> row : rowList) {
+//				// 헤더 보조 설명 스킵용
+//				if (row.toString().contains("YYYYMMDD 형식의 값")) {
+//					continue;
+//				}
+//				//한 row에 모든 값이 빈 값이면 스킵
+//				String tempRow = row.toString().replaceAll(" ", "");
+//				tempRow = tempRow.toString().replaceAll(",", "");
+//				if (tempRow.length() <= 2) {
+//					continue;
+//				}
+//				List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+//			}
+
+		} catch (Exception e) {
+			log.error("e : "+e.getMessage());
+		}
+
+		return ResponseEntity.ok(res.success(data));
+	}
+
+	// 개인정보 테이블 필드 추가
+	public ResponseEntity<Map<String, Object>> columSave(KokonutColumSaveDto kokonutColumSaveDto, String email) {
+		log.info("columSave 호출");
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
+
+		log.info("kokonutColumSaveDto : "+ kokonutColumSaveDto);
+		log.info("email : "+email);
+
+		// 해당 이메일을 통해 회사 IDX 조회
+		AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+
+		int adminIdx;
+		int companyIdx;
+		String businessNumber;
+
+		if(adminCompanyInfoDto == null) {
+			log.error("이메일 정보가 존재하지 않습니다.");
+			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(), "해당 이메일의 정보가 "+ResponseErrorCode.KO004.getDesc()));
+		}
+		else {
+			adminIdx = adminCompanyInfoDto.getAdminIdx(); // modifierIdx
+			companyIdx = adminCompanyInfoDto.getCompanyIdx(); // companyIdx
+			businessNumber = adminCompanyInfoDto.getBusinessNumber(); // tableName
+		}
+
+		int check = kokonutUserService.selectExistTable(businessNumber);
+		if(check == 0) {
+			log.error("유저 테이블이 존재하지 않습니다. businessNumber : "+businessNumber);
+			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(), "유저 테이블이 "+ResponseErrorCode.KO004.getDesc()));
+		}
+
+		// 회원컬럼저장 코드
+		ActivityCode activityCode = ActivityCode.AC_19;
+		// 활동이력 저장 -> 비정상 모드
+		String ip = CommonUtil.clientIp();
+		Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(3, companyIdx, adminIdx, activityCode,
+				businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+
+		String fieldName = kokonutColumSaveDto.getFieldName(); // 필드명
+		String fieldOptionName = kokonutColumSaveDto.getFieldOptionName(); // Comment 내용
+ 		String dataType = kokonutColumSaveDto.getDataType(); // 데이터 타입 : "2" -> BIGINT, "3" -> DOUBLE, "4" -> VARCHAR,  "5" -> LONGTEXT,  "6" -> BOOLEAN,  "7" -> TIMESTAMP
+		Integer dataLength = kokonutColumSaveDto.getDataLength(); // 데이터 길이
+		String isNullYn = kokonutColumSaveDto.getIsNullYn(); // Null값 허용여부 true/false
+		String defaultValue = kokonutColumSaveDto.getDefaultValue(); // 기본값
+		String isEncryption = kokonutColumSaveDto.getIsEncryption(); // 암호화여부 - "0" 필요, "1" 불필요
+
+		// DATA TYPE 정형화
+		String type = "";
+		if(dataType.equals("2")) {
+			type = "BIGINT";
+		} else if(dataType.equals("3")) {
+			type = "DOUBLE";
+		} else if(dataType.equals("4")) {
+			type = "VARCHAR";
+		} else if(dataType.equals("5")) {
+			type = "LONGTEXT";
+		} else if(dataType.equals("6")) {
+			type = "BOOLEAN";
+		} else if(dataType.equals("7")) {
+			type = "TIMESTAMP";
+		}
+		log.info("저장할 필드 데이터타입 : "+type);
+
+		// 길이 정형화
+		int length = 0;
+		if(dataLength != null) {
+			length = dataLength;
+		}
+
+		// Null check 정형화
+		boolean isNull = Boolean.parseBoolean(isNullYn);
+
+		// 대상 테이블 정보를 조회
+		List<KokonutUserFieldDto> targetTable = kokonutUserService.getUserColumns(businessNumber);
+
+		// Field명과 Comment내용 중복 컬럼 체크
+		for (KokonutUserFieldDto column : targetTable) {
+			String Field = column.getField();
+			String Comment = column.getComment();
+
+			if(Comment.contains("(")) {
+				String[] CommentList = Comment.split("\\(");
+				Comment = CommentList[0];
+			}
+
+			if(fieldName.equals(Field.toUpperCase())) {
+				log.error("이미 존재하는 컬럼명 입니다.");
+				return ResponseEntity.ok(res.fail(ResponseErrorCode.KO064.getCode(), ResponseErrorCode.KO064.getDesc()));
+			}
+
+			if(Comment.equals(fieldOptionName)) {
+				log.error("이미 존재하는 개인정보 항목입니다. fieldOptionName : "+fieldOptionName);
+				return ResponseEntity.ok(res.fail(ResponseErrorCode.KO065.getCode(), ResponseErrorCode.KO065.getDesc()));
+			}
+		}
+
+		// Comment 정형화
+		String comment;
+		if(isEncryption.equals("0")) {
+			comment = fieldOptionName + "(암호화,수정가능)";
+		} else {
+			comment = fieldOptionName + "(수정가능)";
+		}
+
+		// 사용테이블에 컬럼 추가
+		kokonutUserService.alterAddColumnTableQuery(businessNumber, fieldName, type, length, isNull, defaultValue, comment);
+		// 휴면테이블에 컬럼 추가
+		kokonutDormantService.alterAddColumnTableQuery(businessNumber, fieldName, type, length, isNull, defaultValue, comment);
+
+		activityHistoryService.updateActivityHistory(activityHistoryIDX,
+				businessNumber+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
+
+		return ResponseEntity.ok(res.success(data));
+	}
+
+	// 개인정보 테이블 필드 수정
+	public ResponseEntity<Map<String, Object>> columUpdate(KokonutColumUpdateDto kokonutColumUpdateDto, String email) {
+		log.info("columUpdate 호출");
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
+
+		log.info("kokonutColumUpdateDto : "+ kokonutColumUpdateDto);
+		log.info("email : "+email);
+
+		// 해당 이메일을 통해 회사 IDX 조회
+		AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+
+		int adminIdx;
+		int companyIdx;
+		String businessNumber;
+
+		if(adminCompanyInfoDto == null) {
+			log.error("이메일 정보가 존재하지 않습니다.");
+			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(), "해당 이메일의 정보가 "+ResponseErrorCode.KO004.getDesc()));
+		}
+		else {
+			adminIdx = adminCompanyInfoDto.getAdminIdx(); // modifierIdx
+			companyIdx = adminCompanyInfoDto.getCompanyIdx(); // companyIdx
+			businessNumber = adminCompanyInfoDto.getBusinessNumber(); // tableName
+		}
+
+		int check = kokonutUserService.selectExistTable(businessNumber);
+		if(check == 0) {
+			log.error("유저 테이블이 존재하지 않습니다. businessNumber : "+businessNumber);
+			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(), "유저 테이블이 "+ResponseErrorCode.KO004.getDesc()));
+		}
+
+		// 회원컬럼수정 코드
+		ActivityCode activityCode = ActivityCode.AC_20;
+		// 활동이력 저장 -> 비정상 모드
+		String ip = CommonUtil.clientIp();
+		Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(3, companyIdx, adminIdx, activityCode,
+				businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+
+		String fieldName;
+		String beforField = kokonutColumUpdateDto.getBeforField(); // 현재 필드명
+		String afterField = kokonutColumUpdateDto.getAfterField(); // 수정할 필드명
+		String fieldOptionName = kokonutColumUpdateDto.getFieldOptionName(); // Comment 내용
+		String dataType = kokonutColumUpdateDto.getDataType(); // 데이터 타입 : "2" -> BIGINT, "3" -> DOUBLE, "4" -> VARCHAR,  "5" -> LONGTEXT,  "6" -> BOOLEAN,  "7" -> TIMESTAMP
+		Integer dataLength = kokonutColumUpdateDto.getDataLength(); // 데이터 길이
+		String isNullYn = kokonutColumUpdateDto.getIsNullYn(); // Null값 허용여부 true/false
+		String defaultValue = kokonutColumUpdateDto.getDefaultValue(); // 기본값
+		String isEncryption = kokonutColumUpdateDto.getIsEncryption(); // 암호화여부 - "0" 필요, "1" 불필요
+
+		// DATA TYPE 정형화
+		String type = "";
+		if(dataType.equals("2")) {
+			type = "BIGINT";
+		} else if(dataType.equals("3")) {
+			type = "DOUBLE";
+		} else if(dataType.equals("4")) {
+			type = "VARCHAR";
+		} else if(dataType.equals("5")) {
+			type = "LONGTEXT";
+		} else if(dataType.equals("6")) {
+			type = "BOOLEAN";
+		} else if(dataType.equals("7")) {
+			type = "TIMESTAMP";
+		}
+		log.info("수정할 필드 데이터타입 : "+type);
+
+		// 길이 정형화
+		int length = 0;
+		if(dataLength != null) {
+			length = dataLength;
+		}
+
+		// Null check 정형화
+		boolean isNull = Boolean.parseBoolean(isNullYn);
+
+		// 대상 테이블 정보를 조회
+		List<KokonutUserFieldDto> targetTable = kokonutUserService.getUserColumns(businessNumber);
+
+		// Field명과 Comment내용 중복 컬럼 체크
+		for (KokonutUserFieldDto column : targetTable) {
+			String Field = column.getField();
+			String Comment = column.getComment();
+
+			if(Comment.contains("(")) {
+				String[] CommentList = Comment.split("\\(");
+				Comment = CommentList[0];
+			}
 
 
+			if (afterField == null) {
+				// 필드를 수정하지 않을 경우
+				if(beforField.equals(Field.toUpperCase())) {
+					log.error("이미 존재하는 컬럼명 입니다.");
+					return ResponseEntity.ok(res.fail(ResponseErrorCode.KO064.getCode(), ResponseErrorCode.KO064.getDesc()));
+				}
+			} else {
+				// 필드를 수정할 경우
+				if(afterField.equals(Field.toUpperCase())) {
+					log.error("이미 존재하는 컬럼명 입니다.");
+					return ResponseEntity.ok(res.fail(ResponseErrorCode.KO064.getCode(), ResponseErrorCode.KO064.getDesc()));
+				}
+			}
+
+			if(Comment.equals(fieldOptionName)) {
+				log.error("이미 존재하는 개인정보 항목입니다. fieldOptionName : "+fieldOptionName);
+				return ResponseEntity.ok(res.fail(ResponseErrorCode.KO065.getCode(), ResponseErrorCode.KO065.getDesc()));
+			}
+		}
+
+		// Comment 정형화
+		String comment;
+		if(isEncryption.equals("0")) {
+			comment = fieldOptionName + "(암호화,수정가능)";
+		} else {
+			comment = fieldOptionName + "(수정가능)";
+		}
+
+		// 필드명을 수정할 경우
+		if (afterField == null) {
+			fieldName = beforField;
+
+//			// 사용테이블에 컬럼 수정
+//			kokonutUserService.alterModifyColumnCommentQuery(businessNumber, beforField, type, length, isNull, defaultValue, comment);
+//			// 휴면테이블에 컬럼 수정
+//			kokonutDormantService.alterModifyColumnCommentQuery(businessNumber, beforField, type, length, isNull, defaultValue, comment);
+		} else {
+			fieldName = afterField;
+
+//			// 사용테이블에 컬럼 수정
+//			kokonutUserService.alterChangeColumnTableQuery(businessNumber, beforField, afterField, type, length, isNull, defaultValue, comment);
+//			// 휴면테이블에 컬럼 수정
+//			kokonutDormantService.alterChangeColumnTableQuery(businessNumber, beforField, afterField, type, length, isNull, defaultValue, comment);
+		}
+
+		// 현재 바꾼 필드의 커멘트 가져오기
+		String changeColumnComment = kokonutUserService.selectUserColumnComment(businessNumber, fieldName);
+//		log.info("changeColumnComment : "+changeColumnComment);
+		if(isEncryption.equals("0")) {
+			if(!changeColumnComment.contains("(암호화,수정가능)")) {
+				log.info("존재안함 -> 데이터 암호화 시작");
+			}
+		} else {
+			if(changeColumnComment.contains("(암호화,수정가능)")) {
+				log.info("존재함 -> 데이터 복호화 시작");
+			}
+		}
 
 
+		// 암호화 타입 변경시 암,복호화진행
+//		if(isEncryption.equals("0")) {
+//			String chengedEncryption = paramMap.get("chengedEncryption").toString();
 
+//		String queryString = "NAME = '이름변경', ID='idchange'";
+//		boolean result = kokonutUserService.updateUserTable(businessNumber, 8, queryString);
+//		log.info("result : "+result);
 
+//			if (chengedEncryption.equals("true")) {
+//				try {
+//					final String DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyIdx);
+//
+//					// 유저테이블
+//					List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+//					List<HashMap<String, Object>> fieldList = dynamicUserService.SelectFieldList(tableName, fieldName);
+//					for (HashMap<String, Object> fieldMap : fieldList) {
+//						int userIdx = Integer.parseInt(fieldMap.get("IDX").toString());
+//						String fieldValue = fieldMap.get(fieldName).toString();
+//						if (fieldValue.equals("")) continue;
+//
+//						// 평문 -> 암호화
+//						if (isEncryption.equals("0")) {
+//							String encryptedValue = AesCrypto.encrypt(fieldValue, DECRYPTED_KEY);
+//
+//							Map<String, Object> item = new HashMap<String, Object>();
+//							item.put("field", fieldName);
+//							item.put("value", encryptedValue);
+//							list.add(item);
+//
+//							if (!kokonutUserService.updateUser(tableName, userIdx, list)) {
+//								logger.info("###[회원정보 DB관리] 암호화 및 복호화 처리 실패. Table : " + tableName + ", FieldName : " + fieldName);
+//								returnMap.put("isSuccess", "false");
+//								returnMap.put("errorMsg", "회원DB 항목 " + controlType + "에 실패했습니다.");
+//								break;
+//							}
+//							// 암호화 -> 평문
+//						}
+//						else {
+//							String decryptedValue = AesCrypto.decrypt(new String(fieldValue.toString().getBytes()), DECRYPTED_KEY);
+//
+//							Map<String, Object> item = new HashMap<String, Object>();
+//							item.put("field", fieldName);
+//							item.put("value", decryptedValue);
+//							list.add(item);
+//
+//							if (!dynamicUserService.UpdateUser(tableName, userIdx, list)) {
+//								logger.info("###[회원정보 DB관리] 암호화 및 복호화 처리 실패. Table : " + tableName + ", FieldName : " + fieldName);
+//								returnMap.put("isSuccess", "false");
+//								returnMap.put("errorMsg", "회원DB 항목 " + controlType + "에 실패했습니다.");
+//								break;
+//							}
+//						}
+//					}
+//
+//					// 휴면테이블
+//					List<Map<String, Object>> list2 = new ArrayList<Map<String, Object>>();
+//					List<HashMap<String, Object>> fieldList2 = dynamicDormantService.SelectFieldList(tableName, fieldName);
+//					for (HashMap<String, Object> fieldMap2 : fieldList2) {
+//						int userIdx = Integer.parseInt(fieldMap2.get("IDX").toString());
+//						String fieldValue = fieldMap2.get(fieldName).toString();
+//						if (fieldValue.equals("")) continue;
+//
+//						// 평문 -> 암호화
+//						if (isEncryption.equals("0")) {
+//							String encryptedValue = AesCrypto.encrypt(fieldValue, DECRYPTED_KEY);
+//
+//							Map<String, Object> item = new HashMap<String, Object>();
+//							item.put("field", fieldName);
+//							item.put("value", encryptedValue);
+//							list.add(item);
+//
+//							if (!dynamicDormantService.UpdateUser(tableName, userIdx, list2)) {
+//								logger.info("###[회원정보 DB관리] 암호화 및 복호화 처리 실패. Table : " + tableName + ", FieldName : " + fieldName);
+//								returnMap.put("isSuccess", "false");
+//								returnMap.put("errorMsg", "회원DB 항목 " + controlType + "에 실패했습니다.");
+//								break;
+//							}
+//							// 암호화 -> 평문
+//						}
+//						else {
+//							String decryptedValue = AesCrypto.decrypt(new String(fieldValue.toString().getBytes()), DECRYPTED_KEY);
+//
+//							Map<String, Object> item = new HashMap<String, Object>();
+//							item.put("field", fieldName);
+//							item.put("value", decryptedValue);
+//							list2.add(item);
+//
+//							if (!dynamicDormantService.UpdateUser(tableName, userIdx, list2)) {
+//								logger.info("###[회원정보 DB관리] 암호화 및 복호화 처리 실패. Table : " + tableName + ", FieldName : " + fieldName);
+//								returnMap.put("isSuccess", "false");
+//								returnMap.put("errorMsg", "회원DB 항목 " + controlType + "에 실패했습니다.");
+//								break;
+//							}
+//						}
+//					}
+//				} catch (Exception e) {
+//					logger.error(e.getMessage());
+//				}
+//			}
+//		}
 
+		activityHistoryService.updateActivityHistory(activityHistoryIDX,
+				businessNumber+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
+
+		return ResponseEntity.ok(res.success(data));
+	}
 
 
 
