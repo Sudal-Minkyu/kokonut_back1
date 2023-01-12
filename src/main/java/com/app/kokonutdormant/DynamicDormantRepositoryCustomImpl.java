@@ -1,5 +1,7 @@
 package com.app.kokonutdormant;
 
+import com.app.kokonutdormant.dtos.KokonutDormantFieldCheckDto;
+import com.app.kokonutdormant.dtos.KokonutDormantFieldInfoDto;
 import com.app.kokonutdormant.dtos.KokonutDormantListDto;
 import com.app.kokonutuser.dtos.KokonutRemoveInfoDto;
 import com.app.kokonutuser.dtos.KokonutUserFieldDto;
@@ -74,5 +76,38 @@ public class DynamicDormantRepositoryCustomImpl implements DynamicDormantReposit
                 new BeanPropertyRowMapper<>(KokonutUserFieldDto.class));
     }
 
+    // 필드-값 쌍으로 사용자 컬럼값 조회
+    @Override
+    public List<KokonutDormantFieldInfoDto> selectDormantFieldList(String VALUE, String searchQuery) {
+        return jdbcTemplate.query(
+                searchQuery,
+                (rs, rowNum) ->
+                        new KokonutDormantFieldInfoDto(
+                                rs.getLong("IDX"),
+                                rs.getObject(VALUE)
+                        )
+        );
+    }
+
+    // 휴면테이블의 필드명을 통해 테이블명, 필드명 조회 -> 삭제하기위해 조회하는 메서드
+    @Override
+    public List<KokonutDormantFieldCheckDto> selectDormantTableNameAndFieldName(String searchQuery) {
+        return jdbcTemplate.query(
+                searchQuery,
+                (rs, rowNum) ->
+                        new KokonutDormantFieldCheckDto(
+                                rs.getString("TABLE_NAME"),
+                                rs.getString("COLUMN_NAME")
+                        )
+        );
+    }
+
+    // 휴면테이블 중복 체크 메서드
+    @Override
+    public int selectExistDormantTable(String businessNumber) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM Information_schema.tables WHERE table_name = "+"'"+businessNumber+"'"+") AS flag";
+//        log.info("중복체크 sql : "+sql);
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
 
 }

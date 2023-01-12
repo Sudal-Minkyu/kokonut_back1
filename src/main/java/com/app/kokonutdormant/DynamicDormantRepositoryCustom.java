@@ -1,7 +1,10 @@
 package com.app.kokonutdormant;
 
+import com.app.kokonutdormant.dtos.KokonutDormantFieldCheckDto;
+import com.app.kokonutdormant.dtos.KokonutDormantFieldInfoDto;
 import com.app.kokonutdormant.dtos.KokonutDormantListDto;
 import com.app.kokonutuser.dtos.KokonutRemoveInfoDto;
+import com.app.kokonutuser.dtos.KokonutUserFieldCheckDto;
 import com.app.kokonutuser.dtos.KokonutUserFieldDto;
 
 import java.util.List;
@@ -18,6 +21,11 @@ public interface DynamicDormantRepositoryCustom {
 
     Integer selectDormantIdCheck(String searchQuery); // 아이디 존재 유무 확인
 
-    List<KokonutUserFieldDto> selectDormantColumns(String searchQuery);
+    List<KokonutUserFieldDto> selectDormantColumns(String searchQuery); // 휴면테이블의 컬럼 조회
 
+    List<KokonutDormantFieldInfoDto> selectDormantFieldList(String field, String searchQuery); // 필드-값 쌍으로 사용자 컬럼값 조회
+
+    List<KokonutDormantFieldCheckDto> selectDormantTableNameAndFieldName(String searchQuery); // 휴면테이블의 필드명을 통해 테이블명, 필드명 조회 -> 삭제하기위해 조회하는 메서드
+
+    int selectExistDormantTable(String businessNumber);
 }

@@ -1,5 +1,6 @@
 package com.app.kokonutuser;
 
+import com.app.kokonutdormant.dtos.KokonutDormantFieldCheckDto;
 import com.app.kokonutuser.dtos.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
 
     // 유저테이블 중복 체크 메서드
     @Override
-    public int selectExistTable(String businessNumber) {
+    public int selectExistUserTable(String businessNumber) {
         String sql = "SELECT EXISTS (SELECT 1 FROM Information_schema.tables WHERE table_name = "+"'"+businessNumber+"'"+") AS flag";
 //        log.info("중복체크 sql : "+sql);
         return jdbcTemplate.queryForObject(sql, Integer.class);
@@ -117,7 +118,7 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
 
     // 필드-값 쌍으로 사용자 컬럼값 조회
     @Override
-    public List<KokonutUserFieldInfoDto> selectFieldList(String VALUE, String searchQuery) {
+    public List<KokonutUserFieldInfoDto> selectUserFieldList(String VALUE, String searchQuery) {
         return jdbcTemplate.query(
             searchQuery,
             (rs, rowNum) ->
@@ -181,5 +182,17 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
         return jdbcTemplate.queryForObject(searchQuery, String.class);
     }
 
+    // 개인정보 테이블의 필드명을 통해 테이블명, 필드명 조회 -> 삭제하기위해 조회하는 메서드
+    @Override
+    public List<KokonutUserFieldCheckDto> selectUserTableNameAndFieldName(String searchQuery) {
+        return jdbcTemplate.query(
+                searchQuery,
+                (rs, rowNum) ->
+                        new KokonutUserFieldCheckDto(
+                                rs.getString("TABLE_NAME"),
+                                rs.getString("COLUMN_NAME")
+                        )
+        );
+    }
 
 }

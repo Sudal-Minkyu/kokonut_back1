@@ -165,15 +165,24 @@ public class DynamicUserRestController {
 	// 개인정보 테이블 필드 수정 - 기존코코넛 메서드 : 없음
 	@PostMapping(value = "/columUpdate")
 	@ApiImplicitParams({
-//			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-//			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
 	})
-	public ResponseEntity<Map<String, Object>> columUpdate(@RequestBody KokonutColumUpdateDto kokonutColumUpdateDto) {
-//		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-		return dynamicUserService.columUpdate(kokonutColumUpdateDto, "woody2@kokonut.me");
+	public ResponseEntity<Map<String, Object>> columUpdate(@RequestBody KokonutColumUpdateDto kokonutColumUpdateDto) throws Exception {
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.columUpdate(kokonutColumUpdateDto, jwtFilterDto.getEmail());
 	}
 
-
+	// 개인정보 테이블 필드 삭제 - 기존코코넛 메서드 : 없음
+	@PostMapping(value = "/columDelete")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+	})
+	public ResponseEntity<Map<String, Object>> columDelete(@RequestParam(name="fieldName", defaultValue = "") String fieldName) {
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+		return dynamicUserService.columDelete(fieldName, jwtFilterDto.getEmail());
+	}
 
 
 

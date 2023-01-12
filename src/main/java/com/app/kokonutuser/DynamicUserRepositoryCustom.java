@@ -9,7 +9,7 @@ public interface DynamicUserRepositoryCustom {
 
     void userCommonTable(String commonQuery); // 생성, 삭제, 업데이트 실행 공용
 
-    int selectExistTable(String businessNumber); // 보내는 값 - tableName = businessNumber
+    int selectExistUserTable(String businessNumber); // 보내는 값 - tableName = businessNumber
 
     List<Map<String, Object>> selectUserList(String searchQuery); // kokonut_user 회원리스트 조회
 
@@ -27,7 +27,7 @@ public interface DynamicUserRepositoryCustom {
 
     String selectIdByFieldAndValue(String searchQuery); // 필드값을 통해 아이디 조회
 
-    List<KokonutUserFieldInfoDto> selectFieldList(String VALUE, String searchQuery); // 필드-값 쌍으로 사용자 컬럼값 조회
+    List<KokonutUserFieldInfoDto> selectUserFieldList(String VALUE, String searchQuery); // 필드-값 쌍으로 사용자 컬럼값 조회
 
     List<KokonutUserPwInfoDto> findByNowPw(String searchQuery); // 현재 비밀번호 값 호출
 
@@ -40,4 +40,6 @@ public interface DynamicUserRepositoryCustom {
     Long selectUserIdx(String searchQuery); // 유저 ID를 통해 IDX를 조회
 
     String selectUserColumnComment(String searchQuery); // 유저테이블의 필드명을 통해 Comment 조회
+
+    List<KokonutUserFieldCheckDto> selectUserTableNameAndFieldName(String searchQuery); // 개인정보 테이블의 필드명을 통해 테이블명, 필드명 조회 -> 삭제하기위해 조회하는 메서드
 }

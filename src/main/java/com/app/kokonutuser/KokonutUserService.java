@@ -68,9 +68,9 @@ public class KokonutUserService {
 	 * 유저DB 테이블 중복검사
 	 * 기존 코코넛 : SelectExistTable
 	 */
-	public int selectExistTable(String businessNumber) {
-		log.info("selectExistTable 호출");
-		return dynamicUserRepositoryCustom.selectExistTable(businessNumber);
+	public int selectExistUserTable(String businessNumber) {
+		log.info("selectExistUserTable 호출");
+		return dynamicUserRepositoryCustom.selectExistUserTable(businessNumber);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class KokonutUserService {
 	 */
 	public boolean existTable(String businessNumber) {
 		log.info("existTable 호출");
-		int result = selectExistTable(businessNumber);
+		int result = selectExistUserTable(businessNumber);
 
 		if (result == 1) {
 			return true;
@@ -258,14 +258,14 @@ public class KokonutUserService {
 	 * @return 사용자 컬럼값 리스트
 	 * 기존 코코넛 : SelectFieldList
 	 */
-	public List<KokonutUserFieldInfoDto> selectFieldList(String businessNumber, String field) {
+	public List<KokonutUserFieldInfoDto> selectUserFieldList(String businessNumber, String field) {
 		log.info("selectFieldList 호출");
 
 		String searchQuery = "SELECT `IDX`,`"+field+"` FROM `" + businessNumber+"`";
 //		log.info("searchQuery : " + searchQuery);
 
 		try {
-			return dynamicUserRepositoryCustom.selectFieldList(field, searchQuery);
+			return dynamicUserRepositoryCustom.selectUserFieldList(field, searchQuery);
 		} catch (Exception e) {
 			log.error("존재하지 않은 field : "+field+" 입니다.");
 			return null;
@@ -301,9 +301,28 @@ public class KokonutUserService {
 	public String selectUserColumnComment(String businessNumber, String fieldName) {
 		log.info("selectUserColumnComment 호출");
 
-		String searchQuery = "SELECT COLUMN_COMMENT FROM information_schema.columns where '" + businessNumber + "' AND column_name = '"+fieldName+"' limit 1";
-		log.info("searchQuery : "+searchQuery);
-		return dynamicUserRepositoryCustom.selectUserColumnComment(searchQuery);
+		try {
+			String searchQuery = "SELECT COLUMN_COMMENT FROM information_schema.columns where '" + businessNumber + "' AND column_name = '"+fieldName+"' limit 1";
+//			log.info("searchQuery : "+searchQuery);
+			return dynamicUserRepositoryCustom.selectUserColumnComment(searchQuery);
+		} catch (Exception e ){
+			log.error("존재하지 않은 필드입니다. ");
+			return null;
+		}
+	}
+
+	// 유저테이블의 필드명을 통해 테이블명, 필드명 조회 -> 삭제하기위해 조회하는 메서드
+	public List<KokonutUserFieldCheckDto> selectUserTableNameAndFieldName(String businessNumber, String fieldName) {
+		log.info("selectUserTableNameAndFieldName 호출");
+
+		try {
+			String searchQuery = "SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.columns where '" + businessNumber + "' AND column_name = '"+fieldName+"' limit 1";
+//			log.info("searchQuery : "+searchQuery);
+			return dynamicUserRepositoryCustom.selectUserTableNameAndFieldName(searchQuery);
+		} catch (Exception e ){
+			log.error("존재하지 않은 필드입니다. ");
+			return null;
+		}
 	}
 
 
@@ -604,23 +623,18 @@ public class KokonutUserService {
 	 * 기존 코코넛 : AlterDropColumnTableQuery
 	 */
 	@Transactional
-	public boolean alterDropColumnTableQuery(String businessNumber, String field) {
-		log.info("alterModifyColumnCommentQuery 호출");
-
-		boolean isSuccess = false;
+	public void alterDropColumnUserTableQuery(String businessNumber, String field) {
+		log.info("alterDropColumnUserTableQuery 호출");
 
 		try {
 			String dropQuery = "ALTER TABLE `" + businessNumber + "` DROP COLUMN " + "`" + field + "`";
 
 			dynamicUserRepositoryCustom.userCommonTable(dropQuery);
 
-			isSuccess = true;
 			log.info("유저테이블 필드삭제 성공 : "+businessNumber);
 		} catch (Exception e) {
 			log.error("유저테이블 필드삭제 에러 : "+businessNumber);
 		}
-
-		return isSuccess;
 	}
 
 	/**

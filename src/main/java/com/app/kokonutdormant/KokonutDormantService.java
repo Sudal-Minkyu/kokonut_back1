@@ -1,7 +1,10 @@
 package com.app.kokonutdormant;
 
+import com.app.kokonutdormant.dtos.KokonutDormantFieldCheckDto;
+import com.app.kokonutdormant.dtos.KokonutDormantFieldInfoDto;
 import com.app.kokonutdormant.dtos.KokonutDormantListDto;
 import com.app.kokonutuser.dtos.KokonutRemoveInfoDto;
+import com.app.kokonutuser.dtos.KokonutUserFieldCheckDto;
 import com.app.kokonutuser.dtos.KokonutUserFieldDto;
 import com.app.kokonutuser.dtos.KokonutUserSearchDto;
 import lombok.extern.slf4j.Slf4j;
@@ -303,6 +306,57 @@ public class KokonutDormantService {
 			log.error("휴면테이블 필드정보 수정 에러 : "+businessNumber);
 		}
 
+	}
+
+	// 휴면테이블 - 필드-값 쌍으로 사용자 컬럼값 조회
+    public List<KokonutDormantFieldInfoDto> selectDormantFieldList(String businessNumber, String field) {
+		log.info("selectDormantFieldList 호출");
+
+		String searchQuery = "SELECT `IDX`,`"+field+"` FROM `" + businessNumber+"`";
+//		log.info("searchQuery : " + searchQuery);
+
+		try {
+			return dynamicDormantRepositoryCustom.selectDormantFieldList(field, searchQuery);
+		} catch (Exception e) {
+			log.error("존재하지 않은 field : "+field+" 입니다.");
+			return null;
+		}
+    }
+
+	// 휴면테이블 컬럼(필드) 삭제
+	@Transactional
+	public void alterDropColumnDormantTableQuery(String businessNumber, String field) {
+		log.info("alterModifyColumnDormantCommentQuery 호출");
+
+		try {
+			String dropQuery = "ALTER TABLE `" + businessNumber + "` DROP COLUMN " + "`" + field + "`";
+
+			dynamicDormantRepositoryCustom.dormantCommonTable(dropQuery);
+
+			log.info("휴면테이블 필드삭제 성공 : "+businessNumber);
+		} catch (Exception e) {
+			log.error("휴면테이블 필드삭제 에러 : "+businessNumber);
+		}
+	}
+
+	// 휴면테이블의 필드명을 통해 테이블명, 필드명 조회 -> 삭제하기위해 조회하는 메서드
+	public List<KokonutDormantFieldCheckDto> selectDormantTableNameAndFieldName(String businessNumber, String fieldName) {
+		log.info("selectDormantTableNameAndFieldName 호출");
+
+		try {
+			String searchQuery = "SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.columns where '" + businessNumber + "' AND column_name = '"+fieldName+"' limit 1";
+//			log.info("searchQuery : "+searchQuery);
+			return dynamicDormantRepositoryCustom.selectDormantTableNameAndFieldName(searchQuery);
+		} catch (Exception e ){
+			log.error("존재하지 않은 필드입니다. ");
+			return null;
+		}
+	}
+
+	// 휴면 테이블 중복검사
+	public int selectExistDormantTable(String businessNumber) {
+		log.info("selectExistDormantTable 호출");
+		return dynamicDormantRepositoryCustom.selectExistDormantTable(businessNumber);
 	}
 
 }
