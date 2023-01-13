@@ -60,7 +60,7 @@ public class KakaoChannelRepositoryCustomImpl extends QuerydslRepositorySupport 
             query.where(kakaoChannel.status.eq(kakaoChannelSearchDto.getStatus()));
         }
 
-        if(kakaoChannelSearchDto.getStatus() != null){
+        if(kakaoChannelSearchDto.getStimeStart() != null){
             query.where(kakaoChannel.regdate.goe(kakaoChannelSearchDto.getStimeStart()));
         }
 

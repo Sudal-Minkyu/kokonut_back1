@@ -56,7 +56,7 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
             query.where(alimtalkTemplate.status.eq(alimtalkTemplateSearchDto.getStatus()));
         }
 
-        if(alimtalkTemplateSearchDto.getStatus() != null){
+        if(alimtalkTemplateSearchDto.getStimeStart() != null){
             query.where(alimtalkTemplate.regdate.goe(alimtalkTemplateSearchDto.getStimeStart()));
         }
 

@@ -4,8 +4,12 @@ import com.app.kokonut.activityHistory.ActivityHistoryService;
 import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
+import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
+import com.app.kokonut.auth.jwt.config.GoogleOTP;
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.company.CompanyService;
+import com.app.kokonut.totalDBDownload.TotalDbDownload;
+import com.app.kokonut.totalDBDownload.TotalDbDownloadRepository;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import com.app.kokonut.woody.common.component.AesCrypto;
@@ -42,32 +46,28 @@ import java.util.*;
 @Service
 public class DynamicUserService {
 
-//	@Autowired
-//	DynamicUserDao dynamicUserDao;
-//
-//    @Autowired
-//    DynamicDormantUserDao dynamicDormantUserDao;
-
+	private final GoogleOTP googleOTP;
 	private final PasswordEncoder passwordEncoder;
 
 	private final AdminRepository adminRepository;
 	private final CompanyRepository companyRepository;
+	private final TotalDbDownloadRepository totalDbDownloadRepository;
 
 	private final ExcelService excelService;
 	private final KokonutUserService kokonutUserService;
 	private final CompanyService companyService;
 	private final ActivityHistoryService activityHistoryService;
 
-	// Service 테스트중
 	private final KokonutDormantService kokonutDormantService;
-
 	private final KokonutRemoveService kokonutRemoveService;
 
-//	@Autowired
-//	ExcelService excelService;
 
 	@Autowired
-	public DynamicUserService(PasswordEncoder passwordEncoder, AdminRepository adminRepository, CompanyRepository companyRepository, ExcelService excelService, KokonutUserService kokonutUserService, KokonutDormantService kokonutDormantService, CompanyService companyService, ActivityHistoryService activityHistoryService, KokonutRemoveService kokonutRemoveService) {
+	public DynamicUserService(GoogleOTP googleOTP, PasswordEncoder passwordEncoder, AdminRepository adminRepository,
+							  CompanyRepository companyRepository, ExcelService excelService,
+							  KokonutUserService kokonutUserService, KokonutDormantService kokonutDormantService, CompanyService companyService,
+							  ActivityHistoryService activityHistoryService, KokonutRemoveService kokonutRemoveService, TotalDbDownloadRepository totalDbDownloadRepository) {
+		this.googleOTP = googleOTP;
 		this.passwordEncoder = passwordEncoder;
 		this.adminRepository = adminRepository;
 		this.companyRepository = companyRepository;
@@ -76,8 +76,8 @@ public class DynamicUserService {
 		this.kokonutDormantService = kokonutDormantService;
 		this.companyService = companyService;
 		this.activityHistoryService = activityHistoryService;
-
 		this.kokonutRemoveService = kokonutRemoveService;
+		this.totalDbDownloadRepository = totalDbDownloadRepository;
 	}
 
 	/**
@@ -1067,6 +1067,7 @@ public class DynamicUserService {
 	}
 
 	// 개인정보 테이블 + 휴면 테이블 필드 추가
+	@Transactional
 	public ResponseEntity<Map<String, Object>> columSave(KokonutColumSaveDto kokonutColumSaveDto, String email) {
 		log.info("columSave 호출");
 
@@ -1184,6 +1185,7 @@ public class DynamicUserService {
 	}
 
 	// 개인정보 테이블 + 휴면 테이블 필드 수정
+	@Transactional
 	public ResponseEntity<Map<String, Object>> columUpdate(KokonutColumUpdateDto kokonutColumUpdateDto, String email) throws Exception {
 		log.info("columUpdate 호출");
 
@@ -1429,6 +1431,7 @@ public class DynamicUserService {
 	}
 
 	// 개인정보 테이블 + 휴면 테이블 필드 삭제 - 기존코코넛 메서드 : 없음
+	@Transactional
 	public ResponseEntity<Map<String, Object>> columDelete(String fieldName, String email) {
 		log.info("columDelete 호출");
 
@@ -1484,8 +1487,7 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_21;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(3, companyIdx, adminIdx, activityCode,
-				businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+		Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(3, companyIdx, adminIdx, activityCode, businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
 
 		if(businessNumber.equals(userTableCheck.get(0).getTABLE_NAME()) && fieldName.equals(userTableCheck.get(0).getCOLUMN_NAME()) &&
 				businessNumber.equals(dormantTableCheck.get(0).getTABLE_NAME()) && fieldName.equals(dormantTableCheck.get(0).getCOLUMN_NAME())){
@@ -1502,9 +1504,5 @@ public class DynamicUserService {
 
 		return ResponseEntity.ok(res.success(data));
 	}
-
-
-
-
 
 }

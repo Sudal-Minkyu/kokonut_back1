@@ -57,7 +57,7 @@ public class AlimtalkMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
             query.where(alimtalkMessage.status.eq(alimtalkMessageSearchDto.getStatus()));
         }
 
-        if(alimtalkMessageSearchDto.getStatus() != null){
+        if(alimtalkMessageSearchDto.getStimeStart() != null){
             query.where(alimtalkMessage.regdate.goe(alimtalkMessageSearchDto.getStimeStart()));
         }
 

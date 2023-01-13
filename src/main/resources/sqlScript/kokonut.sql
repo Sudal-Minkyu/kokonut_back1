@@ -378,7 +378,7 @@ CREATE TABLE `download_history` (
   `REASON` varchar(256) DEFAULT NULL COMMENT '다운로드 사유',
   `ADMIN_IDX` int(11) DEFAULT NULL COMMENT '다운로드한 사람',
   `REGISTER_NAME` varchar(128) DEFAULT NULL COMMENT '다운로드한 사람 이름',
-  `REGIST_DATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '다운로드 일시',
+  `REGIST_DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '다운로드 일시',
   PRIMARY KEY (`IDX`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -871,22 +871,22 @@ CREATE TABLE `total_db_download` (
   `IDX` int(11) NOT NULL AUTO_INCREMENT COMMENT '키',
   `ADMIN_IDX` int(11) DEFAULT NULL COMMENT '요청자',
   `REASON` varchar(512) DEFAULT NULL COMMENT '요청사유',
-  `APPLY_DATE` timestamp NULL DEFAULT NULL COMMENT '요청일자',
+  `APPLY_DATE` datetime NULL DEFAULT NULL COMMENT '요청일자',
   `LINK` varchar(512) DEFAULT NULL COMMENT '다운로드 링크',
   `STATE` int(11) DEFAULT '1' COMMENT '상태(1:다운로드요청, 2:다운로드승인(다운로드대기), 3:다운로드완료, 4:반려)',
   `RETURN_REASON` varchar(512) DEFAULT NULL COMMENT '반려사유',
   `LIMIT` int(11) DEFAULT NULL COMMENT '횟수제한',
-  `LIMIT_DATE_START` timestamp NULL DEFAULT NULL COMMENT '기간제한 시작일자',
-  `LIMIT_DATE_END` timestamp NULL DEFAULT NULL COMMENT '기간제한 종료일자',
-  `DOWNLOAD_DATE` timestamp NULL DEFAULT NULL COMMENT '다운로드 일자',
+  `LIMIT_DATE_START` datetime NULL DEFAULT NULL COMMENT '기간제한 시작일자',
+  `LIMIT_DATE_END` datetime NULL DEFAULT NULL COMMENT '기간제한 종료일자',
+  `DOWNLOAD_DATE` datetime NULL DEFAULT NULL COMMENT '다운로드 일자',
   `REGISTER_IDX` int(11) DEFAULT NULL COMMENT '다운로드정보 등록자',
   `REGISTER_NAME` varchar(64) DEFAULT NULL COMMENT '다운로드정보 등록자 이름',
-  `REGIST_DATE` timestamp NULL DEFAULT NULL COMMENT '다운로드정보 등록일시',
+  `REGIST_DATE` datetime NULL DEFAULT NULL COMMENT '다운로드정보 등록일시',
   `MODIFIER_IDX` int(11) DEFAULT NULL COMMENT '다운로드정보 수정자',
   `MODIFIER_NAME` varchar(64) DEFAULT NULL COMMENT '다운로드정보 수정자 이름',
-  `MODIFY_DATE` timestamp NULL DEFAULT NULL COMMENT '다운로드정보 수정일시',
+  `MODIFY_DATE` datetime NULL DEFAULT NULL COMMENT '다운로드정보 수정일시',
   `IP_ADDR` varchar(64) DEFAULT NULL COMMENT 'IP주소(다운로드정보에 표현)',
-  `REGDATE` timestamp NULL DEFAULT NULL COMMENT '요청일시',
+  `REGDATE` datetime NULL DEFAULT NULL COMMENT '요청일시',
   PRIMARY KEY (`IDX`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

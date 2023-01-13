@@ -2,7 +2,7 @@ package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.ActivityHistoryListDto;
 import com.app.kokonut.activityHistory.dto.ActivityHistorySearchDto;
-import com.app.kokonut.refactor.downloadHistory.service.DownloadHistoryService;
+import com.app.kokonut.downloadHistory.DownloadHistoryService;
 import com.app.kokonut.woody.been.ApiKeyInfo;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;

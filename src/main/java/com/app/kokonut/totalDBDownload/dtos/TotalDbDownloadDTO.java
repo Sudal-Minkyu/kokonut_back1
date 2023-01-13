@@ -1,4 +1,4 @@
-package com.app.kokonut.refactor.totalDBDownload.dto;
+package com.app.kokonut.totalDBDownload.dtos;
 
 
 import io.swagger.annotations.ApiModel;

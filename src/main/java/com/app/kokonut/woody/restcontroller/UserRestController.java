@@ -3,7 +3,7 @@ package com.app.kokonut.woody.restcontroller;
 import com.app.kokonut.activityHistory.ActivityHistoryService;
 import com.app.kokonut.admin.AdminService;
 import com.app.kokonut.company.CompanyService;
-import com.app.kokonut.refactor.downloadHistory.service.DownloadHistoryService;
+import com.app.kokonut.downloadHistory.DownloadHistoryService;
 import com.app.kokonut.woody.common.component.AriaUtil;
 import com.app.kokonut.woody.excel.ExcelService;
 import com.app.kokonut.woody.service.UserService;

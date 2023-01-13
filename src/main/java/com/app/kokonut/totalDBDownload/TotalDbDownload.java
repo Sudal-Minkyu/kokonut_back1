@@ -1,15 +1,20 @@
-package com.app.kokonut.refactor.totalDBDownload.entity;
+package com.app.kokonut.totalDBDownload;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
-@Data
 @Entity
-@Table(name = "total_db_download")
+@EqualsAndHashCode(of = "idx")
+@Data
+@NoArgsConstructor
+@Table(name="total_db_download")
 public class TotalDbDownload implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -42,7 +47,7 @@ public class TotalDbDownload implements Serializable {
      */
     @ApiModelProperty("요청일자")
     @Column(name = "APPLY_DATE")
-    private Date applyDate;
+    private LocalDateTime applyDate;
 
     /**
      * 다운로드 링크
@@ -77,21 +82,21 @@ public class TotalDbDownload implements Serializable {
      */
     @ApiModelProperty("기간제한 시작일자")
     @Column(name = "LIMIT_DATE_START")
-    private Date limitDateStart;
+    private LocalDateTime limitDateStart;
 
     /**
      * 기간제한 종료일자
      */
     @ApiModelProperty("기간제한 종료일자")
     @Column(name = "LIMIT_DATE_END")
-    private Date limitDateEnd;
+    private LocalDateTime limitDateEnd;
 
     /**
      * 다운로드 일자
      */
     @ApiModelProperty("다운로드 일자")
     @Column(name = "DOWNLOAD_DATE")
-    private Date downloadDate;
+    private LocalDateTime downloadDate;
 
     /**
      * 다운로드정보 등록자
@@ -112,7 +117,7 @@ public class TotalDbDownload implements Serializable {
      */
     @Column(name = "REGIST_DATE")
     @ApiModelProperty("다운로드정보 등록일시")
-    private Date registDate;
+    private LocalDateTime registDate;
 
     /**
      * 다운로드정보 수정자
@@ -133,7 +138,7 @@ public class TotalDbDownload implements Serializable {
      */
     @Column(name = "MODIFY_DATE")
     @ApiModelProperty("다운로드정보 수정일시")
-    private Date modifyDate;
+    private LocalDateTime modifyDate;
 
     /**
      * IP주소(다운로드정보에 표현)
@@ -147,6 +152,6 @@ public class TotalDbDownload implements Serializable {
      */
     @Column(name = "REGDATE")
     @ApiModelProperty("요청일시")
-    private Date regdate;
+    private LocalDateTime regdate;
 
 }
