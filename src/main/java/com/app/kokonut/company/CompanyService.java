@@ -132,8 +132,8 @@ public class CompanyService {
                 AwsKmsResultDto enc = awsKmsUtil.encrypt(decryptText);
                 if(enc.getResult().equals("success")) {
                     log.info("KMS 키 업데이트 시작");
-                    optionalCompany.get().setEncryptText(encrpyText);
-                    optionalCompany.get().setDataKey(dataKey);
+                    optionalCompany.get().setEncryptText(enc.getEncryptText());
+                    optionalCompany.get().setDataKey(enc.getDataKey());
                     companyRepository.save(optionalCompany.get());
                     log.info("KMS 키 업데이트 성공");
 

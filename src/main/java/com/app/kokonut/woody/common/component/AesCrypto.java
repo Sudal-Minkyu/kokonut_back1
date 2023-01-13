@@ -1,19 +1,40 @@
 package com.app.kokonut.woody.common.component;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
 
+@Slf4j
 public class AesCrypto {
 
 	private static final String TRANSFORM = "AES/ECB/PKCS5Padding";
+
+	public static void main(String[] args) throws Exception {
+		String target = "test";
+		String key = "123";
+
+		key = lpda(key, "*", 16);
+		log.info("key : "+key);
+
+		log.info("Target = " + target + ", Key = " + key);
+
+		String encryptStr = encrypt(target, key);
+		log.info("Encrypted Text = " + encryptStr);
+
+		String decryptStr = decrypt(encryptStr, key);
+		log.info("Decrypted Text : " + decryptStr);
+	}
 	
 	public static String encrypt(String plainText, String key) throws Exception {
-		if(plainText == null || plainText.isEmpty()) return plainText;
-		
+		if(plainText == null || plainText.isEmpty() || plainText.equals("null")){
+			return plainText;
+		}
+
 		KeyGenerator kgen = KeyGenerator.getInstance("AES");
 		kgen.init(256);
-		
+
 		byte[] raw = key.getBytes();
 		SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
 		Cipher cipher = Cipher.getInstance(TRANSFORM);
@@ -22,18 +43,18 @@ public class AesCrypto {
 		byte[] encrypted = cipher.doFinal(plainText.getBytes());
 		return asHex(encrypted);
 	}
-	
+
 	public static byte[] encrypt(String plainText, byte[] key) throws Exception {
 		KeyGenerator kgen = KeyGenerator.getInstance("AES");
 		kgen.init(256);
-		
+
 //		byte[] raw = key.getBytes();
 		SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 		Cipher cipher = Cipher.getInstance(TRANSFORM);
 
 		cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
 		byte[] encrypted = cipher.doFinal(plainText.getBytes());
-		
+
 		return encrypted;
 	}
 
@@ -47,10 +68,9 @@ public class AesCrypto {
 
 		cipher.init(Cipher.DECRYPT_MODE, skeySpec);
 		byte[] original = cipher.doFinal(fromString(cipherText));
-		String originalString = new String(original);
-		return originalString;
+		return new String(original);
 	}
-	
+
 	public static String decrypt(byte[] dec, byte[] key) throws Exception {
 		KeyGenerator kgen = KeyGenerator.getInstance("AES");
 		kgen.init(256);
@@ -127,18 +147,4 @@ public class AesCrypto {
 		return rtVal;
 	}
 	
-    public static void main(String[] args) throws Exception 
-    {
-    	String target = "test";
-    	String key = "123";
-    	key = lpda(key, "*", 16);
-    	
-    	System.out.println("Target = " + target + ", Key = " + key);
-    	
-    	String encryptStr = encrypt(target, key);
-    	System.out.println("Encrypted Text = " + encryptStr);
-    	
-    	String decryptStr = decrypt(encryptStr, key);
-        System.out.println("Decrypted Text : " + decryptStr);
-    }
 }

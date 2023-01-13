@@ -154,6 +154,9 @@ public class AuthService {
         if (companyRepository.existsByBusinessNumber(businessNumber)) {
             log.error("이미 회원가입된 사업자등록번호 입니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO035.getCode(), ResponseErrorCode.KO035.getDesc()));
+        } else if(businessNumber.length() != 10){
+            log.error("입력하신 사업자등록번호는 10자리가 아닙니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO035.getCode(), ResponseErrorCode.KO035.getDesc()));
         }
 
         // 비밀번호 일치한지 체크
@@ -186,9 +189,16 @@ public class AuthService {
         // 저장할 KMS 암호화키, 복호화키 생성
         String encryptText = "";
         String dataKey = "";
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMM");
         String currDate = formatter.format(new Date());
-        String encKey = currDate + businessNumber;
+        String encKey = currDate + businessNumber; // -> 기존의 encKey 생성은 가입한 날짜시간+사업자등록번호
+        log.info("encKey : "+encKey);
+        // -> woody 수정 가입날짜 년도+월+사업자등록번호 ex) 가입날짜 년월 : 202301, 사업자등록번호(10자리) 1234567890 -> encKey = 2023011234567890 으로 수정
+        // -> 이유는 개인정보등록시 암호화가 필요한 필드일 경우 해당 key를 통해 암호화처리를 할때 Aes암호화를 해야하는데 encKey가 16byte가 넘어가게 되면 예외처리를 하여 16byte로 맞춤.
+        // 사업자 등록번호는 10자리를 넘어가면 안되고, 10자리 미만이여도 안되는 조건 추가한다.
+
+//        20230112 3488101536
 //        if(!signUp.getEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
             AwsKmsResultDto awsKmsResultDto = awsKmsUtil.encrypt(encKey);
             if (awsKmsResultDto.getResult().equals("success")) {

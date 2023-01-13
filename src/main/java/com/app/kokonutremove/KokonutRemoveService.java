@@ -57,36 +57,6 @@ public class KokonutRemoveService {
 		return isSuccess;
 	}
 
-	/**
-	 * REMOVE DB > tableName 테이블에 회원정보 삭제
-	 * @param businessNumber : 테이블 명
-	 * @param idx 회원 IDX
-	 * @return boolean
-	 * 기존 코코넛 : DeleteRemoveDbUser
-	 */
-	@Transactional
-	public boolean deleteRemoveTable(String businessNumber, int idx) {
-		log.info("deleteRemoveTable 호출");
-
-		log.info("businessNumber : "+businessNumber);
-		log.info("idx : "+idx);
-
-		boolean isSuccess = false;
-
-		try {
-			String removeDeleteQuery = "DELETE FROM `"+businessNumber+"` WHERE `IDX` = "+idx;
-			log.info("removeDeleteQuery : "+removeDeleteQuery);
-			dynamicRemoveRepositoryCustom.userCommonTable(removeDeleteQuery);
-
-			log.info("삭제한 유저삭제 성공 : "+businessNumber);
-			isSuccess = true;
-		} catch (Exception e) {
-			log.error("삭제한 유저삭제 에러 : "+businessNumber);
-		}
-
-		return isSuccess;
-	}
-
 
 
 

@@ -1,7 +1,7 @@
 package com.app.kokonut.woody.excel;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFDataFormat;
@@ -13,12 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND;
+
+@Slf4j
 @Service
 public class ExcelService {
 	
@@ -68,9 +72,10 @@ public class ExcelService {
 	}
 	
 	public void download(HttpServletRequest request, HttpServletResponse response, String fileName, List<String> headerList, List<List<String>> dataList) throws IOException {
+		log.info("엑셀 다운로드 download 호출");
+
 		Workbook workbook = new XSSFWorkbook();
-        
-		
+
 		// 첫 번째 시트
 		Sheet sheet = workbook.createSheet("data");
 
@@ -94,33 +99,33 @@ public class ExcelService {
 
         // 회원 엑셀 양식 스타일 설정
         if(fileName.contains("회원 엑셀 양식")) {
-//            headerCellStyle.setFillForegroundColor(HSSFColor.SEA_GREEN.index);
-//            headerCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-//            headerCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-//
-//            headerCellStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-//            headerCellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-//            headerCellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-//            headerCellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-//
-//            headerCellStyle.setTopBorderColor(HSSFColor.GREY_50_PERCENT.index);
-//            headerCellStyle.setBottomBorderColor(HSSFColor.GREY_50_PERCENT.index);
-//            headerCellStyle.setLeftBorderColor(HSSFColor.GREY_50_PERCENT.index);
-//            headerCellStyle.setRightBorderColor(HSSFColor.GREY_50_PERCENT.index);
-//
-//            headerInfoCellStyle.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
-//            headerInfoCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-//            headerInfoCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-//
-//            headerInfoCellStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-//            headerInfoCellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-//            headerInfoCellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-//            headerInfoCellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-//
-//            headerInfoCellStyle.setTopBorderColor(HSSFColor.GREY_50_PERCENT.index);
-//            headerInfoCellStyle.setBottomBorderColor(HSSFColor.GREY_50_PERCENT.index);
-//            headerInfoCellStyle.setLeftBorderColor(HSSFColor.GREY_50_PERCENT.index);
-//            headerInfoCellStyle.setRightBorderColor(HSSFColor.GREY_50_PERCENT.index);
+            headerCellStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.SEA_GREEN.getIndex());
+            headerCellStyle.setFillPattern(SOLID_FOREGROUND);
+            headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+
+            headerCellStyle.setBorderTop(BorderStyle.THIN);
+            headerCellStyle.setBorderBottom(BorderStyle.THIN);
+            headerCellStyle.setBorderLeft(BorderStyle.THIN);
+            headerCellStyle.setBorderRight(BorderStyle.THIN);
+
+            headerCellStyle.setTopBorderColor(HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.getIndex());
+            headerCellStyle.setBottomBorderColor(HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.getIndex());
+            headerCellStyle.setLeftBorderColor(HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.getIndex());
+            headerCellStyle.setRightBorderColor(HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.getIndex());
+
+            headerInfoCellStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.LIGHT_GREEN.getIndex());
+            headerInfoCellStyle.setFillPattern(SOLID_FOREGROUND);
+            headerInfoCellStyle.setAlignment(HorizontalAlignment.CENTER);
+
+            headerInfoCellStyle.setBorderTop(BorderStyle.THIN);
+            headerInfoCellStyle.setBorderBottom(BorderStyle.THIN);
+            headerInfoCellStyle.setBorderLeft(BorderStyle.THIN);
+            headerInfoCellStyle.setBorderRight(BorderStyle.THIN);
+
+            headerInfoCellStyle.setTopBorderColor(HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.getIndex());
+            headerInfoCellStyle.setBottomBorderColor(HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.getIndex());
+            headerInfoCellStyle.setLeftBorderColor(HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.getIndex());
+            headerInfoCellStyle.setRightBorderColor(HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.getIndex());
         }
         
 		// Header
@@ -159,12 +164,12 @@ public class ExcelService {
  		String browser = "";
 		String userAgent = request.getHeader("User-Agent");
 		
-		if ( userAgent.indexOf("MSIE") > -1 || userAgent.indexOf("Trident") > -1 )   {
+		if (userAgent.contains("MSIE") || userAgent.contains("Trident"))   {
 			browser = "MSIE";
-		} else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1 ) {
+		} else if (userAgent.contains("Opera") || userAgent.contains("OPR")) {
 			browser = "Opera";
-		} else if (userAgent.indexOf("Safari") > -1) {
-			if(userAgent.indexOf("Chrome") > -1){
+		} else if (userAgent.contains("Safari")) {
+			if(userAgent.contains("Chrome")){
 				browser = "Chrome";	
 			}else{
 				browser = "Safari";	
@@ -174,30 +179,24 @@ public class ExcelService {
 		}
 		
 		if (browser.equals("MSIE")) {
-			fileName = new String(fileName.getBytes("euc-kr"), "8859_1");
-        } else if (browser.equals("Firefox")) {
-        	fileName =  '"' + new String(fileName.getBytes("UTF-8"), "8859_1") + '"';
-        } else if (browser.equals("Safari")) {
-        	fileName =  '"' + new String(fileName.getBytes("UTF-8"), "8859_1") + '"';
-        } else if (browser.equals("Opera")) {
-        	fileName =  '"' + new String(fileName.getBytes("UTF-8"), "8859_1") + '"';
-        } else if (browser.equals("Chrome")) {
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < fileName.length(); i++) 
+			fileName = new String(fileName.getBytes("euc-kr"), StandardCharsets.ISO_8859_1);
+        } else if (browser.equals("Firefox") || browser.equals("Safari") || browser.equals("Opera")) {
+        	fileName =  '"' + new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1) + '"';
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < fileName.length(); i++)
             {
                 char c = fileName.charAt(i);
                 if (c > '~') {
-                    sb.append(URLEncoder.encode("" + c, "UTF-8"));
+                    sb.append(URLEncoder.encode("" + c, StandardCharsets.UTF_8));
                 } else {
                     sb.append(c);
                 }
             }
             fileName = sb.toString();
-        } else {
-            throw new RuntimeException("Not supported browser");
         }
 		
-		if(fileName == null || fileName.length() <= 0){
+		if(fileName.length() == 0){
 			fileName = "excel.xls";
 		}
 		
@@ -212,6 +211,8 @@ public class ExcelService {
 	}
 	
 	public String generateFileName(List<String> toks) {
+		log.info("generateFileName 호출");
+
 		StringBuilder sb = new StringBuilder();
 		
 		final String SEP = "_";
