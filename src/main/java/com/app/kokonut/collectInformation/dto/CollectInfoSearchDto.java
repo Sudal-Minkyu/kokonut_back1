@@ -1,5 +1,6 @@
 package com.app.kokonut.collectInformation.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,5 +18,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class CollectInfoSearchDto implements Serializable {
 
+    @ApiModelProperty("검색어")
     private String searchText;  // 검색어
 }
