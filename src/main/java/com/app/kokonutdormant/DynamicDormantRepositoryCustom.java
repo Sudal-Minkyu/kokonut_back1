@@ -8,6 +8,7 @@ import com.app.kokonutuser.dtos.KokonutUserFieldCheckDto;
 import com.app.kokonutuser.dtos.KokonutUserFieldDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DynamicDormantRepositoryCustom {
 
@@ -28,4 +29,6 @@ public interface DynamicDormantRepositoryCustom {
     List<KokonutDormantFieldCheckDto> selectDormantTableNameAndFieldName(String searchQuery); // 휴면테이블의 필드명을 통해 테이블명, 필드명 조회 -> 삭제하기위해 조회하는 메서드
 
     int selectExistDormantTable(String businessNumber);
+
+    List<Map<String, Object>> selectDormantList(String searchQuery); // kokonut_dormant 회원리스트 조회
 }

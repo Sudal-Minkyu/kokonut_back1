@@ -64,6 +64,8 @@ dependencies {
 	implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.369' // AWS S3 SDK 쓰기위함
 	implementation group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2' // 이미지 썸네일 쓰기위함
 
+	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0' // CSV 형태 다운로드파일 라이브러리
+
 	// ~
 
 

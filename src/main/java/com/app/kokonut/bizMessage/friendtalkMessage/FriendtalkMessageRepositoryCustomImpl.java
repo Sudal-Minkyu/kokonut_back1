@@ -54,7 +54,7 @@ public class FriendtalkMessageRepositoryCustomImpl extends QuerydslRepositorySup
             query.where(friendtalkMessage.status.eq(friendtalkMessageSearchDto.getStatus()));
         }
 
-        if(friendtalkMessageSearchDto.getStatus() != null){
+        if(friendtalkMessageSearchDto.getStimeStart() != null){
             query.where(friendtalkMessage.regdate.goe(friendtalkMessageSearchDto.getStimeStart()));
         }
 

@@ -3,7 +3,6 @@ package com.app.kokonut.woody.restcontroller;
 import com.app.kokonut.activityHistory.ActivityHistoryService;
 import com.app.kokonut.admin.AdminService;
 import com.app.kokonut.company.CompanyService;
-import com.app.kokonut.refactor.downloadHistory.service.DownloadHistoryService;
 import com.app.kokonut.woody.common.component.AriaUtil;
 import com.app.kokonut.woody.excel.ExcelService;
 import com.app.kokonut.woody.service.UserService;
@@ -26,7 +25,6 @@ public class UserRestController {
 
     private final CompanyService companyService;
     private final ExcelService excelService;
-    private final DownloadHistoryService downloadHistoryService;
     private final AdminService adminService;
     private final ActivityHistoryService activityHistoryService;
 
@@ -37,12 +35,10 @@ public class UserRestController {
 
     @Autowired
     public UserRestController(UserService userService, CompanyService companyService, ExcelService excelService,
-                              DownloadHistoryService downloadHistoryService, AdminService adminService,
-                              ActivityHistoryService activityHistoryService, AriaUtil ariaUtil) {
+                              AdminService adminService, ActivityHistoryService activityHistoryService, AriaUtil ariaUtil) {
         this.userService = userService;
         this.companyService = companyService;
         this.excelService = excelService;
-        this.downloadHistoryService = downloadHistoryService;
         this.adminService = adminService;
         this.activityHistoryService = activityHistoryService;
         this.ariaUtil = ariaUtil;

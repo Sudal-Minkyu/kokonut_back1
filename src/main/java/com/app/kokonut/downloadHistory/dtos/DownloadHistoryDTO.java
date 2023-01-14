@@ -1,4 +1,4 @@
-package com.app.kokonut.refactor.downloadHistory.dto;
+package com.app.kokonut.downloadHistory.dtos;
 
 
 import io.swagger.annotations.ApiModel;

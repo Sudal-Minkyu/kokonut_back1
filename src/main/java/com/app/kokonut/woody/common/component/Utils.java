@@ -10,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 //	public static String getToday()
@@ -122,19 +124,19 @@ public class Utils {
 		return file;
 	}
 
-//	/**
-//	 * 엑셀 Formula injection 검사
-//	 * @param contents
-//	 * @return Formula injection 기능 제거한 contents
-//	 */
-//	public static String weekPointForExcel(String contents) {
-//		Pattern pattern = Pattern.compile("[('='|'@'|'+'|'\\-')]cmd");
-//		Matcher matcher = pattern.matcher(contents);
-//		if(matcher.find()) {
-//			return " ".concat(contents);
-//		} else {
-//			return contents;
-//		}
-//	}
+	/**
+	 * 엑셀 Formula injection 검사
+	 * @param contents
+	 * @return Formula injection 기능 제거한 contents
+	 */
+	public static String weekPointForExcel(String contents) {
+		Pattern pattern = Pattern.compile("[('='|'@'|'+|'\\-')]cmd");
+		Matcher matcher = pattern.matcher(contents);
+		if(matcher.find()) {
+			return " ".concat(contents);
+		} else {
+			return contents;
+		}
+	}
 
 }

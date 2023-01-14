@@ -2,7 +2,6 @@ package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.ActivityHistoryListDto;
 import com.app.kokonut.activityHistory.dto.ActivityHistorySearchDto;
-import com.app.kokonut.refactor.downloadHistory.service.DownloadHistoryService;
 import com.app.kokonut.woody.been.ApiKeyInfo;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
@@ -35,16 +34,9 @@ public class ActivityHistoryRestController {
 
     private final ActivityHistoryService activityHistoryService;
 
-    private final ExcelService excelService;
-
-    private final DownloadHistoryService downloadHistoryService;
-
-
     @Autowired
-    public ActivityHistoryRestController(ActivityHistoryService activityHistoryService, ExcelService excelService, DownloadHistoryService downloadHistoryService) {
+    public ActivityHistoryRestController(ActivityHistoryService activityHistoryService) {
         this.activityHistoryService = activityHistoryService;
-        this.excelService = excelService;
-        this.downloadHistoryService = downloadHistoryService;
     }
 
     // ActivityHistoryApiController -> 기존 코코넛의 kokonutApi 활동이력 조회 리펙토링

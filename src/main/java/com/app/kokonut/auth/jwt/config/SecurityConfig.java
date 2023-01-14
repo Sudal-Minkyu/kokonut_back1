@@ -35,11 +35,13 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         // JWT 필터 및 권한 제외 url
-        return (web) -> web.ignoring().antMatchers("/favicon.ico","/swagger*/**","/v2/api-docs","/webjars/**",
-                "/api/Auth/**", "/api/NiceId/**"
-                // 임시로 해둔 API들
-                , "/api/ApiKey/**", "/api/Qna/**", "/api/Notice/**", "/api/RevisedDocument/**",
-                "/api/DynamicUser/**", "/api/DynamicRemove/**", "/api/DynamicDormant/**");
+        return (web) -> web.ignoring().antMatchers(
+                // 필터 제외항목 API
+                "/favicon.ico","/swagger*/**","/v2/api-docs","/webjars/**", "/api/Auth/**", "/api/NiceId/**",
+                // 임시 제외항목 API
+                "/api/ApiKey/**", "/api/Qna/**", "/api/Notice/**", "/api/RevisedDocument/**",
+                "/api/DynamicUser/**", "/api/DynamicRemove/**", "/api/DynamicDormant/**",
+                "/api/TotalDbDownload/**");
     }
 
 //    @Bean -> Post는 무조건 막는데 확인해봐야됨
