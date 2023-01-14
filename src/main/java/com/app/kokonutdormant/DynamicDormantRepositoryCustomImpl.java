@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Woody
@@ -108,6 +109,12 @@ public class DynamicDormantRepositoryCustomImpl implements DynamicDormantReposit
         String sql = "SELECT EXISTS (SELECT 1 FROM Information_schema.tables WHERE table_name = "+"'"+businessNumber+"'"+") AS flag";
 //        log.info("중복체크 sql : "+sql);
         return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
+
+    // kokonut_dormant 회원리스트 조회
+    @Override
+    public List<Map<String, Object>> selectDormantList(String searchQuery) {
+        return jdbcTemplate.queryForList(searchQuery);
     }
 
 }

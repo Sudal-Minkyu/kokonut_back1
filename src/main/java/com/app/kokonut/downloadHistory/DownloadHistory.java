@@ -29,13 +29,6 @@ public class DownloadHistory implements Serializable {
     private Integer idx;
 
     /**
-     * 종류(ACTIVITY:활동이력)
-     */
-    @Column(name = "TYPE")
-    @ApiModelProperty("종류(ACTIVITY:활동이력)")
-    private String type;
-
-    /**
      * 다운로드한 파일 이름
      */
     @Column(name = "FILE_NAME")
@@ -55,13 +48,6 @@ public class DownloadHistory implements Serializable {
     @Column(name = "ADMIN_IDX")
     @ApiModelProperty("다운로드한 사람")
     private Integer adminIdx;
-
-    /**
-     * 다운로드한 사람 이름
-     */
-    @Column(name = "REGISTER_NAME")
-    @ApiModelProperty("다운로드한 사람 이름")
-    private String registerName;
 
     /**
      * 다운로드 일시

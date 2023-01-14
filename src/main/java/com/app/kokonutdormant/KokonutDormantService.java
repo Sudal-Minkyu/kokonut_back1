@@ -359,4 +359,29 @@ public class KokonutDormantService {
 		return dynamicDormantRepositoryCustom.selectExistDormantTable(businessNumber);
 	}
 
+	// 휴면테이블의 회원리스트 조회
+	public List<Map<String, Object>> selectDormantList(String businessNumber) {
+		log.info("selectDormantList 호출");
+
+		String searchQuery = "SELECT * FROM `"+businessNumber+"` WHERE 1=1";
+//		log.info("searchQuery : "+searchQuery);
+
+		List<Map<String, Object>> result = dynamicDormantRepositoryCustom.selectDormantList(searchQuery);
+//		log.info("result : "+result);
+
+		if(result == null || result.size() == 0) {
+			log.info("휴면정보가 없습니다.");
+			return null;
+		}
+
+//		for(Map<String, Object> user : result) {
+//			String IDX = user.get("IDX").toString();
+//			String ID = user.get("ID").toString();
+//			log.info("IDX : "+IDX);
+//			log.info("ID : "+ID);
+//		}
+
+		return result;
+	}
+
 }

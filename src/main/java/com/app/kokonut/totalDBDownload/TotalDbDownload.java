@@ -1,30 +1,27 @@
 package com.app.kokonut.totalDBDownload;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @EqualsAndHashCode(of = "idx")
 @Data
 @NoArgsConstructor
 @Table(name="total_db_download")
-public class TotalDbDownload implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class TotalDbDownload {
 
     /**
      * 키
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "IDX")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idx;
 
@@ -73,9 +70,9 @@ public class TotalDbDownload implements Serializable {
     /**
      * 횟수제한
      */
-    @Column(name = "LIMIT")
+    @Column(name = "DOWNLOAD_LIMIT")
     @ApiModelProperty("횟수제한")
-    private Integer limit;
+    private Integer downloadLimit;
 
     /**
      * 기간제한 시작일자
@@ -106,13 +103,6 @@ public class TotalDbDownload implements Serializable {
     private Integer registerIdx;
 
     /**
-     * 다운로드정보 등록자 이름
-     */
-    @Column(name = "REGISTER_NAME")
-    @ApiModelProperty("다운로드정보 등록자 이름")
-    private String registerName;
-
-    /**
      * 다운로드정보 등록일시
      */
     @Column(name = "REGIST_DATE")
@@ -125,13 +115,6 @@ public class TotalDbDownload implements Serializable {
     @Column(name = "MODIFIER_IDX")
     @ApiModelProperty("다운로드정보 수정자")
     private Integer modifierIdx;
-
-    /**
-     * 다운로드정보 수정자 이름
-     */
-    @Column(name = "MODIFIER_NAME")
-    @ApiModelProperty("다운로드정보 수정자 이름")
-    private String modifierName;
 
     /**
      * 다운로드정보 수정일시
@@ -153,5 +136,14 @@ public class TotalDbDownload implements Serializable {
     @Column(name = "REGDATE")
     @ApiModelProperty("요청일시")
     private LocalDateTime regdate;
+
+    @Builder
+    public TotalDbDownload(Integer adminIdx, String reason, LocalDateTime applyDate, Integer state, LocalDateTime regdate) {
+        this.adminIdx = adminIdx;
+        this.reason = reason;
+        this.applyDate = applyDate;
+        this.state = state;
+        this.regdate = regdate;
+    }
 
 }

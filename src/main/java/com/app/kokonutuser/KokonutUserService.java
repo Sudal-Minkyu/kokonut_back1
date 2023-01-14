@@ -124,19 +124,19 @@ public class KokonutUserService {
 //		log.info("searchQuery : "+searchQuery);
 
 		List<Map<String, Object>> result = dynamicUserRepositoryCustom.selectUserList(searchQuery);
-		log.info("result : "+result);
+//		log.info("result : "+result);
 
 		if(result == null || result.size() == 0) {
-			log.error("조회된 회원정보가 없습니다.");
+			log.info("개인정보가 없습니다.");
 			return null;
 		}
 
-		for(Map<String, Object> user : result) {
-			String email = user.get("EMAIL").toString();
-			String name = user.get("NAME").toString();
-			log.info("email : "+email);
-			log.info("name : "+name);
-		}
+//		for(Map<String, Object> user : result) {
+//			String IDX = user.get("IDX").toString();
+//			String ID = user.get("ID").toString();
+//			log.info("IDX : "+IDX);
+//			log.info("ID : "+ID);
+//		}
 
 		return result;
 	}

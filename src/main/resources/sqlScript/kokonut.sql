@@ -373,11 +373,9 @@ DROP TABLE IF EXISTS `download_history`;
 
 CREATE TABLE `download_history` (
   `IDX` int(11) NOT NULL AUTO_INCREMENT COMMENT '키',
-  `TYPE` varchar(32) DEFAULT NULL COMMENT '종류(ACTIVITY:활동이력)',
   `FILE_NAME` varchar(256) DEFAULT NULL COMMENT '다운로드한 파일 이름',
   `REASON` varchar(256) DEFAULT NULL COMMENT '다운로드 사유',
   `ADMIN_IDX` int(11) DEFAULT NULL COMMENT '다운로드한 사람',
-  `REGISTER_NAME` varchar(128) DEFAULT NULL COMMENT '다운로드한 사람 이름',
   `REGIST_DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '다운로드 일시',
   PRIMARY KEY (`IDX`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -880,10 +878,8 @@ CREATE TABLE `total_db_download` (
   `LIMIT_DATE_END` datetime NULL DEFAULT NULL COMMENT '기간제한 종료일자',
   `DOWNLOAD_DATE` datetime NULL DEFAULT NULL COMMENT '다운로드 일자',
   `REGISTER_IDX` int(11) DEFAULT NULL COMMENT '다운로드정보 등록자',
-  `REGISTER_NAME` varchar(64) DEFAULT NULL COMMENT '다운로드정보 등록자 이름',
   `REGIST_DATE` datetime NULL DEFAULT NULL COMMENT '다운로드정보 등록일시',
   `MODIFIER_IDX` int(11) DEFAULT NULL COMMENT '다운로드정보 수정자',
-  `MODIFIER_NAME` varchar(64) DEFAULT NULL COMMENT '다운로드정보 수정자 이름',
   `MODIFY_DATE` datetime NULL DEFAULT NULL COMMENT '다운로드정보 수정일시',
   `IP_ADDR` varchar(64) DEFAULT NULL COMMENT 'IP주소(다운로드정보에 표현)',
   `REGDATE` datetime NULL DEFAULT NULL COMMENT '요청일시',

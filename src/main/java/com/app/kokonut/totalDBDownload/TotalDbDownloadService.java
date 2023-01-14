@@ -6,12 +6,21 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
 import com.app.kokonut.auth.jwt.config.GoogleOTP;
+import com.app.kokonut.company.CompanyService;
+import com.app.kokonut.downloadHistory.DownloadHistory;
+import com.app.kokonut.downloadHistory.DownloadHistoryRepository;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadListDto;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadSearchDto;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
 import com.app.kokonut.woody.common.component.CommonUtil;
+import com.app.kokonut.woody.common.component.Utils;
+import com.app.kokonutdormant.KokonutDormantService;
+import com.app.kokonutuser.KokonutUserService;
+import com.app.kokonutuser.dtos.KokonutUserFieldDto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +28,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * @author Woody
@@ -34,18 +48,30 @@ import java.util.Map;
 @Service
 public class TotalDbDownloadService {
 
+    private final ActivityHistoryService activityHistoryService;
+
     private final GoogleOTP googleOTP;
     private final AdminRepository adminRepository;
-    private final ActivityHistoryService activityHistoryService;
+    private final KokonutUserService kokonutUserService;
+    private final KokonutDormantService kokonutDormantService;
+
+    private final CompanyService companyService;
     private final TotalDbDownloadRepository totalDbDownloadRepository;
+    private final DownloadHistoryRepository downloadHistoryRepository;
 
     @Autowired
     public TotalDbDownloadService(GoogleOTP googleOTP, AdminRepository adminRepository,
-                                  ActivityHistoryService activityHistoryService, TotalDbDownloadRepository totalDbDownloadRepository){
+                                  ActivityHistoryService activityHistoryService, KokonutDormantService kokonutDormantService,
+                                  KokonutUserService kokonutUserService, CompanyService companyService,
+                                  TotalDbDownloadRepository totalDbDownloadRepository, DownloadHistoryRepository downloadHistoryRepository){
         this.googleOTP = googleOTP;
         this.adminRepository = adminRepository;
+        this.kokonutUserService = kokonutUserService;
+        this.kokonutDormantService = kokonutDormantService;
+        this.companyService = companyService;
         this.activityHistoryService = activityHistoryService;
         this.totalDbDownloadRepository = totalDbDownloadRepository;
+        this.downloadHistoryRepository = downloadHistoryRepository;
     }
 
     // 개인정보 DB 데이터 전체 다운로드 요청
@@ -105,13 +131,15 @@ public class TotalDbDownloadService {
         totalDbDownload.setState(1);
         totalDbDownload.setApplyDate(LocalDateTime.now());
         totalDbDownload.setRegdate(LocalDateTime.now());
-        TotalDbDownload saveTotalDbDownload = totalDbDownloadRepository.save(totalDbDownload);
 
-        if(saveTotalDbDownload.getIdx() != null){
+        try{
+            totalDbDownloadRepository.save(totalDbDownload);
+
             log.info("회원 DB 데이터 다운로드 요청 완료");
             activityHistoryService.updateActivityHistory(activityHistoryIDX,
                     businessNumber+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
-        } else {
+        } catch (Exception e){
+            log.error("e : "+e.getMessage());
             log.error("회원 DB 데이터 다운로드 요청 실패");
             activityHistoryService.updateActivityHistory(activityHistoryIDX,
                     businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "필드 삭제 조건에 부합하지 않습니다.", 1);
@@ -149,15 +177,262 @@ public class TotalDbDownloadService {
     }
 
     // 개인정보 DB 데이터 다운로드 시작
-    public void userDbDataDownloadStart(Integer idx, String email) {
+    @Transactional
+    public void userDbDataDownloadStart(Integer idx, String email, HttpServletRequest request, HttpServletResponse response) {
         log.info("userDbDataDownloadStart 호출");
 
         log.info("idx : "+ idx);
         log.info("email : "+email);
-        
 
+        // 해당 이메일을 통해 회사 IDX 조회
+        AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+
+        int adminIdx;
+        int companyIdx;
+        String businessNumber;
+
+        if(adminCompanyInfoDto == null) {
+            log.error("이메일 정보가 존재하지 않습니다.");
+            return;
+        }
+        else {
+            adminIdx = adminCompanyInfoDto.getAdminIdx(); // modifierIdx
+            companyIdx = adminCompanyInfoDto.getCompanyIdx(); // companyIdx
+            businessNumber = adminCompanyInfoDto.getBusinessNumber(); // tableName
+        }
+
+        try{
+
+            // 개인정보 DB 데이터 다운로드 시작 코드
+            ActivityCode activityCode = ActivityCode.AC_23;
+            // 활동이력 저장 -> 비정상 모드
+            String ip = CommonUtil.clientIp();
+            Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(3, companyIdx, adminIdx, activityCode,
+                    businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+
+            Optional<TotalDbDownload> optionalTotalDbDownload = totalDbDownloadRepository.findById(idx);
+            if(optionalTotalDbDownload.isPresent()) {
+
+                if(optionalTotalDbDownload.get().getDownloadLimit() == 0) {
+                    log.error("다운로드 횟수가 초과됬습니다. 재요청해주시길 바랍니다.");
+                    return;
+                }
+
+                List<String> headerList = new ArrayList<>();
+                List<String> headerKeyList = new ArrayList<>();
+
+                request.setCharacterEncoding("UTF-8");
+                response.setContentType("text/html; charset=UTF-8");
+
+                String DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyIdx);
+
+                List<KokonutUserFieldDto> columns = kokonutUserService.getUserColumns(businessNumber);
+
+                List<Map<String, Object>> kokonutUserData = kokonutUserService.selectUserList(businessNumber);
+                List<Map<String, Object>> kokonutDormantData = kokonutDormantService.selectDormantList(businessNumber);
+
+                for (KokonutUserFieldDto kokonutUserFieldDto : columns) {
+                    String Field = kokonutUserFieldDto.getField();
+                    String Comment = kokonutUserFieldDto.getComment();
+
+                    // Field 옵션 명 및 암호화 정형화
+                    String FieldOptionName = Comment;
+
+                    if(!FieldOptionName.contains("수정가능")) {
+                        if(Comment.contains("(")) {
+                            String[] FieldOptionNameList = Comment.split("\\(");
+                            FieldOptionName = FieldOptionNameList[0];
+                        }
+
+                        // 보낼필요 없는 데이터
+                        if("인덱스".equals(FieldOptionName) ||
+                                "개인정보 동의".equals(FieldOptionName) ||
+                                "이용내역보낸 날짜".equals(FieldOptionName) ||
+                                "최종 로그인 일시".equals(FieldOptionName) ||
+                                "수정 일시".equals(FieldOptionName)) {
+                            continue;
+                        }
+                    }
+
+                    headerList.add(FieldOptionName);
+                    headerKeyList.add(Field);
+
+                    // 각 데이터의 대한 복호화가 필요한 데이터일 경우 어떻게 처리할건지 방안세우기 to. woody
+//                    for (int j = 0; j < dataList.size(); j++) {
+//                        HashMap<String, Object> map = dataList.get(j);
+//
+//                        // 내용이 비였으면 "" 값 입력
+//                        if(!map.containsKey(Field)) {
+//                            map.put(Field, "");
+//                        }
+//                    }
+//                    if("성별".equals(FieldOptionName)) {
+//                        FieldOptionName = "성별(0:남 / 1:여)";
+//                    }
+//                    if("개인정보 동의".equals(FieldOptionName)) {
+//                        FieldOptionName = "개인정보 동의(N:동의하지않음 / Y:동의)";
+//                    }
+//                    // 휴대폰번호 암호화 분기처리된 값 처리를 위함
+//                    if(Comment.contains("암호화") && Field.equals("Mobile_Number")) {
+//                        isDecryptMobileNumber = true;
+//                    }
+
+//                    if("인덱스".equals(FieldOptionName)) continue;
+                }
+                String state = "현재상태";
+                headerList.add(state);
+                headerKeyList.add(state);
+
+                // 삭제 DB는 일단 제외 woody
+//                for (int i = 0; i < removeList.size(); i++) {
+//                    HashMap<String, Object> removeMap = removeList.get(i);
+//                    dataList.add(removeMap);
+//                }
+
+                String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                String exportFileName = businessNumber + "_개인정보 DB 데이터_" + nowDate + ".csv";
+
+                // 파일명 인코딩
+                String browser;
+                String userAgent = request.getHeader("User-Agent");
+
+                if (userAgent.contains("MSIE") || userAgent.contains("Trident"))   {
+                    browser = "MSIE";
+                } else if (userAgent.contains("Opera") || userAgent.contains("OPR")) {
+                    browser = "Opera";
+                } else if (userAgent.contains("Safari")) {
+                    if(userAgent.contains("Chrome")){
+                        browser = "Chrome";
+                    }else{
+                        browser = "Safari";
+                    }
+                } else {
+                    browser = "Firefox";
+                }
+
+                if (browser.equals("MSIE")) {
+                    exportFileName = new String(exportFileName.getBytes("euc-kr"), StandardCharsets.ISO_8859_1);
+                } else if (browser.equals("Firefox") || browser.equals("Safari") || browser.equals("Opera")) {
+                    exportFileName =  '"' + new String(exportFileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1) + '"';
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < exportFileName.length(); i++)
+                    {
+                        char c = exportFileName.charAt(i);
+                        if (c > '~') {
+                            sb.append(URLEncoder.encode("" + c, StandardCharsets.UTF_8));
+                        } else {
+                            sb.append(c);
+                        }
+                    }
+                    exportFileName = sb.toString();
+                }
+
+                response.setHeader("Content-Disposition", "attachment; filename=\""+exportFileName+"\";");
+                response.setContentType( "application/octet-stream; UTF-8" );
+                response.setHeader("Content-Type", "application/octet-stream");
+                response.setHeader("Content-Transfer-Encoding", "binary;");
+                response.setHeader("Pragma", "no-cache;");
+                response.setHeader("Expires", "-1;");
+
+                Cookie cookie = new Cookie("fileDownload", URLEncoder.encode("true", StandardCharsets.UTF_8));
+                cookie.setMaxAge(10);
+                response.addCookie(cookie);
+
+                PrintWriter printWriter = response.getWriter();
+                printWriter.write("\ufeff");
+                CSVPrinter csvPrinter = new CSVPrinter(printWriter, CSVFormat.EXCEL);
+
+                // 헤더
+                Object[] csvHeader = new String[headerList.size()];
+                for (int i = 0; i < headerList.size(); i++) {
+                    csvHeader[i] = headerList.get(i);
+                }
+                csvPrinter.printRecord(csvHeader);
+                printWriter.flush();
+
+                // 개인정보 테이블 데이터 csv파일에 삽입
+                if(kokonutUserData != null) {
+                    log.info("개인정보데이터 엑셀로 전송");
+                    for (Map<String, Object> userData : kokonutUserData) {
+                        // 엑셀파일 헤더에 값 넣기
+                        Object[] csvBody = new String[headerKeyList.size()];
+
+                        // 해당 헤더의 대한 데이터 넣기
+                        for (int j = 0; j < headerKeyList.size(); j++) {
+                            String Field = headerKeyList.get(j);
+                            if(Field.equals(state)) {
+                                csvBody[j] = "이용중";
+                            } else {
+                                if (userData.get(Field) != null) {
+                                    // 각 데이터 복호화가 필요할시 사용
+//                                  String decryptedValue = AesCrypto.decrypt(new String(map.get(i).get(Field).toString().getBytes()), DECRYPTED_KEY);
+                                    csvBody[j] = Utils.weekPointForExcel(userData.get(Field).toString() + "\t");
+                                } else {
+                                    csvBody[j] = "";
+                                }
+                            }
+                        }
+                        csvPrinter.printRecord(csvBody);
+                        printWriter.flush();
+                    }
+                }
+
+                // 휴면 테이블 데이터 csv파일에 삽입
+                if(kokonutDormantData != null) {
+                    log.info("휴면데이터 엑셀로 전송");
+                    for (Map<String, Object> dormantData : kokonutDormantData) {
+                        // 엑셀파일 헤더에 값 넣기
+                        Object[] csvBody = new String[headerKeyList.size()];
+
+                        // 해당 헤더의 대한 데이터 넣기
+                        for (int j = 0; j < headerKeyList.size(); j++) {
+                            String Field = headerKeyList.get(j);
+                            if(Field.equals(state)) {
+                                csvBody[j] = "휴면중";
+                            } else {
+                                if (dormantData.get(Field) != null) {
+//                                  String decryptedValue = AesCrypto.decrypt(new String(map.get(i).get(Field).toString().getBytes()), DECRYPTED_KEY);
+                                    csvBody[j] = Utils.weekPointForExcel(dormantData.get(Field).toString() + "\t");
+                                } else {
+                                    csvBody[j] = "";
+                                }
+                            }
+                        }
+                        csvPrinter.printRecord(csvBody);
+                        printWriter.flush();
+                    }
+                }
+                csvPrinter.close();
+
+                // 다운로드 요청 완료시 횟수 차감
+                optionalTotalDbDownload.get().setDownloadLimit(optionalTotalDbDownload.get().getDownloadLimit()-1);
+                optionalTotalDbDownload.get().setModifierIdx(adminIdx);
+                optionalTotalDbDownload.get().setModifyDate(LocalDateTime.now());
+                totalDbDownloadRepository.save(optionalTotalDbDownload.get());
+
+                // 다운로드 로그 테이블에 기록
+                DownloadHistory downloadHistory = new DownloadHistory();
+                downloadHistory.setFileName(businessNumber + "_개인정보 DB 데이터_" + nowDate + ".csv");
+                downloadHistory.setReason("개인정보 DB 데이터 다운로드");
+                downloadHistory.setAdminIdx(adminIdx);
+                downloadHistory.setRegistDate(LocalDateTime.now());
+                downloadHistoryRepository.save(downloadHistory);
+
+                // 활동 완료 업데이트
+                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                        businessNumber+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
+
+            } else {
+                log.error("개인정보 DB 데이터 다운로드 요청 데이터가 존재하지 않습니다.");
+                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                        businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "조회한 데이터가 없습니다.", 1);
+            }
+
+        } catch (Exception e){
+            log.error("e : "+e.getMessage());
+            log.error("조회한 데이터가 없습니다.");
+        }
     }
-
-
 
 }

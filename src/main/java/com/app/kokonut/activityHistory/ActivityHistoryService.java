@@ -1,12 +1,13 @@
 package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.*;
+import com.app.kokonut.downloadHistory.DownloadHistoryRepository;
 import com.app.kokonut.woody.been.Column;
+import com.app.kokonut.woody.excel.ExcelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,9 +20,15 @@ public class ActivityHistoryService {
 
     private final ActivityHistoryRepository activityHistoryRepository;
 
+    private final ExcelService excelService;
+    private final DownloadHistoryRepository downloadHistoryRepository;
+
     @Autowired
-    public ActivityHistoryService(ActivityHistoryRepository activityHistoryRepository) {
+    public ActivityHistoryService(ActivityHistoryRepository activityHistoryRepository,
+                                  ExcelService excelService, DownloadHistoryRepository downloadHistoryRepository) {
         this.activityHistoryRepository = activityHistoryRepository;
+        this.excelService = excelService;
+        this.downloadHistoryRepository = downloadHistoryRepository;
     }
 
 //    public String[] TYPE_LIST = {
