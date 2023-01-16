@@ -1,5 +1,7 @@
 package com.app.kokonut.apiKey;
 
+import com.app.kokonut.activityHistory.ActivityHistoryService;
+import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.entity.Admin;
@@ -9,6 +11,7 @@ import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
+import com.app.kokonut.woody.common.component.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -417,13 +420,25 @@ public class ApiKeyService {
             int adminIdx = admin.getIdx();
             int companyIdx = admin.getCompanyIdx();
             String userName = admin.getName();
+            // 회사 정보 가져오기.
+            AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+            String businessNumber = adminCompanyInfoDto.getBusinessNumber();
 
-            // 기존 등록 키가 있는지 확인.
-            ApiKeyListAndDetailDto apiKeyListAndDetailDto = findByApiKeyByCompanyIdx(companyIdx);
+            ActivityCode activityCode = ActivityCode.AC_24; // "API KEY 발급"
+            String ip = CommonUtil.clientIp();
+            ActivityHistoryService activityHistoryService = null;
+
+            // "API KEY 발급 시도 이력", 비정상
+            Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
+                    , businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+
+            ApiKeyListAndDetailDto apiKeyListAndDetailDto = findByApiKeyByCompanyIdx(companyIdx); // 기존 등록 키가 있는지 확인.
             if(apiKeyListAndDetailDto != null) {
-                // TODO errorCode 등록
+                // "API KEY 발급 실패 이력", 정상
+                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                        businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "이미 발급된 API KEY 존재.", 1);
                 log.error("이미 발급된 API Key가 존재합니다. 재발급을 진행해주세요.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO067.getCode(), ResponseErrorCode.KO067.getDesc()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO071.getCode(), ResponseErrorCode.KO071.getDesc()));
             }else {
                 // 키 생성
                 String key = keyGenerate(128);
@@ -439,7 +454,9 @@ public class ApiKeyService {
                     }
                 }
                 insertApiKey(adminIdx, companyIdx, userName, 1, 1, key, 1);
-                // TODO Activity History 활동 이력 남기기 - apk Key 발급
+                // "API KEY 발급 성공 이력", 정상
+                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                        businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
 
                 return ResponseEntity.ok(res.success(data));
             }
@@ -468,6 +485,18 @@ public class ApiKeyService {
                 int companyIdx = admin.getCompanyIdx();
                 String userName = admin.getName();
 
+                // 회사 정보 가져오기.
+                AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+                String businessNumber = adminCompanyInfoDto.getBusinessNumber();
+
+                ActivityCode activityCode = ActivityCode.AC_26; // 사용 차단
+                String ip = CommonUtil.clientIp();
+                ActivityHistoryService activityHistoryService = null;
+
+                // "API KEY 사용 차단 시도 이력", 비정상
+                Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
+                        , businessNumber +" - "+activityCode.getDesc()+" 시도 이력", "API KEY 재발급", ip, 0);
+
                 // 키 생성
                 String key = keyGenerate(128);
                 // 중복 여부 확인
@@ -481,18 +510,32 @@ public class ApiKeyService {
                         key =  keyGenerate(128);
                     }
                 }
-                // TODO apiKeyMapperDto 수정 (companyIdx 추가)에 대해서 woody에게 물어보기
-                ApiKeyMapperDto apiKeyMapperDto = new ApiKeyMapperDto();
-                apiKeyMapperDto.setUseYn("Y");
-                //apiKeyMapperDto.setCompanyIdx(companyIdx);
-                List<ApiKeyListAndDetailDto> apiKeys = findByApiKeyList(apiKeyMapperDto);
-                for(ApiKeyListAndDetailDto apiKey : apiKeys) {
-                    // TODO Activity History 활동 이력 남기기. - api Key block 처리
-                }
-                // API KEY BLOCK 처리
+
+//                api Key 하나 하나에 대해 로그를 남기기 위해 해당 회사의 apiKeys 조회하는 부분 제거
+//                ApiKeyMapperDto apiKeyMapperDto = new ApiKeyMapperDto();
+//                apiKeyMapperDto.setUseYn("Y");
+//                List<ApiKeyListAndDetailDto> apiKeys = findByApiKeyList(apiKeyMapperDto);
+
+                // 해당 회사에 속한 기 발행된 apiKey block 처리
                 updateBlockKey(companyIdx);
-                insertApiKey(adminIdx, companyIdx, userName, 1, 2, key, 1);
-                // TODO Activity History 활동 이력 남기기 - api key 재발급
+                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                        businessNumber+" - "+activityCode.getDesc()+"완료 이력", "API KEY 재발행으로 인한 기존 API KEY BLOCK 처리", 1);
+                // TODO 시행, 실패 이력 남기기 고민할 것
+
+
+                activityCode = ActivityCode.AC_25; // "API KEY 재발급"
+
+                // "API KEY 재발급 시도 이력", 비정상
+                activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
+                        , businessNumber +" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+
+                insertApiKey(adminIdx, companyIdx, userName, 1, 1, key, 1);
+
+                // "API KEY 재발급 성공 이력", 정상
+                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                        businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
+                // TODO 시행, 실패 이력 남기기 고민할 것
+
                 return ResponseEntity.ok(res.success(data));
             }
         }
@@ -518,11 +561,37 @@ public class ApiKeyService {
             // 이메일을 통해 계정 정보 가져오기.
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
-            int modifierIdx = admin.getIdx();
+            Integer modifierIdx = admin.getIdx();
             String userName = admin.getName();
 
+            Integer adminIdx = modifierIdx;
+            Integer companyIdx = admin.getCompanyIdx();
+
+            // 회사 정보 가져오기.
+            AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+            String businessNumber = adminCompanyInfoDto.getBusinessNumber();
+
+            ActivityCode activityCode= ActivityCode.AC_27; // 사용 차단 해제
+
+            if("Y".equals(useYn)){
+                activityCode= ActivityCode.AC_27; // 사용 차단 해제
+            }else{
+                activityCode = ActivityCode.AC_26; // 사용 차단
+            }
+
+            String ip = CommonUtil.clientIp();
+            ActivityHistoryService activityHistoryService = null;
+
+            // "API KEY 사용 차단(해제) 시도 이력", 비정상
+            Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
+                    , businessNumber +" - "+activityCode.getDesc()+" 시도 이력", "API KEY 수정 - "+reason, ip, 0);
+
             updateApiKey(idx, useYn, reason, modifierIdx, userName);
-            // TODO activity History 남기기 - apkKey 블락, 언블락
+            // "API KEY 재발급 성공 이력", 정상
+
+            activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                    businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
+            // TODO 시행, 실패 이력 남기기 고민할 것
 
             return ResponseEntity.ok(res.success(data));
         }

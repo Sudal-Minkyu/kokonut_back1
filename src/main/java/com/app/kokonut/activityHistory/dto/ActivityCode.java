@@ -31,7 +31,10 @@ public enum ActivityCode {
     AC_21("AC_21", "회원테이블 DB 항목 삭제"),
     AC_22("AC_22", "개인정보 전체 DB 데이터 다운로드 요청"),
     AC_23("AC_23", "개인정보 전체 DB 데이터 다운로드 시작"),
-
+    AC_24("AC_24", "API KEY 발급"),
+    AC_25("AC_25", "API KEY 재발급"),
+    AC_26("AC_26", "API KEY 사용 차단"),
+    AC_27("AC_27", "API KEY 사용 차단 해제"),
     ;
     
     private final String code;
