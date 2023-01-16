@@ -45,5 +45,5 @@ public interface ApiKeyRepositoryCustom {
     List<TestApiKeyExpiredListDto> findByTestApiKeyExpiredList(HashMap<String, Object> paramMap, Integer type); // SelectTestApiKeyExpiredList -> 변경후
 
 
-
+    Long findByCheck(String apikey, String email); // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
 }

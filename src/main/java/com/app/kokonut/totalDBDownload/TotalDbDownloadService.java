@@ -224,7 +224,7 @@ public class TotalDbDownloadService {
                 request.setCharacterEncoding("UTF-8");
                 response.setContentType("text/html; charset=UTF-8");
 
-                String DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyIdx);
+//                String DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyIdx); // 복호화용 키 일단 보류
 
                 List<KokonutUserFieldDto> columns = kokonutUserService.getUserColumns(businessNumber);
 
@@ -251,6 +251,11 @@ public class TotalDbDownloadService {
                                 "최종 로그인 일시".equals(FieldOptionName) ||
                                 "수정 일시".equals(FieldOptionName)) {
                             continue;
+                        }
+                    } else {
+                        if(Comment.contains("(")) {
+                            String[] FieldOptionNameList = Comment.split("\\(");
+                            FieldOptionName = FieldOptionNameList[0];
                         }
                     }
 

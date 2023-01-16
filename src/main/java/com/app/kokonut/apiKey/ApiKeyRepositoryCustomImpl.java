@@ -410,4 +410,21 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         return query.fetch();
     }
 
+    // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
+    @Override
+    public Long findByCheck(String key, String email) {
+
+        QApiKey apiKey = QApiKey.apiKey;
+        QAdmin admin = QAdmin.admin;
+
+        JPQLQuery<Long> query = from(apiKey)
+                .innerJoin(admin).on(apiKey.adminIdx.eq(admin.idx))
+                .where(apiKey.key.eq(key).and(admin.email.eq(email)))
+                .select(Projections.constructor(Long.class,
+                        apiKey.count()
+                ));
+
+        return query.fetchOne();
+    }
+
 }

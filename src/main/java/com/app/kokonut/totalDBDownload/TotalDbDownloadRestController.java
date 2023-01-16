@@ -42,7 +42,7 @@ public class TotalDbDownloadRestController {
     public ResponseEntity<Map<String, Object>> userDbDataDownloadApply(@RequestParam(name="otpValue", defaultValue = "") String otpValue,
                                                                        @RequestParam(name="reason", defaultValue = "") String reason) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        return totalDbDownloadService.userDbDataDownloadApply("otpValue", reason, jwtFilterDto.getEmail());
+        return totalDbDownloadService.userDbDataDownloadApply(otpValue, reason, jwtFilterDto.getEmail());
     }
 
     // 개인정보 DB 데이터 다운로드 요청건 리스트 - 기존코코넛 메서드 : /member/totalDbDownload/list
@@ -53,17 +53,17 @@ public class TotalDbDownloadRestController {
     })
     public ResponseEntity<Map<String, Object>> userDbDataDownloadList(@RequestBody TotalDbDownloadSearchDto totalDbDownloadSearchDto, Pageable pageable) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        return totalDbDownloadService.userDbDataDownloadList(totalDbDownloadSearchDto, "woody2@kokonut.me", pageable);
+        return totalDbDownloadService.userDbDataDownloadList(totalDbDownloadSearchDto, jwtFilterDto.getEmail(), pageable);
     }
 
     // 개인정보 DB 데이터 다운로드 시작 - 기존코코넛 메서드 : /member/totalDbDownload/download
     @PostMapping(value = "/userDbDataDownloadStart")
     @ApiImplicitParams({
-//            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-//            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public void userDbDataDownloadStart(@RequestParam(name="idx", defaultValue = "") Integer idx, HttpServletRequest request, HttpServletResponse response) {
-//        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         totalDbDownloadService.userDbDataDownloadStart(idx, "woody2@kokonut.me", request, response);
     }
 

@@ -7,16 +7,18 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.app.kokonut.keydata.KeyDataService;
 import com.app.kokonut.keydata.dtos.KeyDataAWSS3Dto;
+//import com.app.kokonut.woody.config.KokonutApiInterceptor;
+import com.app.kokonut.woody.config.KokonutApiInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
@@ -54,10 +56,24 @@ public class WebConfig implements WebMvcConfigurer {
                 .build();
     }
 
+    // 인터셉터 설정
+    @Bean
+    public KokonutApiInterceptor customInterceptor() {
+        return new KokonutApiInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(customInterceptor()).addPathPatterns("/api/**");
+    }
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*");
+                .allowedOrigins("*")
+                .allowedHeaders("Bearer", "ApiKey")
+                .allowedMethods("GET", "POST")
+                .maxAge(900); // 타임아웃 15분으로 설정
     }
 
     @Bean

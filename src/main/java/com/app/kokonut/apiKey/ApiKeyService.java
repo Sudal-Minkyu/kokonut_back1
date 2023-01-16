@@ -46,18 +46,9 @@ public class ApiKeyService {
         this.adminRepository = adminRepository;
     }
 
-    // ApiKey가 유효한지 검증하는 메서드
-    public boolean validateApiKey(String apikey) {
-        try {
-//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            log.error("apikey : "+apikey);
-
-            return true;
-        } catch (Exception e) {
-            log.error("유효하지않은 APIKey 입니다.");
-            log.error("e : "+e.getMessage());
-        }
-        return false;
+    // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
+    public Long validateApiKey(String apikey, String email) {
+        return apiKeyRepository.findByCheck(apikey, email);
     }
 
     /**
