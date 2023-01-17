@@ -2,20 +2,17 @@ package com.app.kokonut.qna;
 
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
-import com.app.kokonut.joy.email.MailSender;
+import com.app.kokonut.configs.MailSender;
 import com.app.kokonut.admin.AdminService;
 import com.app.kokonut.qna.dto.QnaSchedulerDto;
-import com.app.kokonut.woody.common.AjaxResponse;
+import com.app.kokonut.common.AjaxResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 //@Component
 @Service

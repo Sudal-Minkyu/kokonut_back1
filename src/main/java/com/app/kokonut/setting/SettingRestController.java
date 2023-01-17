@@ -1,7 +1,7 @@
 package com.app.kokonut.setting;
 
 
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.setting.dto.SettingDetailDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

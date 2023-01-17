@@ -22,7 +22,7 @@ import java.util.Map;
  * Remark : 핸드폰 인증 Nice 관련 Controller
  */
 @Slf4j
-@RequestMapping("/api/NiceId")
+@RequestMapping("/v0/api/NiceId")
 @RestController
 public class NiceIdRestController {
 

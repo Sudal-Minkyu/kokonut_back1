@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "")
 @Validated
 @RestController
-@RequestMapping("/api/EmailHistory")
+@RequestMapping("/v2/api/EmailHistory")
 public class EmailHistoryRestController {
 
 

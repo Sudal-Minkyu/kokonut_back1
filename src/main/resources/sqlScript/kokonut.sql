@@ -17,6 +17,28 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`kokonut` /*!40100 DEFAULT CHARACTER SET
 
 USE `kokonut`;
 
+/* 고유번호 기록 테이블 */
+CREATE TABLE `kn_autonum` (
+  `auto_key` varchar(50) NOT NULL DEFAULT '' COMMENT '번호채번유형',
+  `prefix` varchar(6) DEFAULT NULL COMMENT '번호채벌 앞 prefix',
+  `key_decimal` int(11) DEFAULT NULL COMMENT 'seq 자리수(1,6)까지만 일단 넣자',
+  `remark` varchar(100) DEFAULT NULL COMMENT '간단한키설명',
+  `modify_id` varchar(50) DEFAULT NULL,
+  `modify_dt` datetime DEFAULT NULL,
+  PRIMARY KEY (`auto_key`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci COMMENT='번호채번테이블';
+
+/* 고유번호 로그 기록 테이블 */
+CREATE TABLE `kn_autonum_log` (
+  `auto_key` varchar(50) NOT NULL DEFAULT '' COMMENT '키값',
+  `prefix` varchar(20) NOT NULL DEFAULT '' COMMENT '번호채번앞자리문자',
+  `last_seq` int(11) DEFAULT NULL COMMENT '마지막채번된 seq',
+  `last_key` varchar(20) DEFAULT NULL COMMENT '마지막 채번된 전체 번호',
+  `modify_id` varchar(20) DEFAULT NULL,
+  `modify_dt` datetime DEFAULT NULL,
+  PRIMARY KEY (`auto_key`,`prefix`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci COMMENT='번호채번세부테이블';
+
 /*Table structure for table `activity` */
 
 DROP TABLE IF EXISTS `activity`;

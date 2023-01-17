@@ -1,7 +1,7 @@
 package com.app.kokonut.bizMessage.alimtalkTemplate;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateDeleteDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSaveAndUpdateDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSearchDto;
@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/AlimtalkTemplate")
+@RequestMapping("/v2/api/AlimtalkTemplate")
 public class AlimtalkTemplateRestController {
 
     private final AlimtalkTemplateService alimtalkTemplateService;

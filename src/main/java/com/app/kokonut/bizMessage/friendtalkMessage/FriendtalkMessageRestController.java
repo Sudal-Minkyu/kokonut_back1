@@ -1,7 +1,7 @@
 package com.app.kokonut.bizMessage.friendtalkMessage;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageSearchDto;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageSendDto;
 import io.swagger.annotations.ApiImplicitParam;
@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/FriendtalkMessage")
+@RequestMapping("/v2/api/FriendtalkMessage")
 public class FriendtalkMessageRestController {
 
     private final FriendtalkMessageService friendtalkMessageService;

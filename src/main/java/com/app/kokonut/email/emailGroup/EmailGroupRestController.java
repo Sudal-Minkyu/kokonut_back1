@@ -15,7 +15,7 @@ import java.util.Map;
 @Api(tags = "")
 @Validated
 @RestController
-@RequestMapping("/api/EmailGroup")
+@RequestMapping("/v2/api/EmailGroup")
 public class EmailGroupRestController {
     // 기존 코코넛 SystemEmailGroupController 컨트롤러 리팩토링
     // 기존 url : /system/emailGroup , 변경 url : /api/EmailGroup

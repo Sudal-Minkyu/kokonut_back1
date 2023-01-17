@@ -1,8 +1,5 @@
 package com.app.kokonut.controller;
 
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

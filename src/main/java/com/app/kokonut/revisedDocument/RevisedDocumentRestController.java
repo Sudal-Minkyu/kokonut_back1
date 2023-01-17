@@ -1,6 +1,6 @@
 package com.app.kokonut.revisedDocument;
 
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.revisedDocument.dto.RevDocSaveDto;
 import com.app.kokonut.revisedDocument.dto.RevDocSearchDto;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @Validated
 @RestController
-@RequestMapping("/api/RevisedDocument")
+@RequestMapping("/v2/api/RevisedDocument")
 public class RevisedDocumentRestController {
     /* 기존 컨트롤러
      * MemberRevisedDocumentController  "/member/revisedDocument"

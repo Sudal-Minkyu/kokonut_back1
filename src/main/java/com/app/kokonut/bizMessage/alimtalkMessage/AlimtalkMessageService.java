@@ -1,7 +1,6 @@
 package com.app.kokonut.bizMessage.alimtalkMessage;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.bizMessage.alimtalkMessage.alimtalkMessageRecipient.AlimtalkMessageRecipient;
 import com.app.kokonut.bizMessage.alimtalkMessage.alimtalkMessageRecipient.AlimtalkMessageRecipientRepository;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.*;
@@ -9,9 +8,9 @@ import com.app.kokonut.bizMessage.alimtalkTemplate.AlimtalkTemplateRepository;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkMessageTemplateInfoListDto;
 import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
 import com.app.kokonut.navercloud.NaverCloudPlatformService;
-import com.app.kokonut.woody.common.AjaxResponse;
-import com.app.kokonut.woody.common.ResponseErrorCode;
-import com.app.kokonut.woody.common.component.Utils;
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
+import com.app.kokonut.common.component.Utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;

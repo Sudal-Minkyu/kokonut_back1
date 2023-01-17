@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/AdminRemove")
+@RequestMapping("/v2/api/AdminRemove")
 public class AdminRemoveRestController {
 
     private final AdminRemoveService adminRemoveService;

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/AdminLevel")
+@RequestMapping("/v2/api/AdminLevel")
 public class AdminLevelRestController {
 
     private AdminLevelService adminLevelService;

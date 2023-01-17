@@ -1,8 +1,6 @@
 package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.*;
-import com.app.kokonut.woody.been.Column;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

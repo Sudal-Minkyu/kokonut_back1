@@ -1,8 +1,8 @@
 package com.app.kokonut.admin;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
-import com.app.kokonut.woody.common.AjaxResponse;
+import com.app.kokonut.auth.jwt.SecurityUtil;
+import com.app.kokonut.common.AjaxResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +23,7 @@ import java.util.Map;
  * Remark :
  */
 @Slf4j
-@RequestMapping("/api/Admin")
+@RequestMapping("/v1/api/Admin")
 @RestController
 public class AdminRestController {
 

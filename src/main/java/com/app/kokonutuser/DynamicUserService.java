@@ -4,17 +4,13 @@ import com.app.kokonut.activityHistory.ActivityHistoryService;
 import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
-import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
-import com.app.kokonut.auth.jwt.config.GoogleOTP;
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
+import com.app.kokonut.common.component.AesCrypto;
+import com.app.kokonut.common.component.CommonUtil;
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.company.CompanyService;
-import com.app.kokonut.totalDBDownload.TotalDbDownload;
-import com.app.kokonut.totalDBDownload.TotalDbDownloadRepository;
-import com.app.kokonut.woody.common.AjaxResponse;
-import com.app.kokonut.woody.common.ResponseErrorCode;
-import com.app.kokonut.woody.common.component.AesCrypto;
-import com.app.kokonut.woody.common.component.CommonUtil;
-import com.app.kokonut.woody.excel.ExcelService;
+import com.app.kokonut.configs.ExcelService;
 import com.app.kokonutdormant.KokonutDormantService;
 import com.app.kokonutdormant.dtos.KokonutDormantFieldCheckDto;
 import com.app.kokonutdormant.dtos.KokonutDormantFieldInfoDto;
@@ -46,12 +42,10 @@ import java.util.*;
 @Service
 public class DynamicUserService {
 
-	private final GoogleOTP googleOTP;
 	private final PasswordEncoder passwordEncoder;
 
 	private final AdminRepository adminRepository;
 	private final CompanyRepository companyRepository;
-	private final TotalDbDownloadRepository totalDbDownloadRepository;
 
 	private final ExcelService excelService;
 	private final KokonutUserService kokonutUserService;
@@ -61,13 +55,11 @@ public class DynamicUserService {
 	private final KokonutDormantService kokonutDormantService;
 	private final KokonutRemoveService kokonutRemoveService;
 
-
 	@Autowired
-	public DynamicUserService(GoogleOTP googleOTP, PasswordEncoder passwordEncoder, AdminRepository adminRepository,
+	public DynamicUserService(PasswordEncoder passwordEncoder, AdminRepository adminRepository,
 							  CompanyRepository companyRepository, ExcelService excelService,
 							  KokonutUserService kokonutUserService, KokonutDormantService kokonutDormantService, CompanyService companyService,
-							  ActivityHistoryService activityHistoryService, KokonutRemoveService kokonutRemoveService, TotalDbDownloadRepository totalDbDownloadRepository) {
-		this.googleOTP = googleOTP;
+							  ActivityHistoryService activityHistoryService, KokonutRemoveService kokonutRemoveService) {
 		this.passwordEncoder = passwordEncoder;
 		this.adminRepository = adminRepository;
 		this.companyRepository = companyRepository;
@@ -77,7 +69,6 @@ public class DynamicUserService {
 		this.companyService = companyService;
 		this.activityHistoryService = activityHistoryService;
 		this.kokonutRemoveService = kokonutRemoveService;
-		this.totalDbDownloadRepository = totalDbDownloadRepository;
 	}
 
 	/**

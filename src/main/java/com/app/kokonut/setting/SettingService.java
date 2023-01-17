@@ -4,7 +4,7 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.setting.dto.SettingDetailDto;
 import com.app.kokonut.setting.entity.Setting;
-import com.app.kokonut.woody.common.AjaxResponse;
+import com.app.kokonut.common.AjaxResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

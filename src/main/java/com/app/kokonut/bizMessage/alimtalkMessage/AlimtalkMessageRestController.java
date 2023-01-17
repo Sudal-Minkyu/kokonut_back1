@@ -1,7 +1,7 @@
 package com.app.kokonut.bizMessage.alimtalkMessage;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSearchDto;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSendDto;
 import io.swagger.annotations.ApiImplicitParam;
@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/AlimtalkMessage")
+@RequestMapping("/v2/api/AlimtalkMessage")
 public class AlimtalkMessageRestController {
 
     private final AlimtalkMessageService alimtalkMessageService;

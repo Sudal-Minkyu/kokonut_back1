@@ -2,8 +2,8 @@ package com.app.kokonut.apiKey;
 
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dtos.ApiKeySetDto;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
-import com.app.kokonut.woody.common.AjaxResponse;
+import com.app.kokonut.auth.jwt.SecurityUtil;
+import com.app.kokonut.common.AjaxResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/ApiKey")
+@RequestMapping("/v1/api/ApiKey")
 public class ApiKeyRestController {
 
 //    private Logger logger = LoggerFactory.getLogger(ApiKeyRestController.class);
