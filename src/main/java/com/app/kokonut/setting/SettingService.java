@@ -34,6 +34,11 @@ public class SettingService {
         this.adminRepository = adminRepository;
     }
 
+    /**
+     * 관리자설정 상세 조회
+     * @param userRole 사용자 권한
+     * @param email    사용자 이메일
+     */
     public ResponseEntity<Map<String, Object>> settingDetail(String userRole, String email) {
         log.info("settingDetail 호출, userRole : " + userRole);
 
@@ -64,6 +69,12 @@ public class SettingService {
         return ResponseEntity.ok(res.success(data));
     }
 
+    /**
+     * 관리자설정 저장/수정
+     * @param userRole 사용자 권한
+     * @param email    사용자 이메일
+     * @param settingDetailDto 관리자설정 정보
+     */
     public ResponseEntity<Map<String, Object>> settingSave(String userRole, String email, SettingDetailDto settingDetailDto) {
         log.info("settingSave 호출, userRole : " + userRole);
         // 접속정보에서 companyIdx 가져오기

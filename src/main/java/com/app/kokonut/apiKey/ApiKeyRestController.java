@@ -3,6 +3,7 @@ package com.app.kokonut.apiKey;
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dtos.ApiKeySetDto;
 import com.app.kokonut.auth.jwt.SecurityUtil;
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.common.AjaxResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -89,11 +90,8 @@ public class ApiKeyRestController {
     @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     public ResponseEntity<Map<String,Object>> apiKeyManagement(){
         log.info("ApiKey 발급 내역 조회 호출");
-
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-
-        return apiKeyService.apiKeyManagement(email, userRole);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return apiKeyService.apiKeyManagement(jwtFilterDto.getEmail(), jwtFilterDto.getRole());
     }
 
     /**
@@ -104,9 +102,8 @@ public class ApiKeyRestController {
     @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     public ResponseEntity<Map<String,Object>> testIssue(){
         log.info("테스트 ApiKey 발급");
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return apiKeyService.testIssue(email, userRole);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return apiKeyService.testIssue(jwtFilterDto.getEmail(), jwtFilterDto.getRole());
     }
 
     @PostMapping("/issue")
@@ -114,9 +111,8 @@ public class ApiKeyRestController {
     @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     public ResponseEntity<Map<String,Object>> issue() throws NoSuchAlgorithmException {
         log.info("ApiKey 발급 호출");
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return apiKeyService.issue(email, userRole);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return apiKeyService.issue(jwtFilterDto.getEmail(), jwtFilterDto.getRole());
     }
 
     @PostMapping("/reIssue")
@@ -124,9 +120,8 @@ public class ApiKeyRestController {
     @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     public ResponseEntity<Map<String,Object>> reIssue() throws NoSuchAlgorithmException {
         log.info("ApiKey 재발급 호출");
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return apiKeyService.reIssue(email, userRole);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return apiKeyService.reIssue(jwtFilterDto.getEmail(), jwtFilterDto.getRole());
     }
 
     @PostMapping("/modify")
@@ -134,8 +129,7 @@ public class ApiKeyRestController {
     @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     public ResponseEntity<Map<String,Object>> modify(@RequestParam(name="idx") Integer idx, @RequestParam(name="useYn") String useYn, @RequestParam(name="reason") String reason) {
         log.info("ApiKey 수정 호출");
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return apiKeyService.modify(idx, useYn, reason, email, userRole);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return apiKeyService.modify(idx, useYn, reason, jwtFilterDto.getEmail(), jwtFilterDto.getRole());
     }
 }

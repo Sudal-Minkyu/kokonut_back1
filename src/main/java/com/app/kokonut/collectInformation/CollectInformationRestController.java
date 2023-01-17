@@ -1,6 +1,7 @@
 package com.app.kokonut.collectInformation;
 
 import com.app.kokonut.auth.jwt.SecurityUtil;
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.collectInformation.dto.CollectInfoDetailDto;
 import com.app.kokonut.collectInformation.dto.CollectInfoSearchDto;
 import io.swagger.annotations.ApiImplicitParam;
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 @Validated
 @RestController
-@RequestMapping("v2/api/CollectInfomation")
+@RequestMapping("/v2/api/CollectInfomation")
 public class CollectInformationRestController {
     /* 기존 컨트롤러
      * MemberCollectInformationControlle  "/member/collectInformation"
@@ -42,9 +43,8 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoList(@RequestBody CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        return collectInformationService.collectInfoList(userRole, email, collectInfoSearchDto, pageable);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return collectInformationService.collectInfoList(jwtFilterDto.getRole(), jwtFilterDto.getEmail(), collectInfoSearchDto, pageable);
     }
 
     @ApiOperation(value="CollectInfo 내용 조회", notes="개인정보처리방침 내용 조회")
@@ -54,8 +54,8 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoDetail(@RequestParam(name="idx") Integer idx) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return collectInformationService.collectInfoDetail(userRole, idx);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return collectInformationService.collectInfoDetail(jwtFilterDto.getRole(), idx);
     }
 
     @ApiOperation(value="CollectInfo 등록, 수정", notes="개인정보처리방침 수정, 등록")
@@ -65,9 +65,8 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoSave(@RequestBody CollectInfoDetailDto collectInfoDetailDto) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        return collectInformationService.collectInfoSave(userRole, email, collectInfoDetailDto);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return collectInformationService.collectInfoSave(jwtFilterDto.getRole(), jwtFilterDto.getEmail(), collectInfoDetailDto);
     }
 
     @ApiOperation(value="CollectInfo 삭제", notes="개인정보처리방침 삭제")
@@ -77,9 +76,8 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoDelete(@RequestParam(name="idx") Integer idx) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        return collectInformationService.collectInfoDelete(userRole, email, idx);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return collectInformationService.collectInfoDelete(jwtFilterDto.getRole(), jwtFilterDto.getEmail(), idx);
     }
 
 }

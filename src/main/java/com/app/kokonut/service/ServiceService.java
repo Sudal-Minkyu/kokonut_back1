@@ -26,12 +26,19 @@ public class ServiceService {
         this.serviceRepository = serviceRepository;
     }
 
+    /**
+     * 제공 서비스 목록 조회
+     */
     public ResponseEntity<Map<String, Object>> serviceList() {
         log.info("serviceList 호출");
         data.put("serviceList", serviceRepository.findServiceList());
         return ResponseEntity.ok(res.success(data));
     }
 
+    /**
+     * 제공 서비스 상세 조회
+     * @param idx  제공 서비스 인덱스
+     */
     public ResponseEntity<Map<String, Object>> serviceDetail(Integer idx) {
         log.info("serviceDetail 호출, idx : " + idx);
         if(idx != null){

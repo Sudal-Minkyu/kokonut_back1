@@ -24,7 +24,7 @@ public class EmailGroupService {
         this.emailGroupRepository = emailGroupRepository;
     }
 
-    /***
+    /**
      * 메일 그룹 adminIdxList 조회
      * @param idx - email_group IDX
      * 기존 코코넛 서비스 SelectEmailGroupByIdx
@@ -44,8 +44,9 @@ public class EmailGroupService {
         }
     }
 
-    /***
+    /**
      * 메일 그룹 목록 조회
+     * @param pageable 페이징 처리를 위한 정보
      * 기존 코코넛 서비스 SelectEmailGroupList
      */
     public ResponseEntity<Map<String,Object>> emailGroupList(Pageable pageable){
@@ -58,8 +59,9 @@ public class EmailGroupService {
     }
 
 
-    /***
+    /**
      * 메일 그룹 등록
+     * @param emailGroupDetailDto 이메일 그룹 정보
      * 기존 코코넛 서비스 InsertEmailGroup
      */
     public ResponseEntity<Map<String,Object>> saveEmailGroup(EmailGroupDetailDto emailGroupDetailDto) {
@@ -102,8 +104,9 @@ public class EmailGroupService {
         }
     }
 
-    /***
+    /**
      * 메일 그룹 수정
+     * @param emailGroupDetailDto 이메일 그룹 정보
      * 기존 코코넛 서비스 UpdateEmailGroup
      */
     public ResponseEntity<Map<String,Object>> UpdateEmailGroup(EmailGroupDetailDto emailGroupDetailDto) {

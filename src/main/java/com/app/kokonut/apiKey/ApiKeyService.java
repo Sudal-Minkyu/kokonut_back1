@@ -1,5 +1,7 @@
 package com.app.kokonut.apiKey;
 
+import com.app.kokonut.activityHistory.ActivityHistoryService;
+import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.entity.Admin;
@@ -9,6 +11,8 @@ import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
+import com.app.kokonut.common.component.CommonUtil;
+import com.app.kokonut.company.CompanyRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,15 +39,15 @@ import java.util.Map;
 @Service
 public class ApiKeyService {
 
-    private final AjaxResponse res = new AjaxResponse();
-    private final HashMap<String, Object> data = new HashMap<>();
-
     private final ApiKeyRepository apiKeyRepository;
     private final AdminRepository adminRepository;
+    private final CompanyRepository companyRepository;
 
-    public ApiKeyService(ApiKeyRepository apiKeyRepository, AdminRepository adminRepository){
+    public ApiKeyService(ApiKeyRepository apiKeyRepository, AdminRepository adminRepository,
+                         CompanyRepository companyRepository){
         this.apiKeyRepository = apiKeyRepository;
         this.adminRepository = adminRepository;
+        this.companyRepository = companyRepository;
     }
 
     // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
@@ -66,9 +70,8 @@ public class ApiKeyService {
      */
     @Transactional
     public Integer insertApiKey(Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state,
-                             String key, Integer useAccumulate) {
+                                String key, Integer useAccumulate) {
         log.info("insertApiKey 호출");
-
         Date systemDate = new Date(System.currentTimeMillis());
         log.info("현재 날짜 : "+systemDate);
 
@@ -99,6 +102,52 @@ public class ApiKeyService {
         return apiKeyRepository.save(apiKey).getIdx();
     }
 
+    @Transactional
+    public Integer insertApiKey(Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state,
+                                String key, Integer useAccumulate, Integer activityHistoryIDX, ActivityCode activityCode) {
+        log.info("insertApiKey 호출");
+
+        Date systemDate = new Date(System.currentTimeMillis());
+        log.info("현재 날짜 : "+systemDate);
+
+        ApiKey apiKey = new ApiKey();
+        apiKey.setAdminIdx(adminIdx);
+        apiKey.setCompanyIdx(companyIdx);
+        apiKey.setRegisterName(registerName);
+        apiKey.setType(type);
+        apiKey.setState(state);
+        apiKey.setUseAccumulate(useAccumulate);
+        apiKey.setKey(key);
+        apiKey.setRegdate(LocalDateTime.now());
+        apiKey.setUseYn("Y");
+
+        if(type != null && type.equals(2)){
+            // 현재 LocalDate에서 14일후인 날짜계산
+            Calendar c = Calendar.getInstance();
+            c.setTime(systemDate);
+            c.add(Calendar.DATE, 14);
+
+            Date fourteenDayAfter = new Date(c.getTimeInMillis());
+            log.info("14일후 날짜 : "+fourteenDayAfter);
+
+            apiKey.setValidityStart(systemDate);
+            apiKey.setValidityEnd(fourteenDayAfter);
+        }
+
+        ActivityHistoryService activityHistoryService = null;
+        String businessNumber = companyRepository.findById(companyIdx).get().getBusinessNumber();
+        try{
+            apiKeyRepository.save(apiKey);
+            activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                    businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
+        }catch(Exception e){
+            activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                    businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
+            e.getStackTrace();
+        }
+
+        return apiKeyRepository.save(apiKey).getIdx();
+    }
     /**
      * Api Key Update
      */
@@ -132,9 +181,42 @@ public class ApiKeyService {
         apiKeyRepository.save(apiKey);
     }
 
+    @Transactional
+    public void updateApiKey(Integer idx, String useYn, String reason, Integer modifierIdx, String modifierName, Integer activityHistoryIDX, ActivityCode activityCode) {
+        log.info("updateApiKey 호출");
+
+        Integer companyIdx = apiKeyRepository.findById(idx).get().getCompanyIdx();
+        String businessNumber = companyRepository.findById(companyIdx).get().getBusinessNumber();
+
+        ApiKey apiKey = apiKeyRepository.findById(idx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
+
+        Date systemDate = new Date(System.currentTimeMillis());
+        log.info("현재 날짜 : "+systemDate);
+
+        apiKey.setUseYn(useYn);
+        apiKey.setReason(reason);
+
+        apiKey.setModifierIdx(modifierIdx);
+        apiKey.setModifierName(modifierName);
+        apiKey.setModifyDate(LocalDateTime.now());
+
+        ActivityHistoryService activityHistoryService = null;
+        try{
+            apiKeyRepository.save(apiKey);
+            activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                    businessNumber+" - "+activityCode.getDesc()+" 성공 이력", reason, 1);
+        }catch(Exception e){
+            activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                    businessNumber+" - "+activityCode.getDesc()+" 실패 이력", reason, 1);
+            e.getStackTrace();
+        }
+
+    }
+
     /**
      * Api Key 삭제
-     * @param idx
+     //     * @param idx
      */
 //	public void DeleteApiKeyByIdx(int idx) {
 //		dao.DeleteApiKeyByIdx(idx);
@@ -154,9 +236,9 @@ public class ApiKeyService {
         apiKeyRepository.delete(apiKey);
     }
 
-	/**
-	 * Api Key 리스트
-	 */
+    /**
+     * Api Key 리스트
+     */
 //	public List<HashMap<String, Object>> SelectApiKeyList(HashMap<String, Object> paramMap) {
 //		return dao.SelectApiKeyList(paramMap);
 //	}
@@ -165,9 +247,9 @@ public class ApiKeyService {
         return apiKeyRepository.findByApiKeyList(apiKeyMapperDto);
     }
 
-	/**
-	 * Api Key 리스트 Count
-	 */
+    /**
+     * Api Key 리스트 Count
+     */
 //	public int SelectApiKeyListCount(HashMap<String, Object> paramMap) {
 //        return dao.SelectApiKeyListCount(paramMap);
 //    }
@@ -176,7 +258,7 @@ public class ApiKeyService {
         return apiKeyRepository.findByApiKeyListCount(apiKeyMapperDto);
     }
 
-//	/**
+    //	/**
 //	 * Api Key 상세보기
 //	 * @param idx
 //	 */
@@ -190,21 +272,21 @@ public class ApiKeyService {
 
     /**
      * ApiKey 조회
-     * @param key
+     //   * @param key
      * @return
      */
 //    public HashMap<String, Object> SelectByKey(String key) {
 //        return apiKeyRepository.SelectByKey(key);
 //    }
-     public ApiKeyKeyDto findByKey(String key) {
-         log.info("findByKey 호출");
-         return apiKeyRepository.findByKey(key);
-     }
+    public ApiKeyKeyDto findByKey(String key) {
+        log.info("findByKey 호출");
+        return apiKeyRepository.findByKey(key);
+    }
 
-	/**
-	 * Test Api Key 조회
-	 * @param companyIdx
-	 */
+    /**
+     * Test Api Key 조회
+     //	 * @param companyIdx
+     */
 //	public HashMap<String, Object> SelectTestApiKeyByCompanyIdx(int companyIdx) {
 //		HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //		paramMap.put("companyIdx", companyIdx);
@@ -216,10 +298,10 @@ public class ApiKeyService {
         return apiKeyRepository.findByTestApiKeyByCompanyIdx(companyIdx, 2);
     }
 
-	/**
-	 * Test Api Key 중복 조회
-	 * @param key
-	 */
+    /**
+     * Test Api Key 중복 조회
+     //	 * @param key
+     */
 //	public int SelectTestApiKeyDuplicateCount(String key) {
 //		return dao.SelectTestApiKeyDuplicateCount(key);
 //	}
@@ -228,10 +310,10 @@ public class ApiKeyService {
         return apiKeyRepository.findByTestApiKeyDuplicateCount(key, 2);
     }
 
-	/**
-	 * 일반 Api Key 조회
-	 * @param companyIdx
-	 */
+    /**
+     * 일반 Api Key 조회
+     //	 * @param companyIdx
+     */
 //	public HashMap<String, Object> SelectApiKeyByCompanyIdx(int companyIdx) {
 //		HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //		paramMap.put("companyIdx", companyIdx);
@@ -243,10 +325,10 @@ public class ApiKeyService {
         return apiKeyRepository.findByApiKeyByCompanyIdx(companyIdx, 1, "Y");
     }
 
-	/**
-	 * Api Key 중복 조회
-	 * @param key
-	 */
+    /**
+     * Api Key 중복 조회
+     //	 * @param key
+     */
 //	public int SelectApiKeyDuplicateCount(String key) {
 //		return dao.SelectApiKeyDuplicateCount(key);
 //	}
@@ -255,9 +337,9 @@ public class ApiKeyService {
         return apiKeyRepository.findByApiKeyDuplicateCount(key, 1);
     }
 
-	/**
-	 * 만료 예정인 Test API Key 리스트
-	 */
+    /**
+     * 만료 예정인 Test API Key 리스트
+     */
 //	public List<HashMap<String, Object>> SelectTestApiKeyExpiredList(HashMap<String, Object> paramMap) {
 //		return dao.SelectTestApiKeyExpiredList(paramMap);
 //	}
@@ -267,7 +349,7 @@ public class ApiKeyService {
     }
 
     // 검토필요
-	public static String keyGenerate(final int keyLen) throws NoSuchAlgorithmException {
+    public static String keyGenerate(final int keyLen) throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(keyLen);
         SecretKey secretKey = keyGen.generateKey();
@@ -276,9 +358,9 @@ public class ApiKeyService {
     }
 
 
-	/**
-	 * api key block 처리 - 결제 취소 시 사용
-	 */
+    /**
+     * api key block 처리 - 결제 취소 시 사용
+     */
 //	public void UpdateBlockKey(int companyIdx) {
 //		dao.UpdateBlockKey(companyIdx);
 //	}
@@ -298,9 +380,32 @@ public class ApiKeyService {
         apiKeyRepository.save(apiKey);
     }
 
-	/*
-	 * 사용중인 TEST API KEY가 존재한다면 만료처리
-	 */
+    @Transactional
+    public void updateBlockKey(Integer companyIdx, Integer activityHistoryIDX) {
+        log.info("updateBlockKey 호출");
+
+        ActivityCode activityCode = ActivityCode.AC_26; // 사용 차단
+        ActivityHistoryService activityHistoryService = null;
+
+        ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdxAndType(companyIdx,1)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
+        apiKey.setUseYn("N");
+
+        String businessNumber =  companyRepository.findById(companyIdx).get().getBusinessNumber();
+        try{
+            apiKeyRepository.save(apiKey);
+            activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                    businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
+        }catch(Exception e){
+            activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                    businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
+            e.getStackTrace();
+        }
+    }
+
+    /*
+     * 사용중인 TEST API KEY가 존재한다면 만료처리
+     */
 //	public void UpdateTestKeyExpire(int companyIdx) {
 //		dao.UpdateTestKeyExpire(companyIdx);
 //	}
@@ -337,9 +442,9 @@ public class ApiKeyService {
 
 
     /**
-	 * API KEY BLOCK, Send MAIL
-//	  @param companyIdx - 회사IDX
-	 */
+     * API KEY BLOCK, Send MAIL
+     //	  @param companyIdx - 회사IDX
+     */
 //	public void BlockApiByCompanyIdx(int companyIdx) {
 //		HashMap<String, Object> apiMap = new HashMap<String, Object>();
 //		apiMap.put("companyIdx", companyIdx);
@@ -356,6 +461,10 @@ public class ApiKeyService {
     // TODO apiKey 구성이 변경 될 수 있어서 (테스트키의 유무, 유효기한의 유뮤, 삭제여부 등등) 구성 후 로직 작성
     public ResponseEntity<Map<String,Object>> apiKeyManagement(String email, String userRole) {
         log.info("apiKeyManagement 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
         if(email == null){
             log.error("email을 값을 확인 할 수 없습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO067.getCode(), ResponseErrorCode.KO067.getDesc()));
@@ -407,6 +516,10 @@ public class ApiKeyService {
      */
     public ResponseEntity<Map<String, Object>> issue(String email, String userRole) throws NoSuchAlgorithmException {
         log.info("issue 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
         if(email == null){
             log.error("email 값을 확인 할 수 없습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO067.getCode(), ResponseErrorCode.KO067.getDesc()));
@@ -418,12 +531,28 @@ public class ApiKeyService {
             int companyIdx = admin.getCompanyIdx();
             String userName = admin.getName();
 
-            // 기존 등록 키가 있는지 확인.
-            ApiKeyListAndDetailDto apiKeyListAndDetailDto = findByApiKeyByCompanyIdx(companyIdx);
+            // TODO API KEY 발급이 시스템화 되는 것에 대해 논의중이므로 activity History 남기는 부분 주석 처리 (23.01.16. - 카드 등록 시 자동으로 키 발급의 건)
+            // 회사 정보 가져오기.
+//            AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+//            String businessNumber = adminCompanyInfoDto.getBusinessNumber();
+//
+//            ActivityCode activityCode = ActivityCode.AC_24; // "API KEY 발급"
+//            String ip = CommonUtil.clientIp();
+//            ActivityHistoryService activityHistoryService = null;
+
+            // TODO 23.01.16. - 카드 등록 시 자동으로 키 발급의 건
+            // "API KEY 발급 시도 이력", 비정상
+//            Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
+//                    , businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+
+            ApiKeyListAndDetailDto apiKeyListAndDetailDto = findByApiKeyByCompanyIdx(companyIdx); // 기존 등록 키가 있는지 확인.
             if(apiKeyListAndDetailDto != null) {
-                // TODO errorCode 등록
+                // TODO 23.01.16. - 카드 등록 시 자동으로 키 발급의 건
+                // "API KEY 발급 실패 이력", 정상
+//                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+//                        businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "이미 발급된 API KEY 존재.", 1);
                 log.error("이미 발급된 API Key가 존재합니다. 재발급을 진행해주세요.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO067.getCode(), ResponseErrorCode.KO067.getDesc()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO071.getCode(), ResponseErrorCode.KO071.getDesc()));
             }else {
                 // 키 생성
                 String key = keyGenerate(128);
@@ -439,7 +568,10 @@ public class ApiKeyService {
                     }
                 }
                 insertApiKey(adminIdx, companyIdx, userName, 1, 1, key, 1);
-                // TODO Activity History 활동 이력 남기기 - apk Key 발급
+                // TODO 23.01.16. - 카드 등록 시 자동으로 키 발급의 건
+                // "API KEY 발급 성공 이력", 정상
+//                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+//                        businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
 
                 return ResponseEntity.ok(res.success(data));
             }
@@ -453,6 +585,10 @@ public class ApiKeyService {
      */
     public ResponseEntity<Map<String, Object>> reIssue(String email, String userRole) throws NoSuchAlgorithmException {
         log.info("reIssue 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
         if(email == null){
             log.error("email 값을 확인 할 수 없습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO067.getCode(), ResponseErrorCode.KO067.getDesc()));
@@ -468,6 +604,18 @@ public class ApiKeyService {
                 int companyIdx = admin.getCompanyIdx();
                 String userName = admin.getName();
 
+                // 회사 정보 가져오기.
+                AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+                String businessNumber = adminCompanyInfoDto.getBusinessNumber();
+
+                ActivityCode activityCode = ActivityCode.AC_26; // 사용 차단
+                String ip = CommonUtil.clientIp();
+                ActivityHistoryService activityHistoryService = null;
+
+                // "API KEY 사용 차단 시도 이력", 비정상
+                Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
+                        , businessNumber +" - "+activityCode.getDesc()+" 시도 이력", "API KEY 재발급", ip, 0);
+
                 // 키 생성
                 String key = keyGenerate(128);
                 // 중복 여부 확인
@@ -481,18 +629,22 @@ public class ApiKeyService {
                         key =  keyGenerate(128);
                     }
                 }
-                // TODO apiKeyMapperDto 수정 (companyIdx 추가)에 대해서 woody에게 물어보기
-                ApiKeyMapperDto apiKeyMapperDto = new ApiKeyMapperDto();
-                apiKeyMapperDto.setUseYn("Y");
-                //apiKeyMapperDto.setCompanyIdx(companyIdx);
-                List<ApiKeyListAndDetailDto> apiKeys = findByApiKeyList(apiKeyMapperDto);
-                for(ApiKeyListAndDetailDto apiKey : apiKeys) {
-                    // TODO Activity History 활동 이력 남기기. - api Key block 처리
-                }
-                // API KEY BLOCK 처리
-                updateBlockKey(companyIdx);
-                insertApiKey(adminIdx, companyIdx, userName, 1, 2, key, 1);
-                // TODO Activity History 활동 이력 남기기 - api key 재발급
+
+//                api Key 하나 하나에 대해 로그를 남기기 위해 해당 회사의 apiKeys 조회하는 부분 제거
+//                ApiKeyMapperDto apiKeyMapperDto = new ApiKeyMapperDto();
+//                apiKeyMapperDto.setUseYn("Y");
+//                List<ApiKeyListAndDetailDto> apiKeys = findByApiKeyList(apiKeyMapperDto);
+
+                // 해당 회사에 속한 기 발행된 apiKey block 처리
+                updateBlockKey(companyIdx, activityHistoryIDX);
+
+                activityCode = ActivityCode.AC_25; // "API KEY 재발급"
+
+                // "API KEY 재발급 시도 이력", 비정상
+                activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
+                        , businessNumber +" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+
+                insertApiKey(adminIdx, companyIdx, userName, 1, 1, key, 1, activityHistoryIDX, activityCode);
                 return ResponseEntity.ok(res.success(data));
             }
         }
@@ -508,6 +660,10 @@ public class ApiKeyService {
      */
     public ResponseEntity<Map<String, Object>> modify(Integer idx, String useYn, String reason, String email, String userRole) {
         log.info("modify 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
         if(idx == null) {
             log.error("idx 값을 확인 할 수 없습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO051.getCode(), ResponseErrorCode.KO051.getDesc()));
@@ -518,11 +674,32 @@ public class ApiKeyService {
             // 이메일을 통해 계정 정보 가져오기.
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
-            int modifierIdx = admin.getIdx();
+            Integer modifierIdx = admin.getIdx();
             String userName = admin.getName();
 
-            updateApiKey(idx, useYn, reason, modifierIdx, userName);
-            // TODO activity History 남기기 - apkKey 블락, 언블락
+            Integer adminIdx = modifierIdx;
+            Integer companyIdx = admin.getCompanyIdx();
+
+            // 회사 정보 가져오기.
+            AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+            String businessNumber = adminCompanyInfoDto.getBusinessNumber();
+
+            ActivityCode activityCode= ActivityCode.AC_27; // 사용 차단 해제
+
+            if("Y".equals(useYn)){
+                activityCode= ActivityCode.AC_27; // 사용 차단 해제
+            }else{
+                activityCode = ActivityCode.AC_26; // 사용 차단
+            }
+
+            String ip = CommonUtil.clientIp();
+            ActivityHistoryService activityHistoryService = null;
+
+            // "API KEY 사용 차단(해제) 시도 이력", 비정상
+            Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
+                    , businessNumber +" - "+activityCode.getDesc()+" 시도 이력", "API KEY 수정 - "+reason, ip, 0);
+
+            updateApiKey(idx, useYn, reason, modifierIdx, userName, activityHistoryIDX, activityCode);
 
             return ResponseEntity.ok(res.success(data));
         }

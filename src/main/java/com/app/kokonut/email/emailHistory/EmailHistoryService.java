@@ -17,6 +17,7 @@ public class EmailHistoryService {
 
     /**
      * 이메일 발송 내역 저장
+     * @param emailHistoryDto 이메일 발송 정보
      */
     @Transactional
     public boolean saveEmailHistory(EmailHistoryDto emailHistoryDto) {

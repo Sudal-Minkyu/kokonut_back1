@@ -60,6 +60,13 @@ public class QnaService {
         this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
     }
 
+    /**
+     * 1:1문의 목록 조회
+     * @param userRole     사용자 권한
+     * @param email        사용자 이메일
+     * @param qnaSearchDto 1:1문의 검색 조건
+     * @param pageable     페이징 처리를 위한 정보
+     */
     public ResponseEntity<Map<String, Object>> qnaList(String userRole, String email, QnaSearchDto qnaSearchDto, Pageable pageable) {
         log.info("qnaList 호출");
         AjaxResponse res = new AjaxResponse();
@@ -74,7 +81,12 @@ public class QnaService {
         return ResponseEntity.ok(res.ResponseEntityPage(qnaListDtos));
     }
 
-    @Transactional
+    /**
+     * 1:1문의 상세 조회
+     * @param userRole  사용자 권한
+     * @param email     사용자 이메일
+     * @param idx       1:1문의 인덱스
+     */
     public ResponseEntity<Map<String, Object>> qnaDetail(String userRole, String email, Integer idx) {
         log.info("qnaDetail 호출");
         AjaxResponse res = new AjaxResponse();
@@ -99,7 +111,7 @@ public class QnaService {
                     return ResponseEntity.ok(res.success(data));
                 }else{
                     // 시스템 사용자가 아니면 본인이 작성한 문의글만 확인 가능.
-                    if(admin.getIdx() == qnaDetailDto.getAdminIdx()){
+                    if(admin.getIdx().equals(qnaDetailDto.getAdminIdx())){
                         // TODO 첨부 파일 목록 조회
                         log.info("1:1 문의 게시글 상세보기 조회 성공 : " + qnaDetailDto.getIdx() + ", " + qnaDetailDto.getContent());
                         data.put("qnaDetailDto",  qnaDetailDto);
@@ -112,6 +124,13 @@ public class QnaService {
             }
         }
     }
+
+    /**
+     * 1:1문의 질문 등록
+     * @param userRole  사용자 권한
+     * @param email     사용자 이메일
+     * @param qnaQuestionSaveDto 1:1문의 질문 정보
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> questionSave(String userRole, String email, QnaQuestionSaveDto qnaQuestionSaveDto, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("questionSave 호출");
@@ -216,6 +235,13 @@ public class QnaService {
             return ResponseEntity.ok(res.success(data));
         }
     }
+
+    /**
+     * 1:1문의 답변 등록
+     * @param userRole  사용자 권한
+     * @param email     사용자 이메일
+     * @param qnaAnswerSaveDto 1:1문의 답변 정보
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> answerSave(String userRole, String email, QnaAnswerSaveDto qnaAnswerSaveDto) throws IOException {
         log.info("answerSave 호출");
@@ -270,5 +296,5 @@ public class QnaService {
             }
             return ResponseEntity.ok(res.success(data));
         }
-    };
+    }
 }

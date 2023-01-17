@@ -58,6 +58,7 @@ public class EmailService {
 
     /**
      * 이메일 목록 조회
+     * @param pageable 페이징 처리를 위한 정보
      */
     public ResponseEntity<Map<String,Object>> emailList(Pageable pageable){
         log.info("### emailList 호출");
@@ -70,6 +71,8 @@ public class EmailService {
 
     /**
      * 이메일 보내기
+     * @param email 페이징 처리를 위한 정보
+     * @param emailDetailDto 이메일 내용
      */
     @Transactional
     public ResponseEntity<Map<String,Object>> sendEmail(String email, EmailDetailDto emailDetailDto){
@@ -244,6 +247,7 @@ public class EmailService {
 
     /**
      * 이메일 발송 대상 목록 조회하기
+     * @param pageable 페이징 처리를 위한 정보
      */
     public ResponseEntity<Map<String, Object>> emailTargetGroupList(Pageable pageable) {
         log.info("### emailTargetGroupList 호출");

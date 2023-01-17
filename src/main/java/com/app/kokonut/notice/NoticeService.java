@@ -36,6 +36,12 @@ public class NoticeService {
         this.adminRepository = adminRepository;
     }
 
+    /**
+     * 공지사항 목록 조회
+     * @param userRole        사용자 권한
+     * @param noticeSearchDto 공지사항 검색 조건
+     * @param pageable        페이징 처리를 위한 정보
+     */
     public ResponseEntity<Map<String, Object>> noticeList(String userRole, NoticeSearchDto noticeSearchDto, Pageable pageable) {
         log.info("noticeList 호출, userRole : "+ userRole);
         AjaxResponse res = new AjaxResponse();
@@ -49,11 +55,20 @@ public class NoticeService {
             return ResponseEntity.ok(res.ResponseEntityPage(noticeListDtos));
         }
     }
+
+    /**
+     * 공지사항 상세 조회
+     * @param userRole 사용자 권한
+     * @param idx      공지사항 인덱스
+     */
     public ResponseEntity<Map<String, Object>> noticeDetail(String userRole, Integer idx) {
         log.info("noticeDetail 호출, userRole" + userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        if("[SYSTEM]".equals(userRole)){
+        if(!"[SYSTEM]".equals(userRole)){
+            log.error("접근 권한이 없습니다. userRole : " + userRole);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
+        }else{
             if(idx != null){
                 log.info("공지사항 상세 조회, idx : " + idx);
                 NoticeDetailDto noticeDetailDto = noticeRepository.findNoticeByIdx(idx);
@@ -76,18 +91,24 @@ public class NoticeService {
                 log.error("idx 값을 확인 할 수 없습니다.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO047.getCode(), ResponseErrorCode.KO047.getDesc()));
             }
-        }else{
-            log.error("접근 권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
+    /**
+     * 공지사항 저장
+     * @param userRole 사용자 권한
+     * @param email    사용자 이메일
+     * @param noticeDetailDto 공지사항 상세 내용
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> noticeSave(String userRole, String email, NoticeDetailDto noticeDetailDto) {
         log.info("noticeSave 호출, userRole : "+ userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        if("[SYSTEM]".equals(userRole)){
+        if(!"[SYSTEM]".equals(userRole)){
+            log.error("접근권한이 없습니다. userRole : " + userRole);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
+        }else{
             // 접속 정보에서 관리자 정보 가져오기, idx, name
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
@@ -145,18 +166,24 @@ public class NoticeService {
                 }
             }
             return ResponseEntity.ok(res.success(data));
-        }else{
-            log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
+    /**
+     * 공지사항 삭제
+     * @param userRole 사용자 권한
+     * @param email    사용자 이메일
+     * @param idx      공지사항 인덱스
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> noticeDelete(String userRole, String email, Integer idx) {
         log.info("noticeDelete 호출, userRole : " +userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        if("[SYSTEM]".equals(userRole)){
+        if(!"[SYSTEM]".equals(userRole)){
+            log.error("접근권한이 없습니다. userRole : " + userRole);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
+        }else {
             if(idx != null){
                 log.info("공지사항 삭제 시작.");
                 noticeRepository.deleteById(idx);
@@ -166,19 +193,28 @@ public class NoticeService {
                 log.error("idx 값을 확인 할 수 없습니다.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO047.getCode(), ResponseErrorCode.KO047.getDesc()));
             }
-        }else {
-            log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
+    /**
+     * 공지사항 상태 변경
+     * @param userRole 사용자 권한
+     * @param email    사용자 이메일
+     * @param noticeStateDto 공지사항 상태값 정보
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> noticeState(String userRole, String email, NoticeStateDto noticeStateDto) {
         log.info("noticeDelete 호출, userRole : " +userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        if("[SYSTEM]".equals(userRole)){
-            if(noticeStateDto.getIdx() != null){
+        if(!"[SYSTEM]".equals(userRole)){
+            log.error("접근권한이 없습니다. userRole : " + userRole);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
+        }else {
+            if(noticeStateDto.getIdx() == null){
+                log.error("idx 값을 확인 할 수 없습니다.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO047.getCode(), ResponseErrorCode.KO047.getDesc()));
+            }else{
                 log.info("공지사항 상태변경 시작.");
                 Notice notice = noticeRepository.findById(noticeStateDto.getIdx())
                         .orElseThrow(() -> new UsernameNotFoundException("해당하는 공지사항을 찾을 수 없습니다. : "+noticeStateDto.getIdx()));
@@ -194,13 +230,7 @@ public class NoticeService {
                 noticeRepository.save(notice);
                 log.info("공지사항 상태변경 완료.");
                 return ResponseEntity.ok(res.success(data));
-            }else{
-                log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO047.getCode(), ResponseErrorCode.KO047.getDesc()));
             }
-        }else {
-            log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 }

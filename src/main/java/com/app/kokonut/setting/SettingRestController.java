@@ -2,6 +2,7 @@ package com.app.kokonut.setting;
 
 
 import com.app.kokonut.auth.jwt.SecurityUtil;
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.setting.dto.SettingDetailDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -24,7 +25,7 @@ import java.util.Map;
 @Api(tags = "")
 @Validated
 @RestController
-@RequestMapping("api/Setting")
+@RequestMapping("/v2/api/Setting")
 public class SettingRestController {
 
     /* 기존 컨트롤러
@@ -44,20 +45,24 @@ public class SettingRestController {
 
     @ApiOperation(value="관리자 환경설정 조회", notes="관리자 환경설정 상세 조회")
     @PostMapping("/settingDetail") // -> 기존의 코코넛 호출 메서드명 : settingsUI, settingsUI - SystemSettingController, MemberSettingController
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+    })
     public ResponseEntity<Map<String,Object>> settingDetail(){
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        return settingService.settingDetail(userRole, email);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return settingService.settingDetail(jwtFilterDto.getRole(), jwtFilterDto.getEmail());
     }
 
     @ApiOperation(value="관리자 환경설정 저장", notes="관리자 환경설정 저장")
     @PostMapping("/settingSave") // -> 기존의 코코넛 호출 메서드명 : /save - MemberSettingController
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+    })
     public ResponseEntity<Map<String,Object>> settingSave(SettingDetailDto settingDetailDto){
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        String email = SecurityUtil.getCurrentJwt().getEmail();
-        return settingService.settingSave(userRole, email, settingDetailDto);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return settingService.settingSave(jwtFilterDto.getRole(), jwtFilterDto.getEmail(), settingDetailDto);
     }
 
 //    @ApiOperation(value="관리자 환경설정 삭제", notes="관리자 환경설정 전체 삭제")

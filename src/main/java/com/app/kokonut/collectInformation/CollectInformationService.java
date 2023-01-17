@@ -45,6 +45,10 @@ public class CollectInformationService {
 
     /**
      * 개인정보처리방침 목록 조회
+     * @param userRole  사용자 권한
+     * @param email     사용자 이메일
+     * @param collectInfoSearchDto 검색조건
+     * @param pageable 페이징 처리를 위한 정보
      */
     public ResponseEntity<Map<String, Object>> collectInfoList(String userRole, String email, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
         log.info("collectInfoList 호출, userRole : " + userRole);
@@ -69,6 +73,8 @@ public class CollectInformationService {
 
     /**
      * 개인정보처리방침 조회
+     * @param userRole  사용자 권한
+     * @param idx       개인정보처리방침 인덱스
      */
     public ResponseEntity<Map<String,Object>> collectInfoDetail(String userRole, Integer idx) {
         log.info("collectInfoDetail 호출, userRole : " + userRole);
@@ -103,6 +109,9 @@ public class CollectInformationService {
 
     /**
      * 개인정보처리방침 저장, 수정
+     * @param userRole  사용자 권한
+     * @param email     사용자 이메일
+     * @param collectInfoDetailDto 개인정보처리방침 내용
      */
     @Transactional
     public ResponseEntity<Map<String, Object>> collectInfoSave(String userRole, String email, CollectInfoDetailDto collectInfoDetailDto) {
@@ -187,6 +196,9 @@ public class CollectInformationService {
 
     /**
      * 개인정보처리방침 삭제
+     * @param userRole  사용자 권한
+     * @param email     사용자 이메일
+     * @param idx       개인정보처리방침 인덱스
      */
     @Transactional
     public ResponseEntity<Map<String, Object>> collectInfoDelete(String userRole, String email, Integer idx) {
