@@ -145,9 +145,9 @@ public class ApiKeyService {
             activityHistoryService.updateActivityHistory(activityHistoryIDX,
                     businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
         }catch(Exception e){
-            e.getStackTrace();
             activityHistoryService.updateActivityHistory(activityHistoryIDX,
                     businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
+            e.getStackTrace();
         }
 
         return apiKeyRepository.save(apiKey).getIdx();
@@ -211,9 +211,9 @@ public class ApiKeyService {
             activityHistoryService.updateActivityHistory(activityHistoryIDX,
                     businessNumber+" - "+activityCode.getDesc()+" 성공 이력", reason, 1);
         }catch(Exception e){
-            e.getStackTrace();
             activityHistoryService.updateActivityHistory(activityHistoryIDX,
                     businessNumber+" - "+activityCode.getDesc()+" 실패 이력", reason, 1);
+            e.getStackTrace();
         }
 
     }
@@ -528,7 +528,7 @@ public class ApiKeyService {
             int companyIdx = admin.getCompanyIdx();
             String userName = admin.getName();
 
-            // TODO API KEY 발급이 시스템화 되는 것에 대해 논의중이므로 아래 부분 주석 처리 (23.01.16. - 카드 등록 시 자동으로 키 발급의 건)
+            // TODO API KEY 발급이 시스템화 되는 것에 대해 논의중이므로 activity History 남기는 부분 주석 처리 (23.01.16. - 카드 등록 시 자동으로 키 발급의 건)
             // 회사 정보 가져오기.
 //            AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 //            String businessNumber = adminCompanyInfoDto.getBusinessNumber();
@@ -537,14 +537,14 @@ public class ApiKeyService {
 //            String ip = CommonUtil.clientIp();
 //            ActivityHistoryService activityHistoryService = null;
 
-            // TODO (23.01.16. - 카드 등록 시 자동으로 키 발급의 건)
+            // TODO 23.01.16. - 카드 등록 시 자동으로 키 발급의 건
             // "API KEY 발급 시도 이력", 비정상
 //            Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
 //                    , businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
 
             ApiKeyListAndDetailDto apiKeyListAndDetailDto = findByApiKeyByCompanyIdx(companyIdx); // 기존 등록 키가 있는지 확인.
             if(apiKeyListAndDetailDto != null) {
-                // TODO (23.01.16. - 카드 등록 시 자동으로 키 발급의 건)
+                // TODO 23.01.16. - 카드 등록 시 자동으로 키 발급의 건
                 // "API KEY 발급 실패 이력", 정상
 //                activityHistoryService.updateActivityHistory(activityHistoryIDX,
 //                        businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "이미 발급된 API KEY 존재.", 1);
@@ -565,7 +565,7 @@ public class ApiKeyService {
                     }
                 }
                 insertApiKey(adminIdx, companyIdx, userName, 1, 1, key, 1);
-                // TODO (23.01.16. - 카드 등록 시 자동으로 키 발급의 건)
+                // TODO 23.01.16. - 카드 등록 시 자동으로 키 발급의 건
                 // "API KEY 발급 성공 이력", 정상
 //                activityHistoryService.updateActivityHistory(activityHistoryIDX,
 //                        businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
