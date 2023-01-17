@@ -1,7 +1,7 @@
 package com.app.kokonutuser;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonutuser.dtos.KokonutColumSaveDto;
 import com.app.kokonutuser.dtos.KokonutColumUpdateDto;
 import com.app.kokonutuser.dtos.KokonutUserSearchDto;
@@ -11,15 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

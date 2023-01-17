@@ -1,8 +1,8 @@
 package com.app.kokonut.personalInfoProvision.service;
 
-import com.app.kokonut.refactor.personalInfoProvision.dto.PersonalInfoProvisionListDto;
-import com.app.kokonut.refactor.personalInfoProvision.dto.PersonalInfoProvisionMapperDto;
-import com.app.kokonut.refactor.personalInfoProvision.service.PersonalInfoProvisionService;
+import com.app.kokonut.personalInfoProvision.PersonalInfoProvisionService;
+import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionListDto;
+import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionMapperDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

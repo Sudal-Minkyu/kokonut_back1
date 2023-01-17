@@ -1,6 +1,6 @@
 package com.app.kokonut.notice;
 
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.notice.dto.NoticeDetailDto;
 import com.app.kokonut.notice.dto.NoticeSearchDto;
 import com.app.kokonut.notice.dto.NoticeStateDto;
@@ -24,7 +24,7 @@ import java.util.Map;
 @Api(tags = "")
 @Validated
 @RestController
-@RequestMapping("/api/Notice")
+@RequestMapping("/v2/api/Notice")
 public class NoticeRestController {
     /* 기존 컨트롤러
      * SystemNoticeController  "/system/notice"

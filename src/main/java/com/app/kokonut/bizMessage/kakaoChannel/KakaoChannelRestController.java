@@ -1,7 +1,7 @@
 package com.app.kokonut.bizMessage.kakaoChannel;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelSearchDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/KakaoChannel")
+@RequestMapping("/v2/api/KakaoChannel")
 public class KakaoChannelRestController {
 
     private final KakaoChannelService kakaoChannelService;

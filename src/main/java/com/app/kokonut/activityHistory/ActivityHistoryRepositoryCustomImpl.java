@@ -1,7 +1,6 @@
 package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.*;
-import com.app.kokonut.woody.been.Column;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;

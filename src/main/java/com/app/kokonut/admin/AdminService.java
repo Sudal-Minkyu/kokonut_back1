@@ -1,9 +1,8 @@
 package com.app.kokonut.admin;
 
 import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
-import com.app.kokonut.woody.common.AjaxResponse;
-import com.app.kokonut.woody.common.ResponseErrorCode;
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

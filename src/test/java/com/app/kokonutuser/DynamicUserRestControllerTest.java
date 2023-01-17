@@ -4,7 +4,7 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.enums.AuthorityRole;
 import com.app.kokonut.auth.AuthService;
-import com.app.kokonut.auth.jwt.config.GoogleOTP;
+import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;

@@ -1,9 +1,8 @@
 package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.*;
+import com.app.kokonut.configs.ExcelService;
 import com.app.kokonut.downloadHistory.DownloadHistoryRepository;
-import com.app.kokonut.woody.been.Column;
-import com.app.kokonut.woody.excel.ExcelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -107,7 +106,7 @@ public class ActivityHistoryService {
 
     /**
      * 활동내역 insert
-     * @param type - 1:고객정보처리, 2:관리자활동, 3:회원DB관리이력
+     * @param type - 1:고객정보처리, 2:관리자활동, 3:회원DB관리이력, 4:정보제공이력
      * @param companyIdx
      * @param activityCode
      * @param activityDetail - 활동상세내역

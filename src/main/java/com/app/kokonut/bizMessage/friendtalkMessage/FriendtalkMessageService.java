@@ -6,9 +6,9 @@ import com.app.kokonut.bizMessage.friendtalkMessage.friendtalkMessageRecipient.F
 import com.app.kokonut.bizMessage.friendtalkMessage.friendtalkMessageRecipient.FriendtalkMessageRecipientRepository;
 import com.app.kokonut.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
-import com.app.kokonut.woody.common.AjaxResponse;
-import com.app.kokonut.woody.common.ResponseErrorCode;
-import com.app.kokonut.woody.common.component.Utils;
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
+import com.app.kokonut.common.component.Utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
