@@ -1,6 +1,9 @@
 package com.app.kokonut.collectInformation;
 
+import com.app.kokonut.activityHistory.ActivityHistoryService;
+import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.collectInformation.dto.CollectInfoDetailDto;
 import com.app.kokonut.collectInformation.dto.CollectInfoListDto;
@@ -9,6 +12,7 @@ import com.app.kokonut.collectInformation.entity.CollectInformation;
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.woody.common.AjaxResponse;
 import com.app.kokonut.woody.common.ResponseErrorCode;
+import com.app.kokonut.woody.common.component.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,25 +48,52 @@ public class CollectInformationService {
         this.companyRepository = companyRepository;
     }
 
+    /**
+     * 개인정보처리방침 목록 조회
+     */
     public ResponseEntity<Map<String, Object>> collectInfoList(String userRole, String email, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
         log.info("collectInfoList 호출, userRole : " + userRole);
-        // 접속정보에서 companyIdx 가져오기
+        // 접속정보에서 필요한 정보 가져오기.
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
-        // TODO 메뉴 권한에 대한 체크 부분
-        if ("[MASTER]".equals(userRole) || "[ADMIN]".equals(userRole)) {
-            Integer companyIdx = admin.getCompanyIdx();
-            log.info("개인정보 수집 및 이용 안내 목록 조회");
-            Page<CollectInfoListDto> collectInfoListDtos = collectInfoRepository.findCollectInfoPage(companyIdx, collectInfoSearchDto, pageable);
-            return ResponseEntity.ok(res.ResponseEntityPage(collectInfoListDtos));
-        } else {
-            log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
+        AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+
+        Integer adminIdx;
+        Integer companyIdx;
+        String businessNumber;
+
+        if(adminCompanyInfoDto == null){
+            log.error("회사 정보를 조회할 수 없습니다. email : " + email);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO002.getCode(), "회사 정보를 "+ResponseErrorCode.KO002.getDesc()));
+        }else{
+            adminIdx = admin.getIdx();
+            companyIdx = adminCompanyInfoDto.getCompanyIdx();
+            businessNumber = adminCompanyInfoDto.getBusinessNumber();
+            ActivityCode activityCode = ActivityCode.AC_28; // 개인정보처리방침 조회 요청 코드 "개인정보 처리방침 이력 추가"
+
+            // 개인정보처리방침 조회 -> 비정상 모드
+            String ip = CommonUtil.clientIp();
+            ActivityHistoryService activityHistoryService = null;
+            Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode,
+                    businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+            // TODO 메뉴 권한에 대한 체크는 프론트 단에서 진행하기로 함.
+            if (!"[MASTER]".equals(userRole) && !"[ADMIN]".equals(userRole)) {
+                log.error("접근권한이 없습니다. userRole : " + userRole);
+                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                        businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
+            } else {
+                log.info("개인정보 수집 및 이용 안내 목록 조회");
+                Page<CollectInfoListDto> collectInfoListDtos = collectInfoRepository.findCollectInfoPage(companyIdx, collectInfoSearchDto, pageable);
+                activityHistoryService.updateActivityHistory(activityHistoryIDX,
+                        businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
+                return ResponseEntity.ok(res.ResponseEntityPage(collectInfoListDtos));
+            }
         }
     }
     public ResponseEntity<Map<String,Object>> collectInfoDetail(String userRole, Integer idx) {
         log.info("collectInfoDetail 호출, userRole : " + userRole);
-        // TODO 메뉴 권한에 대한 체크 부분
+        // TODO 메뉴 권한에 대한 체크 부분은 프론트 단에서 진행하기로 함.
         if("[MASTER]".equals(userRole) || "[ADMIN]".equals(userRole)){
             if(idx != null){
                 log.info("개인정보 수집 및 이용 안내 상세 조회, idx : " + idx);
@@ -90,7 +121,13 @@ public class CollectInformationService {
     @Transactional
     public ResponseEntity<Map<String, Object>> collectInfoSave(String userRole, String email, CollectInfoDetailDto collectInfoDetailDto) {
         log.info("collectInfoSave 호출, userRole : " + userRole);
-        // TODO 메뉴 권한에 대한 체크 부분
+
+        // 접속정보에서 필요한 정보 가져오기.
+        Admin admin = adminRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
+        AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
+
+        // TODO 메뉴 권한에 대한 체크 부분은 프론트 단에서 진행하기로 함.
         if("[MASTER]".equals(userRole) || "[ADMIN]".equals(userRole)){
             // 접속 정보에서 관리자 정보 가져오기, idx, name
             Admin admin = adminRepository.findByEmail(email)
@@ -142,12 +179,11 @@ public class CollectInformationService {
     @Transactional
     public ResponseEntity<Map<String, Object>> collectInfoDelete(String userRole, String email, Integer idx) {
         log.info("collectInfoDelete 호출, userRole : " + userRole);
-        // TODO 메뉴 권한에 대한 체크 부분
+        // TODO 메뉴 권한에 대한 체크 부분은 프론트 단에서 진행하기로 함.
         if("[MASTER]".equals(userRole) || "[ADMIN]".equals(userRole)){
             if(idx != null){
                 log.info("개인정보 수집 및 이용 안내 삭제 시작.");
                 collectInfoRepository.deleteById(idx);
-                // TODO 삭제 여부 체크. 테스트 코드 확인 후 다른 삭제 로직에도 추가할 것.
                 if(!collectInfoRepository.existsById(idx)){
                     log.info("개인정보 수집 및 이용 안내 삭제 완료. idx : "+idx);
                     data.put("idx",  idx);

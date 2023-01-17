@@ -35,6 +35,9 @@ public enum ActivityCode {
     AC_25("AC_25", "API KEY 재발급"),
     AC_26("AC_26", "API KEY 사용 차단"),
     AC_27("AC_27", "API KEY 사용 차단 해제"),
+    AC_28("AC_28", "개인정보 처리방침 추가"),
+    AC_29("AC_29", "개인정보 처리방침 삭제"),
+    AC_30("AC_30", "개인정보 처리방침 수정"),
     ;
     
     private final String code;
