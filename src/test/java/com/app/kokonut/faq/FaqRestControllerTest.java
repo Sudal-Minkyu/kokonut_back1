@@ -4,7 +4,7 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.enums.AuthorityRole;
 import com.app.kokonut.auth.AuthService;
-import com.app.kokonut.auth.jwt.config.GoogleOTP;
+import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;
@@ -28,18 +28,13 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import javax.servlet.annotation.MultipartConfig;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class FaqRestControllerTest {

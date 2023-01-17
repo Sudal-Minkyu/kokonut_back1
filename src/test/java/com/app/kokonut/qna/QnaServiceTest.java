@@ -3,7 +3,6 @@ package com.app.kokonut.qna;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.entity.enums.AuthorityRole;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
 import com.app.kokonut.qna.dto.QnaAnswerSaveDto;
 import com.app.kokonut.qna.dto.QnaQuestionSaveDto;
 import com.app.kokonut.qna.dto.QnaSearchDto;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 @SpringBootTest
 class QnaServiceTest {

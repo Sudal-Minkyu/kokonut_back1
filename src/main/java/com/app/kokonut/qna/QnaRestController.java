@@ -1,6 +1,6 @@
 package com.app.kokonut.qna;
 
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.qna.dto.QnaAnswerSaveDto;
 import com.app.kokonut.qna.dto.QnaQuestionSaveDto;
 import com.app.kokonut.qna.dto.QnaSearchDto;
@@ -24,7 +24,7 @@ import java.util.Map;
 @Api(tags = "")
 @Validated
 @RestController
-@RequestMapping("/api/Qna")
+@RequestMapping("/v2/api/Qna")
 public class QnaRestController {
     // 기존 코코넛 SystemQnaController 컨트롤러 리팩토링
     // 기존 url : /system/qna , 변경 url : /api/Qna

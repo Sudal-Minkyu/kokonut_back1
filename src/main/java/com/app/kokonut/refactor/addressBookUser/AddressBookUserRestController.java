@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/AddressBookUser")
+@RequestMapping("/v2/api/AddressBookUser")
 public class AddressBookUserRestController {
 
     private final AddressBookUserService addressBookUserService;

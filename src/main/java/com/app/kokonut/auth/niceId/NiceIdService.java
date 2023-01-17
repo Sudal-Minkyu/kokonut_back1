@@ -1,11 +1,10 @@
 package com.app.kokonut.auth.niceId;
 
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.component.AriaUtil;
+import com.app.kokonut.common.component.CommonUtil;
 import com.app.kokonut.keydata.KeyDataService;
-import com.app.kokonut.keydata.dtos.KeyDataNCLOUDDto;
 import com.app.kokonut.keydata.dtos.KeyDataNICEDto;
-import com.app.kokonut.woody.common.AjaxResponse;
-import com.app.kokonut.woody.common.component.AriaUtil;
-import com.app.kokonut.woody.common.component.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+;
 
 @Slf4j
 @Service

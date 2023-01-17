@@ -1,7 +1,7 @@
 package com.app.kokonut.totalDBDownload;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadSearchDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -22,7 +22,7 @@ import java.util.Map;
  * Remark : 회원 DB 데이터 다운로드 요청 관련 API RestController
  */
 @Slf4j
-@RequestMapping("/api/TotalDbDownload")
+@RequestMapping("/v2/api/TotalDbDownload")
 @RestController
 public class TotalDbDownloadRestController {
 
@@ -59,11 +59,11 @@ public class TotalDbDownloadRestController {
     // 개인정보 DB 데이터 다운로드 시작 - 기존코코넛 메서드 : /member/totalDbDownload/download
     @PostMapping(value = "/userDbDataDownloadStart")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+//            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+//            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public void userDbDataDownloadStart(@RequestParam(name="idx", defaultValue = "") Integer idx, HttpServletRequest request, HttpServletResponse response) {
-        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+//        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         totalDbDownloadService.userDbDataDownloadStart(idx, "woody2@kokonut.me", request, response);
     }
 

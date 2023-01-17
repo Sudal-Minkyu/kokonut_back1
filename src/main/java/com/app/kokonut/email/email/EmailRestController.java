@@ -1,7 +1,7 @@
 package com.app.kokonut.email.email;
 
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.email.email.dto.EmailDetailDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/Email")
+@RequestMapping("/v2/api/Email")
 public class EmailRestController {
     // 기존 코코넛 SystemEmailController 컨트롤러 리팩토링
     // 기존 url : /system/email , 변경 url : /api/Email

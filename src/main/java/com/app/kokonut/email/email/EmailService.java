@@ -13,11 +13,11 @@ import com.app.kokonut.email.emailGroup.EmailGroupRepository;
 import com.app.kokonut.email.emailGroup.dto.EmailGroupAdminInfoDto;
 import com.app.kokonut.email.emailGroup.dto.EmailGroupListDto;
 import com.app.kokonut.email.emailGroup.entity.EmailGroup;
-import com.app.kokonut.joy.email.MailSender;
-import com.app.kokonut.woody.common.AjaxResponse;
-import com.app.kokonut.woody.common.ResponseErrorCode;
+import com.app.kokonut.configs.MailSender;
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
 
-import com.app.kokonut.joy.common.component.ReqUtils;
+import com.app.kokonut.common.component.ReqUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

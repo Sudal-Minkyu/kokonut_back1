@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/AddressBook")
+@RequestMapping("/v2/api/AddressBook")
 public class AddressBookRestController {
 
     @Value("${kokonut.mail.host}")

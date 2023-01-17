@@ -4,7 +4,7 @@
 //import com.app.kokonut.activity.dto.ActivityListDto;
 //import com.app.kokonut.activity.Activity;
 //import com.app.kokonut.activity.ActivityService;
-//import com.app.kokonut.woody.common.AjaxResponse;
+//import com.app.kokonut.common.AjaxResponse;
 //import io.swagger.annotations.ApiOperation;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@
 //@Slf4j
 //@RestController
 //@Secured("ROLE_SYSTEM")
-//@RequestMapping("/api/activity")
+//@RequestMapping("/v2/api/activity")
 //public class ActivityRestController {
 //
 //    private final ActivityService activityService;

@@ -2,10 +2,9 @@ package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.ActivityHistoryListDto;
 import com.app.kokonut.activityHistory.dto.ActivityHistorySearchDto;
-import com.app.kokonut.woody.been.ApiKeyInfo;
-import com.app.kokonut.woody.common.AjaxResponse;
-import com.app.kokonut.woody.common.ResponseErrorCode;
-import com.app.kokonut.woody.excel.ExcelService;
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/activityHistory")
+@RequestMapping("/v2/api/activityHistory")
 public class ActivityHistoryRestController {
 
     private final ActivityHistoryService activityHistoryService;
@@ -56,8 +55,8 @@ public class ActivityHistoryRestController {
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-        ApiKeyInfo apiKeyInfo = (ApiKeyInfo)request.getAttribute("apiKeyInfo");
-        log.info("apiKeyInfo : "+apiKeyInfo);
+//        ApiKeyInfo apiKeyInfo = (ApiKeyInfo)request.getAttribute("apiKeyInfo");
+//        log.info("apiKeyInfo : "+apiKeyInfo);
 
 //        final Integer API_KEY_IDX = apiKeyInfo.getIdx();
 //        log.info("API_KEY_IDX : "+API_KEY_IDX);

@@ -7,7 +7,7 @@ import com.app.kokonut.email.email.dto.EmailDetailDto;
 import com.app.kokonut.email.email.entity.Email;
 import com.app.kokonut.email.emailGroup.EmailGroupRepository;
 import com.app.kokonut.email.emailGroup.EmailGroupService;
-import com.app.kokonut.woody.common.ResponseErrorCode;
+import com.app.kokonut.common.ResponseErrorCode;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

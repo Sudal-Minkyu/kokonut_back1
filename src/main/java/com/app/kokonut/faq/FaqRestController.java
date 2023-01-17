@@ -1,6 +1,6 @@
 package com.app.kokonut.faq;
 
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.faq.dto.FaqDetailDto;
 import com.app.kokonut.faq.dto.FaqSearchDto;
 import io.swagger.annotations.Api;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Api(tags = "")
 @Validated
 @RestController
-@RequestMapping("/api/Faq")
+@RequestMapping("/v2/api/Faq")
 public class FaqRestController {
     // 기존 코코넛 SystemFaqController 컨트롤러 리팩토링
     // 기존 url : /system/faq , 변경 url : /api/Faq

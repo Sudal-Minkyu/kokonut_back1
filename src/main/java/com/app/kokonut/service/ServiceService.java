@@ -1,7 +1,7 @@
 package com.app.kokonut.service;
 
-import com.app.kokonut.woody.common.AjaxResponse;
-import com.app.kokonut.woody.common.ResponseErrorCode;
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
