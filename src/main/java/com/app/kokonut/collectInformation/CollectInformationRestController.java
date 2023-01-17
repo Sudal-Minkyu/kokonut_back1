@@ -1,6 +1,6 @@
 package com.app.kokonut.collectInformation;
 
-import com.app.kokonut.auth.jwt.util.SecurityUtil;
+import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.collectInformation.dto.CollectInfoDetailDto;
 import com.app.kokonut.collectInformation.dto.CollectInfoSearchDto;
 import io.swagger.annotations.ApiImplicitParam;
@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @Validated
 @RestController
-@RequestMapping("/api/CollectInfomation")
+@RequestMapping("v2/api/CollectInfomation")
 public class CollectInformationRestController {
     /* 기존 컨트롤러
      * MemberCollectInformationControlle  "/member/collectInformation"
