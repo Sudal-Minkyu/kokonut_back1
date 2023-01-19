@@ -1,9 +1,9 @@
 package com.app.kokonut.qna;
 
-import com.app.kokonut.qna.dto.QnaDetailDto;
-import com.app.kokonut.qna.dto.QnaListDto;
-import com.app.kokonut.qna.dto.QnaSchedulerDto;
-import com.app.kokonut.qna.dto.QnaSearchDto;
+import com.app.kokonut.qna.dtos.QnaDetailDto;
+import com.app.kokonut.qna.dtos.QnaListDto;
+import com.app.kokonut.qna.dtos.QnaSchedulerDto;
+import com.app.kokonut.qna.dtos.QnaSearchDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

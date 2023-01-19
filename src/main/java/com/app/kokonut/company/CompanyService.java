@@ -68,8 +68,8 @@ public class CompanyService {
 //    /**
 //     * 회사정보 등록자 update -> jpa save 활용
 //     */
-//    public void UpdateAdminIdxOfCompany(HashMap<String, Object> paramMap) {
-//        dao.UpdateAdminIdxOfCompany(paramMap);
+//    public void UpdateadminIdOfCompany(HashMap<String, Object> paramMap) {
+//        dao.UpdateadminIdOfCompany(paramMap);
 //    }
 
     /**
@@ -100,30 +100,30 @@ public class CompanyService {
 
     /**
      * 회사 암호화 키 조회 및 업데이트
-     * @param companyIdx
-     * @return 암호화 키(DATA_KEY)
+     * @param companyId
+     * @return companyId 키(DATA_KEY)
      * Remark 기존 코코넛 메서드 명 : SelectCompanyEncryptKey
      * ENCRYPT_TEXT, DATA_KEY 복호화후 재등록하고,
      * 최종적으로 복호화한 DATA_KEY를 전달하는 메서드
      */
     @Transactional
-    public String selectCompanyEncryptKey(Integer companyIdx) {
+    public String selectCompanyEncryptKey(Long companyId) {
 
-        Optional<Company> optionalCompany = companyRepository.findById(companyIdx);
+        Optional<Company> optionalCompany = companyRepository.findById(companyId);
 
         if(optionalCompany.isPresent()){
-            if(optionalCompany.get().getEncryptText() == null) {
+            if(optionalCompany.get().getCompanyEncryptText() == null) {
                 log.error("해당 기업의 encryptText 데이터가 존재하지 않습니다.");
                 return null;
             }
 
-            if(optionalCompany.get().getDataKey() == null) {
+            if(optionalCompany.get().getCompanyDataKey() == null) {
                 log.error("해당 기업의 dataKey 데이터가 존재하지 않습니다.");
                 return null;
             }
 
-            String encrpyText = optionalCompany.get().getEncryptText();
-            String dataKey = optionalCompany.get().getDataKey();
+            String encrpyText = optionalCompany.get().getCompanyEncryptText();
+            String dataKey = optionalCompany.get().getCompanyDataKey();
             AwsKmsResultDto awsKmsResultDto = awsKmsUtil.decrypt(encrpyText, dataKey);
 
             if(awsKmsResultDto.getResult().equals("success")){
@@ -134,8 +134,8 @@ public class CompanyService {
                 AwsKmsResultDto enc = awsKmsUtil.encrypt(decryptText);
                 if(enc.getResult().equals("success")) {
                     log.info("KMS 키 업데이트 시작");
-                    optionalCompany.get().setEncryptText(enc.getEncryptText());
-                    optionalCompany.get().setDataKey(enc.getDataKey());
+                    optionalCompany.get().setCompanyEncryptText(enc.getEncryptText());
+                    optionalCompany.get().setCompanyDataKey(enc.getDataKey());
                     companyRepository.save(optionalCompany.get());
                     log.info("KMS 키 업데이트 성공");
 
@@ -155,7 +155,7 @@ public class CompanyService {
             }
         }
         else {
-            log.error("해당 기업은 존재하지 않습니다. companyIdx : "+companyIdx);
+            log.error("해당 기업은 존재하지 않습니다. companyId : "+companyId);
             return null;
         }
     }
@@ -225,7 +225,7 @@ public class CompanyService {
 //    }
 
     // 자동 결제 후, 결제 정보 저장
-//    public void UpdatePaymentAutoInfo(int companyIdx, String validEnd, String payRequestUid) throws ParseException {
+//    public void UpdatePaymentAutoInfo(Long companyId, String validEnd, String payRequestUid) throws ParseException {
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM");
 //
@@ -255,7 +255,7 @@ public class CompanyService {
     /*
      * 누적 휴면 회원 값 업데이트. 휴면 계정으로 전환된 회원의 누적 값을 관리한다.
      */
-//    public void UpdateDormantAccumulate(int companyIdx, int dormantCount) {
+//    public void UpdateDormantAccumulate(Long companyId, int dormantCount) {
 //        HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //        paramMap.put("companyIdx", companyIdx);
 //        paramMap.put("dormantCount", dormantCount);
@@ -263,7 +263,7 @@ public class CompanyService {
 //    }
 //
 //    // 강제 해제
-//    public void UpdateStopService(int amount, int companyIdx) {
+//    public void UpdateStopService(int amount, Long companyId) {
 //        HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //        paramMap.put("amount", amount);
 //        paramMap.put("companyIdx", companyIdx);
@@ -271,7 +271,7 @@ public class CompanyService {
 //    }
 
     // 인원초과 체크
-//    public boolean CheckUserCount(int companyIdx) {
+//    public boolean CheckUserCount(Long companyId) {
 //
 //        HashMap<String, Object> company = SelectCompanyByIdx(companyIdx);
 //        String businessNumber = company.get("BUSINESS_NUMBER").toString();

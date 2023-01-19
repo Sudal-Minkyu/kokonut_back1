@@ -2,14 +2,18 @@ package com.app.kokonut.refactor.privacyEmailHistory.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
-@Data
 @Entity
-@Table(name = "privacy_email_history")
+@EqualsAndHashCode(of = "phId")
+@Data
+@NoArgsConstructor
+@Table(name="kn_privacy_email_history")
 public class PrivacyEmailHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,29 +23,29 @@ public class PrivacyEmailHistory implements Serializable {
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "ph_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
+    private Long phId;
 
     /**
      * privacy_email 키
      */
     @ApiModelProperty("privacy_email 키")
-    @Column(name = "PRIVACY_EMAIL_IDX", nullable = false)
-    private Integer privacyEmailIdx;
+    @Column(name = "pe_id", nullable = false)
+    private Long peId;
 
     /**
      * 받는 사람 이메일
      */
     @ApiModelProperty("받는 사람 이메일")
-    @Column(name = "RECEIVER_EMAIL", nullable = false)
-    private String receiverEmail;
+    @Column(name = "ph_receiver_email", nullable = false)
+    private String phReceiverEmail;
 
     /**
      * 발송일
      */
     @ApiModelProperty("발송일")
-    @Column(name = "SEND_DATE", nullable = false)
-    private Date sendDate;
+    @Column(name = "ph_send_date", nullable = false)
+    private Date phSendDate;
 
 }

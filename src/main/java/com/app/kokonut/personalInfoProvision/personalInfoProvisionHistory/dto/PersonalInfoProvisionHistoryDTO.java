@@ -45,6 +45,6 @@ public class PersonalInfoProvisionHistoryDTO implements Serializable {
      * 관리자 키 (=수정자)
      */
     @ApiModelProperty("관리자 키 (=수정자)")
-    private Integer adminIdx;
+    private Integer adminId;
 
 }

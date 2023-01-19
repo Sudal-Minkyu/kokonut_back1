@@ -2,14 +2,18 @@ package com.app.kokonut.bizMessage.alimtalkTemplate;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
-@Table(name = "alimtalk_template")
+@EqualsAndHashCode(of = "atId")
+@Data
+@NoArgsConstructor
+@Table(name="kn_alimtalk_template")
 public class AlimtalkTemplate implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,106 +23,120 @@ public class AlimtalkTemplate implements Serializable {
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "at_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
+    private Long atId;
 
     /**
      * 회사 키
      */
     @ApiModelProperty("회사 키")
-    @Column(name = "COMPANY_IDX")
-    private Integer companyIdx;
+    @Column(name = "company_id")
+    private Long companyId;
 
     /**
      * 채널ID
      */
     @ApiModelProperty("채널ID")
-    @Column(name = "CHANNEL_ID", nullable = false)
-    private String channelId;
+    @Column(name = "kc_channel_id", nullable = false)
+    private String kcChannelId;
 
     /**
      * 템플릿 코드
      */
     @ApiModelProperty("템플릿 코드")
-    @Column(name = "TEMPLATE_CODE")
-    private String templateCode;
+    @Column(name = "at_template_code")
+    private String atTemplateCode;
 
     /**
      * 템플릿 이름
      */
     @ApiModelProperty("템플릿 이름")
-    @Column(name = "TEMPLATE_NAME")
-    private String templateName;
+    @Column(name = "at_template_name")
+    private String atTemplateName;
 
     /**
      * 메세지 유형(BA:기본형, EX:부가정보형, AD:광고 추가형, MI:복합형)
      */
-    @Column(name = "MESSAGE_TYPE", nullable = false)
+    @Column(name = "at_message_type", nullable = false)
     @ApiModelProperty("메세지 유형(BA:기본형, EX:부가정보형, AD:광고 추가형, MI:복합형)")
-    private String messageType;
+    private String atMessageType;
 
     /**
      * 부가 정보 내용
      */
     @ApiModelProperty("부가 정보 내용")
-    @Column(name = "EXTRA_CONTENT")
-    private String extraContent;
+    @Column(name = "at_extra_content")
+    private String atExtraContent;
 
     /**
      * 광고 추가 내용
      */
-    @Column(name = "AD_CONTENT")
+    @Column(name = "at_ad_content")
     @ApiModelProperty("광고 추가 내용")
-    private String adContent;
+    private String atAdContent;
 
     /**
      * 알림톡 강조표기 유형(NONE:기본형, TEXT:강조표기형)
      */
-    @Column(name = "EMPHASIZE_TYPE", nullable = false)
+    @Column(name = "at_emphasize_type", nullable = false)
     @ApiModelProperty("알림톡 강조표기 유형(NONE:기본형, TEXT:강조표기형)")
-    private String emphasizeType;
+    private String atEmphasizeType;
 
     /**
      * 알림톡 강조표시 제목
      */
     @ApiModelProperty("알림톡 강조표시 제목")
-    @Column(name = "EMPHASIZE_TITLE")
-    private String emphasizeTitle;
+    @Column(name = "at_emphasize_title")
+    private String atEmphasizeTitle;
 
     /**
      * 알림톡 강조표시 부제목
      */
     @ApiModelProperty("알림톡 강조표시 부제목")
-    @Column(name = "EMPHASIZE_SUB_TITLE")
-    private String emphasizeSubTitle;
+    @Column(name = "at_emphasize_sub_title")
+    private String atEmphasizeSubTitle;
 
     /**
      * 보안 설정 여부(0:사용안함,1:사용)
      */
-    @Column(name = "SECURITY_FLAG")
+    @Column(name = "at_security_flag")
     @ApiModelProperty("보안 설정 여부(0:사용안함,1:사용)")
-    private Integer securityFlag;
-
-    /**
-     * 등록일시
-     */
-    @ApiModelProperty("등록일시")
-    @Column(name = "REGDATE", nullable = false)
-    private LocalDateTime regdate;
-
-    /**
-     * 수정일시
-     */
-    @ApiModelProperty("수정일시")
-    @Column(name = "MODIFY_DATE")
-    private LocalDateTime modifyDate;
+    private Integer atSecurityFlag;
 
     /**
      * 상태: ACCEPT - 수락 REGISTER - 등록 INSPECT - 검수 중 COMPLETE - 완료 REJECT - 반려
      */
-    @Column(name = "STATUS")
+    @Column(name = "at_status")
     @ApiModelProperty("상태: ACCEPT - 수락 REGISTER - 등록 INSPECT - 검수 중 COMPLETE - 완료 REJECT - 반려")
-    private String status;
+    private String atStatus;
+
+    /**
+     * 등록자 email
+     */
+    @ApiModelProperty("등록자 email")
+    @Column(name = "insert_email", nullable = false)
+    private String insert_email;
+
+    /**
+     * 등록 날짜
+     */
+    @ApiModelProperty("등록 날짜")
+    @Column(name = "insert_date", nullable = false)
+    private LocalDateTime insert_date;
+
+    /**
+     * 수정자 이름
+     */
+    @ApiModelProperty("수정자 email")
+    @Column(name = "modify_email")
+    private String modify_email;
+
+    /**
+     * 수정 날짜
+     */
+    @ApiModelProperty("수정 날짜")
+    @Column(name = "modify_date")
+    private LocalDateTime modify_date;
 
 }

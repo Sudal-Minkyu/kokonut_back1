@@ -53,7 +53,7 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
-    public ResponseEntity<Map<String,Object>> collectInfoDetail(@RequestParam(name="idx") Integer idx) {
+    public ResponseEntity<Map<String,Object>> collectInfoDetail(@RequestParam(name="idx") Long idx) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         return collectInformationService.collectInfoDetail(userRole, idx);
     }
@@ -76,7 +76,7 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
-    public ResponseEntity<Map<String,Object>> collectInfoDelete(@RequestParam(name="idx") Integer idx) {
+    public ResponseEntity<Map<String,Object>> collectInfoDelete(@RequestParam(name="idx") Long idx) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
         return collectInformationService.collectInfoDelete(userRole, email, idx);

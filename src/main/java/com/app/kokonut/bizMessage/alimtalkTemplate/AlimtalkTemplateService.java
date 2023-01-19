@@ -54,7 +54,7 @@ public class AlimtalkTemplateService {
         AjaxResponse res = new AjaxResponse();
 
         // 해당 이메일을 통해 회사 IDX 조회
-        int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
 
         List<KakaoChannelByChannelIdListDto> kakaoChannelByChannelIdListDtos = kakaoChannelRepository.findByKakaoChannelIdList(companyIdx);
 
@@ -118,7 +118,7 @@ public class AlimtalkTemplateService {
             log.info("템플릿 저장성공 후 DB 인서트");
 
             // 해당 이메일을 통해 회사 IDX 조회
-            int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+            Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
 
             AlimtalkTemplate alimtalkTemplate = new AlimtalkTemplate();
             alimtalkTemplate.setCompanyIdx(companyIdx);
@@ -165,7 +165,7 @@ public class AlimtalkTemplateService {
 
 
             // 해당 이메일을 통해 회사 IDX 조회
-            int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+            Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
 
             Optional<AlimtalkTemplate> optionalAlimtalkTemplate
                     = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateSaveAndUpdateDto.getTemplateCode(), alimtalkTemplateSaveAndUpdateDto.getChannelId(), companyIdx);
@@ -209,7 +209,7 @@ public class AlimtalkTemplateService {
         HashMap<String, Object> data = new HashMap<>();
 
         // 해당 이메일을 통해 회사 IDX 조회
-        int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
 
         Optional<AlimtalkTemplate> optionalAlimtalkTemplate
                 = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateDeleteDto.getTemplateCode(), alimtalkTemplateDeleteDto.getChannelId(), companyIdx);

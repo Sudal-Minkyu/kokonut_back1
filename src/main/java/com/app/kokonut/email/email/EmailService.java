@@ -4,15 +4,14 @@ import com.app.kokonut.admin.entity.Admin;
 
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
-import com.app.kokonut.email.email.dto.EmailDetailDto;
-import com.app.kokonut.email.email.dto.EmailListDto;
+import com.app.kokonut.email.email.dtos.EmailDetailDto;
+import com.app.kokonut.email.email.dtos.EmailListDto;
 
-import com.app.kokonut.email.email.entity.Email;
 import com.app.kokonut.email.emailGroup.EmailGroupRepository;
 
-import com.app.kokonut.email.emailGroup.dto.EmailGroupAdminInfoDto;
-import com.app.kokonut.email.emailGroup.dto.EmailGroupListDto;
-import com.app.kokonut.email.emailGroup.entity.EmailGroup;
+import com.app.kokonut.email.emailGroup.dtos.EmailGroupAdminInfoDto;
+import com.app.kokonut.email.emailGroup.dtos.EmailGroupListDto;
+import com.app.kokonut.email.emailGroup.EmailGroup;
 import com.app.kokonut.configs.MailSender;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
@@ -81,7 +80,7 @@ public class EmailService {
         // 접속한 사용자 인덱스
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-        emailDetailDto.setSenderAdminIdx(admin.getIdx());
+        emailDetailDto.setSenderadminId(admin.getIdx());
 
         // 이메일 전송을 위한 전처리 - filter, unfilter
         String title = ReqUtils.filter(emailDetailDto.getTitle());
@@ -99,26 +98,26 @@ public class EmailService {
             contents = sb.toString();
         }
 
-        // 이메일 전송을 위한 준비 - reciverType에 따른 adminIdxList 구하기
+        // 이메일 전송을 위한 준비 - reciverType에 따른 adminIdList 구하기
         String receiverType = emailDetailDto.getReceiverType();
-        String adminIdxList = "";
+        String adminIdList = "";
 
         if("I".equals(receiverType)){
-            adminIdxList = emailDetailDto.getReceiverAdminIdxList().toString();
+            adminIdList = emailDetailDto.getReceiveradminIdList().toString();
         }else if(("G").equals(receiverType)){
-            Integer emailGroupIdx = emailDetailDto.getEmailGroupIdx();
+            Long emailGroupIdx = emailDetailDto.getEmailGroupIdx();
             EmailGroupAdminInfoDto emailGroupAdminInfoDto;
             emailGroupAdminInfoDto = emailGroupRepository.findEmailGroupAdminInfoByIdx(emailGroupIdx);
-            adminIdxList = emailGroupAdminInfoDto.getAdminIdxList();
+            adminIdList = emailGroupAdminInfoDto.getadminIdList();
         }else{
             log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getDesc()));
         }
 
         // mailSender 실질적인 이메일 전송 부분
-        String[] toks = adminIdxList.split(",");
+        String[] toks = adminIdList.split(",");
         for(String tok : toks){
-            AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByEmailInfo(Integer.valueOf(tok));
+            AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByEmailInfo(Long.valueOf(tok));
             if(adminEmailInfoDto != null){
                 String reciverEmail = adminEmailInfoDto.getEmail();
                 String reciverName = adminEmailInfoDto.getName();
@@ -145,14 +144,14 @@ public class EmailService {
         Email reciveEmail = new Email();
 
         emailDetailDto.setContents(originContents);
-        reciveEmail.setSenderAdminIdx(emailDetailDto.getSenderAdminIdx());
+        reciveEmail.setSenderadminId(emailDetailDto.getSenderadminId());
         reciveEmail.setReceiverType(emailDetailDto.getReceiverType());
         reciveEmail.setTitle(emailDetailDto.getTitle());
         reciveEmail.setContents(emailDetailDto.getContents());
 
         // 조건에 따른 분기 처리
-        if("I".equals(emailDetailDto.getReceiverType()) && emailDetailDto.getReceiverAdminIdxList() != null) {
-            reciveEmail.setReceiverAdminIdxList(emailDetailDto.getReceiverAdminIdxList());
+        if("I".equals(emailDetailDto.getReceiverType()) && emailDetailDto.getReceiveradminIdList() != null) {
+            reciveEmail.setReceiveradminIdList(emailDetailDto.getReceiveradminIdList());
         }
 
         // 조건에 따른 분기 처리
@@ -169,7 +168,7 @@ public class EmailService {
         // TODO 정상적으로 저장된 경우를 확인하는 방법 알아보기. save 처리가 되던 update 처리가 되던 결과적으로 해당 인덱스는 존재함.
         // sendEamil 객체에서 reciverType에 따라 어드민 인덱스를 조회, 해당 인덱스로 어드민 이메일을 확인한 다음 해당 이메일로 받는 내역을 조회한 다음. 해당 건수가 존재하면 받은걸로 친다고하기엔.
         // 하지만 이런 방법으로 할 경우 이전
-        if(emailRepository.existsById(sendEmail.getIdx())){
+        if(emailRepository.existsByIdx(sendEmail.getIdx())){
             log.info("### 이메일 이력 저장에 성공했습니다. : "+sendEmail.getIdx());
             return ResponseEntity.ok(res.success(data));
         }else{
@@ -198,16 +197,16 @@ public class EmailService {
             EmailDetailDto emailDetailDto = emailRepository.findEmailByIdx(idx);
             if(emailDetailDto != null){
                 String receiverType = emailDetailDto.getReceiverType();
-                String adminIdxList = "";
+                String adminIdList = "";
                 if("I".equals(receiverType)){
                     // 개별 선택으로 발송한 경우
-                    adminIdxList = emailDetailDto.getReceiverAdminIdxList().toString();
+                    adminIdList = emailDetailDto.getReceiveradminIdList().toString();
                 }else if("G".equals(receiverType)){
                     // 그룹 선택으로 메일을 발송한 경우
-                    Integer emailGroupIdx = emailDetailDto.getEmailGroupIdx();
+                    Long emailGroupIdx = emailDetailDto.getEmailGroupIdx();
                     // 메일 그룹 조회 쿼리 동작
                     EmailGroupAdminInfoDto emailGroupAdminInfoDto = emailGroupRepository.findEmailGroupAdminInfoByIdx(emailGroupIdx);
-                    adminIdxList = emailGroupAdminInfoDto.getAdminIdxList();
+                    adminIdList = emailGroupAdminInfoDto.getadminIdList();
                 }else{
                     log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getDesc()));
@@ -215,10 +214,10 @@ public class EmailService {
 
                 // 받는 사람 이메일 문자열 조회
                 StringBuilder emailList = new StringBuilder();
-                String[] toks = adminIdxList.split(",");
+                String[] toks = adminIdList.split(",");
                 for(int i = 0; i < toks.length; i++) {
                     String tok = toks[i];
-                    AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByEmailInfo(Integer.valueOf(tok));
+                    AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByEmailInfo(Long.valueOf(tok));
                     if(adminEmailInfoDto != null){
                         emailList.append(adminEmailInfoDto.getEmail());
                         if(i < toks.length - 1) {
@@ -268,14 +267,14 @@ public class EmailService {
             emailGroup.setIdx(resultDto.get(i).getIdx());
             emailGroup.setName(resultDto.get(i).getName());
             emailGroup.setDesc(resultDto.get(i).getDesc());
-            emailGroup.setAdminIdxList(resultDto.get(i).getAdminIdxList());
+            emailGroup.setadminIdList(resultDto.get(i).getadminIdList());
 
-            String adminIdxs = resultDto.get(i).getAdminIdxList();
-            String adminIdxList[] = adminIdxs.split(",");
+            String adminIds = resultDto.get(i).getadminIdList();
+            String adminIdList[] = adminIds.split(",");
 
             List<String> emailList = new ArrayList<>();
-            for (String adminIdx : adminIdxList) {
-                String adminEmail = adminRepository.findByEmailInfo(Integer.parseInt(adminIdx)).getEmail();
+            for (String adminId : adminIdList) {
+                String adminEmail = adminRepository.findByEmailInfo(Long.parseLong(adminId)).getEmail();
                 emailList.add(adminEmail); // a001@00.oo.com, a002@00.oo.com, a003@00.oo.com
             }
             StringBuilder adminEmailList = new StringBuilder();
@@ -295,7 +294,7 @@ public class EmailService {
             System.out.println(">>>> idx: "+resultList.get(i).getIdx());
             System.out.println(">>>> name: "+resultList.get(i).getName());
             System.out.println(">>>> Desc: "+resultList.get(i).getDesc());
-            System.out.println(">>>> adminIdx: "+resultList.get(i).getAdminIdxList());
+            System.out.println(">>>> adminId: "+resultList.get(i).getadminIdList());
             System.out.println(">>>> adminEmail: "+resultList.get(i).getAdminEmailList());
             System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ");
         }

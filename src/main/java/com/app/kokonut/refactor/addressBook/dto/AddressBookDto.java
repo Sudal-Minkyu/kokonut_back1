@@ -28,7 +28,7 @@ public class AddressBookDto implements Serializable {
     /**
      * 관리자 키
      */
-    private Integer adminIdx;
+    private Integer adminId;
 
     /**
      * IP

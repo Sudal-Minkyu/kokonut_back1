@@ -1,8 +1,7 @@
 package com.app.kokonut.email.email;
 
-import com.app.kokonut.email.email.dto.EmailDetailDto;
-import com.app.kokonut.email.email.dto.EmailListDto;
-import com.app.kokonut.email.email.entity.Email;
+import com.app.kokonut.email.email.dtos.EmailDetailDto;
+import com.app.kokonut.email.email.dtos.EmailListDto;
 import com.app.kokonut.email.email.entity.QEmail;
 import com.app.kokonut.email.emailGroup.entity.QEmailGroup;
 import com.querydsl.core.types.Projections;
@@ -30,7 +29,7 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
     //  SelectEmailList 메일 리스트 조회 emailDao.SelectEmailList(paramMap);
     //  SelectEmailListCount 메일 리스트 Count 조회 emailDao.SelectEmailListCount(paramMap);
     //  SendEmail 메일 전송 emailGroupDao.SelectEmailGroupByIdx(Integer.parseInt(emailGroupIdx));
-    //      adminDao.SelectAdminByIdx(adminIdx);
+    //      adminDao.SelectAdminByIdx(adminId);
     //      emailHistoryService.insert(historyInsertMap)
     //      emailDao.InsertEmail(paramMap)
 
@@ -85,9 +84,9 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         JPQLQuery<EmailDetailDto> query = from(email)
                 .where(email.idx.eq(idx))
                 .select(Projections.constructor(EmailDetailDto.class,
-                        email.senderAdminIdx,
+                        email.senderadminId,
                         email.receiverType,
-                        email.receiverAdminIdxList,
+                        email.receiveradminIdList,
                         email.emailGroupIdx,
                         email.title,
                         email.contents

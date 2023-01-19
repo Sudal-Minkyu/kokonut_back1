@@ -46,7 +46,7 @@ public class DownloadHistory implements Serializable {
      */
     @Column(name = "ADMIN_IDX")
     @ApiModelProperty("다운로드한 사람")
-    private Integer adminIdx;
+    private Integer adminId;
 
     /**
      * 다운로드 일시

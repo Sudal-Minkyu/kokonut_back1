@@ -40,11 +40,11 @@ public class TotalDbDownloadRepositoryCustomImpl extends QuerydslRepositorySuppo
         QCompany company  = QCompany.company;
 
         JPQLQuery<TotalDbDownloadListDto> query = from(totalDbDownload)
-                .innerJoin(admin).on(totalDbDownload.adminIdx.eq(admin.idx))
-                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
+                .innerJoin(admin).on(totalDbDownload.adminId.eq(admin.adminId))
+                .innerJoin(company).on(company.companyId.eq(admin.companyId))
                 .select(Projections.constructor(TotalDbDownloadListDto.class,
                         totalDbDownload.idx,
-                        admin.name,
+                        admin.knName,
                         totalDbDownload.reason,
                         totalDbDownload.applyDate,
                         totalDbDownload.state,

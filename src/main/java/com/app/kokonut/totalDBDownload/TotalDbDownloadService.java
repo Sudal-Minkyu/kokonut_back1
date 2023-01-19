@@ -9,7 +9,6 @@ import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 import com.app.kokonut.common.component.CommonUtil;
 import com.app.kokonut.common.component.Utils;
-import com.app.kokonut.company.CompanyService;
 import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.downloadHistory.DownloadHistory;
 import com.app.kokonut.downloadHistory.DownloadHistoryRepository;
@@ -55,20 +54,18 @@ public class TotalDbDownloadService {
     private final KokonutUserService kokonutUserService;
     private final KokonutDormantService kokonutDormantService;
 
-    private final CompanyService companyService;
     private final TotalDbDownloadRepository totalDbDownloadRepository;
     private final DownloadHistoryRepository downloadHistoryRepository;
 
     @Autowired
     public TotalDbDownloadService(GoogleOTP googleOTP, AdminRepository adminRepository,
                                   ActivityHistoryService activityHistoryService, KokonutDormantService kokonutDormantService,
-                                  KokonutUserService kokonutUserService, CompanyService companyService,
+                                  KokonutUserService kokonutUserService,
                                   TotalDbDownloadRepository totalDbDownloadRepository, DownloadHistoryRepository downloadHistoryRepository){
         this.googleOTP = googleOTP;
         this.adminRepository = adminRepository;
         this.kokonutUserService = kokonutUserService;
         this.kokonutDormantService = kokonutDormantService;
-        this.companyService = companyService;
         this.activityHistoryService = activityHistoryService;
         this.totalDbDownloadRepository = totalDbDownloadRepository;
         this.downloadHistoryRepository = downloadHistoryRepository;
@@ -89,18 +86,18 @@ public class TotalDbDownloadService {
         // 해당 이메일을 통해 회사 IDX 조회
         AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 
-        int adminIdx;
-        int companyIdx;
-        String businessNumber;
+        Long adminId;
+        Long companyId;
+        String companyCode;
 
         if(adminCompanyInfoDto == null) {
             log.error("이메일 정보가 존재하지 않습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(), "해당 이메일의 정보가 "+ResponseErrorCode.KO004.getDesc()));
         }
         else {
-            adminIdx = adminCompanyInfoDto.getAdminIdx(); // modifierIdx
-            companyIdx = adminCompanyInfoDto.getCompanyIdx(); // companyIdx
-            businessNumber = adminCompanyInfoDto.getBusinessNumber(); // tableName
+            adminId = adminCompanyInfoDto.getAdminId(); // modifierIdx
+            companyId = adminCompanyInfoDto.getCompanyId(); // companyId
+            companyCode = adminCompanyInfoDto.getCompanyCode(); // tableName
         }
 
         AdminOtpKeyDto adminOtpKeyDto = adminRepository.findByOtpKey(email);
@@ -122,11 +119,11 @@ public class TotalDbDownloadService {
         ActivityCode activityCode = ActivityCode.AC_22;
         // 활동이력 저장 -> 비정상 모드
         String ip = CommonUtil.clientIp();
-        Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode, businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+        Long activityHistoryId = activityHistoryService.insertActivityHistory(2, companyId, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
 
         // 회원 DB데이터 다운로드 요청건 insert
         TotalDbDownload totalDbDownload = new TotalDbDownload();
-        totalDbDownload.setAdminIdx(adminIdx);
+        totalDbDownload.setAdminId(adminId);
         totalDbDownload.setReason(reason);
         totalDbDownload.setState(1);
         totalDbDownload.setApplyDate(LocalDateTime.now());
@@ -136,13 +133,13 @@ public class TotalDbDownloadService {
             totalDbDownloadRepository.save(totalDbDownload);
 
             log.info("회원 DB 데이터 다운로드 요청 완료");
-            activityHistoryService.updateActivityHistory(activityHistoryIDX,
-                    businessNumber+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
+            activityHistoryService.updateActivityHistory(activityHistoryId,
+                    companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
         } catch (Exception e){
             log.error("e : "+e.getMessage());
             log.error("회원 DB 데이터 다운로드 요청 실패");
-            activityHistoryService.updateActivityHistory(activityHistoryIDX,
-                    businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "필드 삭제 조건에 부합하지 않습니다.", 1);
+            activityHistoryService.updateActivityHistory(activityHistoryId,
+                    companyCode+" - "+activityCode.getDesc()+" 실패 이력", "필드 삭제 조건에 부합하지 않습니다.", 1);
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO068.getCode(), ResponseErrorCode.KO068.getDesc()));
         }
 
@@ -161,17 +158,17 @@ public class TotalDbDownloadService {
         // 해당 이메일을 통해 회사 IDX 조회
         AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 
-        String businessNumber;
+        String companyCode;
 
         if(adminCompanyInfoDto == null) {
             log.error("이메일 정보가 존재하지 않습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(), "해당 이메일의 정보가 "+ResponseErrorCode.KO004.getDesc()));
         }
         else {
-            businessNumber = adminCompanyInfoDto.getBusinessNumber(); // tableName
+            companyCode = adminCompanyInfoDto.getCompanyCode(); // tableName
         }
 
-        Page<TotalDbDownloadListDto> totalDbDownloadListDtoList = totalDbDownloadRepository.findByTotalDbDownloadList(totalDbDownloadSearchDto, businessNumber, pageable);
+        Page<TotalDbDownloadListDto> totalDbDownloadListDtoList = totalDbDownloadRepository.findByTotalDbDownloadList(totalDbDownloadSearchDto, companyCode, pageable);
 
         return ResponseEntity.ok(res.ResponseEntityPage(totalDbDownloadListDtoList));
     }
@@ -187,18 +184,18 @@ public class TotalDbDownloadService {
         // 해당 이메일을 통해 회사 IDX 조회
         AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 
-        int adminIdx;
-        int companyIdx;
-        String businessNumber;
+        Long adminId;
+        Long companyId;
+        String companyCode;
 
         if(adminCompanyInfoDto == null) {
             log.error("이메일 정보가 존재하지 않습니다.");
             return;
         }
         else {
-            adminIdx = adminCompanyInfoDto.getAdminIdx(); // modifierIdx
-            companyIdx = adminCompanyInfoDto.getCompanyIdx(); // companyIdx
-            businessNumber = adminCompanyInfoDto.getBusinessNumber(); // tableName
+            adminId = adminCompanyInfoDto.getAdminId(); // modifierIdx
+            companyId = adminCompanyInfoDto.getCompanyId(); // companyId
+            companyCode = adminCompanyInfoDto.getCompanyCode(); // tableName
         }
 
         try{
@@ -207,8 +204,8 @@ public class TotalDbDownloadService {
             ActivityCode activityCode = ActivityCode.AC_23;
             // 활동이력 저장 -> 비정상 모드
             String ip = CommonUtil.clientIp();
-            Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(3, companyIdx, adminIdx, activityCode,
-                    businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+            Long activityHistoryId = activityHistoryService.insertActivityHistory(3, companyId, adminId, activityCode,
+                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
 
             Optional<TotalDbDownload> optionalTotalDbDownload = totalDbDownloadRepository.findById(idx);
             if(optionalTotalDbDownload.isPresent()) {
@@ -224,12 +221,12 @@ public class TotalDbDownloadService {
                 request.setCharacterEncoding("UTF-8");
                 response.setContentType("text/html; charset=UTF-8");
 
-//                String DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyIdx); // 복호화용 키 일단 보류
+//                String DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyId); // 복호화용 키 일단 보류
 
-                List<KokonutUserFieldDto> columns = kokonutUserService.getUserColumns(businessNumber);
+                List<KokonutUserFieldDto> columns = kokonutUserService.getUserSendDataColumns(companyCode);
 
-                List<Map<String, Object>> kokonutUserData = kokonutUserService.selectUserList(businessNumber);
-                List<Map<String, Object>> kokonutDormantData = kokonutDormantService.selectDormantList(businessNumber);
+                List<Map<String, Object>> kokonutUserData = kokonutUserService.selectUserList(companyCode);
+                List<Map<String, Object>> kokonutDormantData = kokonutDormantService.selectDormantList(companyCode);
 
                 for (KokonutUserFieldDto kokonutUserFieldDto : columns) {
                     String Field = kokonutUserFieldDto.getField();
@@ -245,15 +242,11 @@ public class TotalDbDownloadService {
                         }
 
                         // 보낼필요 없는 데이터
-                        if("인덱스".equals(FieldOptionName) ||
-                                "개인정보 동의".equals(FieldOptionName) ||
-                                "이용내역보낸 날짜".equals(FieldOptionName) ||
-                                "최종 로그인 일시".equals(FieldOptionName) ||
-                                "수정 일시".equals(FieldOptionName)) {
+                        if("비밀번호".equals(FieldOptionName)) {
                             continue;
                         }
                     } else {
-                        if(Comment.contains("(")) {
+                        if (Comment.contains("(")) {
                             String[] FieldOptionNameList = Comment.split("\\(");
                             FieldOptionName = FieldOptionNameList[0];
                         }
@@ -281,9 +274,8 @@ public class TotalDbDownloadService {
 //                    if(Comment.contains("암호화") && Field.equals("Mobile_Number")) {
 //                        isDecryptMobileNumber = true;
 //                    }
-
-//                    if("인덱스".equals(FieldOptionName)) continue;
                 }
+
                 String state = "현재상태";
                 headerList.add(state);
                 headerKeyList.add(state);
@@ -295,7 +287,7 @@ public class TotalDbDownloadService {
 //                }
 
                 String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-                String exportFileName = businessNumber + "_개인정보 DB 데이터_" + nowDate + ".csv";
+                String exportFileName = companyCode + "_개인정보 DB 데이터_" + nowDate + ".csv";
 
                 // 파일명 인코딩
                 String browser;
@@ -412,26 +404,26 @@ public class TotalDbDownloadService {
 
                 // 다운로드 요청 완료시 횟수 차감
                 optionalTotalDbDownload.get().setDownloadLimit(optionalTotalDbDownload.get().getDownloadLimit()-1);
-                optionalTotalDbDownload.get().setModifierIdx(adminIdx);
+                optionalTotalDbDownload.get().setModifierIdx(adminId);
                 optionalTotalDbDownload.get().setModifyDate(LocalDateTime.now());
                 totalDbDownloadRepository.save(optionalTotalDbDownload.get());
 
                 // 다운로드 로그 테이블에 기록
                 DownloadHistory downloadHistory = new DownloadHistory();
-                downloadHistory.setFileName(businessNumber + "_개인정보 DB 데이터_" + nowDate + ".csv");
+                downloadHistory.setFileName(companyCode + "_개인정보 DB 데이터_" + nowDate + ".csv");
                 downloadHistory.setReason("개인정보 DB 데이터 다운로드");
-                downloadHistory.setAdminIdx(adminIdx);
+                downloadHistory.setAdminId(adminId);
                 downloadHistory.setRegistDate(LocalDateTime.now());
                 downloadHistoryRepository.save(downloadHistory);
 
                 // 활동 완료 업데이트
-                activityHistoryService.updateActivityHistory(activityHistoryIDX,
-                        businessNumber+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
+                activityHistoryService.updateActivityHistory(activityHistoryId,
+                        companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
 
             } else {
                 log.error("개인정보 DB 데이터 다운로드 요청 데이터가 존재하지 않습니다.");
-                activityHistoryService.updateActivityHistory(activityHistoryIDX,
-                        businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "조회한 데이터가 없습니다.", 1);
+                activityHistoryService.updateActivityHistory(activityHistoryId,
+                        companyCode+" - "+activityCode.getDesc()+" 실패 이력", "조회한 데이터가 없습니다.", 1);
             }
 
         } catch (Exception e){

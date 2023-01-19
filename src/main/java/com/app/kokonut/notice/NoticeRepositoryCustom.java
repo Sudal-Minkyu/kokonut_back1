@@ -1,9 +1,9 @@
 package com.app.kokonut.notice;
 
-import com.app.kokonut.notice.dto.NoticeContentListDto;
-import com.app.kokonut.notice.dto.NoticeDetailDto;
-import com.app.kokonut.notice.dto.NoticeListDto;
-import com.app.kokonut.notice.dto.NoticeSearchDto;
+import com.app.kokonut.notice.dtos.NoticeContentListDto;
+import com.app.kokonut.notice.dtos.NoticeDetailDto;
+import com.app.kokonut.notice.dtos.NoticeListDto;
+import com.app.kokonut.notice.dtos.NoticeSearchDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -24,7 +24,7 @@ public class PersonalInfoProvisionMapperDto {
 
     private Integer reason;
 
-    private Integer adminIdx;
+    private Integer adminId;
 
     private Integer recipientType;
     private String recipientEmail;
@@ -48,8 +48,8 @@ public class PersonalInfoProvisionMapperDto {
         return Objects.requireNonNullElse(reason, 0);
     }
 
-    public Integer getAdminIdx() {
-        return Objects.requireNonNullElse(adminIdx, 0);
+    public Integer getadminId() {
+        return Objects.requireNonNullElse(adminId, 0);
     }
 
     public Integer getRecipientType() {

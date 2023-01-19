@@ -2,7 +2,7 @@ package com.app.kokonut.configs;
 
 
 import com.app.kokonut.email.emailHistory.EmailHistoryRepository;
-import com.app.kokonut.email.emailHistory.entity.EmailHistory;
+import com.app.kokonut.email.emailHistory.EmailHistory;
 import com.app.kokonut.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.navercloud.dto.NCloudPlatformMailRequest;
 import com.app.kokonut.navercloud.dto.RecipientForRequest;
@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -106,7 +107,7 @@ public class MailSender {
 		URL url = new URL(mailViewURL);
 		URLConnection conn = url.openConnection();
 		InputStream is = conn.getInputStream();
-		return IOUtils.toString(is);
+		return IOUtils.toString(is, StandardCharsets.UTF_8);
 	}
 
 }

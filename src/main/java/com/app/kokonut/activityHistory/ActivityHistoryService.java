@@ -107,7 +107,7 @@ public class ActivityHistoryService {
     /**
      * 활동내역 insert
      * @param type - 1:고객정보처리, 2:관리자활동, 3:회원DB관리이력, 4:정보제공이력
-     * @param companyIdx
+     * @param companyId
      * @param activityCode
      * @param activityDetail - 활동상세내역
      * @param reason - 사유
@@ -116,35 +116,35 @@ public class ActivityHistoryService {
      * @return save IDX
      * 기존 코코넛 : InsertActivityHistory
      */
-    public Integer insertActivityHistory(int type, int companyIdx, int adminIdx, ActivityCode activityCode, String activityDetail, String reason, String ipAddr, int state) {
+    public Long insertActivityHistory(int type, long companyId, long adminId, ActivityCode activityCode, String activityDetail, String reason, String ipAddr, int state) {
 
         ActivityHistory activityHistory = new ActivityHistory();
         activityHistory.setType(type);
-        activityHistory.setCompanyIdx(companyIdx);
-        activityHistory.setAdminIdx(adminIdx);
+        activityHistory.setCompanyId(companyId);
+        activityHistory.setAdminId(adminId);
         activityHistory.setActivityCode(activityCode);
         activityHistory.setActivityDetail(activityDetail);
         activityHistory.setReason(reason);
         activityHistory.setIpAddr(ipAddr);
         activityHistory.setState(state);
-        activityHistory.setRegdate(LocalDateTime.now());
+        activityHistory.setInsert_date(LocalDateTime.now());
 
         activityHistory = activityHistoryRepository.save(activityHistory);
 
-        return activityHistory.getIdx();
+        return activityHistory.getAhId();
     }
 
     /**
      * 활동내역 Update
-     * @param idx - 키값
+     * @param ahId - 키값
      * @param activityDetail - 활동상세내역
      * @param reason - 사유
      * @param state - 0:비정상, 1:정상
      * 기존 코코넛 : UpdateActivityHistory
      */
-    public void updateActivityHistory(int idx, String activityDetail, String reason, int state) {
+    public void updateActivityHistory(Long ahId, String activityDetail, String reason, int state) {
 
-        ActivityHistory activityHistory = activityHistoryRepository.findById(idx)
+        ActivityHistory activityHistory = activityHistoryRepository.findById(ahId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ActivityHistory' 입니다."));
 
         activityHistory.setActivityDetail(activityDetail);
@@ -161,7 +161,7 @@ public class ActivityHistoryService {
 //    public void DeleteActivityHistoryByIdx(int idx) {
 //        activityHistoryRepository.DeleteActivityHistoryByIdx(idx);
 //    }
-    public void deleteActivityHistoryByIdx(int idx) {
+    public void deleteActivityHistoryByIdx(Long idx) {
         ActivityHistory activityHistory = activityHistoryRepository.findById(idx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ActivityHistory' 입니다."));
 

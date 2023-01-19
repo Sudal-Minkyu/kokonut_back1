@@ -17,10 +17,10 @@ import java.util.List;
 public interface CollectInformationRepositoryCustom {
 
     // 개인정보 처리방침 목록 조회 - 기존 SelectCollectInformationList, SelectCollectInformationListCount
-    Page<CollectInfoListDto> findCollectInfoPage(Integer companyIdx, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable);
+    Page<CollectInfoListDto> findCollectInfoPage(Long companyIdx, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable);
 
     // 개인정보 처리방침 상세 조회 - 기존 SelectCollectInformationByIdx
-    CollectInfoDetailDto findCollectInfoByIdx(Integer idx);
+    CollectInfoDetailDto findCollectInfoByIdx(Long idx);
 
     // 개인정보 처리방침 등록 - 기존 InsertCollectInformation
     // 개인정보 처리방침 수정 - 기존 UpdateCollectInformation

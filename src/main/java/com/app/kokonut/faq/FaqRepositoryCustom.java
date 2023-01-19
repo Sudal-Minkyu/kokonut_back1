@@ -1,9 +1,9 @@
 package com.app.kokonut.faq;
 
-import com.app.kokonut.faq.dto.FaqAnswerListDto;
-import com.app.kokonut.faq.dto.FaqDetailDto;
-import com.app.kokonut.faq.dto.FaqSearchDto;
-import com.app.kokonut.faq.dto.FaqListDto;
+import com.app.kokonut.faq.dtos.FaqAnswerListDto;
+import com.app.kokonut.faq.dtos.FaqDetailDto;
+import com.app.kokonut.faq.dtos.FaqSearchDto;
+import com.app.kokonut.faq.dtos.FaqListDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

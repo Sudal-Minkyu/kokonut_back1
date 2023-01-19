@@ -21,7 +21,7 @@ public class TotalDbDownloadListDto {
 
     private Integer idx;
 
-    private Integer adminName; // 요청자 명
+    private String adminName; // 요청자 명
 
     private String reason; // 요청사유
 

@@ -16,8 +16,8 @@ import java.util.List;
  */
 public interface FriendtalkMessageRepositoryCustom {
 
-    Page<FriendtalkMessageListDto> findByFriendtalkMessagePage(FriendtalkMessageSearchDto friendtalkMessageSearchDto, int companyIdx, Pageable pageable);
+    Page<FriendtalkMessageListDto> findByFriendtalkMessagePage(FriendtalkMessageSearchDto friendtalkMessageSearchDto, Long companyId, Pageable pageable);
 
-    List<FriendtalkMessageInfoListDto> findByFriendtalkMessageInfoList(int companyIdx, String state);
+    List<FriendtalkMessageInfoListDto> findByFriendtalkMessageInfoList(Long companyId, String state);
 
 }

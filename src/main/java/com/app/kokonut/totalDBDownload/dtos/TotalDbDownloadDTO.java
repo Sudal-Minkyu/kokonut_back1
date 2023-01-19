@@ -24,7 +24,7 @@ public class TotalDbDownloadDTO implements Serializable {
      * 요청자
      */
     @ApiModelProperty("요청자")
-    private Integer adminIdx;
+    private Integer adminId;
 
 
     /**

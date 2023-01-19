@@ -1,9 +1,8 @@
 package com.app.kokonut.revisedDocument;
 
-import com.app.kokonut.revisedDocument.dto.RevDocListDto;
-import com.app.kokonut.revisedDocument.dto.RevDocSearchDto;
+import com.app.kokonut.revisedDocument.dtos.RevDocListDto;
+import com.app.kokonut.revisedDocument.dtos.RevDocSearchDto;
 import com.app.kokonut.revisedDocument.entity.QRevisedDocument;
-import com.app.kokonut.revisedDocument.entity.RevisedDocument;
 import com.app.kokonut.revisedDocumentFile.QRevisedDocumentFile;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;

@@ -17,9 +17,9 @@ import java.util.List;
  */
 public interface AlimtalkMessageRepositoryCustom {
 
-    Page<AlimtalkMessageListDto> findByAlimtalkMessagePage(AlimtalkMessageSearchDto alimtalkMessageSearchDto, int companyIdx, Pageable pageable);
+    Page<AlimtalkMessageListDto> findByAlimtalkMessagePage(AlimtalkMessageSearchDto alimtalkMessageSearchDto, Long companyId, Pageable pageable);
 
-    List<AlimtalkMessageInfoListDto> findByAlimtalkMessageInfoList(int companyIdx, String state); // state 값이 "1" 일 경우 status 성공, 실패, 발송취소, 발송요청성공, 발송요청실패 일 경우만 조회
+    List<AlimtalkMessageInfoListDto> findByAlimtalkMessageInfoList(Long companyId, String state); // state 값이 "1" 일 경우 status 성공, 실패, 발송취소, 발송요청성공, 발송요청실패 일 경우만 조회
 
     AlimtalkMessageResultDetailDto findByAlimtalkMessageResultDetail(String requestId);
 

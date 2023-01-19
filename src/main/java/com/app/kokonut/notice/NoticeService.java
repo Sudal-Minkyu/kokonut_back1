@@ -2,8 +2,7 @@ package com.app.kokonut.notice;
 
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.notice.dto.*;
-import com.app.kokonut.notice.entity.Notice;
+import com.app.kokonut.notice.dtos.*;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -91,7 +90,7 @@ public class NoticeService {
             // 접속 정보에서 관리자 정보 가져오기, idx, name
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-            Integer adminIdx = admin.getIdx();
+            Integer adminId = admin.getIdx();
             String adminName = admin.getName();
 
             if(noticeDetailDto.getIdx() == null){
@@ -100,7 +99,7 @@ public class NoticeService {
 
                 log.info("등록자, 등록일시, 내용 세팅");
                 Notice insertNotice = new Notice();
-                insertNotice.setAdminIdx(adminIdx);
+                insertNotice.setadminId(adminId);
                 insertNotice.setRegisterName(adminName);
                 insertNotice.setRegdate(LocalDateTime.now());
 
@@ -119,7 +118,7 @@ public class NoticeService {
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO048.getCode(), ResponseErrorCode.KO048.getDesc()));
                 }else{
                     log.info("수정자, 수정일시 세팅 내용 세팅");
-                    updateNotice.get().setModifierIdx(adminIdx);
+                    updateNotice.get().setModifierIdx(adminId);
                     updateNotice.get().setModifierName(adminName);
                     updateNotice.get().setModifyDate(LocalDateTime.now());
 

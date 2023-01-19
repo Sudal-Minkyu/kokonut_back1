@@ -36,8 +36,8 @@ public class TotalDbDownloadRestController {
     // 개인정보 DB 데이터 전체 다운로드 요청 - 기존코코넛 메서드 : /member/totalDbDownload/apply
     @PostMapping(value = "/userDbDataDownloadApply")
     @ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String, Object>> userDbDataDownloadApply(@RequestParam(name="otpValue", defaultValue = "") String otpValue,
                                                                        @RequestParam(name="reason", defaultValue = "") String reason) {
@@ -48,8 +48,8 @@ public class TotalDbDownloadRestController {
     // 개인정보 DB 데이터 다운로드 요청건 리스트 - 기존코코넛 메서드 : /member/totalDbDownload/list
     @PostMapping(value = "/userDbDataDownloadList")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String, Object>> userDbDataDownloadList(@RequestBody TotalDbDownloadSearchDto totalDbDownloadSearchDto, Pageable pageable) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
@@ -59,12 +59,12 @@ public class TotalDbDownloadRestController {
     // 개인정보 DB 데이터 다운로드 시작 - 기존코코넛 메서드 : /member/totalDbDownload/download
     @PostMapping(value = "/userDbDataDownloadStart")
     @ApiImplicitParams({
-//            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-//            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public void userDbDataDownloadStart(@RequestParam(name="idx", defaultValue = "") Integer idx, HttpServletRequest request, HttpServletResponse response) {
-//        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        totalDbDownloadService.userDbDataDownloadStart(idx, "woody2@kokonut.me", request, response);
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        totalDbDownloadService.userDbDataDownloadStart(idx, jwtFilterDto.getEmail(), request, response);
     }
 
 }

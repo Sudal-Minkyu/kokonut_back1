@@ -5,6 +5,8 @@ import com.app.kokonut.activityHistory.dto.ActivityHistorySearchDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +42,12 @@ public class ActivityHistoryRestController {
 
     // ActivityHistoryApiController -> 기존 코코넛의 kokonutApi 활동이력 조회 리펙토링
     // 기존 url : /api/activity-history , 변경 url : /api/activityHistory
+    @GetMapping("/getList")
     @ApiOperation(value="활동이력 조회", notes="활동이력 목록을 조회")
-    @GetMapping("/")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+    })
 //    public ResponseEntity<GetListResponse> getList(
 //            @ApiParam(value="유형 (1: 고객정보처리이력, 2: 관리자활동이력)", required=true, example="1") @RequestParam Integer type,
 //            HttpServletRequest request) {
@@ -126,7 +132,7 @@ public class ActivityHistoryRestController {
 //
 //            String fileName= excelService.generateFileName(fileNameToks);
 //            final String TYPE = "API";
-//            final Integer ADMIN_IDX = apiKeyInfo.getAdminIdx();
+//            final Integer ADMIN_IDX = apiKeyInfo.getadminId();
 //            final String REGISTER_NAME = apiKeyInfo.getRegisterName();
 //
 //            // 엑셀 다운로드
@@ -205,13 +211,13 @@ public class ActivityHistoryRestController {
 //            downloadHistoryMap.put("type", TYPE);
 //            downloadHistoryMap.put("fileName", fileName);
 //            downloadHistoryMap.put("reason", REASON);
-//            downloadHistoryMap.put("adminIdx", ADMIN_IDX);
+//            downloadHistoryMap.put("adminId", ADMIN_IDX);
 //            downloadHistoryMap.put("registerName", REGISTER_NAME);
 //
 //            downloadHistoryService.InsertDownloadHistory(downloadHistoryMap);
 //
 //            // 관리자 활동이력 저장
-//            activityHistoryService.InsertActivityHistory(type, apiKeyInfo.getCompanyIdx(), apiKeyInfo.getAdminIdx(), type == 1 ? 6 : 7, "", REASON, IP, 1);
+//            activityHistoryService.InsertActivityHistory(type, apiKeyInfo.getCompanyIdx(), apiKeyInfo.getadminId(), type == 1 ? 6 : 7, "", REASON, IP, 1);
 //
 //        } catch(Exception e) {
 //            dblogger.save(DBLogger.LEVEL.ERROR, API_KEY_IDX, IP, DBLogger.TYPE.READ, LOG_HEADER, e.getMessage());

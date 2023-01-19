@@ -24,7 +24,7 @@ public class CollectInformationDto implements Serializable {
     private Integer companyIdx;
 
     @ApiModelProperty("등록자")
-    private Integer adminIdx;
+    private Integer adminId;
 
     @ApiModelProperty("제목")
     private String title;

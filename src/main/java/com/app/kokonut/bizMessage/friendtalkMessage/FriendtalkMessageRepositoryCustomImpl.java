@@ -33,7 +33,7 @@ public class FriendtalkMessageRepositoryCustomImpl extends QuerydslRepositorySup
     }
 
     @Override
-    public Page<FriendtalkMessageListDto> findByFriendtalkMessagePage(FriendtalkMessageSearchDto friendtalkMessageSearchDto, int companyIdx, Pageable pageable) {
+    public Page<FriendtalkMessageListDto> findByFriendtalkMessagePage(FriendtalkMessageSearchDto friendtalkMessageSearchDto, Long companyId, Pageable pageable) {
 
         QFriendtalkMessage friendtalkMessage  = QFriendtalkMessage.friendtalkMessage;
 
@@ -69,7 +69,7 @@ public class FriendtalkMessageRepositoryCustomImpl extends QuerydslRepositorySup
     }
     
     @Override
-    public List<FriendtalkMessageInfoListDto> findByFriendtalkMessageInfoList(int companyIdx, String state) {
+    public List<FriendtalkMessageInfoListDto> findByFriendtalkMessageInfoList(Long companyId, String state) {
 
         QFriendtalkMessage friendtalkMessage = QFriendtalkMessage.friendtalkMessage;
         QCompany company = QCompany.company;

@@ -75,6 +75,7 @@ public class SecurityConfig {
             .antMatchers("/", "/swagger-ui/index.html/**").permitAll()
             .antMatchers("/v1/api/Admin/masterTest", "/v1/api/Admin/**").hasAnyAuthority("MASTER", "SYSTEM")
             .antMatchers("/v1/api/Admin/adminTest").hasAnyAuthority("ADMIN","SYSTEM")
+
             .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
             .and()
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);

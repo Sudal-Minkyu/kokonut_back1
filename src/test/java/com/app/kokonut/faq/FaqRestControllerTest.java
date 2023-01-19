@@ -10,7 +10,7 @@ import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;
 import com.app.kokonut.company.Company;
 import com.app.kokonut.company.CompanyRepository;
-import com.app.kokonut.faq.dto.FaqSearchDto;
+import com.app.kokonut.faq.dtos.FaqSearchDto;
 import com.google.gson.Gson;
 import org.apache.commons.codec.binary.Base32;
 import org.junit.jupiter.api.AfterEach;
@@ -87,7 +87,7 @@ class FaqRestControllerTest {
         Company company = new Company();
         company.setBusinessNumber(businessNum);
         company.setRegdate(LocalDateTime.now());
-        int companyIdx = companyRepository.save(company).getIdx();
+        Long companyId = companyRepository.save(company).getIdx();
 
         // 시스템 회원 등록
         Admin admin = Admin.builder()

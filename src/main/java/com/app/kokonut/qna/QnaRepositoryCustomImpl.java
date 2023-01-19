@@ -1,12 +1,11 @@
 package com.app.kokonut.qna;
 
 import com.app.kokonut.admin.entity.QAdmin;
-import com.app.kokonut.qna.dto.QnaDetailDto;
-import com.app.kokonut.qna.dto.QnaListDto;
-import com.app.kokonut.qna.dto.QnaSchedulerDto;
-import com.app.kokonut.qna.dto.QnaSearchDto;
+import com.app.kokonut.qna.dtos.QnaDetailDto;
+import com.app.kokonut.qna.dtos.QnaListDto;
+import com.app.kokonut.qna.dtos.QnaSchedulerDto;
+import com.app.kokonut.qna.dtos.QnaSearchDto;
 import com.app.kokonut.qna.entity.QQna;
-import com.app.kokonut.qna.entity.Qna;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -60,10 +59,10 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         QAdmin admin  = QAdmin.admin;
 
         JPQLQuery<QnaListDto> query = from(qna)
-                .leftJoin(admin).on(admin.idx.eq(qna.adminIdx))
+                .leftJoin(admin).on(admin.idx.eq(qna.adminId))
                 .select(Projections.constructor(QnaListDto.class,
                         qna.idx,
-                        qna.adminIdx,
+                        qna.adminId,
                         qna.title,
                         qna.type,
                         qna.regdate,
@@ -79,8 +78,8 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         if(qnaSearchDto.getType() != null){
             query.where(qna.type.eq(qnaSearchDto.getType()));
         }
-        if((qnaSearchDto.getAdminIdx() != null) &&(!"[SYSTEM]".equals(userRole))){
-            query.where(qna.adminIdx.eq(qnaSearchDto.getAdminIdx()));
+        if((qnaSearchDto.getadminId() != null) &&(!"[SYSTEM]".equals(userRole))){
+            query.where(qna.adminId.eq(qnaSearchDto.getadminId()));
         }
         if(qnaSearchDto.getStimeStart() != null){
             query.where(qna.regdate.goe(qnaSearchDto.getStimeStart()));
@@ -129,7 +128,7 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         JPQLQuery<QnaDetailDto> query = from(qna)
                 .select(Projections.constructor(QnaDetailDto.class,
                         qna.idx,
-                        qna.adminIdx,
+                        qna.adminId,
                         qna.title,
                         qna.content,
                         qna.fileGroupId,
@@ -142,8 +141,8 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
                         adminQ.name.as("maskingName"),
                         adminA.name.as("ansName")
                 ));
-        query.leftJoin(adminA).on(qna.adminIdx.eq(adminA.idx)); // 답변자 이름을 구하기 위한 조인
-        query.leftJoin(adminQ).on(qna.adminIdx.eq(adminQ.idx)); // 질문자 이름을 구하기 위한 조인
+        query.leftJoin(adminA).on(qna.adminId.eq(adminA.idx)); // 답변자 이름을 구하기 위한 조인
+        query.leftJoin(adminQ).on(qna.adminId.eq(adminQ.idx)); // 질문자 이름을 구하기 위한 조인
         query.where(qna.idx.eq(idx));
         return query.fetchOne();
     }
@@ -173,7 +172,7 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 //
 //                .select(Projections.constructor(QnaAnswerSaveDto.class,
 //                        qna.idx,
-//                        qna.adminIdx,
+//                        qna.adminId,
 //                        qna.title,
 //                        qna.content,
 //                        qna.fileGroupId,
@@ -186,8 +185,8 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 //                        adminQ.name.as("maskingName"),
 //                        adminA.name.as("ansName")
 //                ));
-//        query.leftJoin(adminA).on(qna.adminIdx.eq(adminA.idx)); // 답변자 이름을 구하기 위한 조인
-//        query.leftJoin(adminQ).on(qna.adminIdx.eq(adminQ.idx)); // 질문자 이름을 구하기 위한 조인
+//        query.leftJoin(adminA).on(qna.adminId.eq(adminA.idx)); // 답변자 이름을 구하기 위한 조인
+//        query.leftJoin(adminQ).on(qna.adminId.eq(adminQ.idx)); // 질문자 이름을 구하기 위한 조인
 //        query.where(qna.idx.eq(idx));
 //
 //        return null;

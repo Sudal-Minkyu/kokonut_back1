@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdminCompanyInfoDto {
 
-    private Integer adminIdx;
+    private Long adminId;
 
-    private Integer companyIdx;
+    private Long companyId;
 
-    private String businessNumber;
+    private String companyCode;
 
 }

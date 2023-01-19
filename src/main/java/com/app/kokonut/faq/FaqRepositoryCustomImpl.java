@@ -1,10 +1,9 @@
 package com.app.kokonut.faq;
 
-import com.app.kokonut.faq.dto.FaqAnswerListDto;
-import com.app.kokonut.faq.dto.FaqDetailDto;
-import com.app.kokonut.faq.dto.FaqListDto;
-import com.app.kokonut.faq.dto.FaqSearchDto;
-import com.app.kokonut.faq.entity.Faq;
+import com.app.kokonut.faq.dtos.FaqAnswerListDto;
+import com.app.kokonut.faq.dtos.FaqDetailDto;
+import com.app.kokonut.faq.dtos.FaqListDto;
+import com.app.kokonut.faq.dtos.FaqSearchDto;
 import com.app.kokonut.faq.entity.QFaq;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
@@ -120,7 +119,7 @@ public class FaqRepositoryCustomImpl extends QuerydslRepositorySupport implement
         JPQLQuery<FaqDetailDto> query = from(faq)
                 .select(Projections.constructor(FaqDetailDto.class,
                         faq.idx,
-                        faq.adminIdx,
+                        faq.adminId,
                         faq.question,
                         faq.answer,
                         faq.type,

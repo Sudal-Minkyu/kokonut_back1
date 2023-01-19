@@ -45,7 +45,7 @@ public class DownloadHistoryDTO implements Serializable {
      * 다운로드한 사람
      */
     @ApiModelProperty("다운로드한 사람")
-    private Integer adminIdx;
+    private Integer adminId;
 
 
     /**

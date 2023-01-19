@@ -33,7 +33,7 @@ public class CollectInformationRepositoryCustomImpl extends QuerydslRepositorySu
     }
 
     @Override
-    public Page<CollectInfoListDto> findCollectInfoPage(Integer companyIdx, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
+    public Page<CollectInfoListDto> findCollectInfoPage(Long companyIdx, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
         /*
            SELECT `IDX`
 	            , `TITLE`
@@ -50,22 +50,22 @@ public class CollectInformationRepositoryCustomImpl extends QuerydslRepositorySu
                 .select(Projections.constructor(CollectInfoListDto.class,
                         collectInfo.idx,
                         collectInfo.title,
-                        collectInfo.registerName,
-                        collectInfo.regdate
+                        collectInfo.insert_email,
+                        collectInfo.insert_date
                         ));
         query.where(collectInfo.companyIdx.eq(companyIdx));
         // 조건에 따른 where 절 추가
         if(collectInfoSearchDto.getSearchText() != null){
             query.where(collectInfo.title.contains(collectInfoSearchDto.getSearchText()));
         }
-        query.orderBy(collectInfo.regdate.desc());
+        query.orderBy(collectInfo.insert_date.desc());
 
         final List<CollectInfoListDto> collectInfoListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(collectInfoListDtos, pageable, query.fetchCount());
     }
 
     @Override
-    public CollectInfoDetailDto findCollectInfoByIdx(Integer idx) {
+    public CollectInfoDetailDto findCollectInfoByIdx(Long idx) {
         /*
            SELECT `IDX`
                 , `TITLE`

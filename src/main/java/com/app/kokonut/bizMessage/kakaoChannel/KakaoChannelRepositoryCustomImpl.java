@@ -3,7 +3,6 @@ package com.app.kokonut.bizMessage.kakaoChannel;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelByChannelIdListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelSearchDto;
-import com.app.kokonut.bizMessage.kakaoChannel.entity.KakaoChannel;
 import com.app.kokonut.bizMessage.kakaoChannel.entity.QKakaoChannel;
 import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
@@ -35,7 +34,7 @@ public class KakaoChannelRepositoryCustomImpl extends QuerydslRepositorySupport 
     }
 
     @Override
-    public Page<KakaoChannelListDto> findByKakaoChannelPage(KakaoChannelSearchDto kakaoChannelSearchDto, int companyIdx, Pageable pageable) {
+    public Page<KakaoChannelListDto> findByKakaoChannelPage(KakaoChannelSearchDto kakaoChannelSearchDto, Long companyId, Pageable pageable) {
 
         QKakaoChannel kakaoChannel  = QKakaoChannel.kakaoChannel;
         QCompany company  = QCompany.company;
@@ -75,7 +74,7 @@ public class KakaoChannelRepositoryCustomImpl extends QuerydslRepositorySupport 
     }
 
     @Override
-    public List<KakaoChannelByChannelIdListDto> findByKakaoChannelIdList(int companyIdx) {
+    public List<KakaoChannelByChannelIdListDto> findByKakaoChannelIdList(Long companyId) {
 
         QKakaoChannel kakaoChannel = QKakaoChannel.kakaoChannel;
         QCompany company = QCompany.company;

@@ -34,7 +34,7 @@ public class AlimtalkMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
     }
 
     @Override
-    public Page<AlimtalkMessageListDto> findByAlimtalkMessagePage(AlimtalkMessageSearchDto alimtalkMessageSearchDto, int companyIdx, Pageable pageable) {
+    public Page<AlimtalkMessageListDto> findByAlimtalkMessagePage(AlimtalkMessageSearchDto alimtalkMessageSearchDto, Long companyId, Pageable pageable) {
 
         QAlimtalkMessage alimtalkMessage  = QAlimtalkMessage.alimtalkMessage;
 
@@ -72,7 +72,7 @@ public class AlimtalkMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
     }
 
     @Override
-    public List<AlimtalkMessageInfoListDto> findByAlimtalkMessageInfoList(int companyIdx, String state) {
+    public List<AlimtalkMessageInfoListDto> findByAlimtalkMessageInfoList(Long companyId, String state) {
 
         QAlimtalkMessage alimtalkMessage = QAlimtalkMessage.alimtalkMessage;
         QCompany company = QCompany.company;

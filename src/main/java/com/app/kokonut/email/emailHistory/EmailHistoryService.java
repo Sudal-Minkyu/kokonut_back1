@@ -1,7 +1,6 @@
 package com.app.kokonut.email.emailHistory;
 
-import com.app.kokonut.email.emailHistory.dto.EmailHistoryDto;
-import com.app.kokonut.email.emailHistory.entity.EmailHistory;
+import com.app.kokonut.email.emailHistory.dtos.EmailHistoryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

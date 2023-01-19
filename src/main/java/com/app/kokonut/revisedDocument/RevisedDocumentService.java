@@ -3,17 +3,15 @@ package com.app.kokonut.revisedDocument;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.keydata.KeyDataService;
-import com.app.kokonut.revisedDocument.dto.RevDocSaveDto;
-import com.app.kokonut.revisedDocument.dto.RevDocListDto;
-import com.app.kokonut.revisedDocument.dto.RevDocSearchDto;
-import com.app.kokonut.revisedDocument.entity.RevisedDocument;
+import com.app.kokonut.revisedDocument.dtos.RevDocSaveDto;
+import com.app.kokonut.revisedDocument.dtos.RevDocListDto;
+import com.app.kokonut.revisedDocument.dtos.RevDocSearchDto;
 import com.app.kokonut.revisedDocumentFile.RevisedDocumentFile;
 import com.app.kokonut.revisedDocumentFile.RevisedDocumentFileRepository;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 import com.app.kokonut.common.component.AwsS3Util;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -95,11 +93,11 @@ public class RevisedDocumentService {
             // 접속 정보에서 idx 가져오기
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-            Integer adminIdx = admin.getIdx();
+            Integer adminId = admin.getIdx();
             String adminName = admin.getName();
             Integer companyIdx =admin.getCompanyIdx();
 
-            revDoc.setAdminIdx(adminIdx);
+            revDoc.setadminId(adminId);
             revDoc.setRegisterName(adminName);
             revDoc.setRegdate(LocalDateTime.now());
             revDoc.setCompanyIdx(companyIdx);
@@ -118,7 +116,7 @@ public class RevisedDocumentService {
                 }else{
                     log.info("첨부파일 있음. 파일 업로드 시작.");
                     RevisedDocumentFile revDocFile = new RevisedDocumentFile();
-                    revDocFile.setRegIdx(adminIdx);
+                    revDocFile.setRegIdx(adminId);
                     revDocFile.setRevisedDocumentIdx(savedIdx);
 
                     // file original name

@@ -2,11 +2,10 @@ package com.app.kokonut.faq;
 
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.faq.dto.FaqAnswerListDto;
-import com.app.kokonut.faq.dto.FaqDetailDto;
-import com.app.kokonut.faq.dto.FaqListDto;
-import com.app.kokonut.faq.dto.FaqSearchDto;
-import com.app.kokonut.faq.entity.Faq;
+import com.app.kokonut.faq.dtos.FaqAnswerListDto;
+import com.app.kokonut.faq.dtos.FaqDetailDto;
+import com.app.kokonut.faq.dtos.FaqListDto;
+import com.app.kokonut.faq.dtos.FaqSearchDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +82,7 @@ public class FaqService {
             // 접속 정보에서 관리자 정보 가져오기, idx, name
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-            Integer adminIdx = admin.getIdx();
+            Integer adminId = admin.getIdx();
             String adminName = admin.getName();
 
             if(faqDetailDto.getIdx() != null){
@@ -92,7 +91,7 @@ public class FaqService {
                 log.info("등록자, 등록일시, 내용 세팅");
                 Faq insertFaq = new Faq();
 
-                insertFaq.setAdminIdx(adminIdx);
+                insertFaq.setadminId(adminId);
                 insertFaq.setRegisterName(adminName);
                 insertFaq.setRegdate(LocalDateTime.now());
 
@@ -110,7 +109,7 @@ public class FaqService {
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO050.getCode(), ResponseErrorCode.KO050.getDesc()));
                 }else{
                     log.info("수정자, 수정일시 세팅");
-                    updateFaq.get().setModifierIdx(adminIdx);
+                    updateFaq.get().setModifierIdx(adminId);
                     updateFaq.get().setModifierName(adminName);
                     updateFaq.get().setModifyDate(LocalDateTime.now());
                     log.info("내용 세팅");

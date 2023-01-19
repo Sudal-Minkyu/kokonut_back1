@@ -49,10 +49,10 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, Integer>, JpaSpe
 //
 //     List<HashMap<String, Object>> SelectTestApiKeyExpiredList(HashMap<String, Object> paramMap); // 변경전 - RepositoryCustom 완료 @@@@
 //
-//     void UpdateBlockKey(int companyIdx); // 변경전 - Service 완료 @@@@
+//     void UpdateBlockKey(Long companyId); // 변경전 - Service 완료 @@@@
 //
-//     void UpdateTestKeyExpire(int companyIdx); // 변경전 - Service 완료 @@@@
+//     void UpdateTestKeyExpire(Long companyId); // 변경전 - Service 완료 @@@@
 //
-//     void DeleteApiKeyByCompanyIdx(int companyIdx); // 변경전 - Service 완료 @@@@
+//     void DeleteApiKeyByCompanyIdx(Long companyId); // 변경전 - Service 완료 @@@@
 
 }

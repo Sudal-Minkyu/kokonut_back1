@@ -37,7 +37,7 @@ public class AlimtalkMessageDto {
      * 보낸사람(관리자 키)
      */
     @ApiModelProperty("보낸사람(관리자 키)")
-    private Integer adminIdx;
+    private Integer adminId;
 
 
     /**

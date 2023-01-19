@@ -6,8 +6,7 @@ import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.common.component.AwsS3Util;
 import com.app.kokonut.configs.MailSender;
 import com.app.kokonut.keydata.KeyDataService;
-import com.app.kokonut.qna.dto.*;
-import com.app.kokonut.qna.entity.Qna;
+import com.app.kokonut.qna.dtos.*;
 import com.app.kokonut.qnaFile.QnaFile;
 import com.app.kokonut.qnaFile.QnaFileRepository;
 import com.app.kokonut.common.AjaxResponse;
@@ -67,7 +66,7 @@ public class QnaService {
         // 접속 정보에서 idx 가져오기
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-        qnaSearchDto.setAdminIdx(admin.getIdx());
+        qnaSearchDto.setadminId(admin.getIdx());
 
         Page<QnaListDto> qnaListDtos = qnaRepository.findQnaPage(userRole, qnaSearchDto, pageable);
 
@@ -99,7 +98,7 @@ public class QnaService {
                     return ResponseEntity.ok(res.success(data));
                 }else{
                     // 시스템 사용자가 아니면 본인이 작성한 문의글만 확인 가능.
-                    if(admin.getIdx() == qnaDetailDto.getAdminIdx()){
+                    if(admin.getIdx() == qnaDetailDto.getadminId()){
                         // TODO 첨부 파일 목록 조회
                         log.info("1:1 문의 게시글 상세보기 조회 성공 : " + qnaDetailDto.getIdx() + ", " + qnaDetailDto.getContent());
                         data.put("qnaDetailDto",  qnaDetailDto);
@@ -133,7 +132,7 @@ public class QnaService {
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
 
             // 1:1 문의 등록
-            qna.setAdminIdx(admin.getIdx());
+            qna.setadminId(admin.getIdx());
             qna.setTitle(qnaQuestionSaveDto.getTitle());
             qna.setContent(qnaQuestionSaveDto.getContent());
             qna.setType(qnaQuestionSaveDto.getType());
@@ -244,7 +243,7 @@ public class QnaService {
                 }else{
                     saveQna.setIdx(qnaAnswerSaveDto.getIdx());
                     // 문의 내용
-                    saveQna.setAdminIdx(savedQna.get().getAdminIdx());
+                    saveQna.setadminId(savedQna.get().getadminId());
                     saveQna.setTitle(savedQna.get().getTitle());
                     saveQna.setContent(savedQna.get().getContent());
                     saveQna.setType(savedQna.get().getType());

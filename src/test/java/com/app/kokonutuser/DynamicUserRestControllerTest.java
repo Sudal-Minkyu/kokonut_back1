@@ -80,7 +80,7 @@ class DynamicUserRestControllerTest {
         Company company = new Company();
         company.setBusinessNumber("123456");
         company.setRegdate(LocalDateTime.now());
-        int companyIdx = companyRepository.save(company).getIdx();
+        Long companyId = companyRepository.save(company).getIdx();
 
         Admin admin = Admin.builder()
                 .email(testemail)

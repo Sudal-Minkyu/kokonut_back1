@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -36,7 +37,7 @@ public class PersonalInfoProvisionDto {
      * 관리자 키 (=등록자)
      */
     @ApiModelProperty("관리자 키 (=등록자)")
-    private Integer adminIdx;
+    private Integer adminId;
 
 
     /**
@@ -80,14 +81,6 @@ public class PersonalInfoProvisionDto {
     @ApiModelProperty("정보제공 동의유형 (1: 고정필드, 2: 별도수집) (AGREE_YN 이 'Y'인 경우에만 저장)")
     private Integer agreeType;
 
-
-    /**
-     * 등록일
-     */
-    @ApiModelProperty("등록일")
-    private Date regdate;
-
-
     /**
      * 목적
      */
@@ -106,22 +99,14 @@ public class PersonalInfoProvisionDto {
      * 제공 시작일
      */
     @ApiModelProperty("제공 시작일")
-    private Date startDate;
+    private LocalDateTime startDate;
 
 
     /**
      * 제공 만료일 (=제공 시작일+제공 기간)
      */
     @ApiModelProperty("제공 만료일 (=제공 시작일+제공 기간)")
-    private Date expDate;
-
-
-    /**
-     * 제공 기간 (일)
-     */
-    @ApiModelProperty("제공 기간 (일)")
-    private Integer period;
-
+    private LocalDateTime expDate;
 
     /**
      * 보유기간 (사용후 즉시 삭제: IMMEDIATELY, 한달: MONTH, 일년: YEAR)
@@ -156,6 +141,13 @@ public class PersonalInfoProvisionDto {
      */
     @ApiModelProperty("제공 대상 상태 (전체: ALL, 선택완료: SELETED)")
     private String targetStatus;
+
+    /**
+     * 등록일
+     */
+    @ApiModelProperty("등록일")
+    private LocalDateTime insert_date;
+
 
     private String adminName;
 }

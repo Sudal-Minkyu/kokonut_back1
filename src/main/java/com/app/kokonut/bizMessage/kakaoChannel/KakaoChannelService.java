@@ -4,7 +4,6 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.bizMessage.alimtalkTemplate.AlimtalkTemplateRepository;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelSearchDto;
-import com.app.kokonut.bizMessage.kakaoChannel.entity.KakaoChannel;
 import com.app.kokonut.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
 import com.app.kokonut.common.AjaxResponse;
@@ -54,7 +53,7 @@ public class KakaoChannelService {
         AjaxResponse res = new AjaxResponse();
 
         // 해당 이메일을 통해 회사 IDX 조회
-        int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
 
         // 사용자가 체험하기를 제외한 모든 채널 조회후 업데이트??..
         if(!email.equals("test@kokonut.me")) {
@@ -147,7 +146,7 @@ public class KakaoChannelService {
 
             if(naverCloudPlatformResultDto.getResultCode().equals(200)) {
                 // 카카오 채널 등록 INSERT
-                int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+                Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
 
                 KakaoChannel kakaoChannel = new KakaoChannel();
                 kakaoChannel.setChannelId(channelId);

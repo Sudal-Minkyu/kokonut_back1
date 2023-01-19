@@ -55,7 +55,7 @@ public class CollectInformationService {
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
 
-        Integer companyIdx = admin.getCompanyIdx();
+        Long companyIdx = admin.getCompanyId();
         // TODO 메뉴 권한에 대한 체크는 프론트 단에서 진행하기로 함.
         if (!"[MASTER]".equals(userRole) && !"[ADMIN]".equals(userRole)) {
             log.error("접근권한이 없습니다. userRole : " + userRole);
@@ -70,7 +70,7 @@ public class CollectInformationService {
     /**
      * 개인정보처리방침 조회
      */
-    public ResponseEntity<Map<String,Object>> collectInfoDetail(String userRole, Integer idx) {
+    public ResponseEntity<Map<String,Object>> collectInfoDetail(String userRole, Long idx) {
         log.info("collectInfoDetail 호출, userRole : " + userRole);
 
         AjaxResponse res = new AjaxResponse();
@@ -126,13 +126,13 @@ public class CollectInformationService {
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
             }else{
                 CollectInformation saveCollectInfo = new CollectInformation();
-                Integer adminIdx = admin.getIdx();
-                String adminName = admin.getName();
+                Long adminId = admin.getAdminId();
+                String adminEmail = admin.getKnEmail();
 
                 ActivityCode activityCode;
-                Integer companyIdx = adminCompanyInfoDto.getCompanyIdx();
+                Long companyId = adminCompanyInfoDto.getCompanyId();
                 String ip = CommonUtil.clientIp();
-                String businessNumber = adminCompanyInfoDto.getBusinessNumber();
+                String companyCode = adminCompanyInfoDto.getCompanyCode();
 
                 if(collectInfoDetailDto.getIdx() != null){
                     // 수정
@@ -141,16 +141,16 @@ public class CollectInformationService {
                     saveCollectInfo = collectInfoRepository.findById(collectInfoDetailDto.getIdx())
                             .orElseThrow(() -> new IllegalArgumentException("개인정보처리방침 수정 실패, 게시글을 발견할 수 없습니다. 요청 idx : " + collectInfoDetailDto.getIdx()));
                     log.info("개인정보처리방침 수정 - 수정자, 수정일시 세팅");
-                    saveCollectInfo.setModifierIdx(adminIdx);
-                    saveCollectInfo.setModifierName(adminName);
-                    saveCollectInfo.setModifyDate(LocalDateTime.now());
+                    saveCollectInfo.setModify_id(adminId);
+                    saveCollectInfo.setModify_email(adminEmail);
+                    saveCollectInfo.setModify_date(LocalDateTime.now());
                 }else {
                     // 등록
                     activityCode = ActivityCode.AC_28; // 개인정보 처리방침 추가
                     log.info("개인정보처리방침 등록 - 등록자, 등록일시 세팅");
-                    saveCollectInfo.setAdminIdx(adminIdx);
-                    saveCollectInfo.setRegisterName(adminName);
-                    saveCollectInfo.setRegdate(LocalDateTime.now());
+                    saveCollectInfo.setadminId(adminId);
+                    saveCollectInfo.setInsert_email(adminEmail);
+                    saveCollectInfo.setInsert_date(LocalDateTime.now());
                 }
 
                 log.info("개인정보처리방침 등록/수정 - 내용 세팅");
@@ -162,20 +162,20 @@ public class CollectInformationService {
                 }
 
                 // 활동이력 -> 비정상 모드
-                Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
-                        , businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+                Long activityHistoryId = activityHistoryService.insertActivityHistory(2, companyId, adminId, activityCode
+                        , companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
                 try{
                     log.info("개인정보처리방침 등록/수정 시작.");
-                    Integer savedIdx = collectInfoRepository.save(saveCollectInfo).getIdx();
+                    Long savedIdx = collectInfoRepository.save(saveCollectInfo).getIdx();
                     log.info("개인정보처리방침 등록/수정 완료. idx : " + savedIdx);
                     // 활동이력 -> 정상 모드
-                    activityHistoryService.updateActivityHistory(activityHistoryIDX,
-                            businessNumber+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
+                    activityHistoryService.updateActivityHistory(activityHistoryId,
+                            companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
                     return ResponseEntity.ok(res.success(data));
                 } catch(Exception e){
                     // 활동이력 -> 정상 모드
-                    activityHistoryService.updateActivityHistory(activityHistoryIDX,
-                            businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
+                    activityHistoryService.updateActivityHistory(activityHistoryId,
+                            companyCode+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
                     e.getStackTrace();
                     log.error("개인정보처리방침 등록/수정 실패");
                     // TODO errorCode 추가 -  개인정보 처리방침 저장을 실패했습니다. 시스템 관리자에게 문의해주세요.
@@ -189,7 +189,7 @@ public class CollectInformationService {
      * 개인정보처리방침 삭제
      */
     @Transactional
-    public ResponseEntity<Map<String, Object>> collectInfoDelete(String userRole, String email, Integer idx) {
+    public ResponseEntity<Map<String, Object>> collectInfoDelete(String userRole, String email, Long idx) {
         log.info("collectInfoDelete 호출, userRole : " + userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
@@ -215,26 +215,26 @@ public class CollectInformationService {
                     log.info("개인정보 처리방침 삭제 시작.");
 
                     ActivityCode activityCode = ActivityCode.AC_29;
-                    Integer adminIdx = admin.getIdx();
-                    Integer companyIdx = adminCompanyInfoDto.getCompanyIdx();
+                    Long adminId = admin.getAdminId();
+                    Long companyId = adminCompanyInfoDto.getCompanyId();
                     String ip = CommonUtil.clientIp();
-                    String businessNumber = adminCompanyInfoDto.getBusinessNumber();
+                    String companyCode = adminCompanyInfoDto.getCompanyCode();
 
                     // 활동이력 -> 비정상 모드
-                    Integer activityHistoryIDX = activityHistoryService.insertActivityHistory(2, companyIdx, adminIdx, activityCode
-                            , businessNumber+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+                    Long activityHistoryId = activityHistoryService.insertActivityHistory(2, companyId, adminId, activityCode
+                            , companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
 
                     collectInfoRepository.deleteById(idx);
                     if(!collectInfoRepository.existsById(idx)){
                         // 활동이력 -> 정상 모드
-                        activityHistoryService.updateActivityHistory(activityHistoryIDX,
-                                businessNumber+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
+                        activityHistoryService.updateActivityHistory(activityHistoryId,
+                                companyCode+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
                         log.info("개인정보 처리방침 삭제 완료. idx : "+idx);
                         return ResponseEntity.ok(res.success(data));
                     }else{
                         // 활동이력 -> 정상 모드
-                        activityHistoryService.updateActivityHistory(activityHistoryIDX,
-                                businessNumber+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
+                        activityHistoryService.updateActivityHistory(activityHistoryId,
+                                companyCode+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
                         // TODO errorCode 추가 -  개인정보 처리방침 삭제 실패했습니다. 시스템 관리자에게 문의해주세요.
                         log.error("개인정보 처리방침 삭제에 실패했습니다. 관리자에게 문의해주세요. idx : " + idx);
                         return ResponseEntity.ok(res.fail(ResponseErrorCode.KO052.getCode(), ResponseErrorCode.KO052.getDesc()));

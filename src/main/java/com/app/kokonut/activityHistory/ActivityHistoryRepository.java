@@ -16,7 +16,7 @@ public interface ActivityHistoryRepository extends JpaRepository<ActivityHistory
 //    public void UpdateActivityHistoryReasonByIdx(HashMap<String, Object> paramMap);
 
 
-//    public void DeleteActivityHistoryByCompanyIdx(int companyIdx);
+//    public void DeleteActivityHistoryByCompanyIdx(Long companyId);
 //
 //    public void DeleteExpiredActivityHistory(Map<String, Object> map);
 

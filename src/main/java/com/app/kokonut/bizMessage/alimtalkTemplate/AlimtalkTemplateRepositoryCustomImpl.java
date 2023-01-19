@@ -34,7 +34,7 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
     }
 
     @Override
-    public Page<AlimtalkTemplateListDto> findByAlimtalkTemplatePage(AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, int companyIdx, Pageable pageable) {
+    public Page<AlimtalkTemplateListDto> findByAlimtalkTemplatePage(AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, Long companyId, Pageable pageable) {
 
         QAlimtalkTemplate alimtalkTemplate  = QAlimtalkTemplate.alimtalkTemplate;
 
@@ -71,7 +71,7 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
     }
 
     @Override
-    public List<AlimtalkTemplateInfoListDto> findByAlimtalkTemplateInfoList(int companyIdx, String channelId, String state) {
+    public List<AlimtalkTemplateInfoListDto> findByAlimtalkTemplateInfoList(Long companyId, String channelId, String state) {
 
         QAlimtalkTemplate alimtalkTemplate = QAlimtalkTemplate.alimtalkTemplate;
         QCompany company = QCompany.company;
@@ -92,7 +92,7 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
     }
 
     @Override
-    public List<AlimtalkMessageTemplateInfoListDto> findByAlimtalkMessageTemplateInfoList(int companyIdx, String channelId) {
+    public List<AlimtalkMessageTemplateInfoListDto> findByAlimtalkMessageTemplateInfoList(Long companyId, String channelId) {
 
         QAlimtalkTemplate alimtalkTemplate = QAlimtalkTemplate.alimtalkTemplate;
         QCompany company = QCompany.company;

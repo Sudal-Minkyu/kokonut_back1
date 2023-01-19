@@ -49,6 +49,6 @@ public class PersonalInfoProvisionHistory implements Serializable {
      */
     @Column(name = "ADMIN_IDX")
     @ApiModelProperty("관리자 키 (=수정자)")
-    private Integer adminIdx;
+    private Integer adminId;
 
 }

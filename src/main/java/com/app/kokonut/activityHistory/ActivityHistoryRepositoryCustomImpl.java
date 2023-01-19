@@ -265,7 +265,7 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
                 .select(Projections.constructor(ActivityHistoryInfoListDto.class,
                     activityHistory.idx,
                     activityHistory.companyIdx,
-                    activityHistory.adminIdx,
+                    activityHistory.adminId,
                     activityHistory.activityCode,
                     activityHistory.activityDetail,
                     activityHistory.reason,

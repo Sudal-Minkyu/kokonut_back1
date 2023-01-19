@@ -4,8 +4,7 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.configs.MailSender;
 import com.app.kokonut.admin.AdminService;
-import com.app.kokonut.qna.dto.QnaSchedulerDto;
-import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.qna.dtos.QnaSchedulerDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

@@ -24,24 +24,24 @@ public class KokonutRemoveService {
 
 	/**
 	 * REMOVE DB > tableName 테이블에 회원정보 저장
-	 * @param businessNumber : 테이블 명
+	 * @param companyCode : 테이블 명
 	 * @param nameString 컬럼 리스트
 	 * @param valueString 값 리스트
 	 * @return boolean
 	 * 기존 코코넛 : InsertRemoveDbUser
 	 */
 	@Transactional
-	public boolean insertRemoveTable(String businessNumber, String nameString, String valueString) {
+	public boolean insertRemoveTable(String companyCode, String nameString, String valueString) {
 		log.info("insertRemoveTable 호출");
 
-		log.info("businessNumber : "+businessNumber);
+		log.info("companyCode : "+companyCode);
 		log.info("nameString : "+nameString);
 		log.info("valueString : "+valueString);
 
 		boolean isSuccess = false;
 
 		try {
-			String insertQuery = "INSERT INTO `" + businessNumber + "` " +
+			String insertQuery = "INSERT INTO `" + companyCode + "` " +
 					nameString +
 					" VALUES " +
 					valueString;
@@ -49,9 +49,9 @@ public class KokonutRemoveService {
 			dynamicRemoveRepositoryCustom.userCommonTable(insertQuery);
 
 			isSuccess = true;
-			log.info("삭제할 유저저장 성공 : "+businessNumber);
+			log.info("삭제할 유저저장 성공 : "+companyCode);
 		} catch (Exception e) {
-			log.error("삭제할 유저저장 에러 : "+businessNumber);
+			log.error("삭제할 유저저장 에러 : "+companyCode);
 		}
 
 		return isSuccess;

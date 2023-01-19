@@ -13,10 +13,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@EqualsAndHashCode(of = "adminIdx")
+@EqualsAndHashCode(of = "adminId")
 @Data
 @NoArgsConstructor
-@Table(name="admin_remove")
+@Table(name="kn_admin_remove")
 public class AdminRemove implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,35 +26,35 @@ public class AdminRemove implements Serializable {
      */
     @Id
     @ApiModelProperty("ADMIN IDX")
-    @Column(name = "ADMIN_IDX", nullable = false)
-    private Integer adminIdx;
+    @Column(name = "admin_id", nullable = false)
+    private Integer adminId;
 
     /**
      * 이메일
      */
-    @Column(name = "EMAIL")
+    @Column(name = "ar_email")
     @ApiModelProperty("이메일")
-    private String email;
+    private String arEmail;
 
     /**
      * 탈퇴 사유(1:계정변경, 2:서비스 이용 불만, 3:사용하지 않음, 4:기타)
      */
-    @Column(name = "REASON")
+    @Column(name = "ar_reason")
     @ApiModelProperty("탈퇴 사유(1:계정변경, 2:서비스 이용 불만, 3:사용하지 않음, 4:기타)")
-    private Integer reason;
+    private Integer arReason;
 
     /**
      * 탈퇴 사유
      */
     @ApiModelProperty("탈퇴 사유")
-    @Column(name = "REASON_DETAIL")
-    private String reasonDetail;
+    @Column(name = "ar_reason_detail")
+    private String ar_reason_detail;
 
     /**
      * 탈퇴일시
      */
     @ApiModelProperty("탈퇴일시")
-    @Column(name = "REGDATE", nullable = false)
-    private Date regdate;
+    @Column(name = "ar_withdrawal_date", nullable = false)
+    private Date arWithdrawalDate;
 
 }

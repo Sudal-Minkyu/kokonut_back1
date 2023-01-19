@@ -18,6 +18,7 @@ import com.app.kokonut.company.Company;
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.companyFile.CompanyFile;
 import com.app.kokonut.companyFile.CompanyFileRepository;
+import com.app.kokonut.configs.KeyGenerateService;
 import com.app.kokonut.keydata.KeyDataService;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
@@ -45,6 +46,7 @@ import java.io.IOException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -62,12 +64,12 @@ public class AuthService {
     @Value("${kokonut.aws.s3.businessS3Folder}")
     private String businessS3Folder;
 
-//    @Value("${kokonut.aws.s3.url}")
     private final String AWSURL;
 
     private final AwsS3Util awsS3Util;
     private final AwsKmsUtil awsKmsUtil;
 
+    private final KeyGenerateService keyGenerateService;
     private final AdminRepository adminRepository;
 
     private final CompanyRepository companyRepository;
@@ -81,13 +83,15 @@ public class AuthService {
     private final GoogleOTP googleOTP;
 
     @Autowired
-    public AuthService(KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository, AwsKmsUtil awsKmsUtil, CompanyRepository companyRepository, CompanyFileRepository companyFileRepository,
+    public AuthService(KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository,
+                       AwsKmsUtil awsKmsUtil, KeyGenerateService keyGenerateService, CompanyRepository companyRepository, CompanyFileRepository companyFileRepository,
                        AwsKmsHistoryRepository awsKmsHistoryRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
                        StringRedisTemplate redisTemplate, GoogleOTP googleOTP) {
         this.awsS3Util = awsS3Util;
         this.adminRepository = adminRepository;
         this.awsKmsUtil = awsKmsUtil;
+        this.keyGenerateService = keyGenerateService;
         this.companyRepository = companyRepository;
         this.companyFileRepository = companyFileRepository;
         this.awsKmsHistoryRepository = awsKmsHistoryRepository;
@@ -210,19 +214,22 @@ public class AuthService {
             }
 //        }
 
+        String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
+        company.setCompanyCode(keyGenerateService.keyGenerate("kn_company", "kokonut"+nowDate, "system"));
         company.setCompanyName(signUp.getCompanyName());
-        company.setRepresentative(signUp.getRepresentative());
+        company.setCompanyRepresentative(signUp.getRepresentative());
         company.setCompanyTel(signUp.getCompanyTel());
-        company.setBusinessType(signUp.getBusinessType());
-        company.setBusinessNumber(businessNumber);
+        company.setCompanyBusinessType(signUp.getBusinessType());
+        company.setCompanyBusinessNumber(businessNumber);
         company.setCompanyAddress(signUp.getCompanyAddress());
         company.setCompanyAddressNumber(signUp.getCompanyAddressNumber());
         company.setCompanyAddressDetail(signUp.getCompanyAddressDetail());
-        company.setEncryptText(encryptText);
-        company.setDataKey(dataKey);
-        company.setRegdate(LocalDateTime.now());
+        company.setCompanyEncryptText(encryptText);
+        company.setCompanyDataKey(dataKey);
+        company.setInsert_email(signUp.getEmail());
+        company.setInsert_date(LocalDateTime.now());
         Company saveCompany = companyRepository.save(company);
-        log.info("기업 정보 저장 saveCompany : "+saveCompany.getIdx());
+        log.info("기업 정보 저장 saveCompany : "+saveCompany.getCompanyId());
 
         log.info("KMS 발급 이력 저장(Insert) 로직 시작");
         AwsKmsHistory awsKmsHistory = new AwsKmsHistory();
@@ -237,25 +244,27 @@ public class AuthService {
         Integer state = 1; // 0:정지(권한해제), 1:사용, 2:로그인제한(비번5회오류), 3:탈퇴, 4:휴면계정
 
         Admin admin = new Admin();
-        admin.setEmail(signUp.getEmail());
-        admin.setPassword(passwordEncoder.encode(signUp.getPassword()));
-        admin.setCompanyIdx(saveCompany.getIdx());
-        admin.setMasterIdx(0); // 사업자는 0, 관리자가 등록한건 관리자IDX ?
-        admin.setName(signUp.getName());
-        admin.setPhoneNumber(signUp.getPhoneNumber());
-        admin.setState(state);
-        admin.setUserType(userType);
-        admin.setRoleName(AuthorityRole.ROLE_MASTER);
-        admin.setRegdate(LocalDateTime.now());
+        admin.setKnEmail(signUp.getEmail());
+        admin.setKnPassword(passwordEncoder.encode(signUp.getPassword()));
+        admin.setCompanyId(saveCompany.getCompanyId());
+        admin.setMasterId(0L); // 사업자는 0, 관리자가 등록한건 관리자IDX ?
+        admin.setKnName(signUp.getName());
+        admin.setKnPhoneNumber(signUp.getPhoneNumber());
+        admin.setKnState(state);
+        admin.setKnUserType(userType);
+        admin.setARoleCode(AuthorityRole.ROLE_MASTER);
+        admin.setInsert_email(signUp.getEmail());
+        admin.setInsert_date(LocalDateTime.now());
         Admin saveAdmin = adminRepository.save(admin);
-        log.info("사용자 정보 저장 saveAdmin : "+saveAdmin.getIdx());
+        log.info("사용자 정보 저장 saveAdmin : "+saveAdmin.getAdminId());
+
 
         if(multipartFile != null && !signUp.getEmail().equals("kokonut@kokonut.me")) {
             log.info("사업자등록증 업로드 시작 multipartFile : "+multipartFile);
             log.info("CompanyFile 저장(Insert) 로직 시작");
 
             CompanyFile companyFile = new CompanyFile();
-            companyFile.setCompanyIdx(saveCompany.getIdx());
+            companyFile.setCompanyId(saveCompany.getCompanyId());
 
             // 파일 오리지널 Name
             String originalFilename = Normalizer.normalize(Objects.requireNonNull(multipartFile.getOriginalFilename()), Normalizer.Form.NFC);
@@ -283,8 +292,8 @@ public class AuthService {
             log.info("filePath : "+filePath);
             companyFile.setCfPath(filePath);
 
-            companyFile.setRegIdx(saveAdmin.getIdx());
-            companyFile.setRegDate(LocalDateTime.now());
+            companyFile.setInsert_email(saveAdmin.getKnEmail());
+            companyFile.setInsert_date(LocalDateTime.now());
 
             // S3 파일업로드
             String storedFileName = awsS3Util.imageFileUpload(multipartFile, fileName, businessS3Folder+date.format(new Date()));
@@ -326,7 +335,7 @@ public class AuthService {
             response.addCookie(cookie);
         }
 
-        data.put("email", saveAdmin.getEmail());
+        data.put("email", saveAdmin.getKnEmail());
 
         return ResponseEntity.ok(res.success(data));
     }
@@ -366,14 +375,14 @@ public class AuthService {
                     // 이때 authentication은 인증 여부를 확인하는 authenticated 값이 false
                     UsernamePasswordAuthenticationToken authenticationToken = login.toAuthentication();
 
-                    if(optionalAdmin.get().getOtpKey() == null){
+                    if(optionalAdmin.get().getKnOtpKey() == null){
                         log.error("등록된 OTP가 존재하지 않습니다. 구글 OTP 2단계 인증을 등록해주세요.");
                         return ResponseEntity.ok(res.fail(ResponseErrorCode.KO011.getCode(),ResponseErrorCode.KO011.getDesc()));
                     }
                     else {
 
                         // OTP 검증 절차
-                        boolean auth = googleOTP.checkCode(login.getOtpValue(), optionalAdmin.get().getOtpKey());
+                        boolean auth = googleOTP.checkCode(login.getOtpValue(), optionalAdmin.get().getKnOtpKey());
                         log.info("auth : " + auth);
 
                         if (!auth) {
@@ -571,7 +580,7 @@ public class AuthService {
         }
         else {
 
-            log.info("OTP Key 등록 할 이메일 : " + optionalAdmin.get().getEmail());
+            log.info("OTP Key 등록 할 이메일 : " + optionalAdmin.get().getKnEmail());
 
             //현재암호비교
             if (!passwordEncoder.matches(googleOtpSave.getPassword(), optionalAdmin.get().getPassword())){
@@ -589,11 +598,10 @@ public class AuthService {
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO013.getCode(), ResponseErrorCode.KO013.getDesc()));
             }
 
-            optionalAdmin.get().setModifierIdx(optionalAdmin.get().getModifierIdx());
-            optionalAdmin.get().setModifierName(optionalAdmin.get().getName());
+            optionalAdmin.get().setModify_email(optionalAdmin.get().getKnEmail());
             optionalAdmin.get().setModifyDate(LocalDateTime.now());
 
-            optionalAdmin.get().setOtpKey(googleOtpSave.getOtpKey());
+            optionalAdmin.get().setKnOtpKey(googleOtpSave.getOtpKey());
             adminRepository.save(optionalAdmin.get());
 
             // 변경이후 시스템관리자에게 메일보내기 시작 추가하기 12/05 Woody

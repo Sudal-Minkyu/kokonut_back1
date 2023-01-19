@@ -1,7 +1,7 @@
 package com.app.kokonut.email.email;
 
-import com.app.kokonut.email.email.dto.EmailDetailDto;
-import com.app.kokonut.email.email.dto.EmailListDto;
+import com.app.kokonut.email.email.dtos.EmailDetailDto;
+import com.app.kokonut.email.email.dtos.EmailListDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -25,7 +25,7 @@ public interface EmailRepositoryCustom {
     //  SelectEmailList 메일 리스트 조회 emailDao.SelectEmailList(paramMap);
     //  SelectEmailListCount 메일 리스트 Count 조회 emailDao.SelectEmailListCount(paramMap);
     //  SendEmail 메일 전송 emailGroupDao.SelectEmailGroupByIdx(Integer.parseInt(emailGroupIdx));
-    //      adminDao.SelectAdminByIdx(adminIdx);
+    //      adminDao.SelectAdminByIdx(adminId);
     //      emailHistoryService.insert(historyInsertMap)
     //      emailDao.InsertEmail(paramMap)
 }

@@ -20,7 +20,7 @@ public class TestApiKeyExpiredListDto {
 
     private Integer idx;
     private Integer companyIdx;
-    private Integer adminIdx;
+    private Integer adminId;
     private String key;
     private Date regdate;
 

@@ -1,7 +1,7 @@
 package com.app.kokonut.revisedDocument;
 
-import com.app.kokonut.revisedDocument.dto.RevDocListDto;
-import com.app.kokonut.revisedDocument.dto.RevDocSearchDto;
+import com.app.kokonut.revisedDocument.dtos.RevDocListDto;
+import com.app.kokonut.revisedDocument.dtos.RevDocSearchDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

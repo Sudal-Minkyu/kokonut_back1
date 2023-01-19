@@ -17,9 +17,9 @@ import java.util.List;
 public interface KakaoChannelRepositoryCustom {
 
     // 카카오 채널 리스트 호출 -> 기존의 코코넛 메서트 : SelectKakaoTalkChannelList
-    Page<KakaoChannelListDto> findByKakaoChannelPage(KakaoChannelSearchDto kakaoChannelSearchDto, int companyIdx, Pageable pageable);
+    Page<KakaoChannelListDto> findByKakaoChannelPage(KakaoChannelSearchDto kakaoChannelSearchDto, Long companyId, Pageable pageable);
 
     // 카카오 채널ID 리스트 조회
-    List<KakaoChannelByChannelIdListDto> findByKakaoChannelIdList(int companyIdx);
+    List<KakaoChannelByChannelIdListDto> findByKakaoChannelIdList(Long companyId);
 
 }

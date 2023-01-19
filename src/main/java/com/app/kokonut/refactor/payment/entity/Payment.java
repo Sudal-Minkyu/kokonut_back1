@@ -35,7 +35,7 @@ public class Payment implements Serializable {
      */
     @Column(name = "ADMIN_IDX")
     @ApiModelProperty("결제자 키(관리자)")
-    private Integer adminIdx;
+    private Integer adminId;
 
     /**
      * 결제UID

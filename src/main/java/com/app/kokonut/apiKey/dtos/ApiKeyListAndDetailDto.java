@@ -21,7 +21,7 @@ public class ApiKeyListAndDetailDto {
 
     private Integer idx;
     private Integer companyIdx;
-    private Integer adminIdx;
+    private Integer adminId;
     private String key;
     private LocalDateTime regdate;
 

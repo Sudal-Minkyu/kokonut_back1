@@ -2,15 +2,19 @@ package com.app.kokonut.bizMessage.friendtalkMessage;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@Data
 @Entity
-@Table(name = "friendtalk_message")
+@EqualsAndHashCode(of = "fmId")
+@Data
+@NoArgsConstructor
+@Table(name="kn_friendtalk_message")
 public class FriendtalkMessage implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,78 +24,85 @@ public class FriendtalkMessage implements Serializable {
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "fm_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
+    private Long fmId;
 
     /**
-     * 회사 키
+     * 회사(Company) 키
      */
-    @ApiModelProperty("회사 키")
-    @Column(name = "COMPANY_IDX")
-    private Integer companyIdx;
-
-    /**
-     * 보낸사람(관리자 키)
-     */
-    @Column(name = "ADMIN_IDX")
-    @ApiModelProperty("보낸사람(관리자 키)")
-    private Integer adminIdx;
-
-    /**
-     * 채널ID
-     */
-    @ApiModelProperty("채널ID")
-    @Column(name = "CHANNEL_ID", nullable = false)
-    private String channelId;
-
-    /**
-     * 요청ID(예약발송시 reserveId로 사용)
-     */
-    @Column(name = "REQUEST_ID", nullable = false)
-    @ApiModelProperty("요청ID(예약발송시 reserveId로 사용)")
-    private String requestId;
-
-    /**
-     * 발송타입-즉시발송(immediate),예약발송(reservation)
-     */
-    @Column(name = "TRANSMIT_TYPE")
-    @ApiModelProperty("발송타입-즉시발송(immediate),예약발송(reservation)")
-    private String transmitType;
-
-    /**
-     * 예약발송일시
-     */
-    @ApiModelProperty("예약발송일시")
-    @Column(name = "RESERVATION_DATE")
-    private LocalDateTime reservationDate;
-
-    /**
-     * 발송상태(init-초기상태,[메시지발송요청조회]success-성공,processing-발송중,reserved-예약중,scheduled-스케줄중,fail-실패 [예약메시지]ready-발송 대기,processing-발송 요청중,canceled-발송 취소,fail-발송 요청 실패,done-발송 요청 성공,stale-발송 요청 실패 (시간 초과))
-     */
-    @Column(name = "STATUS")
-    @ApiModelProperty("발송상태(init-초기상태,[메시지발송요청조회]success-성공,processing-발송중,reserved-예약중,scheduled-스케줄중,fail-실패 [예약메시지]ready-발송 대기,processing-발송 요청중,canceled-발송 취소,fail-발송 요청 실패,done-발송 요청 성공,stale-발송 요청 실패 (시간 초과))")
-    private String status;
+    @Column(name = "company_id")
+    @ApiModelProperty("회사(Company) 키")
+    private Long companyId;
 
     /**
      * 등록자
      */
     @ApiModelProperty("등록자")
-    @Column(name = "REGIDX", nullable = false)
-    private Integer regIdx;
+    @Column(name = "admin_id")
+    private Long adminId;
 
     /**
-     * 등록일시
+     * 채널ID
      */
-    @ApiModelProperty("등록일시")
-    @Column(name = "REGDATE", nullable = false)
-    private LocalDateTime regdate;
+    @ApiModelProperty("채널ID")
+    @Column(name = "kc_channel_id", nullable = false)
+    private String kcChannelId;
 
     /**
-     * 업데이트일시
+     * 요청ID(예약발송시 reserveId로 사용)
      */
-    @ApiModelProperty("업데이트일시")
-    @Column(name = "MODIFY_DATE")
-    private LocalDateTime modifyDate;
+    @Column(name = "fm_request_id", nullable = false)
+    @ApiModelProperty("요청ID(예약발송시 reserveId로 사용)")
+    private String fmRequestId;
+
+    /**
+     * 발송타입-즉시발송(immediate),예약발송(reservation)
+     */
+    @Column(name = "fm_transmit_type")
+    @ApiModelProperty("발송타입-즉시발송(immediate),예약발송(reservation)")
+    private String fmTransmitType;
+
+    /**
+     * 예약발송일시
+     */
+    @ApiModelProperty("예약발송일시")
+    @Column(name = "fm_reservation_date")
+    private LocalDateTime fmReservationDate;
+
+    /**
+     * 발송상태(init-초기상태,[메시지발송요청조회]success-성공,processing-발송중,reserved-예약중,scheduled-스케줄중,fail-실패 [예약메시지]ready-발송 대기,processing-발송 요청중,canceled-발송 취소,fail-발송 요청 실패,done-발송 요청 성공,stale-발송 요청 실패 (시간 초과))
+     */
+    @Column(name = "fm_status")
+    @ApiModelProperty("발송상태(init-초기상태,[메시지발송요청조회]success-성공,processing-발송중,reserved-예약중,scheduled-스케줄중,fail-실패 [예약메시지]ready-발송 대기,processing-발송 요청중,canceled-발송 취소,fail-발송 요청 실패,done-발송 요청 성공,stale-발송 요청 실패 (시간 초과))")
+    private String fmStatus;
+
+    /**
+     * 등록자 email
+     */
+    @ApiModelProperty("등록자 email")
+    @Column(name = "insert_email", nullable = false)
+    private String insert_email;
+
+    /**
+     * 등록 날짜
+     */
+    @ApiModelProperty("등록 날짜")
+    @Column(name = "insert_date", nullable = false)
+    private LocalDateTime insert_date;
+
+    /**
+     * 수정자 이름
+     */
+    @ApiModelProperty("수정자 email")
+    @Column(name = "modify_email")
+    private String modify_email;
+
+    /**
+     * 수정 날짜
+     */
+    @ApiModelProperty("수정 날짜")
+    @Column(name = "modify_date")
+    private LocalDateTime modify_date;
 
 }

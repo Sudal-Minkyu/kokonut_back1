@@ -1,9 +1,8 @@
 package com.app.kokonut.email.emailGroup;
 
-import com.app.kokonut.email.emailGroup.dto.EmailGroupAdminInfoDto;
-import com.app.kokonut.email.emailGroup.dto.EmailGroupDetailDto;
-import com.app.kokonut.email.emailGroup.dto.EmailGroupListDto;
-import com.app.kokonut.email.emailGroup.entity.EmailGroup;
+import com.app.kokonut.email.emailGroup.dtos.EmailGroupAdminInfoDto;
+import com.app.kokonut.email.emailGroup.dtos.EmailGroupDetailDto;
+import com.app.kokonut.email.emailGroup.dtos.EmailGroupListDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +24,12 @@ public class EmailGroupService {
     }
 
     /***
-     * 메일 그룹 adminIdxList 조회
+     * 메일 그룹 adminIdList 조회
      * @param idx - email_group IDX
      * 기존 코코넛 서비스 SelectEmailGroupByIdx
      */
     public ResponseEntity<Map<String,Object>> emailGroupDetail(Integer idx){
-        log.info("### findEmailGroupAdminIdxByIdx 호출");
+        log.info("### findEmailGroupadminIdByIdx 호출");
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         if(idx == null){
@@ -38,7 +37,7 @@ public class EmailGroupService {
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO042.getCode(), ResponseErrorCode.KO042.getDesc()));
         }else{
             EmailGroupAdminInfoDto emailGroupAdminInfoDto = emailGroupRepository.findEmailGroupAdminInfoByIdx(idx);
-            data.put("adminIdxList", emailGroupAdminInfoDto.getAdminIdxList());
+            data.put("adminIdList", emailGroupAdminInfoDto.getadminIdList());
 
             return ResponseEntity.ok(res.success(data));
         }
@@ -72,7 +71,7 @@ public class EmailGroupService {
         EmailGroup newEmailGroup =  new EmailGroup();
         newEmailGroup.setName(emailGroupDetailDto.getName());
         newEmailGroup.setDesc(emailGroupDetailDto.getDesc());
-        newEmailGroup.setAdminIdxList(emailGroupDetailDto.getAdminIdxList());
+        newEmailGroup.setadminIdList(emailGroupDetailDto.getadminIdList());
         emailGroupRepository.save(newEmailGroup);
 
         return ResponseEntity.ok(res.success(data));
@@ -117,7 +116,7 @@ public class EmailGroupService {
         updateEmailGroup.setIdx(emailGroupDetailDto.getIdx());
         updateEmailGroup.setName(emailGroupDetailDto.getName());
         updateEmailGroup.setDesc(emailGroupDetailDto.getDesc());
-        updateEmailGroup.setAdminIdxList(emailGroupDetailDto.getAdminIdxList());
+        updateEmailGroup.setadminIdList(emailGroupDetailDto.getadminIdList());
         emailGroupRepository.save(updateEmailGroup);
         log.info("### 이메일 그룹 수정, 수정된 이메일 그룹 idx : " + emailGroupDetailDto.getIdx());
         return ResponseEntity.ok(res.success(data));

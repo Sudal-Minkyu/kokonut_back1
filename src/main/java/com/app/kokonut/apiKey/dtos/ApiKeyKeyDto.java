@@ -35,7 +35,7 @@ public class ApiKeyKeyDto {
      * 등록자
      */
     @ApiModelProperty("등록자")
-    private Integer adminIdx;
+    private Integer adminId;
 
 
     /**

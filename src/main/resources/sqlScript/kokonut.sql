@@ -806,11 +806,11 @@ VALUES
 select * from `kn_service`;
 commit;
 
-/*Table structure for table `setting` */
+/*Table structure for table `knSetting` */
 
-DROP TABLE IF EXISTS `setting`;
+DROP TABLE IF EXISTS `knSetting`;
 
-CREATE TABLE `setting` (
+CREATE TABLE `knSetting` (
   `IDX` int(11) NOT NULL AUTO_INCREMENT COMMENT '키',
   `COMPANY_IDX` int(11) DEFAULT NULL COMMENT '회사(Company) 키',
   `OVERSEAS_BLOCK` int(11) DEFAULT '0' COMMENT '해외로그인차단(0:차단안함,1:차단)',
@@ -820,7 +820,7 @@ CREATE TABLE `setting` (
   PRIMARY KEY (`IDX`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `setting` */
+/*Data for the table `knSetting` */
 
 /*Table structure for table `shedlock` */
 

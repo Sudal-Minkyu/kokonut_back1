@@ -55,7 +55,7 @@ public class FriendtalkMessageService {
         AjaxResponse res = new AjaxResponse();
 
         // 해당 이메일을 통해 회사 IDX 조회
-        int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
         List<FriendtalkMessageInfoListDto> friendtalkMessageInfoListDtos = friendtalkMessageRepository.findByFriendtalkMessageInfoList(companyIdx, "1");
 
         List<FriendtalkMessage> alimtalkMessageList = new ArrayList<>();
@@ -152,8 +152,8 @@ public class FriendtalkMessageService {
             if(result.getResultCode().equals(200)) {
                 log.info("발송성공후 친구톡 메세지 등록 정보 INSERT");
 
-                int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
-                int adminIdx = adminRepository.findByCompanyInfo(email).getAdminIdx();
+                Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+                Long adminId = adminRepository.findByCompanyInfo(email).getadminId();
 
                 HashMap<String, Object> response = Utils.convertJSONstringToMap(result.getResultText());
 
@@ -170,7 +170,7 @@ public class FriendtalkMessageService {
 
                     friendtalkMessage.setReservationDate(reservationDate);
                 }
-                friendtalkMessage.setRegIdx(adminIdx);
+                friendtalkMessage.setRegIdx(adminId);
                 friendtalkMessage.setRegdate(LocalDateTime.now());
 
                 FriendtalkMessage saveFriendtalkMessage = friendtalkMessageRepository.save(friendtalkMessage);

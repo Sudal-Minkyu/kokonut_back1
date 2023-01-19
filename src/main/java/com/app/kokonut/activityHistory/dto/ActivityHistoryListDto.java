@@ -22,7 +22,7 @@ public class ActivityHistoryListDto {
     // activity_hisotroy 테이블
     private Integer idx;
     private Integer companyIdx;
-    private Integer adminIdx;
+    private Integer adminId;
     private Integer activityIdx;
     private String activityDetail;
 

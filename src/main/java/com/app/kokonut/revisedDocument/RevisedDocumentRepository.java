@@ -1,6 +1,5 @@
 package com.app.kokonut.revisedDocument;
 
-import com.app.kokonut.revisedDocument.entity.RevisedDocument;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

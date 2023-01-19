@@ -1,10 +1,9 @@
 package com.app.kokonut.notice;
 
-import com.app.kokonut.notice.dto.NoticeContentListDto;
-import com.app.kokonut.notice.dto.NoticeDetailDto;
-import com.app.kokonut.notice.dto.NoticeListDto;
-import com.app.kokonut.notice.dto.NoticeSearchDto;
-import com.app.kokonut.notice.entity.Notice;
+import com.app.kokonut.notice.dtos.NoticeContentListDto;
+import com.app.kokonut.notice.dtos.NoticeDetailDto;
+import com.app.kokonut.notice.dtos.NoticeListDto;
+import com.app.kokonut.notice.dtos.NoticeSearchDto;
 import com.app.kokonut.notice.entity.QNotice;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;

@@ -61,11 +61,11 @@ public class ApiKeyService {
      * 원래 받는 데이터 -> HashMap<String,Object> paramMap 형식
      * Api Key Insert
      * param
-     * - Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state
+     * - Integer adminId, Integer companyIdx, String registerName, Integer type, Integer state
      * - String key
      */
     @Transactional
-    public Integer insertApiKey(Integer adminIdx, Integer companyIdx, String registerName, Integer type, Integer state,
+    public Integer insertApiKey(Integer adminId, Integer companyIdx, String registerName, Integer type, Integer state,
                              String key, Integer useAccumulate) {
         log.info("insertApiKey 호출");
 
@@ -73,7 +73,7 @@ public class ApiKeyService {
         log.info("현재 날짜 : "+systemDate);
 
         ApiKey apiKey = new ApiKey();
-        apiKey.setAdminIdx(adminIdx);
+        apiKey.setadminId(adminId);
         apiKey.setCompanyIdx(companyIdx);
         apiKey.setRegisterName(registerName);
         apiKey.setType(type);
@@ -205,7 +205,7 @@ public class ApiKeyService {
 	 * Test Api Key 조회
 	 * @param companyIdx
 	 */
-//	public HashMap<String, Object> SelectTestApiKeyByCompanyIdx(int companyIdx) {
+//	public HashMap<String, Object> SelectTestApiKeyByCompanyIdx(Long companyId) {
 //		HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //		paramMap.put("companyIdx", companyIdx);
 //
@@ -232,7 +232,7 @@ public class ApiKeyService {
 	 * 일반 Api Key 조회
 	 * @param companyIdx
 	 */
-//	public HashMap<String, Object> SelectApiKeyByCompanyIdx(int companyIdx) {
+//	public HashMap<String, Object> SelectApiKeyByCompanyIdx(Long companyId) {
 //		HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //		paramMap.put("companyIdx", companyIdx);
 //
@@ -279,7 +279,7 @@ public class ApiKeyService {
 	/**
 	 * api key block 처리 - 결제 취소 시 사용
 	 */
-//	public void UpdateBlockKey(int companyIdx) {
+//	public void UpdateBlockKey(Long companyId) {
 //		dao.UpdateBlockKey(companyIdx);
 //	}
     /** JPA save()로 재구성 : updateBlockKey -> 변경후
@@ -301,7 +301,7 @@ public class ApiKeyService {
 	/*
 	 * 사용중인 TEST API KEY가 존재한다면 만료처리
 	 */
-//	public void UpdateTestKeyExpire(int companyIdx) {
+//	public void UpdateTestKeyExpire(Long companyId) {
 //		dao.UpdateTestKeyExpire(companyIdx);
 //	}
     /** JPA save()로 재구성 : updateTestKeyExpire -> 변경후
@@ -340,7 +340,7 @@ public class ApiKeyService {
 	 * API KEY BLOCK, Send MAIL
 //	  @param companyIdx - 회사IDX
 	 */
-//	public void BlockApiByCompanyIdx(int companyIdx) {
+//	public void BlockApiByCompanyIdx(Long companyId) {
 //		HashMap<String, Object> apiMap = new HashMap<String, Object>();
 //		apiMap.put("companyIdx", companyIdx);
 //		apiMap.put("useYn", "Y");
@@ -366,7 +366,7 @@ public class ApiKeyService {
                 log.error("회사 정보를 조회할 수 없습니다. email : " + email);
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO002.getCode(), "회사 정보를 "+ResponseErrorCode.KO002.getDesc()));
             }else{
-                int companyIdx = adminCompanyInfoDto.getCompanyIdx();
+                Long companyId = adminCompanyInfoDto.getCompanyIdx();
                 boolean serviceValid = false;
                 /**
                  * 기존 코코넛 서비스의 경우 로그인 할 때 apiKey를 함께 조회해서 kokonutUser에 다 담은 뒤
@@ -414,8 +414,8 @@ public class ApiKeyService {
             // 이메일을 통해 계정 정보 가져오기.
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
-            int adminIdx = admin.getIdx();
-            int companyIdx = admin.getCompanyIdx();
+            Long adminId = admin.getIdx();
+            Long companyId = admin.getCompanyIdx();
             String userName = admin.getName();
 
             // 기존 등록 키가 있는지 확인.
@@ -438,7 +438,7 @@ public class ApiKeyService {
                         key =  keyGenerate(128);
                     }
                 }
-                insertApiKey(adminIdx, companyIdx, userName, 1, 1, key, 1);
+                insertApiKey(adminId, companyIdx, userName, 1, 1, key, 1);
                 // TODO Activity History 활동 이력 남기기 - apk Key 발급
 
                 return ResponseEntity.ok(res.success(data));
@@ -464,8 +464,8 @@ public class ApiKeyService {
                 // 이메일을 통해 계정 정보 가져오기.
                 Admin admin = adminRepository.findByEmail(email)
                         .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
-                int adminIdx = admin.getIdx();
-                int companyIdx = admin.getCompanyIdx();
+                Long adminId = admin.getIdx();
+                Long companyId = admin.getCompanyIdx();
                 String userName = admin.getName();
 
                 // 키 생성
@@ -491,7 +491,7 @@ public class ApiKeyService {
                 }
                 // API KEY BLOCK 처리
                 updateBlockKey(companyIdx);
-                insertApiKey(adminIdx, companyIdx, userName, 1, 2, key, 1);
+                insertApiKey(adminId, companyIdx, userName, 1, 2, key, 1);
                 // TODO Activity History 활동 이력 남기기 - api key 재발급
                 return ResponseEntity.ok(res.success(data));
             }

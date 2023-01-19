@@ -34,7 +34,7 @@ public class PaymentVO implements Serializable {
      * 결제자 키(관리자)
      */
     @ApiModelProperty("결제자 키(관리자)")
-    private Integer adminIdx;
+    private Integer adminId;
 
 
     /**

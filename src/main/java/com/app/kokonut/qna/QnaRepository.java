@@ -1,6 +1,5 @@
 package com.app.kokonut.qna;
 
-import com.app.kokonut.qna.entity.Qna;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

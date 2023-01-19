@@ -65,8 +65,8 @@ public class AlimtalkMessageService {
         AjaxResponse res = new AjaxResponse();
 
         // 해당 이메일을 통해 회사 IDX 조회
-        int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
-        List<AlimtalkMessageInfoListDto> alimtalkMessageInfoListDtos = alimtalkMessageRepository.findByAlimtalkMessageInfoList(companyIdx, "1");
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
+        List<AlimtalkMessageInfoListDto> alimtalkMessageInfoListDtos = alimtalkMessageRepository.findByAlimtalkMessageInfoList(companyId, "1");
 
         List<AlimtalkMessage> alimtalkMessageList = new ArrayList<>();
         for(AlimtalkMessageInfoListDto alimtalkMessageInfoListDto : alimtalkMessageInfoListDtos) {
@@ -107,7 +107,7 @@ public class AlimtalkMessageService {
                 if(!updateSatus.equals("")) {
                     Optional<AlimtalkMessage> optionalAlimtalkMessage = alimtalkMessageRepository.findById(idx);
                     if(optionalAlimtalkMessage.isPresent()){
-                        optionalAlimtalkMessage.get().setStatus(updateSatus);
+                        optionalAlimtalkMessage.get().setAmStatus(updateSatus);
                         alimtalkMessageList.add(optionalAlimtalkMessage.get());
                     } else {
                         log.error("해당 알림톡 메세지를 찾을 수 없습니다.");
@@ -120,7 +120,7 @@ public class AlimtalkMessageService {
         // 전체 업데이트
         alimtalkMessageRepository.saveAll(alimtalkMessageList);
 
-        Page<AlimtalkMessageListDto> alimtalkMessageListDtos = alimtalkMessageRepository.findByAlimtalkMessagePage(alimtalkMessageSearchDto, companyIdx, pageable);
+        Page<AlimtalkMessageListDto> alimtalkMessageListDtos = alimtalkMessageRepository.findByAlimtalkMessagePage(alimtalkMessageSearchDto, companyId, pageable);
 
         return ResponseEntity.ok(res.ResponseEntityPage(alimtalkMessageListDtos));
     }
@@ -132,7 +132,7 @@ public class AlimtalkMessageService {
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-        int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
 
         log.info("channelId : "+channelId);
         log.info("templateCode : "+templateCode);
@@ -140,7 +140,7 @@ public class AlimtalkMessageService {
         List<HashMap<String, Object>> templates = new ArrayList<>();
         List<HashMap<String, Object>> template = new ArrayList<>();
 
-        List<AlimtalkMessageTemplateInfoListDto> alimtalkMessageTemplateInfoListDtos = alimtalkTemplateRepository.findByAlimtalkMessageTemplateInfoList(companyIdx, channelId);
+        List<AlimtalkMessageTemplateInfoListDto> alimtalkMessageTemplateInfoListDtos = alimtalkTemplateRepository.findByAlimtalkMessageTemplateInfoList(companyId, channelId);
 
         for(AlimtalkMessageTemplateInfoListDto alimtalkMessageTemplateInfoListDto : alimtalkMessageTemplateInfoListDtos) {
 
@@ -208,26 +208,26 @@ public class AlimtalkMessageService {
         if(result.getResultCode().equals(200)) {
             log.info("발송성공후 알림톡 메세지 등록 정보 INSERT");
 
-            int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
-            int adminIdx = adminRepository.findByCompanyInfo(email).getAdminIdx();
+            Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
+            Long adminId = adminRepository.findByCompanyInfo(email).getAdminId();
 
             HashMap<String, Object> response = Utils.convertJSONstringToMap(result.getResultText());
 
             AlimtalkMessage alimTalkMessage = new AlimtalkMessage();
-            alimTalkMessage.setCompanyIdx(companyIdx);
-            alimTalkMessage.setRequestId(response.get("requestId").toString());
-            alimTalkMessage.setChannelId(alimtalkMessageSendDto.getChannelId());
-            alimTalkMessage.setTransmitType(alimtalkMessageSendDto.getTransmitType());
+            alimTalkMessage.setCompanyId(companyId);
+            alimTalkMessage.setAmRequestId(response.get("requestId").toString());
+            alimTalkMessage.setKcChannelId(alimtalkMessageSendDto.getChannelId());
+            alimTalkMessage.setAmTransmitType(alimtalkMessageSendDto.getTransmitType());
             if(alimtalkMessageSendDto.getTransmitType().equals("reservation")) {
                 String reservationDateStr = alimtalkMessageSendDto.getReservationDate();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
                 LocalDateTime reservationDate = LocalDateTime.parse(reservationDateStr, formatter);
                 log.info("예약발송시간 : "+reservationDate);
 
-                alimTalkMessage.setReservationDate(reservationDate);
+                alimTalkMessage.setAmReservationDate(reservationDate);
             }
-            alimTalkMessage.setRegIdx(adminIdx);
-            alimTalkMessage.setRegdate(LocalDateTime.now());
+            alimTalkMessage.setInsert_email(email);
+            alimTalkMessage.setInsert_date(LocalDateTime.now());
 
             AlimtalkMessage saveAlimtalkMessage = alimtalkMessageRepository.save(alimTalkMessage);
             log.info("알림톡 메세지 인서트 성공");
@@ -236,10 +236,10 @@ public class AlimtalkMessageService {
 
             for(AlimtalkMessageSendSubDto alimtalkMessageSendSubDto : alimtalkMessageSendDto.getAlimtalkMessageSendSubDtoList()){
                 AlimtalkMessageRecipient alimtalkMessageRecipient = new AlimtalkMessageRecipient();
-                alimtalkMessageRecipient.setAlimtalkMessageIdx(saveAlimtalkMessage.getIdx());
-                alimtalkMessageRecipient.setEmail(alimtalkMessageSendSubDto.getEmail());
-                alimtalkMessageRecipient.setName(alimtalkMessageSendSubDto.getUserName());
-                alimtalkMessageRecipient.setPhoneNumber(alimtalkMessageSendSubDto.getPhoneNumber());
+                alimtalkMessageRecipient.setAmId(saveAlimtalkMessage.getAmId());
+                alimtalkMessageRecipient.setAmr_email(alimtalkMessageSendSubDto.getEmail());
+                alimtalkMessageRecipient.setAmr_name(alimtalkMessageSendSubDto.getUserName());
+                alimtalkMessageRecipient.setAmr_phone_number(alimtalkMessageSendSubDto.getPhoneNumber());
                 alimtalkMessageRecipients.add(alimtalkMessageRecipient);
             }
 
@@ -347,9 +347,9 @@ public class AlimtalkMessageService {
 
         log.info("조회내용 searchText : "+searchText);
 
-        String businessNumber = adminRepository.findByCompanyInfo(email).getBusinessNumber();
+        String companyCode = adminRepository.findByCompanyInfo(email).getCompanyCode();
 
-        log.info("호출 할 유저리스트의 기업번호 : "+businessNumber);
+        log.info("호출 할 유저리스트의 기업번호 : "+companyCode);
 
 //        Page<Dto> listDtos = dynamicUserService.SelectRecipientList(searchText, businessNumber, pageable);
 

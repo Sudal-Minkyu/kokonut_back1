@@ -48,12 +48,12 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         Date systemDate = new Date(System.currentTimeMillis());
 
         JPQLQuery<ApiKeyListAndDetailDto> query = from(apiKey)
-                .innerJoin(admin).on(admin.idx.eq(apiKey.adminIdx))
+                .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
                 .innerJoin(company).on(company.idx.eq(admin.companyIdx))
                 .select(Projections.constructor(ApiKeyListAndDetailDto.class,
                         apiKey.idx,
                         apiKey.companyIdx,
-                        apiKey.adminIdx,
+                        apiKey.adminId,
                         apiKey.key,
                         apiKey.regdate,
 
@@ -117,7 +117,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         Date systemDate = new Date(System.currentTimeMillis());
 
         JPQLQuery<Long> query = from(apiKey)
-                .innerJoin(admin).on(admin.idx.eq(apiKey.adminIdx))
+                .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
                 .innerJoin(company).on(company.idx.eq(admin.companyIdx))
                 .select(Projections.constructor(Long.class,
                         apiKey.count()
@@ -161,13 +161,13 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         Date systemDate = new Date(System.currentTimeMillis());
 
         JPQLQuery<ApiKeyListAndDetailDto> query = from(apiKey)
-                .innerJoin(admin).on(admin.idx.eq(apiKey.adminIdx))
+                .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
                 .innerJoin(company).on(company.idx.eq(admin.companyIdx))
                 .where(apiKey.idx.eq(idx))
                 .select(Projections.constructor(ApiKeyListAndDetailDto.class,
                         apiKey.idx,
                         apiKey.companyIdx,
-                        apiKey.adminIdx,
+                        apiKey.adminId,
                         apiKey.key,
                         apiKey.regdate,
 
@@ -206,7 +206,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
                 .select(Projections.constructor(ApiKeyKeyDto.class,
                         apiKey.idx,
                         apiKey.companyIdx,
-                        apiKey.adminIdx,
+                        apiKey.adminId,
                         apiKey.registerName,
                         apiKey.key,
                         apiKey.regdate,
@@ -240,13 +240,13 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         Date systemDate = new Date(System.currentTimeMillis());
 
         JPQLQuery<ApiKeyListAndDetailDto> query = from(apiKey)
-                .innerJoin(admin).on(admin.idx.eq(apiKey.adminIdx))
+                .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
                 .innerJoin(company).on(company.idx.eq(admin.companyIdx))
                 .where(apiKey.companyIdx.eq(companyIdx).and(apiKey.type.eq(type)))
                 .select(Projections.constructor(ApiKeyListAndDetailDto.class,
                         apiKey.idx,
                         apiKey.companyIdx,
-                        apiKey.adminIdx,
+                        apiKey.adminId,
                         apiKey.key,
                         apiKey.regdate,
 
@@ -301,13 +301,13 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         Date systemDate = new Date(System.currentTimeMillis());
 
         JPQLQuery<ApiKeyListAndDetailDto> query = from(apiKey)
-                .innerJoin(admin).on(admin.idx.eq(apiKey.adminIdx))
+                .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
                 .innerJoin(company).on(company.idx.eq(admin.companyIdx))
                 .where(apiKey.companyIdx.eq(companyIdx).and(apiKey.type.eq(type).and(apiKey.useYn.eq(useYn)))).limit(1)
                 .select(Projections.constructor(ApiKeyListAndDetailDto.class,
                         apiKey.idx,
                         apiKey.companyIdx,
-                        apiKey.adminIdx,
+                        apiKey.adminId,
                         apiKey.key,
                         apiKey.regdate,
 
@@ -372,7 +372,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         log.info("3일후 날짜 : "+threeDayAfter);
 
         JPQLQuery<TestApiKeyExpiredListDto> query = from(apiKey)
-                .innerJoin(admin).on(admin.idx.eq(apiKey.adminIdx))
+                .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
                 .innerJoin(company).on(company.idx.eq(admin.companyIdx))
                 .where(apiKey.type.eq(type)
                         // xml 쿼리 -> AND DATE_FORMAT(SYSDATE(), '%Y-%m-%d') = DATE_FORMAT(DATE_ADD(A.`VALIDITY_END`, INTERVAL 3 DAY), '%Y-%m-%d')
@@ -381,7 +381,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
                 .select(Projections.constructor(TestApiKeyExpiredListDto.class,
                         apiKey.idx,
                         apiKey.companyIdx,
-                        apiKey.adminIdx,
+                        apiKey.adminId,
                         apiKey.key,
                         apiKey.regdate,
 
@@ -418,7 +418,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         QAdmin admin = QAdmin.admin;
 
         JPQLQuery<Long> query = from(apiKey)
-                .innerJoin(admin).on(apiKey.adminIdx.eq(admin.idx))
+                .innerJoin(admin).on(apiKey.adminId.eq(admin.idx))
                 .where(apiKey.key.eq(key).and(admin.email.eq(email)))
                 .select(Projections.constructor(Long.class,
                         apiKey.count()
