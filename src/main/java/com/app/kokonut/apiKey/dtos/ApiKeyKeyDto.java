@@ -28,14 +28,14 @@ public class ApiKeyKeyDto {
      * 회사(Company) 키
      */
     @ApiModelProperty("회사(Company) 키")
-    private Integer companyIdx;
+    private Long companyId;
 
 
     /**
      * 등록자
      */
     @ApiModelProperty("등록자")
-    private Integer adminId;
+    private Long adminId;
 
 
     /**

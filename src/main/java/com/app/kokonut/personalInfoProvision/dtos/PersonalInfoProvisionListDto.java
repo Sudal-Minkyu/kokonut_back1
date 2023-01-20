@@ -20,8 +20,8 @@ public class PersonalInfoProvisionListDto {
 
     // PersonalInfoProvision 데이터
     private Integer idx; // PersonalInfoProvision - 고유값ID
-//    private Integer companyIdx; // PersonalInfoProvision - 기업 고유값ID
-//    private Integer adminId; // PersonalInfoProvision - 관리자 고유값ID (=등록자)
+//    private Long companyId; // PersonalInfoProvision - 기업 고유값ID
+//    private Long adminId; // PersonalInfoProvision - 관리자 고유값ID (=등록자)
     private String number; // PersonalInfoProvision - 관리번호
     private Integer reason; // PersonalInfoProvision - 필요사유 (1: 서비스운영, 2: 이벤트/프로모션, 3: 제휴, 4: 광고/홍보)
     private Integer type; // PersonalInfoProvision - 항목유형 (1: 회원정보 전체 항목, 2: 개인 식별 정보를 포함한 일부 항목, 3: 개인 식별 정보를 포함하지 않는 일부 항목)

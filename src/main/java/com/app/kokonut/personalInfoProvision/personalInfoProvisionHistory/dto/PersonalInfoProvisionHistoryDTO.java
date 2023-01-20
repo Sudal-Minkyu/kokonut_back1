@@ -38,13 +38,13 @@ public class PersonalInfoProvisionHistoryDTO implements Serializable {
      * 회사 키
      */
     @ApiModelProperty("회사 키")
-    private Integer companyIdx;
+    private Long companyId;
 
 
     /**
      * 관리자 키 (=수정자)
      */
     @ApiModelProperty("관리자 키 (=수정자)")
-    private Integer adminId;
+    private Long adminId;
 
 }

@@ -24,16 +24,13 @@ public class QnaDetailDto implements Serializable {
     private Integer idx;
 
     @ApiModelProperty("질문자(사용자 키)")
-    private Integer adminId;
+    private Long adminId;
 
     @ApiModelProperty("제목")
     private String title;
 
     @ApiModelProperty("문의내용")
     private String content;
-
-    @ApiModelProperty("첨부파일 아이디")
-    private String fileGroupId;
 
     @ApiModelProperty("분류(0:기타,1:회원정보,2:사업자정보,3:Kokonut서비스,4:결제)")
     private Integer type;
@@ -48,7 +45,7 @@ public class QnaDetailDto implements Serializable {
     private String answer;
 
     @ApiModelProperty("답변일")
-    private LocalDateTime answerDate;
+    private LocalDateTime modify_date;
 
     // Admin Table
     @ApiModelProperty("질문자 이메일")

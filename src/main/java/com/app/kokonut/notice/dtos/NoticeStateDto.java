@@ -15,12 +15,12 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NoticeStateDto implements Serializable {
+public class NoticeStateDto {
 
     @ApiModelProperty("키")
-    private Integer idx;
+    private Long ntId;
 
     @ApiModelProperty("0:게시중지,1:게시중,2:게시대기")
-    private Integer state;
+    private Integer ntState;
 
 }

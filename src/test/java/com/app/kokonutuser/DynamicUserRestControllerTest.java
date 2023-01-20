@@ -84,7 +84,7 @@ class DynamicUserRestControllerTest {
 
         Admin admin = Admin.builder()
                 .email(testemail)
-                .companyIdx(companyIdx)
+                .companyId(companyId)
                 .password(passwordEncoder.encode(password))
                 .phoneNumber(testphoneNumber)
                 .otpKey(googleOtpGenerateDto.getOtpKey())

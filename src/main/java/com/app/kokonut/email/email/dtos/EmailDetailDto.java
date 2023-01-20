@@ -20,21 +20,21 @@ public class EmailDetailDto {
 
     // email 테이블
     @ApiModelProperty("보내는 관리자 키(시스템 관리자 고정)")
-    private Long senderadminId;
+    private Long emSenderAdminId;
 
     @ApiModelProperty("받는사람 타입(I:개별,G:그룹)")
-    private String receiverType;
+    private String emReceiverType;
 
     @ApiModelProperty("받는 관리자 키(문자열, 구분자: ',')")
-    private String receiveradminIdList;
+    private String emReceiverAdminIdList;
 
     @ApiModelProperty("받는 그룹 키")
-    private Long emailGroupIdx;
+    private Long egId;
 
     @ApiModelProperty("제목")
-    private String title;
+    private String emTitle;
 
     @ApiModelProperty("내용")
-    private String contents;
+    private String emContents;
 
 }

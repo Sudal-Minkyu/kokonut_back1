@@ -62,9 +62,9 @@ public class TotalDbDownloadRestController {
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public void userDbDataDownloadStart(@RequestParam(name="idx", defaultValue = "") Integer idx, HttpServletRequest request, HttpServletResponse response) {
+    public void userDbDataDownloadStart(@RequestParam(name="tdId", defaultValue = "") Long tdId, HttpServletRequest request, HttpServletResponse response) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        totalDbDownloadService.userDbDataDownloadStart(idx, jwtFilterDto.getEmail(), request, response);
+        totalDbDownloadService.userDbDataDownloadStart(tdId, jwtFilterDto.getEmail(), request, response);
     }
 
 }

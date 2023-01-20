@@ -42,13 +42,13 @@ public class PersonalInfoProvisionHistory implements Serializable {
      */
     @ApiModelProperty("회사 키")
     @Column(name = "COMPANY_IDX", nullable = false)
-    private Integer companyIdx;
+    private Long companyId;
 
     /**
      * 관리자 키 (=수정자)
      */
     @Column(name = "ADMIN_IDX")
     @ApiModelProperty("관리자 키 (=수정자)")
-    private Integer adminId;
+    private Long adminId;
 
 }

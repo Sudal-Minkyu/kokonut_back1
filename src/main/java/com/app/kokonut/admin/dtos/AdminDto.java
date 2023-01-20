@@ -31,7 +31,7 @@ public class AdminDto {
      * COMPANY IDX
      */
     @ApiModelProperty("COMPANY IDX")
-    private Integer companyIdx;
+    private Long companyId;
 
 
     /**

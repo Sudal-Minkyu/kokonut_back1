@@ -18,7 +18,7 @@ public interface EmailRepositoryCustom {
 
     // 이메일 상세 조회
     // 기존 코코넛 서비스 메서드 : SelectEmailByIdx
-    EmailDetailDto findEmailByIdx(Integer idx);
+    EmailDetailDto findEmailByIdx(Long emId);
 
     //  기존 코코넛 서비스
     //  SelectEmailByIdx 메일 상세 조회 emailDao.SelectEmailByIdx(idx);

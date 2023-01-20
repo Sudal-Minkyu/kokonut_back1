@@ -30,7 +30,7 @@ public class KakaoChannelDto implements Serializable {
      * 회사 키
      */
     @ApiModelProperty("회사 키")
-    private Integer companyIdx;
+    private Long companyId;
 
 
     /**

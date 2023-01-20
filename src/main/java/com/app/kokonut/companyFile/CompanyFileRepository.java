@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
  * Remark : 기업 파일업로드 Repository
  */
 @Repository
-public interface CompanyFileRepository extends JpaRepository<CompanyFile, Integer>, JpaSpecificationExecutor<CompanyFile> {
+public interface CompanyFileRepository extends JpaRepository<CompanyFile, Long>, JpaSpecificationExecutor<CompanyFile> {
 
 }

@@ -53,7 +53,7 @@ public class KakaoChannelService {
         AjaxResponse res = new AjaxResponse();
 
         // 해당 이메일을 통해 회사 IDX 조회
-        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
 
         // 사용자가 체험하기를 제외한 모든 채널 조회후 업데이트??..
         if(!email.equals("test@kokonut.me")) {
@@ -78,7 +78,7 @@ public class KakaoChannelService {
             }
         }
 
-        Page<KakaoChannelListDto> kakaoChannelListDtos = kakaoChannelRepository.findByKakaoChannelPage(kakaoChannelSearchDto, companyIdx, pageable);
+        Page<KakaoChannelListDto> kakaoChannelListDtos = kakaoChannelRepository.findByKakaoChannelPage(kakaoChannelSearchDto, companyId, pageable);
 
         return ResponseEntity.ok(res.ResponseEntityPage(kakaoChannelListDtos));
     }
@@ -146,11 +146,11 @@ public class KakaoChannelService {
 
             if(naverCloudPlatformResultDto.getResultCode().equals(200)) {
                 // 카카오 채널 등록 INSERT
-                Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+                Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
 
                 KakaoChannel kakaoChannel = new KakaoChannel();
                 kakaoChannel.setChannelId(channelId);
-                kakaoChannel.setCompanyIdx(companyIdx);
+                kakaoChannel.setcompanyId(companyId);
                 kakaoChannel.setStatus("INACTIVE");
                 kakaoChannel.setRegdate(LocalDateTime.now());
                 kakaoChannelRepository.save(kakaoChannel);

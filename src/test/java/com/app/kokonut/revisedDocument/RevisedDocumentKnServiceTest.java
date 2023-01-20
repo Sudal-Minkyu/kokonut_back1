@@ -59,7 +59,7 @@ class RevisedDocumentKnServiceTest {
                 .name("마스터")
                 .password("test")
                 .roleName(AuthorityRole.ROLE_MASTER)
-                .companyIdx(2)
+                .companyId(2)
                 .regdate(LocalDateTime.now())
                 .state(1)
                 .build();
@@ -69,7 +69,7 @@ class RevisedDocumentKnServiceTest {
         masterIdx = master.getIdx();
         masterName = master.getName();
         masterEmail = master.getEmail();
-        comapnyIdx = master.getCompanyIdx();
+        comapnyIdx = master.getCompanyId();
         System.out.println("## adminRepository.save(masterAdmin) - mater Admin 등록");
     }
 

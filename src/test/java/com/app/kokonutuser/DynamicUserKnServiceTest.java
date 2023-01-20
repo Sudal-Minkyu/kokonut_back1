@@ -21,7 +21,7 @@ class DynamicUserKnServiceTest {
 
     private Integer saveadminId;
 
-    private Integer saveCompanyIdx;
+    private Integer savecompanyId;
 
     @Autowired
     private DynamicUserService dynamicUserService;
@@ -42,13 +42,13 @@ class DynamicUserKnServiceTest {
                 .regdate(LocalDateTime.now())
                 .build();
 
-        saveCompanyIdx= companyRepository.save(company).getIdx();
+        savecompanyId= companyRepository.save(company).getIdx();
 
         // 테스트용 admin
         Admin admin = Admin.builder()
                 .email(email)
                 .password("test")
-                .companyIdx(saveCompanyIdx)
+                .companyId(savecompanyId)
                 .roleName(AuthorityRole.ROLE_MASTER)
                 .regdate(LocalDateTime.now())
                 .build();
@@ -69,7 +69,7 @@ class DynamicUserKnServiceTest {
 //
 //        System.out.println("저장된 saveadminId : "+saveadminId);
 //
-//        System.out.println("저장된 saveCompanyIdx : "+saveCompanyIdx);
+//        System.out.println("저장된 savecompanyId : "+savecompanyId);
 //
 //        ResponseEntity<Map<String, Object>> response = dynamicUserService.createTable(email);
 //        System.out.println("response : "+response);

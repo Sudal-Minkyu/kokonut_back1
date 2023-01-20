@@ -1,7 +1,6 @@
 package com.app.kokonut.setting;
 
 import com.app.kokonut.company.QCompany;
-import com.app.kokonut.setting.entity.QSetting;
 import com.app.kokonut.setting.dtos.KnSettingDetailDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * @author joy
  * Date : 2023-01-05
  * Time :
- * Remark : SettingRepositoryCustom 쿼리문 선언부
+ * Remark : knSettingRepositoryCustom 쿼리문 선언부
  */
 @Repository
 public class KnSettingRepositoryCustomImpl extends QuerydslRepositorySupport implements KnSettingRepositoryCustom {
@@ -22,28 +21,28 @@ public class KnSettingRepositoryCustomImpl extends QuerydslRepositorySupport imp
     }
 
     @Override
-    public KnSettingDetailDto findSettingDetailByCompanyIdx(Integer companyIdx) {
+    public KnSettingDetailDto findSettingDetailBycompanyId(Long companyId) {
 
         /*
          *  SELECT A.IDX
          *       , A.OVERSEAS_BLOCK
          *       , A.DORMANT_ACCOUNT
-         *    FROM `setting` AS A
+         *    FROM `knSetting` AS A
          *    JOIN `company` AS B
          *      ON A.COMPANY_IDX = B.IDX
-         *   WHERE A.COMPANY_IDX = #{companyIdx}
+         *   WHERE A.COMPANY_IDX = #{companyId}
          */
 
-        QSetting setting = QSetting.setting;
+        QKnSetting knSetting = QKnSetting.knSetting;
         QCompany company = QCompany.company;
 
-        JPQLQuery<KnSettingDetailDto> query = from(setting)
-                .where(setting.companyIdx.eq(companyIdx))
-                .join(company).on(setting.companyIdx.eq(company.idx))
+        JPQLQuery<KnSettingDetailDto> query = from(knSetting)
+                .where(knSetting.companyId.eq(companyId))
+                .join(company).on(knSetting.companyId.eq(company.companyId))
                 .select(Projections.constructor(KnSettingDetailDto.class,
-                        setting.idx,
-                        setting.overseasBlock,
-                        setting.dormantAccount));
+                        knSetting.stId,
+                        knSetting.stOverseasBlock,
+                        knSetting.stDormantAccount));
         return query.fetchOne();
     }
 }

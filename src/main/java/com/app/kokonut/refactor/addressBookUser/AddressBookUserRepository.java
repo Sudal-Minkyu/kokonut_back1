@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AddressBookUserRepository extends JpaRepository<AddressBookUser, Integer>, JpaSpecificationExecutor<AddressBookUser>, AddressBookUserRepositoryCustom {
+public interface AddressBookUserRepository extends JpaRepository<AddressBookUser, Long>, JpaSpecificationExecutor<AddressBookUser>, AddressBookUserRepositoryCustom {
 
 }

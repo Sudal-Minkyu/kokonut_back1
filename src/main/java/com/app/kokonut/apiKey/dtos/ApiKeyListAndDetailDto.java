@@ -20,10 +20,10 @@ import java.util.Date;
 public class ApiKeyListAndDetailDto {
 
     private Integer idx;
-    private Integer companyIdx;
-    private Integer adminId;
+    private Long companyId;
+    private Long adminId;
     private String key;
-    private LocalDateTime regdate;
+    private LocalDateTime insert_date;
 
     private Integer type;
     private String note;
@@ -36,8 +36,8 @@ public class ApiKeyListAndDetailDto {
     private String useYn;
 
     private String reason;
-    private Integer modifierIdx;
-    private String modifierName;
+
+    private String modify_email;
     private LocalDateTime modifyDate;
 
     private String name;

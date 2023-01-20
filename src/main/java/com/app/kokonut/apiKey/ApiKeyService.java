@@ -61,11 +61,11 @@ public class ApiKeyService {
      * 원래 받는 데이터 -> HashMap<String,Object> paramMap 형식
      * Api Key Insert
      * param
-     * - Integer adminId, Integer companyIdx, String registerName, Integer type, Integer state
+     * - Long adminId, Long companyId, String registerName, Integer type, Integer state
      * - String key
      */
     @Transactional
-    public Integer insertApiKey(Integer adminId, Integer companyIdx, String registerName, Integer type, Integer state,
+    public Integer insertApiKey(Long adminId, Long companyId, String registerName, Integer type, Integer state,
                              String key, Integer useAccumulate) {
         log.info("insertApiKey 호출");
 
@@ -74,7 +74,7 @@ public class ApiKeyService {
 
         ApiKey apiKey = new ApiKey();
         apiKey.setadminId(adminId);
-        apiKey.setCompanyIdx(companyIdx);
+        apiKey.setcompanyId(companyId);
         apiKey.setRegisterName(registerName);
         apiKey.setType(type);
         apiKey.setState(state);
@@ -203,17 +203,17 @@ public class ApiKeyService {
 
 	/**
 	 * Test Api Key 조회
-	 * @param companyIdx
+	 * @param companyId
 	 */
-//	public HashMap<String, Object> SelectTestApiKeyByCompanyIdx(Long companyId) {
+//	public HashMap<String, Object> SelectTestApiKeyBycompanyId(Long companyId) {
 //		HashMap<String, Object> paramMap = new HashMap<String, Object>();
-//		paramMap.put("companyIdx", companyIdx);
+//		paramMap.put("companyId", companyId);
 //
-//		return dao.SelectTestApiKeyByCompanyIdx(paramMap);
+//		return dao.SelectTestApiKeyBycompanyId(paramMap);
 //	}
-    public ApiKeyListAndDetailDto findByTestApiKeyByCompanyIdx(Integer companyIdx) {
-        log.info("findByTestApiKeyByCompanyIdx 호출");
-        return apiKeyRepository.findByTestApiKeyByCompanyIdx(companyIdx, 2);
+    public ApiKeyListAndDetailDto findByTestApiKeyBycompanyId(Long companyId) {
+        log.info("findByTestApiKeyBycompanyId 호출");
+        return apiKeyRepository.findByTestApiKeyBycompanyId(companyId, 2);
     }
 
 	/**
@@ -230,17 +230,17 @@ public class ApiKeyService {
 
 	/**
 	 * 일반 Api Key 조회
-	 * @param companyIdx
+	 * @param companyId
 	 */
-//	public HashMap<String, Object> SelectApiKeyByCompanyIdx(Long companyId) {
+//	public HashMap<String, Object> SelectApiKeyBycompanyId(Long companyId) {
 //		HashMap<String, Object> paramMap = new HashMap<String, Object>();
-//		paramMap.put("companyIdx", companyIdx);
+//		paramMap.put("companyId", companyId);
 //
-//		return dao.SelectApiKeyByCompanyIdx(paramMap);
+//		return dao.SelectApiKeyBycompanyId(paramMap);
 //	}
-    public ApiKeyListAndDetailDto findByApiKeyByCompanyIdx(Integer companyIdx) {
-        log.info("findByApiKeyByCompanyIdx 호출");
-        return apiKeyRepository.findByApiKeyByCompanyIdx(companyIdx, 1, "Y");
+    public ApiKeyListAndDetailDto findByApiKeyBycompanyId(Long companyId) {
+        log.info("findByApiKeyBycompanyId 호출");
+        return apiKeyRepository.findByApiKeyBycompanyId(companyId, 1, "Y");
     }
 
 	/**
@@ -280,18 +280,18 @@ public class ApiKeyService {
 	 * api key block 처리 - 결제 취소 시 사용
 	 */
 //	public void UpdateBlockKey(Long companyId) {
-//		dao.UpdateBlockKey(companyIdx);
+//		dao.UpdateBlockKey(companyId);
 //	}
     /** JPA save()로 재구성 : updateBlockKey -> 변경후
      * 결제 취소 시 사용
      * param
-     * - Integer companyIdx
+     * - Long companyId
      */
     @Transactional
-    public void updateBlockKey(Integer companyIdx) {
+    public void updateBlockKey(Long companyId) {
         log.info("updateBlockKey 호출");
 
-        ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdxAndType(companyIdx,1)
+        ApiKey apiKey = apiKeyRepository.findApiKeyBycompanyIdAndType(companyId,1)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
         apiKey.setUseYn("N");
 
@@ -302,34 +302,34 @@ public class ApiKeyService {
 	 * 사용중인 TEST API KEY가 존재한다면 만료처리
 	 */
 //	public void UpdateTestKeyExpire(Long companyId) {
-//		dao.UpdateTestKeyExpire(companyIdx);
+//		dao.UpdateTestKeyExpire(companyId);
 //	}
     /** JPA save()로 재구성 : updateTestKeyExpire -> 변경후
      * 사용중인 TEST API KEY가 존재한다면 만료처리
      * param
-     * - Integer companyIdx
+     * - Long companyId
      */
     @Transactional
-    public void updateTestKeyExpire(Integer companyIdx) {
+    public void updateTestKeyExpire(Long companyId) {
         log.info("updateTestKeyExpire 호출");
         Date systemDate = new Date(System.currentTimeMillis());
 
-        ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdxAndTypeDate(companyIdx,2, systemDate)
+        ApiKey apiKey = apiKeyRepository.findApiKeyBycompanyIdAndTypeDate(companyId,2, systemDate)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
         apiKey.setValidityEnd(systemDate);
 
         apiKeyRepository.save(apiKey);
     }
 
-    /** JPA delete()로 재구성 : TotalDeleteService deleteApiKeyByCompanyIdx -> 변경후
+    /** JPA delete()로 재구성 : TotalDeleteService deleteApiKeyBycompanyId -> 변경후
      * param
-     * - Integer companyIdx
+     * - Long companyId
      */
     @Transactional
-    public void deleteApiKeyByCompanyIdx(Integer companyIdx) {
-        log.info("deleteApiKeyByCompanyIdx 호출");
+    public void deleteApiKeyBycompanyId(Long companyId) {
+        log.info("deleteApiKeyBycompanyId 호출");
 
-        ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdx(companyIdx)
+        ApiKey apiKey = apiKeyRepository.findApiKeyBycompanyId(companyId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
 
         apiKeyRepository.delete(apiKey);
@@ -338,18 +338,18 @@ public class ApiKeyService {
 
     /**
 	 * API KEY BLOCK, Send MAIL
-//	  @param companyIdx - 회사IDX
+//	  @param companyId - 회사IDX
 	 */
-//	public void BlockApiByCompanyIdx(Long companyId) {
+//	public void BlockApiBycompanyId(Long companyId) {
 //		HashMap<String, Object> apiMap = new HashMap<String, Object>();
-//		apiMap.put("companyIdx", companyIdx);
+//		apiMap.put("companyId", companyId);
 //		apiMap.put("useYn", "Y");
 //		List<HashMap<String, Object>> apiKeyList = SelectApiKeyList(apiMap);
 //		for(HashMap<String, Object> apiKey : apiKeyList) {
 //			final String LOG_HEADER = "[kokonut Api Block]";
 //			dblogger.save(DBLogger.LEVEL.INFO, Integer.parseInt(apiKey.get("IDX").toString()), CommonUtil.clientIp(), DBLogger.TYPE.DELETE, LOG_HEADER, "delete");
 //		}
-//		UpdateBlockKey(companyIdx);
+//		UpdateBlockKey(companyId);
 //	}
     // 해당 메서드는 dblogger 유틸리티 추가하고 진행함
 
@@ -366,7 +366,7 @@ public class ApiKeyService {
                 log.error("회사 정보를 조회할 수 없습니다. email : " + email);
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO002.getCode(), "회사 정보를 "+ResponseErrorCode.KO002.getDesc()));
             }else{
-                Long companyId = adminCompanyInfoDto.getCompanyIdx();
+                Long companyId = adminCompanyInfoDto.getCompanyId();
                 boolean serviceValid = false;
                 /**
                  * 기존 코코넛 서비스의 경우 로그인 할 때 apiKey를 함께 조회해서 kokonutUser에 다 담은 뒤
@@ -380,12 +380,12 @@ public class ApiKeyService {
 //                switch (apiKeykeyDto.getType()) {
 //                    case 1 :
 //                        // 일반
-//                        apiKeyListAndDetailDto = findByApiKeyByCompanyIdx(companyIdx);
+//                        apiKeyListAndDetailDto = findByApiKeyBycompanyId(companyId);
 //                        data.put("email", email);
 //                        break;
 //                    case 2 :
 //                        // 테스트
-//                        apiKeyListAndDetailDto = findByTestApiKeyByCompanyIdx(companyIdx);
+//                        apiKeyListAndDetailDto = findByTestApiKeyBycompanyId(companyId);
 //                        break;
 //                }
 //                data.put("apiKeyListAndDetailDto", apiKeyListAndDetailDto.getKey());
@@ -414,12 +414,12 @@ public class ApiKeyService {
             // 이메일을 통해 계정 정보 가져오기.
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
-            Long adminId = admin.getIdx();
-            Long companyId = admin.getCompanyIdx();
-            String userName = admin.getName();
+            Long adminId = admin.getAdminId();
+            Long companyId = admin.getCompanyId();
+            String userName = admin.getKnName();
 
             // 기존 등록 키가 있는지 확인.
-            ApiKeyListAndDetailDto apiKeyListAndDetailDto = findByApiKeyByCompanyIdx(companyIdx);
+            ApiKeyListAndDetailDto apiKeyListAndDetailDto = findByApiKeyBycompanyId(companyId);
             if(apiKeyListAndDetailDto != null) {
                 // TODO errorCode 등록
                 log.error("이미 발급된 API Key가 존재합니다. 재발급을 진행해주세요.");
@@ -438,7 +438,7 @@ public class ApiKeyService {
                         key =  keyGenerate(128);
                     }
                 }
-                insertApiKey(adminId, companyIdx, userName, 1, 1, key, 1);
+                insertApiKey(adminId, companyId, userName, 1, 1, key, 1);
                 // TODO Activity History 활동 이력 남기기 - apk Key 발급
 
                 return ResponseEntity.ok(res.success(data));
@@ -464,9 +464,9 @@ public class ApiKeyService {
                 // 이메일을 통해 계정 정보 가져오기.
                 Admin admin = adminRepository.findByEmail(email)
                         .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
-                Long adminId = admin.getIdx();
-                Long companyId = admin.getCompanyIdx();
-                String userName = admin.getName();
+                Long adminId = admin.getAdminId();
+                Long companyId = admin.getCompanyId();
+                String userName = admin.getKnName();
 
                 // 키 생성
                 String key = keyGenerate(128);
@@ -481,17 +481,17 @@ public class ApiKeyService {
                         key =  keyGenerate(128);
                     }
                 }
-                // TODO apiKeyMapperDto 수정 (companyIdx 추가)에 대해서 woody에게 물어보기
+                // TODO apiKeyMapperDto 수정 (companyId 추가)에 대해서 woody에게 물어보기
                 ApiKeyMapperDto apiKeyMapperDto = new ApiKeyMapperDto();
                 apiKeyMapperDto.setUseYn("Y");
-                //apiKeyMapperDto.setCompanyIdx(companyIdx);
+                //apiKeyMapperDto.setcompanyId(companyId);
                 List<ApiKeyListAndDetailDto> apiKeys = findByApiKeyList(apiKeyMapperDto);
                 for(ApiKeyListAndDetailDto apiKey : apiKeys) {
                     // TODO Activity History 활동 이력 남기기. - api Key block 처리
                 }
                 // API KEY BLOCK 처리
-                updateBlockKey(companyIdx);
-                insertApiKey(adminId, companyIdx, userName, 1, 2, key, 1);
+                updateBlockKey(companyId);
+                insertApiKey(adminId, companyId, userName, 1, 2, key, 1);
                 // TODO Activity History 활동 이력 남기기 - api key 재발급
                 return ResponseEntity.ok(res.success(data));
             }
@@ -518,8 +518,8 @@ public class ApiKeyService {
             // 이메일을 통해 계정 정보 가져오기.
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
-            int modifierIdx = admin.getIdx();
-            String userName = admin.getName();
+            int modifierIdx = admin.getAdminId();
+            String userName = admin.getKnName();
 
             updateApiKey(idx, useYn, reason, modifierIdx, userName);
             // TODO activity History 남기기 - apkKey 블락, 언블락

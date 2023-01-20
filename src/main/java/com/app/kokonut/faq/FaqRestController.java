@@ -43,14 +43,14 @@ public class FaqRestController {
     }
 
     @ApiOperation(value="Faq 내용 조회", notes="자주 묻는 질문 내용 조회")
-    @GetMapping(value = "/faqDetail/{idx}") // -> 기존의 코코넛 호출 메서드명 : detailView - SystemFaqController, FaqController
+    @GetMapping(value = "/faqDetail/{faqId}") // -> 기존의 코코넛 호출 메서드명 : detailView - SystemFaqController, FaqController
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> faqDetail(@PathVariable("idx") Integer idx) {
+    public ResponseEntity<Map<String,Object>> faqDetail(@PathVariable("faqId") Long faqId) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return faqService.faqDetail(userRole, idx);
+        return faqService.faqDetail(userRole, faqId);
     }
 
     @ApiOperation(value="Faq 등록, 수정", notes="자주 묻는 질문 등록, 수정")
@@ -71,10 +71,10 @@ public class FaqRestController {
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> faqDelete(@RequestParam(name="idx") Integer idx) {
+    public ResponseEntity<Map<String,Object>> faqDelete(@RequestParam(name="faqId") Long faqId) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return faqService.faqDelete(userRole, email, idx);
+        return faqService.faqDelete(userRole, email, faqId);
     }
 
 

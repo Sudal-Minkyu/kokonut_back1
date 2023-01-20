@@ -30,14 +30,14 @@ public class PersonalInfoProvisionDto {
      * 기업 키
      */
     @ApiModelProperty("기업 키")
-    private Integer companyIdx;
+    private Long companyId;
 
 
     /**
      * 관리자 키 (=등록자)
      */
     @ApiModelProperty("관리자 키 (=등록자)")
-    private Integer adminId;
+    private Long adminId;
 
 
     /**

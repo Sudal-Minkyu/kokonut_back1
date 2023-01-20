@@ -1,8 +1,8 @@
 package com.app.kokonut.collectInformation;
 
-import com.app.kokonut.collectInformation.entity.CollectInformation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
  * Remark : CollectInformationRepository 개인정보 처리방침 - 개인정보 수집 및 이용 안내
  */
 @Repository
-public interface CollectInformationRepository extends JpaRepository<CollectInformation, Integer>, JpaSpecificationExecutor<CollectInformation>, CollectInformationRepositoryCustom {
+public interface CollectInformationRepository extends JpaRepository<CollectInformation, Long>, JpaSpecificationExecutor<CollectInformation>, CollectInformationRepositoryCustom {
 
 }

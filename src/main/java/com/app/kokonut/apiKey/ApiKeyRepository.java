@@ -16,14 +16,14 @@ import java.util.Optional;
  * Remark : 기존의 코코넛 프로젝트의 ApiKeyDao라고 보면 됨
  */
 @Repository
-public interface ApiKeyRepository extends JpaRepository<ApiKey, Integer>, JpaSpecificationExecutor<ApiKey>, ApiKeyRepositoryCustom {
+public interface ApiKeyRepository extends JpaRepository<ApiKey, Long>, JpaSpecificationExecutor<ApiKey>, ApiKeyRepositoryCustom {
 
-    Optional<ApiKey> findApiKeyByCompanyIdxAndType(Integer companyIdx, Integer type);
+    Optional<ApiKey> findApiKeyBycompanyIdAndType(Long companyId, Integer type);
 
-    @Query("select a from ApiKey a where a.companyIdx = :companyIdx and a.type = :type and (a.validityStart <= :validityStart and :validityStart < a.validityEnd)")
-    Optional<ApiKey> findApiKeyByCompanyIdxAndTypeDate(@Param("companyIdx") Integer companyIdx, @Param("type") Integer type, @Param("validityStart") Date validityStart);
+    @Query("select a from ApiKey a where a.companyId = :companyId and a.type = :type and (a.validityStart <= :validityStart and :validityStart < a.validityEnd)")
+    Optional<ApiKey> findApiKeyBycompanyIdAndTypeDate(@Param("companyId") Long companyId, @Param("type") Integer type, @Param("validityStart") Date validityStart);
 
-    Optional<ApiKey> findApiKeyByCompanyIdx(Integer companyIdx);
+    Optional<ApiKey> findApiKeyBycompanyId(Long companyId);
 
 //     List<HashMap<String, Object>> SelectApiKeyList(HashMap<String, Object> paramMap); // 변경전 - RepositoryCustom 완료 @@@@
 //
@@ -39,11 +39,11 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, Integer>, JpaSpe
 //
 //     void DeleteApiKeyByIdx(int idx); // 변경전 - Service 완료 @@@@
 //
-//     HashMap<String, Object> SelectTestApiKeyByCompanyIdx(HashMap<String, Object> paramMap); // 변경전 - RepositoryCustom 완료 @@@@
+//     HashMap<String, Object> SelectTestApiKeyBycompanyId(HashMap<String, Object> paramMap); // 변경전 - RepositoryCustom 완료 @@@@
 //
 //     int SelectTestApiKeyDuplicateCount(String key); // 변경전 - RepositoryCustom 완료 @@@@
 //
-//     HashMap<String, Object> SelectApiKeyByCompanyIdx(HashMap<String, Object> paramMap); // 변경전 - RepositoryCustom 완료 @@@@
+//     HashMap<String, Object> SelectApiKeyBycompanyId(HashMap<String, Object> paramMap); // 변경전 - RepositoryCustom 완료 @@@@
 //
 //     int SelectApiKeyDuplicateCount(String key); // 변경전 - RepositoryCustom 완료 @@@@
 //
@@ -53,6 +53,6 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, Integer>, JpaSpe
 //
 //     void UpdateTestKeyExpire(Long companyId); // 변경전 - Service 완료 @@@@
 //
-//     void DeleteApiKeyByCompanyIdx(Long companyId); // 변경전 - Service 완료 @@@@
+//     void DeleteApiKeyBycompanyId(Long companyId); // 변경전 - Service 완료 @@@@
 
 }

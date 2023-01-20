@@ -3,8 +3,6 @@ package com.app.kokonut.bizMessage.kakaoChannel;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelByChannelIdListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelSearchDto;
-import com.app.kokonut.bizMessage.kakaoChannel.entity.QKakaoChannel;
-import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -40,10 +38,10 @@ public class KakaoChannelRepositoryCustomImpl extends QuerydslRepositorySupport 
         QCompany company  = QCompany.company;
 
         JPQLQuery<KakaoChannelListDto> query = from(kakaoChannel)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
+                .innerJoin(company).on(company.idx.eq(companyId))
                 .select(Projections.constructor(KakaoChannelListDto.class,
                         kakaoChannel.idx,
-                        kakaoChannel.companyIdx,
+                        kakaoChannel.companyId,
                         kakaoChannel.channelId,
                         kakaoChannel.channelName,
                         kakaoChannel.status,
@@ -80,8 +78,8 @@ public class KakaoChannelRepositoryCustomImpl extends QuerydslRepositorySupport 
         QCompany company = QCompany.company;
 
         JPQLQuery<KakaoChannelByChannelIdListDto> query = from(kakaoChannel)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
-                .where(kakaoChannel.companyIdx.eq(company.idx))
+                .innerJoin(company).on(company.idx.eq(companyId))
+                .where(kakaoChannel.companyId.eq(company.idx))
                 .select(Projections.constructor(KakaoChannelByChannelIdListDto.class,
                         kakaoChannel.channelId
                 ));

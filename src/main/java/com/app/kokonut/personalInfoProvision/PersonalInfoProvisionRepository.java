@@ -14,14 +14,14 @@ import java.util.Optional;
  * Remark : 기존의 코코넛 프로젝트의 PersonalInfoDao라고 보면 됨
  */
 @Repository
-public interface PersonalInfoProvisionRepository extends JpaRepository<PersonalInfoProvision, Integer>, JpaSpecificationExecutor<PersonalInfoProvision>, PersonalInfoProvisionRepositoryCustom {
+public interface PersonalInfoProvisionRepository extends JpaRepository<PersonalInfoProvision, Long>, JpaSpecificationExecutor<PersonalInfoProvision>, PersonalInfoProvisionRepositoryCustom {
 
     /////////////////////////////////////////////////////////////////
     // 정보제공
     /////////////////////////////////////////////////////////////////
 //    String selectProvisionLatestNumber(String prefix); // 변경전 - RepositoryCustom 완료 @@@@
 //    Map<String, Object> selectProvision(String number); // 변경전 - RepositoryCustom 완료 @@@@
-    Optional<PersonalInfoProvision> findPersonalInfoProvisionByCompanyIdxAndNumber(Integer companyIdx, String number); // selectProvisionByNumberAndCompanyIdx -> 변경후
+    Optional<PersonalInfoProvision> findPersonalInfoProvisionBycompanyIdAndNumber(Long companyId, String number); // selectProvisionByNumberAndcompanyId -> 변경후
     Optional<PersonalInfoProvision> findPersonalInfoProvisionByRecipientEmailAndNumber(String number, String recipientEmail); // selectProvisionByNumberAndRecipientEmail -> 변경후
 //    List<HashMap<String, Object>> selectProvisionList(HashMap<String, Object> map); // 변경전 - RepositoryCustom 완료 @@@@
 //    int selectProvisionListCount(Map<String, Object> map); // 변경전 - RepositoryCustom 완료 @@@@ -> selectProvisionList의 size() 해도 되지않을까?... 일단 이건 이렇게 조치

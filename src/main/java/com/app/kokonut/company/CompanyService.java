@@ -231,7 +231,7 @@ public class CompanyService {
 //
 //        HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //        paramMap.put("isAutoPay", 4);
-//        paramMap.put("companyIdx", companyIdx);
+//        paramMap.put("companyId", companyId);
 //        Date today = new Date();
 //        String validStart = sdf.format(today);
 //        paramMap.put("validStart", validStart);
@@ -257,7 +257,7 @@ public class CompanyService {
      */
 //    public void UpdateDormantAccumulate(Long companyId, int dormantCount) {
 //        HashMap<String, Object> paramMap = new HashMap<String, Object>();
-//        paramMap.put("companyIdx", companyIdx);
+//        paramMap.put("companyId", companyId);
 //        paramMap.put("dormantCount", dormantCount);
 //        dao.UpdateDormantAccumulate(paramMap);
 //    }
@@ -266,21 +266,21 @@ public class CompanyService {
 //    public void UpdateStopService(int amount, Long companyId) {
 //        HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //        paramMap.put("amount", amount);
-//        paramMap.put("companyIdx", companyIdx);
+//        paramMap.put("companyId", companyId);
 //        dao.UpdateStopService(paramMap);
 //    }
 
     // 인원초과 체크
 //    public boolean CheckUserCount(Long companyId) {
 //
-//        HashMap<String, Object> company = SelectCompanyByIdx(companyIdx);
+//        HashMap<String, Object> company = SelectCompanyByIdx(companyId);
 //        String businessNumber = company.get("BUSINESS_NUMBER").toString();
 //        String isValid = company.get("IS_VALID").toString();
 //
 //        HashMap<String, Object> paramMap = new HashMap<String, Object>();
-//        paramMap.put("companyIdx", companyIdx);
+//        paramMap.put("companyId", companyId);
 //
-//        HashMap<String, Object> testApiKey = apiKeydao.SelectTestApiKeyByCompanyIdx(paramMap);
+//        HashMap<String, Object> testApiKey = apiKeydao.SelectTestApiKeyBycompanyId(paramMap);
 //        String apiKeyValid = "";
 //        String useYn = "";
 //
@@ -293,7 +293,7 @@ public class CompanyService {
 //            }
 //        }
 //
-//        HashMap<String, Object> apiKey = apiKeydao.SelectApiKeyByCompanyIdx(paramMap);
+//        HashMap<String, Object> apiKey = apiKeydao.SelectApiKeyBycompanyId(paramMap);
 //        if(apiKey != null) {
 //            apiKeyValid = apiKey.get("IS_VALID").toString();
 //            useYn = apiKey.get("USE_YN").toString();
@@ -320,7 +320,7 @@ public class CompanyService {
 
     /**
      * 이용기간 기간 3일 연장
-     * @param companyIdx
+     * @param companyId
      */
 //    public void UpdateValidEndThreeDays(int idx) {
 //        dao.UpdateValidEndThreeDays(idx);

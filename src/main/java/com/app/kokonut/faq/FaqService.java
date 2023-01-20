@@ -45,26 +45,26 @@ public class FaqService {
         }
     }
 
-    public ResponseEntity<Map<String, Object>> faqDetail(String userRole, Integer idx) {
+    public ResponseEntity<Map<String, Object>> faqDetail(String userRole, Long faqId) {
         log.info("faqDetail 호출, userRole : "+ userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         if("[SYSTEM]".equals(userRole)){
-            if(idx != null){
-                log.info("자주묻는 질문 상세 조회, idx : " + idx);
-                FaqDetailDto faqDetailDto = faqRepository.findFaqByIdx(idx);
+            if(faqId != null){
+                log.info("자주묻는 질문 상세 조회, faqId : " + faqId);
+                FaqDetailDto faqDetailDto = faqRepository.findFaqByIdx(faqId);
                 if(faqDetailDto != null){
                     // 조회 성공
-                    log.info("자주묻는 질문 상세 조회 성공, idx : " + faqDetailDto.getIdx() + ", Question : " + faqDetailDto.getQuestion());
+                    log.info("자주묻는 질문 상세 조회 성공, faqId : " + faqDetailDto.getFaqId() + ", Question : " + faqDetailDto.getFaqQuestion());
                     data.put("faqDetailDto",  faqDetailDto);
                     return ResponseEntity.ok(res.success(data));
                 }else{
                     // 조회 실패
-                    log.error("자주묻는 질문 상세 조회 실패, idx : " +idx);
+                    log.error("자주묻는 질문 상세 조회 실패, faqId : " +faqId);
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO050.getCode(), ResponseErrorCode.KO050.getDesc()));
                 }
             }else{
-                log.error("idx 값을 확인 할 수 없습니다.");
+                log.error("faqId 값을 확인 할 수 없습니다.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO049.getCode(), ResponseErrorCode.KO049.getDesc()));
             }
         }else{
@@ -79,51 +79,51 @@ public class FaqService {
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         if("[SYSTEM]".equals(userRole)){
-            // 접속 정보에서 관리자 정보 가져오기, idx, name
+            // 접속 정보에서 관리자 정보 가져오기, faqId, name
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-            Integer adminId = admin.getIdx();
-            String adminName = admin.getName();
+            Long adminId = admin.getAdminId();
+            String adminName = admin.getKnName();
 
-            if(faqDetailDto.getIdx() != null){
+            if(faqDetailDto.getFaqId() != null){
                 log.info("자주묻는 질문 등록");
                 FaqDetailDto insertDetailDto = faqDetailDto;
                 log.info("등록자, 등록일시, 내용 세팅");
                 Faq insertFaq = new Faq();
 
-                insertFaq.setadminId(adminId);
-                insertFaq.setRegisterName(adminName);
-                insertFaq.setRegdate(LocalDateTime.now());
+                insertFaq.setAdminId(adminId);
+                insertFaq.setInsert_email(email);
+                insertFaq.setInsert_date(LocalDateTime.now());
 
-                insertFaq.setQuestion(insertDetailDto.getQuestion());
-                insertFaq.setAnswer(insertDetailDto.getAnswer());
-                insertFaq.setType(insertDetailDto.getType());
+                insertFaq.setFaqQuestion(insertDetailDto.getFaqQuestion());
+                insertFaq.setFaqAnswer(insertDetailDto.getFaqAnswer());
+                insertFaq.setFaqType(insertDetailDto.getFaqType());
 
-                Integer savedIdx = faqRepository.save(insertFaq).getIdx();
-                log.info("자주묻는 질문 등록 완료. idx : " + savedIdx);
+                Long savedfaqId = faqRepository.save(insertFaq).getFaqId();
+                log.info("자주묻는 질문 등록 완료. faqId : " + savedfaqId);
             }else{
-                log.info("자주묻는 질문 수정, idx : " + faqDetailDto.getIdx());
-                Optional<Faq> updateFaq = faqRepository.findById(faqDetailDto.getIdx());
+                log.info("자주묻는 질문 수정, faqId : " + faqDetailDto.getFaqId());
+                Optional<Faq> updateFaq = faqRepository.findById(faqDetailDto.getFaqId());
                 if(updateFaq.isEmpty()){
-                    log.error("자주묻는 질문 수정 실패, 게시글을 발견할 수 없습니다. 요청 idx : " + faqDetailDto.getIdx());
+                    log.error("자주묻는 질문 수정 실패, 게시글을 발견할 수 없습니다. 요청 faqId : " + faqDetailDto.getFaqId());
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO050.getCode(), ResponseErrorCode.KO050.getDesc()));
                 }else{
                     log.info("수정자, 수정일시 세팅");
-                    updateFaq.get().setModifierIdx(adminId);
-                    updateFaq.get().setModifierName(adminName);
-                    updateFaq.get().setModifyDate(LocalDateTime.now());
+                    updateFaq.get().setModify_id(adminId);
+                    updateFaq.get().setModify_email(email);
+                    updateFaq.get().setModify_date(LocalDateTime.now());
                     log.info("내용 세팅");
-                    if(faqDetailDto.getQuestion() != null){
-                        updateFaq.get().setQuestion(faqDetailDto.getQuestion());
+                    if(faqDetailDto.getFaqQuestion() != null){
+                        updateFaq.get().setFaqQuestion(faqDetailDto.getFaqQuestion());
                     }
-                    if(faqDetailDto.getAnswer() != null){
-                        updateFaq.get().setAnswer(faqDetailDto.getAnswer());
+                    if(faqDetailDto.getFaqAnswer() != null){
+                        updateFaq.get().setFaqAnswer(faqDetailDto.getFaqAnswer());
                     }
-                    if(faqDetailDto.getType() != null){
-                        updateFaq.get().setType(faqDetailDto.getType());
+                    if(faqDetailDto.getFaqType() != null){
+                        updateFaq.get().setFaqType(faqDetailDto.getFaqType());
                     }
-                    Integer updatedIdx = faqRepository.save(updateFaq.get()).getIdx();
-                    log.info("자주묻는 질문 수정 완료. idx : " + updatedIdx);
+                    Long updatedfaqId = faqRepository.save(updateFaq.get()).getFaqId();
+                    log.info("자주묻는 질문 수정 완료. faqId : " + updatedfaqId);
                 }
             }
             return ResponseEntity.ok(res.success(data));
@@ -134,18 +134,18 @@ public class FaqService {
     }
 
     @Transactional
-    public ResponseEntity<Map<String, Object>> faqDelete(String userRole, String email, Integer idx) {
+    public ResponseEntity<Map<String, Object>> faqDelete(String userRole, String email, Long faqId) {
         log.info("faqDelete 호출, userRole : " +userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         if("[SYSTEM]".equals(userRole)){
-            if(idx != null){
+            if(faqId != null){
                 log.info("자주묻는 질문 삭제 시작.");
-                faqRepository.deleteById(idx);
-                log.info("자주묻는 질문 삭제 완료. idx : "+idx);
+                faqRepository.deleteById(faqId);
+                log.info("자주묻는 질문 삭제 완료. faqId : "+faqId);
                 return ResponseEntity.ok(res.success(data));
             }else{
-                log.error("idx 값을 확인 할 수 없습니다.");
+                log.error("faqId 값을 확인 할 수 없습니다.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO049.getCode(), ResponseErrorCode.KO049.getDesc()));
             }
         }else {

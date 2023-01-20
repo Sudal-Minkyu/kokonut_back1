@@ -30,14 +30,14 @@ public class AlimtalkMessageDto {
      * 회사 키
      */
     @ApiModelProperty("회사 키")
-    private Integer companyIdx;
+    private Long companyId;
 
 
     /**
      * 보낸사람(관리자 키)
      */
     @ApiModelProperty("보낸사람(관리자 키)")
-    private Integer adminId;
+    private Long adminId;
 
 
     /**

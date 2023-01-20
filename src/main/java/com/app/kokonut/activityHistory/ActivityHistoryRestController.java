@@ -78,8 +78,8 @@ public class ActivityHistoryRestController {
 
         ActivityHistorySearchDto activityHistorySearchDto = new ActivityHistorySearchDto();
         activityHistorySearchDto.setType(type);
-//        activityHistorySearchDto.setCompanyIdx(apiKeyInfo.getCompanyIdx());
-        activityHistorySearchDto.setCompanyIdx(2);
+//        activityHistorySearchDto.setcompanyId(apiKeyInfo.getCompanyId());
+        activityHistorySearchDto.setcompanyId(2);
 
         List<ActivityHistoryListDto> activityHistoryListDtos = activityHistoryService.findByActivityHistoryList(activityHistorySearchDto);
 
@@ -136,7 +136,7 @@ public class ActivityHistoryRestController {
 //            final String REGISTER_NAME = apiKeyInfo.getRegisterName();
 //
 //            // 엑셀 다운로드
-//            List<Map<String, Object>> list = activityHistoryService.SelectActivityHistoryList(type, apiKeyInfo.getCompanyIdx());
+//            List<Map<String, Object>> list = activityHistoryService.SelectActivityHistoryList(type, apiKeyInfo.getCompanyId());
 //            if(list == null) {
 //                status = HttpStatus.NOT_FOUND;
 //                throw new Exception("not found history list");
@@ -217,7 +217,7 @@ public class ActivityHistoryRestController {
 //            downloadHistoryService.InsertDownloadHistory(downloadHistoryMap);
 //
 //            // 관리자 활동이력 저장
-//            activityHistoryService.InsertActivityHistory(type, apiKeyInfo.getCompanyIdx(), apiKeyInfo.getadminId(), type == 1 ? 6 : 7, "", REASON, IP, 1);
+//            activityHistoryService.InsertActivityHistory(type, apiKeyInfo.getCompanyId(), apiKeyInfo.getadminId(), type == 1 ? 6 : 7, "", REASON, IP, 1);
 //
 //        } catch(Exception e) {
 //            dblogger.save(DBLogger.LEVEL.ERROR, API_KEY_IDX, IP, DBLogger.TYPE.READ, LOG_HEADER, e.getMessage());

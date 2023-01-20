@@ -18,9 +18,9 @@ import java.io.Serializable;
 public class FaqAnswerListDto implements Serializable {
 
     @ApiModelProperty("질문")
-    private String question;
+    private String faqQuestion;
 
     @ApiModelProperty("답변")
-    private String answer;
+    private String faqAnswer;
 
 }

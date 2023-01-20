@@ -43,28 +43,28 @@ public class TotalDbDownloadRepositoryCustomImpl extends QuerydslRepositorySuppo
                 .innerJoin(admin).on(totalDbDownload.adminId.eq(admin.adminId))
                 .innerJoin(company).on(company.companyId.eq(admin.companyId))
                 .select(Projections.constructor(TotalDbDownloadListDto.class,
-                        totalDbDownload.idx,
+                        totalDbDownload.tdId,
                         admin.knName,
-                        totalDbDownload.reason,
-                        totalDbDownload.applyDate,
-                        totalDbDownload.state,
-                        totalDbDownload.returnReason,
-                        totalDbDownload.downloadDate
+                        totalDbDownload.tdReason,
+                        totalDbDownload.tdApplyDate,
+                        totalDbDownload.tdState,
+                        totalDbDownload.tdReturnReason,
+                        totalDbDownload.td_download_date
                 ));
 
-        if(totalDbDownloadSearchDto.getState() != null){
-            query.where(totalDbDownload.state.eq(totalDbDownloadSearchDto.getState()));
+        if(totalDbDownloadSearchDto.getTdState() != null){
+            query.where(totalDbDownload.tdState.eq(totalDbDownloadSearchDto.getTdState()));
         }
 
         if(totalDbDownloadSearchDto.getStimeStart() != null){
-            query.where(totalDbDownload.regdate.goe(totalDbDownloadSearchDto.getStimeStart()));
+            query.where(totalDbDownload.insert_date.goe(totalDbDownloadSearchDto.getStimeStart()));
         }
 
         if(totalDbDownloadSearchDto.getStimeEnd() != null){
-            query.where(totalDbDownload.regdate.loe(totalDbDownloadSearchDto.getStimeEnd()));
+            query.where(totalDbDownload.insert_date.loe(totalDbDownloadSearchDto.getStimeEnd()));
         }
 
-        query.orderBy(totalDbDownload.idx.desc());
+        query.orderBy(totalDbDownload.tdId.desc());
 
         final List<TotalDbDownloadListDto> totalDbDownloadListDtoList = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(totalDbDownloadListDtoList, pageable, query.fetchCount());

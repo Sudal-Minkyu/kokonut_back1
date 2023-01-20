@@ -19,15 +19,15 @@ import java.io.Serializable;
 public class KnServiceDto implements Serializable {
 
     @ApiModelProperty("키")
-    private Integer idx;
+    private Long srId;
 
     @ApiModelProperty("서비스 이름")
-    private String ksService;
+    private String srService;
 
     @ApiModelProperty("서비스 금액")
-    private Integer ksPrice;
+    private Integer srPrice;
 
     @ApiModelProperty("평균 회원 1명당 금액")
-    private Integer ksPerPrice;
+    private Integer srPerPrice;
 
 }

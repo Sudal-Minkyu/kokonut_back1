@@ -2,8 +2,7 @@ package com.app.kokonut.email.email;
 
 import com.app.kokonut.email.email.dtos.EmailDetailDto;
 import com.app.kokonut.email.email.dtos.EmailListDto;
-import com.app.kokonut.email.email.entity.QEmail;
-import com.app.kokonut.email.emailGroup.entity.QEmailGroup;
+import com.app.kokonut.email.emailGroup.QEmailGroup;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -48,17 +47,17 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         QEmailGroup emailGroup  = QEmailGroup.emailGroup;
 
         JPQLQuery<EmailListDto> query = from(email)
-                .leftJoin(emailGroup).on(emailGroup.idx.eq(email.emailGroupIdx))
+                .leftJoin(emailGroup).on(emailGroup.egId.eq(email.egId))
                 .select(Projections.constructor(EmailListDto.class,
-                        email.idx,
-                        email.emailGroupIdx,
-                        email.title,
-                        email.contents,
-                        email.regdate,
-                        emailGroup.name,
-                        emailGroup.desc
-                        ));
-        query.orderBy(email.regdate.desc());
+                        email.emId,
+                        email.egId,
+                        email.emTitle,
+                        email.emContents,
+                        email.insert_email,
+                        emailGroup.egName,
+                        emailGroup.egDesc
+                ));
+        query.orderBy(email.insert_date.desc());
 
         final List<EmailListDto> emailListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(emailListDtos, pageable, query.fetchCount());
@@ -67,7 +66,7 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
     // 이메일 상세 조회
     // param : Integer idx
     @Override
-    public EmailDetailDto findEmailByIdx(Integer idx) {
+    public EmailDetailDto findEmailByIdx(Long emId) {
         /*
          * SELECT `SENDER_ADMIN_IDX'
          * 		, `RECEIVER_TYPE`,
@@ -82,14 +81,14 @@ public class EmailRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         QEmail email = QEmail.email;
 
         JPQLQuery<EmailDetailDto> query = from(email)
-                .where(email.idx.eq(idx))
+                .where(email.emId.eq(emId))
                 .select(Projections.constructor(EmailDetailDto.class,
-                        email.senderadminId,
-                        email.receiverType,
-                        email.receiveradminIdList,
-                        email.emailGroupIdx,
-                        email.title,
-                        email.contents
+                        email.emSenderAdminId,
+                        email.emReceiverType,
+                        email.emReceiverAdminIdList,
+                        email.egId,
+                        email.emTitle,
+                        email.emContents
                 ));
 
         return query.fetchOne();

@@ -36,7 +36,7 @@ public class AddressBook implements Serializable {
      */
     @ApiModelProperty("관리자 키")
     @Column(name = "admin_id")
-    private Integer adminId;
+    private Long adminId;
 
     /**
      * IP

@@ -1,6 +1,5 @@
 package com.app.kokonut.personalInfoProvision;
 
-import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionDto;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionListDto;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionMapperDto;
@@ -91,7 +90,7 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
 //        select * from (
 //                select
 //                a.IDX as idx,
-//                a.COMPANY_IDX as companyIdx,
+//                a.COMPANY_IDX as companyId,
 //                a.ADMIN_IDX as adminId,
 //                a.NUMBER as number,
 //                a.REASON as reason,
@@ -151,7 +150,7 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
         // 네이티브 쿼리문
         sb.append("SELECT * FROM ( \n");
         sb.append("SELECT \n");
-        sb.append("a.IDX as idx, a.COMPANY_IDX as companyIdx, a.ADMIN_IDX as adminId, \n");
+        sb.append("a.IDX as idx, a.COMPANY_IDX as companyId, a.ADMIN_IDX as adminId, \n");
         sb.append("a.NUMBER as number, a.REASON as reason, a.TYPE as type, a.RECIPIENT_TYPE as recipientType, \n");
         sb.append("a.AGREE_YN as agreeYn, a.AGREE_TYPE as agreeType, a.REGDATE as regdate, \n");
         sb.append("a.PURPOSE as purpose, a.TAG as tag, a.START_DATE as startDate, a.EXP_DATE as expDate, \n");
@@ -176,7 +175,7 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
         sb.append("LEFT JOIN personal_info_download_history c ON c.NUMBER= a.NUMBER \n");
         sb.append("WHERE 1=1 \n");
 
-        sb.append("AND a.COMPANY_IDX = :companyIdx \n");
+        sb.append("AND a.COMPANY_IDX = :companyId \n");
 
         if(personalInfoProvisionMapperDto.getReason() != 0 && personalInfoProvisionMapperDto.getReason() != null){
             sb.append("AND a.REASON = :reason \n");
@@ -224,7 +223,7 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
         // 쿼리조건 선언부
         Query query = em.createNativeQuery(sb.toString());
 
-        query.setParameter("companyIdx", personalInfoProvisionMapperDto.getCompanyIdx());
+        query.setParameter("companyId", personalInfoProvisionMapperDto.getCompanyId());
 
         if(personalInfoProvisionMapperDto.getState() != 0 && personalInfoProvisionMapperDto.getState() != null){
             query.setParameter("state", personalInfoProvisionMapperDto.getState());

@@ -18,12 +18,12 @@ import java.util.List;
 @AllArgsConstructor
 public class AlimtalkMessageResultDetailDto {
 
-    private String requestId;
+    private String amRequestId;
 
-    private String channelId;
+    private String kcChannelId;
 
-    private String transmitType; // 즉시발송 : immediate, 예약발송 : reservation
+    private String amTransmitType; // 즉시발송 : immediate, 예약발송 : reservation
 
-    private String status;
+    private String amStatus;
 
 }

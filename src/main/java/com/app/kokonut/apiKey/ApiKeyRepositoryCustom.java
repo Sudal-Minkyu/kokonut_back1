@@ -29,14 +29,14 @@ public interface ApiKeyRepositoryCustom {
     // ApiKey 단일 조회 : param -> key
     ApiKeyKeyDto findByKey(String key); // SelectByKey -> 변경후
 
-    // TestApiKey 단일 조회 : param -> companyIdx, type = 2
-    ApiKeyListAndDetailDto findByTestApiKeyByCompanyIdx(Integer companyIdx, Integer type); // SelectTestApiKeyByCompanyIdx -> 변경후
+    // TestApiKey 단일 조회 : param -> companyId, type = 2
+    ApiKeyListAndDetailDto findByTestApiKeyBycompanyId(Long companyId, Integer type); // SelectTestApiKeyBycompanyId -> 변경후
 
     // TestApiKey 중복 조회 : param -> key, type = 2
     Long findByTestApiKeyDuplicateCount(String key, Integer type); // SelectTestApiKeyDuplicateCount -> 변경후
 
-    // ApiKey 단일 조회 : param -> companyIdx, type = 1, useYn = "Y"
-    ApiKeyListAndDetailDto findByApiKeyByCompanyIdx(Integer companyIdx, Integer type, String useYn); // SelectApiKeyByCompanyIdx -> 변경후
+    // ApiKey 단일 조회 : param -> companyId, type = 1, useYn = "Y"
+    ApiKeyListAndDetailDto findByApiKeyBycompanyId(Long companyId, Integer type, String useYn); // SelectApiKeyBycompanyId -> 변경후
 
     // ApiKey 중복 조회 : param -> key, type = 1
     Long findByApiKeyDuplicateCount(String key, Integer type); // SelectApiKeyDuplicateCount -> 변경후

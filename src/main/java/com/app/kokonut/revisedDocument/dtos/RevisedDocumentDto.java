@@ -23,7 +23,7 @@ public class RevisedDocumentDto implements Serializable {
     private Integer idx;
 
     @ApiModelProperty("회사(Company) 키")
-    private Integer companyIdx;
+    private Long companyId;
 
     @ApiModelProperty("시행시작일자")
     private LocalDateTime enforceStartDate;
@@ -35,7 +35,7 @@ public class RevisedDocumentDto implements Serializable {
     private String fileGroupId;
 
     @ApiModelProperty("등록자")
-    private Integer adminId;
+    private Long adminId;
 
     @ApiModelProperty("등록자이름")
     private String registerName;

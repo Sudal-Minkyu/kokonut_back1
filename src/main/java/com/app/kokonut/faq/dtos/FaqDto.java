@@ -24,7 +24,7 @@ public class FaqDto implements Serializable {
      * 최종 등록한 사람의 IDX를 저장
      */
     @ApiModelProperty("최종 등록한 사람의 IDX를 저장")
-    private Integer adminId;
+    private Long adminId;
 
 
     /**

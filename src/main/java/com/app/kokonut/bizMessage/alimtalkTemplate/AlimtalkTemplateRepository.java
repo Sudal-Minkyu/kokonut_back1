@@ -11,14 +11,14 @@ import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Repository
-public interface AlimtalkTemplateRepository extends JpaRepository<AlimtalkTemplate, Integer>, JpaSpecificationExecutor<AlimtalkTemplate>, AlimtalkTemplateRepositoryCustom {
+public interface AlimtalkTemplateRepository extends JpaRepository<AlimtalkTemplate, Long>, JpaSpecificationExecutor<AlimtalkTemplate>, AlimtalkTemplateRepositoryCustom {
 
     @Transactional
     @Modifying
     @Query("delete from AlimtalkTemplate a where a.channelId = :channelId")
     void findByAlimtalkTemplateDelete(String channelId);
 
-    @Query("select a from AlimtalkTemplate a where a.templateCode = :templateCode and a.channelId = :channelId and a.companyIdx = :companyIdx")
+    @Query("select a from AlimtalkTemplate a where a.templateCode = :templateCode and a.channelId = :channelId and a.companyId = :companyId")
     Optional<AlimtalkTemplate> findByAlimtalkTemplate(String templateCode, String channelId, Long companyId);
 
 }

@@ -1,55 +1,54 @@
 package com.app.kokonut.email.emailHistory.dtos;
 
-
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.io.Serializable;
+import lombok.NoArgsConstructor;
 
 @Data
-@ApiModel("")
-public class EmailHistoryDto implements Serializable {
+@NoArgsConstructor
+@AllArgsConstructor
+public class EmailHistoryDto {
 
     /**
      * 보내는 사람 이메일
      */
     @ApiModelProperty("보내는 사람 이메일")
-    private String from;
+    private String ehFrom;
 
 
     /**
      * 보내는 사람 이름
      */
     @ApiModelProperty("보내는 사람 이름")
-    private String fromName;
+    private String ehFromName;
 
 
     /**
      * 받는 사람 이메일
      */
     @ApiModelProperty("받는 사람 이메일")
-    private String to;
+    private String ehTo;
 
 
     /**
      * 받는 사람 이름
      */
     @ApiModelProperty("받는 사람 이름")
-    private String toName;
+    private String ehToName;
 
 
     /**
      * 제목
      */
     @ApiModelProperty("제목")
-    private String title;
+    private String ehTitle;
 
 
     /**
      * 내용
      */
     @ApiModelProperty("내용")
-    private String contents;
+    private String ehContents;
 
 }

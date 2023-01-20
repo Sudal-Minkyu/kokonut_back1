@@ -63,7 +63,7 @@ public class File implements Serializable {
      */
     @ApiModelProperty("등록자")
     @Column(name = "ADMIN_IDX")
-    private Integer adminId;
+    private Long adminId;
 
     /**
      * 등록일

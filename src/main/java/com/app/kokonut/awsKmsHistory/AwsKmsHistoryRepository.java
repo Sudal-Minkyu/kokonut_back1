@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AwsKmsHistoryRepository extends JpaRepository<AwsKmsHistory, Integer>, JpaSpecificationExecutor<AwsKmsHistory> {
+public interface AwsKmsHistoryRepository extends JpaRepository<AwsKmsHistory, Long>, JpaSpecificationExecutor<AwsKmsHistory> {
 
 }

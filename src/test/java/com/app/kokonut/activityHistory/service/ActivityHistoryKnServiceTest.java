@@ -8,7 +8,6 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.company.Company;
 import com.app.kokonut.company.CompanyRepository;
-import com.app.kokonut.refactor.adminLevel.AdminLevelRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,9 +37,6 @@ class ActivityHistoryKnServiceTest {
 //    @Autowired
 //    private ActivityRepository activityRepository;
 
-    @Autowired
-    private AdminLevelRepository adminLevelRepository;
-
 //    EntityManager entityManager;
 
     // 테스트하기 사전데이터 넣기
@@ -63,7 +59,7 @@ class ActivityHistoryKnServiceTest {
         System.out.println("저장된 saveCompany : "+saveCompany);
 
         Admin admin = new Admin();
-        admin.setCompanyIdx(saveCompany.getIdx());
+        admin.setcompanyId(saveCompany.getIdx());
         admin.setName("사용자");
         Admin saveAdmin = adminRepository.save(admin);
         System.out.println("저장된 saveAdmin : "+saveAdmin);
@@ -77,14 +73,14 @@ class ActivityHistoryKnServiceTest {
 
 
         // given
-        Long adminId = saveAdmin.getIdx();
+        Long adminId = saveadmin.getAdminId();
         Long companyId = saveCompany.getIdx();
 //        int activityIdx = saveActivity.getIdx();
 
         ActivityHistory activityHistory = new ActivityHistory();
 
         activityHistory.setadminId(adminId);
-        activityHistory.setCompanyIdx(companyIdx);
+        activityHistory.setcompanyId(companyId);
         activityHistory.setType(2);
         activityHistory.setRegdate(systemDate);
 
@@ -137,27 +133,27 @@ class ActivityHistoryKnServiceTest {
 //
 //    @Test
 //    @DisplayName("활동내역 정보 리스트 조회 테스트 : type 4 일 경우")
-//    public void findByActivityHistoryByCompanyIdxAndTypeListTest1(){
+//    public void findByActivityHistoryBycompanyIdAndTypeListTest1(){
 //
 //        // given
-//        Integer companyIdx = 1;
+//        Long companyId = 1;
 //        Integer type = 4;
 //
 //        // when
-//        List<ActivityHistoryInfoListDto> activityHistoryInfoListDtos = activityHistoryService.findByActivityHistoryByCompanyIdxAndTypeList(companyIdx, type);
+//        List<ActivityHistoryInfoListDto> activityHistoryInfoListDtos = activityHistoryService.findByActivityHistoryBycompanyIdAndTypeList(companyId, type);
 //        System.out.println("activityHistoryInfoListDtos : "+ activityHistoryInfoListDtos);
 //    }
 
 //    @Test
 //    @DisplayName("활동내역 정보 리스트 조회 테스트 : type 2 경우")
-//    public void findByActivityHistoryByCompanyIdxAndTypeListTest2(){
+//    public void findByActivityHistoryBycompanyIdAndTypeListTest2(){
 //
 //        // given
-//        Integer companyIdx = 1;
+//        Long companyId = 1;
 //        Integer type = 2;
 //
 //        // when
-//        List<ActivityHistoryInfoListDto> activityHistoryInfoListDtos = activityHistoryService.findByActivityHistoryByCompanyIdxAndTypeList(companyIdx, type);
+//        List<ActivityHistoryInfoListDto> activityHistoryInfoListDtos = activityHistoryService.findByActivityHistoryBycompanyIdAndTypeList(companyId, type);
 //        System.out.println("activityHistoryInfoListDtos : "+ activityHistoryInfoListDtos);
 //    }
 
@@ -188,11 +184,11 @@ class ActivityHistoryKnServiceTest {
 //    public void findByActivityHistoryStatisticsTest(){
 //
 //        // given
-//        Integer companyIdx = 1;
+//        Long companyId = 1;
 //        int day = 1;
 //
 //        // when
-//        ActivityHistoryStatisticsDto activityHistoryStatisticsDto = activityHistoryService.findByActivityHistoryStatistics(companyIdx, day);
+//        ActivityHistoryStatisticsDto activityHistoryStatisticsDto = activityHistoryService.findByActivityHistoryStatistics(companyId, day);
 //        System.out.println("activityHistoryStatisticsDto : "+ activityHistoryStatisticsDto);
 //    }
 
@@ -209,7 +205,7 @@ class ActivityHistoryKnServiceTest {
         String ipAddr = "ip테스트";
         int state = 1;
 
-        Integer saveactivityHistoryId = activityHistoryService.insertActivityHistory(type, companyIdx, adminId, activityCode, activityDetail, reason, ipAddr, state);
+        Integer saveactivityHistoryId = activityHistoryService.insertActivityHistory(type, companyId, adminId, activityCode, activityDetail, reason, ipAddr, state);
         System.out.println("저장된 IDX : "+saveactivityHistoryId);
     }
 

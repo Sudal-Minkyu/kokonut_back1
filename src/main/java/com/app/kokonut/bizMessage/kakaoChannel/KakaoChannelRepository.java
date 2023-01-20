@@ -15,7 +15,7 @@ import javax.transaction.Transactional;
  * Remark : KakaoChannel Repository
  */
 @Repository
-public interface KakaoChannelRepository extends JpaRepository<KakaoChannel, Integer>, JpaSpecificationExecutor<KakaoChannel>, KakaoChannelRepositoryCustom {
+public interface KakaoChannelRepository extends JpaRepository<KakaoChannel, Long>, JpaSpecificationExecutor<KakaoChannel>, KakaoChannelRepositoryCustom {
 
     @Transactional
     @Modifying

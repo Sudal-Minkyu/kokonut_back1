@@ -27,7 +27,7 @@ public class PolicyVO implements Serializable {
      * 정책 등록자
      */
     @ApiModelProperty("정책 등록자")
-    private Integer adminId;
+    private Long adminId;
 
 
     /**

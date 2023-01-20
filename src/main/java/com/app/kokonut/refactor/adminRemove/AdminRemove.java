@@ -27,7 +27,7 @@ public class AdminRemove implements Serializable {
     @Id
     @ApiModelProperty("ADMIN IDX")
     @Column(name = "admin_id", nullable = false)
-    private Integer adminId;
+    private Long adminId;
 
     /**
      * 이메일

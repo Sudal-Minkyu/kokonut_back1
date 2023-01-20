@@ -51,14 +51,14 @@ public class NoticeRestController {
     }
 
     @ApiOperation(value="Notice 내용 조회", notes="공지사항 내용 조회")
-    @GetMapping(value = "/noticeDetail/{idx}") // -> 기존의 코코넛 호출 메서드명 : detailView - SystemNoticeController, NoticeController
+    @GetMapping(value = "/noticeDetail/{ntId}") // -> 기존의 코코넛 호출 메서드명 : detailView - SystemNoticeController, NoticeController
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> noticeDetail(@PathVariable("idx") Integer idx) {
+    public ResponseEntity<Map<String,Object>> noticeDetail(@PathVariable("ntId") Long ntId) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return noticeService.noticeDetail(userRole, idx);
+        return noticeService.noticeDetail(userRole, ntId);
     }
 
     @ApiOperation(value="Notice 등록, 수정", notes="공지사항 수정, 등록")
@@ -79,10 +79,10 @@ public class NoticeRestController {
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> noticeDelete(@RequestParam(name="idx") Integer idx) {
+    public ResponseEntity<Map<String,Object>> noticeDelete(@RequestParam(name="ntId") Long ntId) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return noticeService.noticeDelete(userRole, email, idx);
+        return noticeService.noticeDelete(userRole, email, ntId);
     }
 
     @ApiOperation(value="Notice 게시 상태변경", notes="공지사항 게시 상태변경")

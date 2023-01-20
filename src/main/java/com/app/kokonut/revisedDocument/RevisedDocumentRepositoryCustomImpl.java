@@ -2,8 +2,6 @@ package com.app.kokonut.revisedDocument;
 
 import com.app.kokonut.revisedDocument.dtos.RevDocListDto;
 import com.app.kokonut.revisedDocument.dtos.RevDocSearchDto;
-import com.app.kokonut.revisedDocument.entity.QRevisedDocument;
-import com.app.kokonut.revisedDocumentFile.QRevisedDocumentFile;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -31,7 +29,7 @@ public class RevisedDocumentRepositoryCustomImpl extends QuerydslRepositorySuppo
     }
 
     @Override
-    public Page<RevDocListDto> findRevDocPage(Integer companyIdx, RevDocSearchDto revDocSearchDto, Pageable pageable) {
+    public Page<RevDocListDto> findRevDocPage(Long companyId, RevDocSearchDto revDocSearchDto, Pageable pageable) {
        /*
         * SELECT A.`IDX`
         *      , A.`ENFORCE_START_DATE`
@@ -43,7 +41,7 @@ public class RevisedDocumentRepositoryCustomImpl extends QuerydslRepositorySuppo
 	   LEFT JOIN `revise_doc_file` B
 		      ON A.`IDX` = B.`REVISED_DOCUMENT_IDX`
 	  WHERE 1 = 1
-	    AND A.`COMPANY_IDX` = #{companyIdx}
+	    AND A.`COMPANY_IDX` = #{companyId}
 		AND A.`REGDATE` BETWEEN #{stimeStart} AND #{stimeEnd}
 	  ORDER BY A.`REGDATE` DESC
 	    *
@@ -61,7 +59,7 @@ public class RevisedDocumentRepositoryCustomImpl extends QuerydslRepositorySuppo
                         doc.regdate
                         //, file.cfOriginalFilename
                 ));
-        query.where(doc.companyIdx.eq(companyIdx),
+        query.where(doc.companyId.eq(companyId),
                 doc.regdate.between(revDocSearchDto.getStimeStart(), revDocSearchDto.getStimeEnd())
         );
 

@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
  * Remark : RevisedDocumentRepository 개인정보 처리방침 - 개정문서
  */
 @Repository
-public interface RevisedDocumentRepository extends JpaRepository<RevisedDocument, Integer>, JpaSpecificationExecutor<RevisedDocument>, RevisedDocumentRepositoryCustom {
+public interface RevisedDocumentRepository extends JpaRepository<RevisedDocument, Long>, JpaSpecificationExecutor<RevisedDocument>, RevisedDocumentRepositoryCustom {
 
 }

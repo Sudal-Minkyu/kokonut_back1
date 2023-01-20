@@ -16,6 +16,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -45,62 +46,62 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         QAdmin admin = QAdmin.admin;
         QCompany company = QCompany.company;
 
-        Date systemDate = new Date(System.currentTimeMillis());
+        LocalDateTime nowDate = LocalDateTime.now();
 
         JPQLQuery<ApiKeyListAndDetailDto> query = from(apiKey)
-                .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
-                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
+                .innerJoin(admin).on(admin.adminId.eq(apiKey.adminId))
+                .innerJoin(company).on(company.companyId.eq(admin.companyId))
                 .select(Projections.constructor(ApiKeyListAndDetailDto.class,
-                        apiKey.idx,
-                        apiKey.companyIdx,
+                        apiKey.akId,
+                        apiKey.companyId,
                         apiKey.adminId,
-                        apiKey.key,
-                        apiKey.regdate,
+                        apiKey.akKey,
+                        apiKey.insert_date,
 
-                        apiKey.type,
-                        apiKey.note,
-                        apiKey.validityStart,
-                        apiKey.validityEnd,
+                        apiKey.akType,
+                        apiKey.akNote,
+                        apiKey.akValidityStart,
+                        apiKey.akValidityEnd,
 
                         new CaseBuilder()
-                                .when(apiKey.validityStart.loe(systemDate).and(apiKey.validityEnd.goe(systemDate))).then("Y")
+                                .when(apiKey.akValidityStart.loe(nowDate).and(apiKey.akValidityEnd.goe(nowDate))).then("Y")
                                 .otherwise("N"),
 
-                        apiKey.useAccumulate,
-                        apiKey.state,
-                        apiKey.useYn,
+                        apiKey.akUseAccumulate,
+                        apiKey.akState,
+                        apiKey.akUseYn,
 
-                        apiKey.reason,
-                        apiKey.modifierIdx,
-                        apiKey.modifierName,
-                        apiKey.modifyDate,
+                        apiKey.akReason,
 
-                        admin.name,
-                        company.companyName
+                        apiKey.modify_email,
+                        apiKey.modify_date,
+
+                        admin.knName,
+                        company.cpName
                 ));
 
         if(apiKeyMapperDto.getUseYn() != null) {
-            query.where(apiKey.useYn.eq(String.valueOf(apiKeyMapperDto.getUseYn())));
+            query.where(apiKey.akUseYn.eq(String.valueOf(apiKeyMapperDto.getUseYn())));
         }
 
         if(apiKeyMapperDto.getType() != null) {
-            query.where(apiKey.type.eq(apiKeyMapperDto.getType()));
+            query.where(apiKey.akType.eq(apiKeyMapperDto.getType()));
         }
 
         if(apiKeyMapperDto.getBeInUse() != null) {
             if(apiKeyMapperDto.getBeInUse().equals("Y")){
-                query.where(apiKey.validityStart.gt(systemDate).or(apiKey.validityEnd.lt(systemDate)));
+                query.where(apiKey.akValidityStart.gt(nowDate).or(apiKey.akValidityEnd.lt(nowDate)));
             }else{
-                query.where(apiKey.validityEnd.lt(systemDate));
+                query.where(apiKey.akValidityEnd.lt(nowDate));
             }
         }
 
         if(apiKeyMapperDto.getStimeStart() != null && apiKeyMapperDto.getStimeEnd() != null){
-            query.where(apiKey.regdate.between(apiKeyMapperDto.getStimeStart(), apiKeyMapperDto.getStimeEnd()));
+            query.where(apiKey.insert_date.between(apiKeyMapperDto.getStimeStart(), apiKeyMapperDto.getStimeEnd()));
         }
 
         if(apiKeyMapperDto.getSearchText() != null){
-            query.where(apiKey.key.like("%"+ apiKeyMapperDto.getSearchText() +"%"));
+            query.where(apiKey.akKey.like("%"+ apiKeyMapperDto.getSearchText() +"%"));
         }
 
         return query.fetch();
@@ -118,7 +119,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 
         JPQLQuery<Long> query = from(apiKey)
                 .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
-                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
+                .innerJoin(company).on(company.idx.eq(admin.companyId))
                 .select(Projections.constructor(Long.class,
                         apiKey.count()
                 ));
@@ -162,11 +163,11 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 
         JPQLQuery<ApiKeyListAndDetailDto> query = from(apiKey)
                 .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
-                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
+                .innerJoin(company).on(company.idx.eq(admin.companyId))
                 .where(apiKey.idx.eq(idx))
                 .select(Projections.constructor(ApiKeyListAndDetailDto.class,
                         apiKey.idx,
-                        apiKey.companyIdx,
+                        apiKey.companyId,
                         apiKey.adminId,
                         apiKey.key,
                         apiKey.regdate,
@@ -205,7 +206,7 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
                 .where(apiKey.key.eq(key))
                 .select(Projections.constructor(ApiKeyKeyDto.class,
                         apiKey.idx,
-                        apiKey.companyIdx,
+                        apiKey.companyId,
                         apiKey.adminId,
                         apiKey.registerName,
                         apiKey.key,
@@ -229,9 +230,9 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         return query.fetchOne();
     }
 
-    // Test Api Key 조회 : param -> companyIdx
+    // Test Api Key 조회 : param -> companyId
     @Override
-    public ApiKeyListAndDetailDto findByTestApiKeyByCompanyIdx(Integer companyIdx, Integer type) {
+    public ApiKeyListAndDetailDto findByTestApiKeyBycompanyId(Long companyId, Integer type) {
 
         QApiKey apiKey = QApiKey.apiKey;
         QAdmin admin = QAdmin.admin;
@@ -241,11 +242,11 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 
         JPQLQuery<ApiKeyListAndDetailDto> query = from(apiKey)
                 .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
-                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
-                .where(apiKey.companyIdx.eq(companyIdx).and(apiKey.type.eq(type)))
+                .innerJoin(company).on(company.idx.eq(admin.companyId))
+                .where(apiKey.companyId.eq(companyId).and(apiKey.type.eq(type)))
                 .select(Projections.constructor(ApiKeyListAndDetailDto.class,
                         apiKey.idx,
-                        apiKey.companyIdx,
+                        apiKey.companyId,
                         apiKey.adminId,
                         apiKey.key,
                         apiKey.regdate,
@@ -290,9 +291,9 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
         return query.fetchOne();
     }
 
-    // ApiKey 단일 조회 : param -> companyIdx, type = 1, useYn = "Y"
+    // ApiKey 단일 조회 : param -> companyId, type = 1, useYn = "Y"
     @Override
-    public ApiKeyListAndDetailDto findByApiKeyByCompanyIdx(Integer companyIdx, Integer type, String useYn) {
+    public ApiKeyListAndDetailDto findByApiKeyBycompanyId(Long companyId, Integer type, String useYn) {
 
         QApiKey apiKey = QApiKey.apiKey;
         QAdmin admin = QAdmin.admin;
@@ -302,11 +303,11 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 
         JPQLQuery<ApiKeyListAndDetailDto> query = from(apiKey)
                 .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
-                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
-                .where(apiKey.companyIdx.eq(companyIdx).and(apiKey.type.eq(type).and(apiKey.useYn.eq(useYn)))).limit(1)
+                .innerJoin(company).on(company.idx.eq(admin.companyId))
+                .where(apiKey.companyId.eq(companyId).and(apiKey.type.eq(type).and(apiKey.useYn.eq(useYn)))).limit(1)
                 .select(Projections.constructor(ApiKeyListAndDetailDto.class,
                         apiKey.idx,
-                        apiKey.companyIdx,
+                        apiKey.companyId,
                         apiKey.adminId,
                         apiKey.key,
                         apiKey.regdate,
@@ -373,14 +374,14 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 
         JPQLQuery<TestApiKeyExpiredListDto> query = from(apiKey)
                 .innerJoin(admin).on(admin.idx.eq(apiKey.adminId))
-                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
+                .innerJoin(company).on(company.idx.eq(admin.companyId))
                 .where(apiKey.type.eq(type)
                         // xml 쿼리 -> AND DATE_FORMAT(SYSDATE(), '%Y-%m-%d') = DATE_FORMAT(DATE_ADD(A.`VALIDITY_END`, INTERVAL 3 DAY), '%Y-%m-%d')
                         // 서프하고 얘기 한번 해야 할듯한 쿼리 fix
                         .and(apiKey.validityEnd.goe(systemDate).and(apiKey.validityEnd.loe(threeDayAfter))))
                 .select(Projections.constructor(TestApiKeyExpiredListDto.class,
                         apiKey.idx,
-                        apiKey.companyIdx,
+                        apiKey.companyId,
                         apiKey.adminId,
                         apiKey.key,
                         apiKey.regdate,

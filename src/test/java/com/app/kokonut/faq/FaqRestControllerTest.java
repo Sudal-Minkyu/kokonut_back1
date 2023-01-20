@@ -92,7 +92,7 @@ class FaqRestControllerTest {
         // 시스템 회원 등록
         Admin admin = Admin.builder()
                 .email(sEmail)
-                .companyIdx(companyIdx)
+                .companyId(companyId)
                 .password(passwordEncoder.encode(sPassword))
                 .phoneNumber(sPhoneNum)
                 .otpKey(googleOtpGenerateDto.getOtpKey())

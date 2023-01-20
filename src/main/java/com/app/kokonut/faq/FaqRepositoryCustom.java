@@ -21,6 +21,6 @@ public interface FaqRepositoryCustom {
     Page<FaqAnswerListDto> findFaqAnswerPage(Pageable pageable);
 
     // Faq 상세 조회 - 기존 SelectFaqByIdx
-    FaqDetailDto findFaqByIdx(Integer idx);
+    FaqDetailDto findFaqByIdx(Long idx);
 
 }

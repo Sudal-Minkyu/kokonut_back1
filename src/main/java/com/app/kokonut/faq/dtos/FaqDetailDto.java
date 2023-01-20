@@ -1,50 +1,34 @@
 package com.app.kokonut.faq.dtos;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FaqDetailDto implements Serializable {
+public class FaqDetailDto {
 
-    @ApiModelProperty("키")
-    private Integer idx;
+    private Long faqId;
+    private Long adminId;
 
-    @ApiModelProperty("등록자")
-    private Integer adminId;
+    private String faqQuestion;
+    private String faqAnswer;
 
-    @ApiModelProperty("질문")
-    private String question;
+    private Integer faqType;
 
-    @ApiModelProperty("답변")
-    private String answer;
+    private LocalDateTime faqRegistStartDate;
 
-    @ApiModelProperty("분류(0:기타,1:회원정보,2:사업자정보,3:kokonut서비스,4:결제)")
-    private Integer type;
+    private Integer faqViewCount;
 
-    @ApiModelProperty("작성정보 작성자")
-    private String registerName;
+    private String insert_email;
+    private LocalDateTime insert_date;
 
-    @ApiModelProperty("등록일자")
-    private LocalDateTime regdate;
+    private Long modify_id;
+    private String modify_email;
+    private LocalDateTime modify_date;
 
-    @ApiModelProperty("수정자")
-    private Integer modifierIdx;
-
-    @ApiModelProperty("수정정보 수정자")
-    private String modifierName;
-
-    @ApiModelProperty("수정일자")
-    private LocalDateTime modifyDate;
-
-    @ApiModelProperty("조회수")
-    private Integer viewCount;
 
 }

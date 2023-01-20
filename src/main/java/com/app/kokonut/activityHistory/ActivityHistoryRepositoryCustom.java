@@ -14,15 +14,15 @@ public interface ActivityHistoryRepositoryCustom {
 
     List<ActivityHistoryListDto> findByActivityHistoryList(ActivityHistorySearchDto activityHistorySearchDto); // SelectActivityHistoryList -> 변경후
 
-    ActivityHistoryDto findByActivityHistoryByIdx(Integer idx); // SelectActivityHistoryByIdx -> 변경후
+    ActivityHistoryDto findByActivityHistoryByIdx(Long idx); // SelectActivityHistoryByIdx -> 변경후
 
-    ActivityHistoryDto findByActivityHistoryByCompanyIdxAndReasonaAndAtivityIdx(Integer companyIdx, String reason, Integer activityIdx); // SelectActivityHistoryByCompanyIdxAndReason -> 변경후
+    ActivityHistoryDto findByActivityHistoryBycompanyIdAndReasonaAndAtivityIdx(Long companyId, String ahReason); // SelectActivityHistoryBycompanyIdAndReason -> 변경후
 
-    List<ActivityHistoryInfoListDto> findByActivityHistoryByCompanyIdxAndTypeList(Integer companyIdx, Integer type); // SelectByTypeAndCompanyIdx -> 변경후
+    List<ActivityHistoryInfoListDto> findByActivityHistoryBycompanyIdAndTypeList(Long companyId, Integer ahType); // SelectByTypeAndcompanyId -> 변경후
 
     List<Column> findByActivityHistoryColumnList(); // selectColumns -> 변경후
 
-    ActivityHistoryStatisticsDto findByActivityHistoryStatistics(Integer companyIdx, int day); // SelectStatisticsActivityHistory -> 변경후
+    ActivityHistoryStatisticsDto findByActivityHistoryStatistics(Long companyId, int day); // SelectStatisticsActivityHistory -> 변경후
 
     void deleteExpiredActivityHistory(int activityIdx, int month);
 }

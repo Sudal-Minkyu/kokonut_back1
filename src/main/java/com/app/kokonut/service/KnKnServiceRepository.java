@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * Time :
  * Remark : ServiceRepository
  */
-public interface KnKnServiceRepository extends JpaRepository<KnService, Integer>, JpaSpecificationExecutor<KnService>, KnServiceRepositoryCustom {
+public interface KnKnServiceRepository extends JpaRepository<KnService, Long>, JpaSpecificationExecutor<KnService>, KnServiceRepositoryCustom {
 
 }

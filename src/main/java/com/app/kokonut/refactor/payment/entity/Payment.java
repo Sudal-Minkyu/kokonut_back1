@@ -28,14 +28,14 @@ public class Payment implements Serializable {
      */
     @Column(name = "COMPANY_IDX")
     @ApiModelProperty("COMPANY IDX")
-    private Integer companyIdx;
+    private Long companyId;
 
     /**
      * 결제자 키(관리자)
      */
     @Column(name = "ADMIN_IDX")
     @ApiModelProperty("결제자 키(관리자)")
-    private Integer adminId;
+    private Long adminId;
 
     /**
      * 결제UID

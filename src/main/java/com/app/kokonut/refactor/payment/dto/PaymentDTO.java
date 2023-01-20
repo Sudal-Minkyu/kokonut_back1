@@ -24,14 +24,14 @@ public class PaymentDTO implements Serializable {
      * COMPANY IDX
      */
     @ApiModelProperty("COMPANY IDX")
-    private Integer companyIdx;
+    private Long companyId;
 
 
     /**
      * 결제자 키(관리자)
      */
     @ApiModelProperty("결제자 키(관리자)")
-    private Integer adminId;
+    private Long adminId;
 
 
     /**

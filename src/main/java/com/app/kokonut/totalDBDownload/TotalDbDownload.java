@@ -93,14 +93,14 @@ public class TotalDbDownload {
      */
     @ApiModelProperty("다운로드 일자")
     @Column(name = "td_download_date")
-    private LocalDateTime td_download_date;
+    private LocalDateTime tdDownloadDate;
 
     /**
      * IP주소(다운로드정보에 표현)
      */
     @Column(name = "td_ip_addr")
     @ApiModelProperty("IP주소(다운로드정보에 표현)")
-    private String td_ip_addr;
+    private String tdIpAddr;
 
     /**
      * 등록 날짜

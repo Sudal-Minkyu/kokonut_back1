@@ -33,13 +33,13 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
 
     // Admin OtpKey 단일 조회
     @Override
-    public AdminOtpKeyDto findByOtpKey(String aEmail) {
+    public AdminOtpKeyDto findByOtpKey(String knEmail) {
         QAdmin admin = QAdmin.admin;
 
         JPQLQuery<AdminOtpKeyDto> query = from(admin)
-                .where(admin.aEmail.eq(aEmail))
+                .where(admin.knEmail.eq(knEmail))
                 .select(Projections.constructor(AdminOtpKeyDto.class,
-                        admin.aOtpKey
+                        admin.knOtpKey
                 ));
 
         return query.fetchOne();
@@ -54,11 +54,11 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
 
         JPQLQuery<AdminCompanyInfoDto> query = from(admin)
                 .innerJoin(company).on(company.companyId.eq(admin.companyId))
-                .where(admin.aEmail.eq(aEmail))
+                .where(admin.knEmail.eq(aEmail))
                 .select(Projections.constructor(AdminCompanyInfoDto.class,
                         admin.adminId,
                         company.companyId,
-                        company.companyCode
+                        company.cpCode
                 ));
 
         return query.fetchOne();
@@ -71,8 +71,8 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
         JPQLQuery<AdminEmailInfoDto> query = from(admin)
                 .where(admin.adminId.eq(adminId))
                 .select(Projections.constructor(AdminEmailInfoDto.class,
-                        admin.aEmail,
-                        admin.aName
+                        admin.knEmail,
+                        admin.knName
                 ));
         return query.fetchOne();
     }
@@ -82,10 +82,10 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
     public List<AdminEmailInfoDto> findSystemAdminEmailInfo() {
         QAdmin admin = QAdmin.admin;
         JPQLQuery<AdminEmailInfoDto> query = from(admin)
-                .where(admin.aState.eq(1), admin.aRoleCode.eq(AuthorityRole.ROLE_SYSTEM))
+                .where(admin.knState.eq(1), admin.aRoleCode.eq(AuthorityRole.ROLE_SYSTEM))
                 .select(Projections.constructor(AdminEmailInfoDto.class,
-                        admin.aEmail,
-                        admin.aName
+                        admin.knEmail,
+                        admin.knName
                 ));
         return query.fetch();
     }

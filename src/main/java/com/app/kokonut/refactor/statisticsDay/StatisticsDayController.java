@@ -1,9 +1,6 @@
 package com.app.kokonut.refactor.statisticsDay;
 
 import com.app.kokonut.refactor.statisticsDay.dtos.StatisticsDayDto;
-import com.app.kokonut.refactor.statisticsDay.vo.StatisticsDayQueryVO;
-import com.app.kokonut.refactor.statisticsDay.vo.StatisticsDayUpdateVO;
-import com.app.kokonut.refactor.statisticsDay.vo.StatisticsDayVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,34 +20,4 @@ public class StatisticsDayController {
     @Autowired
     private StatisticsDayService statisticsDayService;
 
-    @PostMapping
-    @ApiOperation("Save ")
-    public String save(@Valid @RequestBody StatisticsDayVO vO) {
-        return statisticsDayService.save(vO).toString();
-    }
-
-    @DeleteMapping("/{id}")
-    @ApiOperation("Delete ")
-    public void delete(@Valid @NotNull @PathVariable("id") Integer id) {
-        statisticsDayService.delete(id);
-    }
-
-    @PutMapping("/{id}")
-    @ApiOperation("Update ")
-    public void update(@Valid @NotNull @PathVariable("id") Integer id,
-                       @Valid @RequestBody StatisticsDayUpdateVO vO) {
-        statisticsDayService.update(id, vO);
-    }
-
-    @GetMapping("/{id}")
-    @ApiOperation("Retrieve by ID ")
-    public StatisticsDayDto getById(@Valid @NotNull @PathVariable("id") Integer id) {
-        return statisticsDayService.getById(id);
-    }
-
-    @GetMapping
-    @ApiOperation("Retrieve by query ")
-    public Page<StatisticsDayDto> query(@Valid StatisticsDayQueryVO vO) {
-        return statisticsDayService.query(vO);
-    }
 }

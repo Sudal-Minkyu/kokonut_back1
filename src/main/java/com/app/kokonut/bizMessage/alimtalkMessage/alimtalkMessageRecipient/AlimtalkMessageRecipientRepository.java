@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AlimtalkMessageRecipientRepository extends JpaRepository<AlimtalkMessageRecipient, Integer>, JpaSpecificationExecutor<AlimtalkMessageRecipient> {
+public interface AlimtalkMessageRecipientRepository extends JpaRepository<AlimtalkMessageRecipient, Long>, JpaSpecificationExecutor<AlimtalkMessageRecipient> {
 
 }

@@ -62,14 +62,14 @@ class ApiKeyKnServiceTest {
 //        System.out.println("저장된 saveCompany : "+saveCompany);
 
         Admin admin = new Admin();
-        admin.setCompanyIdx(saveCompany.getIdx());
+        admin.setcompanyId(saveCompany.getIdx());
         admin.setName("사용자명");
         Admin saveAdmin = adminRepository.save(admin);
 //        System.out.println("저장된 saveAdmin : "+saveAdmin);
 
         List<ApiKey> apiKeyList = new ArrayList<>();
 
-        Long adminId = saveAdmin.getIdx();
+        Long adminId = saveadmin.getAdminId();
         Long companyId = saveCompany.getIdx();
         String registerName;
         int type = 1;
@@ -84,7 +84,7 @@ class ApiKeyKnServiceTest {
             registerName = "테스트_"+i;
             key = "test_key_"+i;
             apiKey.setadminId(adminId);
-            apiKey.setCompanyIdx(companyIdx);
+            apiKey.setcompanyId(companyId);
             apiKey.setRegisterName(registerName);
             apiKey.setType(type);
             apiKey.setState(state);
@@ -112,8 +112,8 @@ class ApiKeyKnServiceTest {
     public void insertApiKeyAndDeleteApiKeyByIdxTest(){
 
         // given
-        Integer adminId = 99;
-        Integer companyIdx = 99;
+        Long adminId = 99;
+        Long companyId = 99;
         String registerName = "테스트_99";
         Integer type = 1;
         Integer state = 1;
@@ -121,7 +121,7 @@ class ApiKeyKnServiceTest {
         Integer useAccumulate = 1;
 
         // when
-        Integer createIdx = apiKeyService.insertApiKey(adminId, companyIdx, registerName, type, state, key, useAccumulate);
+        Integer createIdx = apiKeyService.insertApiKey(adminId, companyId, registerName, type, state, key, useAccumulate);
         System.out.println("인서트 완료 createIdx : "+createIdx);
 
         apiKeyService.deleteApiKeyByIdx(createIdx);
@@ -138,8 +138,8 @@ class ApiKeyKnServiceTest {
     public void updateApiKeyAndDeleteApiKeyByIdxTest(){
 
         // given
-        Integer adminId = 99;
-        Integer companyIdx = 99;
+        Long adminId = 99;
+        Long companyId = 99;
         String registerName = "테스트_99";
         Integer type = 1;
         Integer state = 1;
@@ -147,7 +147,7 @@ class ApiKeyKnServiceTest {
         Integer useAccumulate = 1;
 
         // when
-        Integer createIdx = apiKeyService.insertApiKey(adminId, companyIdx, registerName, type, state, key, useAccumulate);
+        Integer createIdx = apiKeyService.insertApiKey(adminId, companyId, registerName, type, state, key, useAccumulate);
         System.out.println("인서트 완료 createIdx : "+createIdx);
 
         // when
@@ -229,11 +229,11 @@ class ApiKeyKnServiceTest {
     }
 
     @Test
-    @DisplayName("TestApiKey 단일 조회 : param -> companyIdx, type = 2 테스트")
-    public void findByTestApiKeyByCompanyIdxTest(){
+    @DisplayName("TestApiKey 단일 조회 : param -> companyId, type = 2 테스트")
+    public void findByTestApiKeyBycompanyIdTest(){
 
         // when
-        ApiKeyListAndDetailDto apiKeyDetail = apiKeyService.findByTestApiKeyByCompanyIdx(1);
+        ApiKeyListAndDetailDto apiKeyDetail = apiKeyService.findByTestApiKeyBycompanyId(1);
         System.out.println("apiKeyDetail : "+apiKeyDetail);
 
         // then
@@ -256,11 +256,11 @@ class ApiKeyKnServiceTest {
     }
 
     @Test
-    @DisplayName("ApiKey 단일 조회 : param -> companyIdx, type = 1, useYn = 'Y' 테스트")
-    public void findByApiKeyByCompanyIdxTest(){
+    @DisplayName("ApiKey 단일 조회 : param -> companyId, type = 1, useYn = 'Y' 테스트")
+    public void findByApiKeyBycompanyIdTest(){
 
         // when
-        ApiKeyListAndDetailDto apiKeyDetail = apiKeyService.findByApiKeyByCompanyIdx(1);
+        ApiKeyListAndDetailDto apiKeyDetail = apiKeyService.findByApiKeyBycompanyId(1);
         System.out.println("apiKeyDetail : "+apiKeyDetail);
 
         // then
@@ -303,8 +303,8 @@ class ApiKeyKnServiceTest {
     public void updateBlockKeyTest(){
 
         // given
-        Integer adminId = 99;
-        Integer companyIdx = 99;
+        Long adminId = 99;
+        Long companyId = 99;
         String registerName = "테스트_99";
         Integer type = 1;
         Integer state = 1;
@@ -312,7 +312,7 @@ class ApiKeyKnServiceTest {
         Integer useAccumulate = 1;
 
         // when
-        Integer createIdx = apiKeyService.insertApiKey(adminId, companyIdx, registerName, type, state, key, useAccumulate);
+        Integer createIdx = apiKeyService.insertApiKey(adminId, companyId, registerName, type, state, key, useAccumulate);
         System.out.println("인서트 완료 createIdx : "+createIdx);
 
         Optional<ApiKey> optionalApiKey = apiKeyRepository.findById(createIdx);
@@ -320,9 +320,9 @@ class ApiKeyKnServiceTest {
             System.out.println("updateBlockKeyTest : 인서트 성공");
             assertEquals("Y", optionalApiKey.get().getUseYn());
 
-            apiKeyService.updateBlockKey(companyIdx);
+            apiKeyService.updateBlockKey(companyId);
 
-            ApiKey apiKey = apiKeyRepository.findApiKeyByCompanyIdxAndType(companyIdx,1)
+            ApiKey apiKey = apiKeyRepository.findApiKeyBycompanyIdAndType(companyId,1)
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ApiKey' 입니다."));
             assertEquals("N", apiKey.getUseYn());
 
@@ -344,8 +344,8 @@ class ApiKeyKnServiceTest {
     public void updateTestKeyExpireTest(){
 
         // given
-        Integer adminId = 99;
-        Integer companyIdx = 99;
+        Long adminId = 99;
+        Long companyId = 99;
         String registerName = "테스트_99";
         Integer type = 2;
         Integer state = 1;
@@ -353,16 +353,16 @@ class ApiKeyKnServiceTest {
         Integer useAccumulate = 1;
 
         // when
-        Integer createIdx = apiKeyService.insertApiKey(adminId, companyIdx, registerName, type, state, key, useAccumulate);
+        Integer createIdx = apiKeyService.insertApiKey(adminId, companyId, registerName, type, state, key, useAccumulate);
         System.out.println("인서트 완료 createIdx : "+createIdx);
 
         Optional<ApiKey> optionalApiKey = apiKeyRepository.findById(createIdx);
         if(optionalApiKey.isPresent()){
             System.out.println("updateTestKeyExpire : 인서트 성공");
-            assertEquals(99, optionalApiKey.get().getCompanyIdx());
+            assertEquals(99, optionalApiKey.get().getCompanyId());
             assertEquals(2, optionalApiKey.get().getType());
 
-            apiKeyService.updateTestKeyExpire(companyIdx);
+            apiKeyService.updateTestKeyExpire(companyId);
 
             apiKeyService.deleteApiKeyByIdx(createIdx);
             System.out.println("삭제 성공 createIdx : "+createIdx);
@@ -375,15 +375,15 @@ class ApiKeyKnServiceTest {
     }
 
     @Test
-    @DisplayName("ApiKey TotalDeleteService deleteApiKeyByCompanyIdx 테스트 - " +
-            "1. 성공적으로 인서트(insertApiKey)하고 deleteApiKeyByCompanyIdx를 호출한다. " +
-            "2. 인서트한 값의 deleteApiKeyByCompanyIdx를 호출한다. " +
+    @DisplayName("ApiKey TotalDeleteService deleteApiKeyBycompanyId 테스트 - " +
+            "1. 성공적으로 인서트(insertApiKey)하고 deleteApiKeyBycompanyId를 호출한다. " +
+            "2. 인서트한 값의 deleteApiKeyBycompanyId를 호출한다. " +
             "3. 데이터를 삭제(deleteApiKeyByIdx)한 후 다시 조회하여 테스트를 마무리한다.")
-    public void deleteApiKeyByCompanyIdxTest(){
+    public void deleteApiKeyBycompanyIdTest(){
 
         // given
-        Integer adminId = 99;
-        Integer companyIdx = 99;
+        Long adminId = 99;
+        Long companyId = 99;
         String registerName = "테스트_99";
         Integer type = 1;
         Integer state = 1;
@@ -391,20 +391,20 @@ class ApiKeyKnServiceTest {
         Integer useAccumulate = 1;
 
         // when
-        Integer createIdx = apiKeyService.insertApiKey(adminId, companyIdx, registerName, type, state, key, useAccumulate);
+        Integer createIdx = apiKeyService.insertApiKey(adminId, companyId, registerName, type, state, key, useAccumulate);
         System.out.println("인서트 완료 createIdx : "+createIdx);
 
         Optional<ApiKey> optionalApiKey = apiKeyRepository.findById(createIdx);
         if(optionalApiKey.isPresent()){
-            System.out.println("deleteApiKeyByCompanyIdx : 인서트 성공");
-            assertEquals(99, optionalApiKey.get().getCompanyIdx());
+            System.out.println("deleteApiKeyBycompanyId : 인서트 성공");
+            assertEquals(99, optionalApiKey.get().getCompanyId());
 
-            apiKeyService.deleteApiKeyByCompanyIdx(companyIdx);
-            System.out.println("삭제 성공 companyIdx : "+companyIdx);
+            apiKeyService.deleteApiKeyBycompanyId(companyId);
+            System.out.println("삭제 성공 companyId : "+companyId);
 
             Optional<ApiKey> optionalDeleteApiKey = apiKeyRepository.findById(createIdx);
             if(optionalDeleteApiKey.isEmpty()){
-                System.out.println("deleteApiKeyByCompanyIdx : 테스트 성공");
+                System.out.println("deleteApiKeyBycompanyId : 테스트 성공");
             }
         }
     }

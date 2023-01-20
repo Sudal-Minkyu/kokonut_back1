@@ -23,12 +23,12 @@ public class AddressBookDto implements Serializable {
     /**
      * 회사 키(주소록 보는 권한이 개인이면 삭제해도 되는 컬럼)
      */
-    private Integer companyIdx;
+    private Long companyId;
 
     /**
      * 관리자 키
      */
-    private Integer adminId;
+    private Long adminId;
 
     /**
      * IP

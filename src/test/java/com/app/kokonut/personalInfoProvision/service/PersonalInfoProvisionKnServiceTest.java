@@ -24,7 +24,7 @@ class PersonalInfoProvisionKnServiceTest {
 
         // given
         PersonalInfoProvisionMapperDto personalInfoProvisionMapperDto = new PersonalInfoProvisionMapperDto();
-        personalInfoProvisionMapperDto.setCompanyIdx(13); // 기업 고유값ID 13 조회
+        personalInfoProvisionMapperDto.setcompanyId(13); // 기업 고유값ID 13 조회
 
         // when
         List<PersonalInfoProvisionListDto> personalInfoProvisionListDtos = personalInfoProvisionService.findByProvisionList(personalInfoProvisionMapperDto);

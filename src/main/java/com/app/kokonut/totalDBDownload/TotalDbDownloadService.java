@@ -10,10 +10,10 @@ import com.app.kokonut.common.ResponseErrorCode;
 import com.app.kokonut.common.component.CommonUtil;
 import com.app.kokonut.common.component.Utils;
 import com.app.kokonut.configs.GoogleOTP;
-import com.app.kokonut.downloadHistory.DownloadHistory;
-import com.app.kokonut.downloadHistory.DownloadHistoryRepository;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadListDto;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadSearchDto;
+import com.app.kokonut.totalDBDownloadHistory.TotalDbDownloadHistory;
+import com.app.kokonut.totalDBDownloadHistory.TotalDbDownloadHistoryRepository;
 import com.app.kokonutdormant.KokonutDormantService;
 import com.app.kokonutuser.KokonutUserService;
 import com.app.kokonutuser.dtos.KokonutUserFieldDto;
@@ -55,20 +55,20 @@ public class TotalDbDownloadService {
     private final KokonutDormantService kokonutDormantService;
 
     private final TotalDbDownloadRepository totalDbDownloadRepository;
-    private final DownloadHistoryRepository downloadHistoryRepository;
+    private final TotalDbDownloadHistoryRepository totalDbDownloadHistoryRepository;
 
     @Autowired
     public TotalDbDownloadService(GoogleOTP googleOTP, AdminRepository adminRepository,
                                   ActivityHistoryService activityHistoryService, KokonutDormantService kokonutDormantService,
                                   KokonutUserService kokonutUserService,
-                                  TotalDbDownloadRepository totalDbDownloadRepository, DownloadHistoryRepository downloadHistoryRepository){
+                                  TotalDbDownloadRepository totalDbDownloadRepository, TotalDbDownloadHistoryRepository totalDbDownloadHistoryRepository){
         this.googleOTP = googleOTP;
         this.adminRepository = adminRepository;
         this.kokonutUserService = kokonutUserService;
         this.kokonutDormantService = kokonutDormantService;
         this.activityHistoryService = activityHistoryService;
         this.totalDbDownloadRepository = totalDbDownloadRepository;
-        this.downloadHistoryRepository = downloadHistoryRepository;
+        this.totalDbDownloadHistoryRepository = totalDbDownloadHistoryRepository;
     }
 
     // 개인정보 DB 데이터 전체 다운로드 요청
@@ -83,7 +83,7 @@ public class TotalDbDownloadService {
         log.info("reason : "+ reason);
         log.info("email : "+email);
 
-        // 해당 이메일을 통해 회사 IDX 조회
+        // 해당 이메일을 통해 회사 tdId 조회
         AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 
         Long adminId;
@@ -95,7 +95,7 @@ public class TotalDbDownloadService {
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(), "해당 이메일의 정보가 "+ResponseErrorCode.KO004.getDesc()));
         }
         else {
-            adminId = adminCompanyInfoDto.getAdminId(); // modifierIdx
+            adminId = adminCompanyInfoDto.getAdminId(); // modifiertdId
             companyId = adminCompanyInfoDto.getCompanyId(); // companyId
             companyCode = adminCompanyInfoDto.getCompanyCode(); // tableName
         }
@@ -124,10 +124,10 @@ public class TotalDbDownloadService {
         // 회원 DB데이터 다운로드 요청건 insert
         TotalDbDownload totalDbDownload = new TotalDbDownload();
         totalDbDownload.setAdminId(adminId);
-        totalDbDownload.setReason(reason);
-        totalDbDownload.setState(1);
-        totalDbDownload.setApplyDate(LocalDateTime.now());
-        totalDbDownload.setRegdate(LocalDateTime.now());
+        totalDbDownload.setTdReason(reason);
+        totalDbDownload.setTdState(1);
+        totalDbDownload.setTdApplyDate(LocalDateTime.now());
+        totalDbDownload.setInsert_date(LocalDateTime.now());
 
         try{
             totalDbDownloadRepository.save(totalDbDownload);
@@ -155,7 +155,7 @@ public class TotalDbDownloadService {
         log.info("totalDbDownloadSearchDto : "+ totalDbDownloadSearchDto);
         log.info("email : "+email);
 
-        // 해당 이메일을 통해 회사 IDX 조회
+        // 해당 이메일을 통해 회사 tdId 조회
         AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 
         String companyCode;
@@ -175,13 +175,13 @@ public class TotalDbDownloadService {
 
     // 개인정보 DB 데이터 다운로드 시작
     @Transactional
-    public void userDbDataDownloadStart(Integer idx, String email, HttpServletRequest request, HttpServletResponse response) {
+    public void userDbDataDownloadStart(Long tdId, String email, HttpServletRequest request, HttpServletResponse response) {
         log.info("userDbDataDownloadStart 호출");
 
-        log.info("idx : "+ idx);
+        log.info("tdId : "+ tdId);
         log.info("email : "+email);
 
-        // 해당 이메일을 통해 회사 IDX 조회
+        // 해당 이메일을 통해 회사 tdId 조회
         AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 
         Long adminId;
@@ -193,7 +193,7 @@ public class TotalDbDownloadService {
             return;
         }
         else {
-            adminId = adminCompanyInfoDto.getAdminId(); // modifierIdx
+            adminId = adminCompanyInfoDto.getAdminId(); // modifiertdId
             companyId = adminCompanyInfoDto.getCompanyId(); // companyId
             companyCode = adminCompanyInfoDto.getCompanyCode(); // tableName
         }
@@ -207,10 +207,10 @@ public class TotalDbDownloadService {
             Long activityHistoryId = activityHistoryService.insertActivityHistory(3, companyId, adminId, activityCode,
                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
 
-            Optional<TotalDbDownload> optionalTotalDbDownload = totalDbDownloadRepository.findById(idx);
+            Optional<TotalDbDownload> optionalTotalDbDownload = totalDbDownloadRepository.findById(tdId);
             if(optionalTotalDbDownload.isPresent()) {
 
-                if(optionalTotalDbDownload.get().getDownloadLimit() == 0) {
+                if(optionalTotalDbDownload.get().getTdLimit() == 0) {
                     log.error("다운로드 횟수가 초과됬습니다. 재요청해주시길 바랍니다.");
                     return;
                 }
@@ -403,18 +403,16 @@ public class TotalDbDownloadService {
                 csvPrinter.close();
 
                 // 다운로드 요청 완료시 횟수 차감
-                optionalTotalDbDownload.get().setDownloadLimit(optionalTotalDbDownload.get().getDownloadLimit()-1);
-                optionalTotalDbDownload.get().setModifierIdx(adminId);
-                optionalTotalDbDownload.get().setModifyDate(LocalDateTime.now());
-                totalDbDownloadRepository.save(optionalTotalDbDownload.get());
+                optionalTotalDbDownload.get().setTdLimit(optionalTotalDbDownload.get().getTdLimit()-1);
+                TotalDbDownload saveTotalDbDownload = totalDbDownloadRepository.save(optionalTotalDbDownload.get());
 
                 // 다운로드 로그 테이블에 기록
-                DownloadHistory downloadHistory = new DownloadHistory();
-                downloadHistory.setFileName(companyCode + "_개인정보 DB 데이터_" + nowDate + ".csv");
-                downloadHistory.setReason("개인정보 DB 데이터 다운로드");
-                downloadHistory.setAdminId(adminId);
-                downloadHistory.setRegistDate(LocalDateTime.now());
-                downloadHistoryRepository.save(downloadHistory);
+                TotalDbDownloadHistory totalDbDownloadHistory = new TotalDbDownloadHistory();
+                totalDbDownloadHistory.setTdId(saveTotalDbDownload.getTdId());
+                totalDbDownloadHistory.setTdhFileName(companyCode + "_개인정보 DB 데이터_" + nowDate + ".csv");
+                totalDbDownloadHistory.setTdhReason("개인정보 DB 데이터 다운로드");
+                totalDbDownloadHistory.setInsert_date(LocalDateTime.now());
+                totalDbDownloadHistoryRepository.save(totalDbDownloadHistory);
 
                 // 활동 완료 업데이트
                 activityHistoryService.updateActivityHistory(activityHistoryId,

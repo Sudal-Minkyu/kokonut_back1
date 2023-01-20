@@ -24,7 +24,7 @@ public class QnaQuestionSaveDto {
     private Integer idx;
 
     @ApiModelProperty("질문자(사용자 키)")
-    private Integer adminId;
+    private Long adminId;
 
     @ApiModelProperty("제목")
     private String title;

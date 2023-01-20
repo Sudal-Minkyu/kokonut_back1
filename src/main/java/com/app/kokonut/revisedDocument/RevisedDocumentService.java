@@ -72,9 +72,9 @@ public class RevisedDocumentService {
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
         // TODO 메뉴 권한에 대한 체크 부분
         if ("[MASTER]".equals(userRole) || "[ADMIN]".equals(userRole)) {
-            Integer companyIdx = admin.getCompanyIdx();
+            Long companyId = admin.getCompanyId();
             log.info("개정문서 목록 조회");
-            Page<RevDocListDto> revDocListDtos = revisedDocumentRepository.findRevDocPage(companyIdx, revDocSearchDto, pageable);
+            Page<RevDocListDto> revDocListDtos = revisedDocumentRepository.findRevDocPage(companyId, revDocSearchDto, pageable);
             return ResponseEntity.ok(res.ResponseEntityPage(revDocListDtos));
         } else {
             log.error("접근권한이 없습니다. userRole : " + userRole);
@@ -93,22 +93,22 @@ public class RevisedDocumentService {
             // 접속 정보에서 idx 가져오기
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-            Integer adminId = admin.getIdx();
-            String adminName = admin.getName();
-            Integer companyIdx =admin.getCompanyIdx();
+            Long adminId = admin.getAdminId();
+            String adminName = admin.getKnName();
+            Long companyId =admin.getCompanyId();
 
-            revDoc.setadminId(adminId);
-            revDoc.setRegisterName(adminName);
-            revDoc.setRegdate(LocalDateTime.now());
-            revDoc.setCompanyIdx(companyIdx);
-            revDoc.setEnforceStartDate(revDocSaveDto.getEnforceStartDate());
-            revDoc.setEnforceEndDate(revDocSaveDto.getEnforceEndDate());
+            revDoc.setAdminId(adminId);
+            revDoc.setInsert_email(email);
+            revDoc.setInsert_date(LocalDateTime.now());
+            revDoc.setCompanyId(companyId);
+            revDoc.setRdEnforceStartDate(revDocSaveDto.getEnforceStartDate());
+            revDoc.setRdEnforceEndDate(revDocSaveDto.getEnforceEndDate());
 
-            Integer savedIdx = revisedDocumentRepository.save(revDoc).getIdx();
-            log.info("개정문서 등록 완료, idx : "+ savedIdx);
+            Long savedId = revisedDocumentRepository.save(revDoc).getRdId();
+            log.info("개정문서 등록 완료, idx : "+ savedId);
 
-            if(savedIdx != null){
-                log.info("개정문서 파일 업로드 처리 시작, idx : "+savedIdx);
+            if(savedId != null){
+                log.info("개정문서 파일 업로드 처리 시작, idx : "+savedId);
                 // 파일 업로드 처리
                 MultipartFile multipartFile = revDocSaveDto.getMultipartFile();
                 if(multipartFile.isEmpty()){
@@ -116,13 +116,13 @@ public class RevisedDocumentService {
                 }else{
                     log.info("첨부파일 있음. 파일 업로드 시작.");
                     RevisedDocumentFile revDocFile = new RevisedDocumentFile();
-                    revDocFile.setRegIdx(adminId);
-                    revDocFile.setRevisedDocumentIdx(savedIdx);
+                    revDocFile.setInsert_email(email);
+                    revDocFile.setRdfId(savedId);
 
                     // file original name
                     String originalFilename = Normalizer.normalize(Objects.requireNonNull(multipartFile.getOriginalFilename()), Normalizer.Form.NFC);
                     log.info("originalFilename : "+originalFilename);
-                    revDocFile.setCfOriginalFilename(originalFilename);
+                    revDocFile.setRdfOriginalFilename(originalFilename);
 
                     // file size
                     long fileSize = multipartFile.getSize();
@@ -136,18 +136,18 @@ public class RevisedDocumentService {
                     // file name 서버 저장 시 중복 명 처리
                     String fileName = UUID.randomUUID().toString().replace("-", "")+ext;
                     log.info("fileName : "+fileName);
-                    revDocFile.setCfFilename(fileName);
+                    revDocFile.setRdfFilename(fileName);
 
                     // S3에 저장 할 파일 주소
                     SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
                     String filePath = AWSURL+revDocS3Folder+date.format(new Date());
                     log.info("filePath : "+filePath);
-                    revDocFile.setCfPath(filePath);
+                    revDocFile.setRdfPath(filePath);
 
                     // S3에 파일 업로드
                     awsS3Util.nomalFileUpload(multipartFile, fileName, revDocS3Folder+date.format(new Date()));
                     // 파일 저장
-                    Integer fileIdx = revisedDocumentFileRepository.save(revDocFile).getIdx();
+                    Long fileIdx = revisedDocumentFileRepository.save(revDocFile).getRdId();
                     log.info("첨부 파일 저장에 성공햇습니다. idx : " + fileIdx);
                 }
             }else{

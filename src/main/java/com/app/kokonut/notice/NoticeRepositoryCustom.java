@@ -22,6 +22,6 @@ public interface NoticeRepositoryCustom {
     Page<NoticeContentListDto> findNoticeContentPage(Pageable pageable);
 
     // Notice 내용 조회 - 기존 SelectNoticeByIdx
-    NoticeDetailDto findNoticeByIdx(Integer idx);
+    NoticeDetailDto findNoticeByIdx(Long ntId);
 
 }

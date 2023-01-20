@@ -10,15 +10,15 @@ import com.app.kokonut.keydata.dtos.KeyDataDto;
  */
 public interface KeyDataRepositoryCustom {
 
-    KeyDataDto findByKeyValue(String keyName);
+    KeyDataDto findByKeyValue(String kdKeyName);
 
-    String findByAWSKey(String keyName); // AWS S3 keyData 조회
+    String findByAWSKey(String kdKeyName); // AWS S3 keyData 조회
 
-    String findByKMSKey(String keyName); // KMS keyData 조회
+    String findByKMSKey(String kdKeyName); // KMS keyData 조회
 
-    String findByNCLOUDKey(String keyName); // NCLOUD keyData 조회
+    String findByNCLOUDKey(String kdKeyName); // NCLOUD keyData 조회
 
-    String findByNICEKey(String keyName); // NICE keyData 조회
+    String findByNICEKey(String kdKeyName); // NICE keyData 조회
 
 
 }

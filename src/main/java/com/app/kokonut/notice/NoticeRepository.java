@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * Time :
  * Remark : NoticeRepository 공지사항
  */
-public interface NoticeRepository extends JpaRepository<Notice, Integer>, JpaSpecificationExecutor<Notice>, NoticeRepositoryCustom {
+public interface NoticeRepository extends JpaRepository<Notice, Long>, JpaSpecificationExecutor<Notice>, NoticeRepositoryCustom {
 
 }

@@ -44,33 +44,33 @@ public class ActivityHistory implements Serializable {
     // 1:고객정보처리,2:관리자활동,3:회원DB관리이력
     @Column(name = "ah_type")
     @ApiModelProperty("1:고객정보처리,2:관리자활동,3:회원DB관리이력")
-    private Integer ah_type;
+    private Integer ahType;
 
     // 활동 관리 코드
     @Enumerated(EnumType.STRING)
     @ApiModelProperty("ActivityCode Enum 관리")
     @Column(name="ah_activity_code")
-    private ActivityCode ah_activity_code;
+    private ActivityCode activityCode;
 
     // 활동 상세 내역
     @ApiModelProperty("활동 상세 내역")
     @Column(name = "ah_activity_detail")
-    private String ah_activity_detail;
+    private String ahActivityDetail;
 
     // 사유
     @ApiModelProperty("사유")
     @Column(name = "ah_reason")
-    private String ah_reason;
+    private String ahReason;
 
     // 접속IP주소
     @ApiModelProperty("접속IP주소")
     @Column(name = "ah_ip_addr")
-    private String ah_ip_addr;
+    private String ahIpAddr;
 
     // 0:비정상,1:정상
     @Column(name = "ah_state")
     @ApiModelProperty("0:비정상,1:정상")
-    private Integer ah_state;
+    private Integer ahState;
 
     /**
      * 등록자 email

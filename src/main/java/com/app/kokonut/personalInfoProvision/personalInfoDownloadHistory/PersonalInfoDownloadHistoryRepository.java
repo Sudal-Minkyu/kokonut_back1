@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * Remark :
  */
 @Repository
-public interface PersonalInfoDownloadHistoryRepository extends JpaRepository<PersonalInfoDownloadHistory, Integer>, JpaSpecificationExecutor<PersonalInfoDownloadHistory> {
+public interface PersonalInfoDownloadHistoryRepository extends JpaRepository<PersonalInfoDownloadHistory, Long>, JpaSpecificationExecutor<PersonalInfoDownloadHistory> {
 
 }

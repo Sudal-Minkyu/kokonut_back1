@@ -200,16 +200,16 @@ public class KeyDataService {
     }
 
     // 키값 조회
-    public String findByKeyValue(String keyName) {
+    public String findByKeyValue(String kdKeyName) {
 //        log.info("findByKeyValue 호출 : "+keyName);
 
-        KeyDataDto keyValue = keyDataRepository.findByKeyValue(keyName);
+        KeyDataDto kdKeyValue = keyDataRepository.findByKeyValue(kdKeyName);
 //        log.info("가져온 값 : "+keyValue);
 
-        if(keyValue != null) {
-            return keyValue.getKeyValue();
+        if(kdKeyValue != null) {
+            return kdKeyValue.getKdKeyValue();
         } else {
-            log.error("findByKeyValue 호출 - 결과값이 존재하지 않습니다. keyName : "+keyName+" / result : "+null);
+            log.error("findByKeyValue 호출 - 결과값이 존재하지 않습니다. kdKeyName : "+kdKeyName+" / result : "+null);
 
             return null;
         }

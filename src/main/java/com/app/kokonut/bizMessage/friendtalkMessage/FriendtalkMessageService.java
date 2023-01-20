@@ -55,8 +55,8 @@ public class FriendtalkMessageService {
         AjaxResponse res = new AjaxResponse();
 
         // 해당 이메일을 통해 회사 IDX 조회
-        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
-        List<FriendtalkMessageInfoListDto> friendtalkMessageInfoListDtos = friendtalkMessageRepository.findByFriendtalkMessageInfoList(companyIdx, "1");
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
+        List<FriendtalkMessageInfoListDto> friendtalkMessageInfoListDtos = friendtalkMessageRepository.findByFriendtalkMessageInfoList(companyId, "1");
 
         List<FriendtalkMessage> alimtalkMessageList = new ArrayList<>();
         for(FriendtalkMessageInfoListDto friendtalkMessageInfoListDto : friendtalkMessageInfoListDtos) {
@@ -110,7 +110,7 @@ public class FriendtalkMessageService {
         // 전체 업데이트
         friendtalkMessageRepository.saveAll(alimtalkMessageList);
 
-        Page<FriendtalkMessageListDto> friendtalkMessageListDtos = friendtalkMessageRepository.findByFriendtalkMessagePage(friendtalkMessageSearchDto, companyIdx, pageable);
+        Page<FriendtalkMessageListDto> friendtalkMessageListDtos = friendtalkMessageRepository.findByFriendtalkMessagePage(friendtalkMessageSearchDto, companyId, pageable);
 
         return ResponseEntity.ok(res.ResponseEntityPage(friendtalkMessageListDtos));
     }
@@ -152,13 +152,13 @@ public class FriendtalkMessageService {
             if(result.getResultCode().equals(200)) {
                 log.info("발송성공후 친구톡 메세지 등록 정보 INSERT");
 
-                Long companyId = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+                Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
                 Long adminId = adminRepository.findByCompanyInfo(email).getadminId();
 
                 HashMap<String, Object> response = Utils.convertJSONstringToMap(result.getResultText());
 
                 FriendtalkMessage friendtalkMessage = new FriendtalkMessage();
-                friendtalkMessage.setCompanyIdx(companyIdx);
+                friendtalkMessage.setcompanyId(companyId);
                 friendtalkMessage.setRequestId(response.get("requestId").toString());
                 friendtalkMessage.setChannelId(friendtalkMessageSendDto.getChannelId());
                 friendtalkMessage.setTransmitType(friendtalkMessageSendDto.getTransmitType());

@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * Remark : SettingRepository 관리자 환경설정
  */
 @Repository
-public interface KnKnSettingRepository extends JpaRepository<KnSetting, Integer>, JpaSpecificationExecutor<KnSetting>, KnSettingRepositoryCustom {
+public interface KnKnSettingRepository extends JpaRepository<KnSetting, Long>, JpaSpecificationExecutor<KnSetting>, KnSettingRepositoryCustom {
 
 }

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ActivityHistoryRepository extends JpaRepository<ActivityHistory, Integer>, JpaSpecificationExecutor<ActivityHistory>, ActivityHistoryRepositoryCustom {
+public interface ActivityHistoryRepository extends JpaRepository<ActivityHistory, Long>, JpaSpecificationExecutor<ActivityHistory>, ActivityHistoryRepositoryCustom {
 
 //    public void InsertActivityHistory(HashMap<String, Object> paramMap);
 //
@@ -16,7 +16,7 @@ public interface ActivityHistoryRepository extends JpaRepository<ActivityHistory
 //    public void UpdateActivityHistoryReasonByIdx(HashMap<String, Object> paramMap);
 
 
-//    public void DeleteActivityHistoryByCompanyIdx(Long companyId);
+//    public void DeleteActivityHistoryBycompanyId(Long companyId);
 //
 //    public void DeleteExpiredActivityHistory(Map<String, Object> map);
 

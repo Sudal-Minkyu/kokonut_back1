@@ -15,7 +15,7 @@ public interface KnServiceRepositoryCustom {
     List<KnServiceDto> findServiceList();
 
     // 서비스(구독권) 상세 보기 - 기존 SelectServiceByIdx
-    KnServiceDto findServiceByIdx(Integer idx);
+    KnServiceDto findServiceByIdx(Long srId);
 
     // 서비스(구독권) 등록 하기 - 기존 InsertService
     // 서비스(구독권) 수정 하기 - 기존 UpdateService

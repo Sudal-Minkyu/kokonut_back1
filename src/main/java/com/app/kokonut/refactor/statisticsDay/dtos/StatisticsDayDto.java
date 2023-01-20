@@ -19,7 +19,7 @@ public class StatisticsDayDto implements Serializable {
      * COMPANY IDX
      */
     @ApiModelProperty("COMPANY IDX")
-    private Integer companyIdx;
+    private Long companyId;
 
 
     /**

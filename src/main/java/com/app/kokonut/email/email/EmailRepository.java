@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface EmailRepository extends JpaRepository<Email, Integer>, JpaSpecificationExecutor<Email>, EmailRepositoryCustom {
+public interface EmailRepository extends JpaRepository<Email, Long>, JpaSpecificationExecutor<Email>, EmailRepositoryCustom {
     boolean existsByIdx(Long idx);
 }

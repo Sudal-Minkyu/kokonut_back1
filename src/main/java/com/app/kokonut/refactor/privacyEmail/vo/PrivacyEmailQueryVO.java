@@ -53,6 +53,6 @@ public class PrivacyEmailQueryVO implements Serializable {
      * 기업 키(기업별 이메일인 경우)
      */
     @ApiModelProperty("기업 키(기업별 이메일인 경우)")
-    private Integer companyIdx;
+    private Long companyId;
 
 }

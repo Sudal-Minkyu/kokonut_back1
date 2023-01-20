@@ -62,7 +62,7 @@ public class FileVO implements Serializable {
      * 등록자
      */
     @ApiModelProperty("등록자")
-    private Integer adminId;
+    private Long adminId;
 
 
     /**

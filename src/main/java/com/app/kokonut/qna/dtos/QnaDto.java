@@ -23,14 +23,14 @@ public class QnaDto implements Serializable {
      * COMPANY IDX
      */
     @ApiModelProperty("COMPANY IDX")
-    private Integer companyIdx;
+    private Long companyId;
 
 
     /**
      * 질문자(사용자 키)
      */
     @ApiModelProperty("질문자(사용자 키)")
-    private Integer adminId;
+    private Long adminId;
 
 
     /**

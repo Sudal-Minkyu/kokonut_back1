@@ -20,19 +20,19 @@ import java.time.LocalDateTime;
 public class NoticeDetailDto implements Serializable {
 
     @ApiModelProperty("키")
-    private Integer idx;
+    private Long ntId;
 
     @ApiModelProperty("상단공지여부(0:일반,1:상단공지)")
-    private Integer isNotice;
+    private Integer ntIsNotice;
 
     @ApiModelProperty("제목")
-    private String title;
+    private String ntTitle;
 
     @ApiModelProperty("내용")
-    private String content;
+    private String ntContent;
 
     @ApiModelProperty("조회수(사용여부확인필요)")
-    private Integer viewCount;
+    private Integer ntViewCount;
 
     @ApiModelProperty("작성정보 작성자")
     private String registerName;
@@ -41,18 +41,18 @@ public class NoticeDetailDto implements Serializable {
     private LocalDateTime registDate;
 
     @ApiModelProperty("등록일자")
-    private LocalDateTime regdate;
+    private LocalDateTime insert_date;
 
     @ApiModelProperty("수정정보 수정자")
-    private String modifierName;
+    private String modify_email;
 
     @ApiModelProperty("수정일자")
-    private LocalDateTime modifyDate;
+    private LocalDateTime modify_date;
 
     @ApiModelProperty("0:게시중지,1:게시중,2:게시대기")
-    private Integer state;
+    private Integer ntState;
 
     @ApiModelProperty("게시중지 일자")
-    private LocalDateTime stopDate;
+    private LocalDateTime ntStopDate;
 
 }

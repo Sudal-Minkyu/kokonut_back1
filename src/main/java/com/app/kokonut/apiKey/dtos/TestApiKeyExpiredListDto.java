@@ -19,8 +19,8 @@ import java.util.Date;
 public class TestApiKeyExpiredListDto {
 
     private Integer idx;
-    private Integer companyIdx;
-    private Integer adminId;
+    private Long companyId;
+    private Long adminId;
     private String key;
     private Date regdate;
 

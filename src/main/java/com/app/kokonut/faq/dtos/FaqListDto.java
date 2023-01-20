@@ -14,21 +14,21 @@ import java.time.LocalDateTime;
 public class FaqListDto implements Serializable {
 
     @ApiModelProperty("키")
-    private Integer idx;
+    private Long faqId;
 
     @ApiModelProperty("질문")
-    private String question;
+    private String faqQuestion;
 
     @ApiModelProperty("답변")
-    private String answer;
+    private String faqAnswer;
 
     @ApiModelProperty("분류(0:기타,1:회원정보,2:사업자정보,3:kokonut서비스,4:결제)")
-    private Integer type;
-
-    @ApiModelProperty("등록일자")
-    private LocalDateTime regdate;
+    private Integer faqType;
 
     @ApiModelProperty("조회수")
-    private Integer viewCount;
+    private Integer faqViewCount;
+
+    @ApiModelProperty("등록일자")
+    private LocalDateTime insert_date;
 
 }

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "rdId")
 @Data
 @NoArgsConstructor
-@Table(name="revised_document")
+@Table(name="kn_revised_document")
 public class RevisedDocument implements Serializable {
 
     private static final long serialVersionUID = 1L;

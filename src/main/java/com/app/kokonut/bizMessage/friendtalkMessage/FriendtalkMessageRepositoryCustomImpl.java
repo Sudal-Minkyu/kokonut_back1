@@ -3,7 +3,6 @@ package com.app.kokonut.bizMessage.friendtalkMessage;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageInfoListDto;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageListDto;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageSearchDto;
-import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -38,7 +37,7 @@ public class FriendtalkMessageRepositoryCustomImpl extends QuerydslRepositorySup
         QFriendtalkMessage friendtalkMessage  = QFriendtalkMessage.friendtalkMessage;
 
         JPQLQuery<FriendtalkMessageListDto> query = from(friendtalkMessage)
-                .where(friendtalkMessage.companyIdx.eq(companyIdx))
+                .where(friendtalkMessage.companyId.eq(companyId))
                 .select(Projections.constructor(FriendtalkMessageListDto.class,
                         friendtalkMessage.channelId,
                         friendtalkMessage.requestId,
@@ -75,8 +74,8 @@ public class FriendtalkMessageRepositoryCustomImpl extends QuerydslRepositorySup
         QCompany company = QCompany.company;
 
         JPQLQuery<FriendtalkMessageInfoListDto> query = from(friendtalkMessage)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
-                .where(friendtalkMessage.companyIdx.eq(company.idx))
+                .innerJoin(company).on(company.idx.eq(companyId))
+                .where(friendtalkMessage.companyId.eq(company.idx))
                 .select(Projections.constructor(FriendtalkMessageInfoListDto.class,
                         friendtalkMessage.idx,
                         friendtalkMessage.requestId,

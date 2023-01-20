@@ -21,10 +21,10 @@ public interface KnSettingRepositoryCustom {
     // 로그인 세션타임 시간 업데이트 - 기존 UpdateLoginSessionTime
 
     // SettingDao
-    // 관리자 환경설정 상세 조회 - 기존 SelectSettingByCompanyIdx
-    KnSettingDetailDto findSettingDetailByCompanyIdx(Integer companyIdx);
+    // 관리자 환경설정 상세 조회 - 기존 SelectSettingBycompanyId
+    KnSettingDetailDto findSettingDetailBycompanyId(Long companyId);
 
     // 관리자 환경설정 등록 - 기존 InsertSetting
     // 관리자 환경설정 수정 - 기존 UpdateSetting
-    // 관리자 환경설정 전체 삭제 - 기존 DeleteByCompanyIdx
+    // 관리자 환경설정 전체 삭제 - 기존 DeleteBycompanyId
 }

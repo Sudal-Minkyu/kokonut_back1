@@ -4,7 +4,6 @@ import com.app.kokonut.faq.dtos.FaqAnswerListDto;
 import com.app.kokonut.faq.dtos.FaqDetailDto;
 import com.app.kokonut.faq.dtos.FaqListDto;
 import com.app.kokonut.faq.dtos.FaqSearchDto;
-import com.app.kokonut.faq.entity.QFaq;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,24 +52,24 @@ public class FaqRepositoryCustomImpl extends QuerydslRepositorySupport implement
 
         JPQLQuery<FaqListDto> query = from(faq)
                 .select(Projections.constructor(FaqListDto.class,
-                        faq.idx,
-                        faq.question,
-                        faq.answer,
-                        faq.type,
-                        faq.regdate,
-                        faq.viewCount
+                        faq.faqId,
+                        faq.faqQuestion,
+                        faq.faqAnswer,
+                        faq.faqType,
+                        faq.faqViewCount,
+                        faq.insert_date
                 ));
         // 조건에 따른 where 절 추가
-        if(faqSearchDto.getType() != null){
-            query.where(faq.type.eq(faqSearchDto.getType()));
+        if(faqSearchDto.getFaqType() != null){
+            query.where(faq.faqType.eq(faqSearchDto.getFaqType()));
         }
         if((faqSearchDto.getStimeStart() != null) && (faqSearchDto.getStimeEnd() !=null)){
-            query.where(faq.regdate.between(faqSearchDto.getStimeStart(), faqSearchDto.getStimeEnd()));
+            query.where(faq.insert_date.between(faqSearchDto.getStimeStart(), faqSearchDto.getStimeEnd()));
         }
         if(faqSearchDto.getSearchText() != null){
-            query.where(faq.question.contains(faqSearchDto.getSearchText()));
+            query.where(faq.faqQuestion.contains(faqSearchDto.getSearchText()));
         }
-        query.orderBy(faq.regdate.desc());
+        query.orderBy(faq.insert_date.desc());
 
         final List<FaqListDto> FaqListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(FaqListDtos, pageable, query.fetchCount());
@@ -87,18 +87,18 @@ public class FaqRepositoryCustomImpl extends QuerydslRepositorySupport implement
         QFaq faq  = QFaq.faq;
         JPQLQuery<FaqAnswerListDto> query = from(faq)
                 .select(Projections.constructor(FaqAnswerListDto.class,
-                        faq.question,
-                        faq.answer
+                        faq.faqQuestion,
+                        faq.faqAnswer
                 ));
         // 조건에 따른 where 절 추가
-        query.where(faq.state.eq(1));
-        query.orderBy(faq.regdate.desc());
+        query.where(faq.faqState.eq(1));
+        query.orderBy(faq.insert_date.desc());
 
         final List<FaqAnswerListDto> FaqAnswerListDto = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(FaqAnswerListDto, pageable, query.fetchCount());
     }
     @Override
-    public FaqDetailDto findFaqByIdx(Integer idx) {
+    public FaqDetailDto findFaqByIdx(Long faqId) {
         /*
            SELECT `IDX`
                 , `ADMIN_IDX`
@@ -118,18 +118,20 @@ public class FaqRepositoryCustomImpl extends QuerydslRepositorySupport implement
         QFaq faq  = QFaq.faq;
         JPQLQuery<FaqDetailDto> query = from(faq)
                 .select(Projections.constructor(FaqDetailDto.class,
-                        faq.idx,
+                        faq.faqId,
                         faq.adminId,
-                        faq.question,
-                        faq.answer,
-                        faq.type,
-                        faq.registerName,
-                        faq.regdate,
-                        faq.modifierIdx,
-                        faq.modifierName,
-                        faq.viewCount
+                        faq.faqQuestion,
+                        faq.faqAnswer,
+                        faq.faqType,
+                        faq.faqRegistStartDate,
+                        faq.faqViewCount,
+                        faq.insert_email,
+                        faq.insert_date,
+                        faq.modify_id,
+                        faq.modify_email,
+                        faq.modify_date
                 ));
-        query.where(faq.idx.eq(idx));
+        query.where(faq.faqId.eq(faqId));
         return query.fetchOne();
     }
 }

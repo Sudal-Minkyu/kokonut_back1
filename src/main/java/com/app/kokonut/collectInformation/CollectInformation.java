@@ -1,4 +1,4 @@
-package com.app.kokonut.collectInformation.entity;
+package com.app.kokonut.collectInformation;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -46,21 +46,14 @@ public class CollectInformation implements Serializable {
      */
     @Column(name = "ci_title")
     @ApiModelProperty("제목")
-    private String ci_title;
+    private String ciTitle;
 
     /**
      * 내용
      */
     @ApiModelProperty("내용")
     @Column(name = "ci_content")
-    private String ci_content;
-
-    /**
-     * 등록자 email
-     */
-    @ApiModelProperty("등록자 email")
-    @Column(name = "insert_email", nullable = false)
-    private String insert_email;
+    private String ciContent;
 
     /**
      * 등록자 email

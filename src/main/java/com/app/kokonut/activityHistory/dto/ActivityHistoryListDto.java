@@ -21,8 +21,8 @@ public class ActivityHistoryListDto {
 
     // activity_hisotroy 테이블
     private Integer idx;
-    private Integer companyIdx;
-    private Integer adminId;
+    private Long companyId;
+    private Long adminId;
     private Integer activityIdx;
     private String activityDetail;
 

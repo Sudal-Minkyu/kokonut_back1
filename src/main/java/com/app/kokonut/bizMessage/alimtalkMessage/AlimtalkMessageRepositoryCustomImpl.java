@@ -39,33 +39,33 @@ public class AlimtalkMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
         QAlimtalkMessage alimtalkMessage  = QAlimtalkMessage.alimtalkMessage;
 
         JPQLQuery<AlimtalkMessageListDto> query = from(alimtalkMessage)
-                .where(alimtalkMessage.companyIdx.eq(companyIdx))
+                .where(alimtalkMessage.companyId.eq(companyId))
                 .select(Projections.constructor(AlimtalkMessageListDto.class,
-                        alimtalkMessage.channelId,
-                        alimtalkMessage.templateCode,
-                        alimtalkMessage.requestId,
-                        alimtalkMessage.status,
-                        alimtalkMessage.regdate
+                        alimtalkMessage.kcChannelId,
+                        alimtalkMessage.atTemplateCode,
+                        alimtalkMessage.amRequestId,
+                        alimtalkMessage.amStatus,
+                        alimtalkMessage.insert_date
                 ));
 
         if(alimtalkMessageSearchDto.getSearchText() != null){
-            query.where(alimtalkMessage.templateCode.containsIgnoreCase(alimtalkMessageSearchDto.getSearchText())
-                    .or(alimtalkMessage.requestId.containsIgnoreCase(alimtalkMessageSearchDto.getSearchText())));
+            query.where(alimtalkMessage.atTemplateCode.containsIgnoreCase(alimtalkMessageSearchDto.getSearchText())
+                    .or(alimtalkMessage.amRequestId.containsIgnoreCase(alimtalkMessageSearchDto.getSearchText())));
         }
 
         if(alimtalkMessageSearchDto.getStatus() != null){
-            query.where(alimtalkMessage.status.eq(alimtalkMessageSearchDto.getStatus()));
+            query.where(alimtalkMessage.amStatus.eq(alimtalkMessageSearchDto.getStatus()));
         }
 
         if(alimtalkMessageSearchDto.getStimeStart() != null){
-            query.where(alimtalkMessage.regdate.goe(alimtalkMessageSearchDto.getStimeStart()));
+            query.where(alimtalkMessage.insert_date.goe(alimtalkMessageSearchDto.getStimeStart()));
         }
 
         if(alimtalkMessageSearchDto.getStimeEnd() != null){
-            query.where(alimtalkMessage.regdate.loe(alimtalkMessageSearchDto.getStimeEnd()));
+            query.where(alimtalkMessage.insert_date.loe(alimtalkMessageSearchDto.getStimeEnd()));
         }
 
-        query.orderBy(alimtalkMessage.regdate.desc());
+        query.orderBy(alimtalkMessage.insert_date.desc());
 
         final List<AlimtalkMessageListDto> alimtalkMessageListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(alimtalkMessageListDtos, pageable, query.fetchCount());
@@ -78,35 +78,35 @@ public class AlimtalkMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
         QCompany company = QCompany.company;
 
         JPQLQuery<AlimtalkMessageInfoListDto> query = from(alimtalkMessage)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
-                .where(alimtalkMessage.companyIdx.eq(company.idx))
+                .innerJoin(company).on(company.companyId.eq(companyId))
+                .where(alimtalkMessage.companyId.eq(company.companyId))
                 .select(Projections.constructor(AlimtalkMessageInfoListDto.class,
-                        alimtalkMessage.idx,
-                        alimtalkMessage.requestId,
-                        alimtalkMessage.transmitType,
-                        alimtalkMessage.status
+                        alimtalkMessage.amId,
+                        alimtalkMessage.amRequestId,
+                        alimtalkMessage.amTransmitType,
+                        alimtalkMessage.amStatus
                 ));
 
         if(state.equals("1")){
             // state 값이 "1"일 경우 : statue 값이 success, fail, canceled, done, stale 은 제외한다.
-            query.where(alimtalkMessage.status.in("init", "processing", "reserved", "scheduled", "ready"));
+            query.where(alimtalkMessage.amStatus.in("init", "processing", "reserved", "scheduled", "ready"));
         }
 
         return query.fetch();
     }
 
     @Override
-    public AlimtalkMessageResultDetailDto findByAlimtalkMessageResultDetail(String requestId) {
+    public AlimtalkMessageResultDetailDto findByAlimtalkMessageResultDetail(String amRequestId) {
 
         QAlimtalkMessage alimtalkMessage = QAlimtalkMessage.alimtalkMessage;
 
         JPQLQuery<AlimtalkMessageResultDetailDto> query = from(alimtalkMessage)
-                .where(alimtalkMessage.requestId.eq(requestId))
+                .where(alimtalkMessage.amRequestId.eq(amRequestId))
                 .select(Projections.constructor(AlimtalkMessageResultDetailDto.class,
-                        alimtalkMessage.requestId,
-                        alimtalkMessage.channelId,
-                        alimtalkMessage.transmitType,
-                        alimtalkMessage.status
+                        alimtalkMessage.amRequestId,
+                        alimtalkMessage.kcChannelId,
+                        alimtalkMessage.amTransmitType,
+                        alimtalkMessage.amStatus
                 ));
 
         return query.fetchOne();

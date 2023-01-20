@@ -1,4 +1,4 @@
-package com.app.kokonut.collectInformation.dto;
+package com.app.kokonut.collectInformation.dtos;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

@@ -20,11 +20,11 @@ import java.util.Objects;
 public class PersonalInfoProvisionMapperDto {
 
     @NotNull(message = "기업 ID가 존재하지 않습니다.")
-    private Integer companyIdx;
+    private Long companyId;
 
     private Integer reason;
 
-    private Integer adminId;
+    private Long adminId;
 
     private Integer recipientType;
     private String recipientEmail;

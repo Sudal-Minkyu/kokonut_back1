@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
  * Remark : AlimtalkMessage Repository
  */
 @Repository
-public interface AlimtalkMessageRepository extends JpaRepository<AlimtalkMessage, Integer>, JpaSpecificationExecutor<AlimtalkMessage>, AlimtalkMessageRepositoryCustom {
+public interface AlimtalkMessageRepository extends JpaRepository<AlimtalkMessage, Long>, JpaSpecificationExecutor<AlimtalkMessage>, AlimtalkMessageRepositoryCustom {
 
 }

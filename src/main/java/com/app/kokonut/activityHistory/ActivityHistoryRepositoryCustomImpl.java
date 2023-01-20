@@ -103,8 +103,8 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
             sb.append("AND a.ACTIVITY_IDX = :activityIdx \n");
         }
 
-        if(activityHistorySearchDto.getCompanyIdx() != null){
-            sb.append("AND a.COMPANY_IDX = :companyIdx \n");
+        if(activityHistorySearchDto.getCompanyId() != null){
+            sb.append("AND a.COMPANY_IDX = :companyId \n");
         }
 
         if(activityHistorySearchDto.getStimeStart() != null && activityHistorySearchDto.getStimeEnd() != null){
@@ -130,8 +130,8 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
             query.setParameter("activityIdx", activityHistorySearchDto.getActivityIdx());
         }
 
-        if(activityHistorySearchDto.getCompanyIdx() != null){
-            query.setParameter("companyIdx", activityHistorySearchDto.getCompanyIdx());
+        if(activityHistorySearchDto.getCompanyId() != null){
+            query.setParameter("companyId", activityHistorySearchDto.getCompanyId());
         }
 
         if(activityHistorySearchDto.getStimeStart() != null && activityHistorySearchDto.getStimeEnd() != null){
@@ -149,7 +149,7 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
     // ActivityHistory 단일 조회
     // param : Integer idx
     @Override
-    public ActivityHistoryDto findByActivityHistoryByIdx(Integer idx) {
+    public ActivityHistoryDto findByActivityHistoryByIdx(Long ahId) {
 
         EntityManager em = getEntityManager();
         StringBuilder sb = new StringBuilder();
@@ -174,24 +174,24 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
         sb.append("LEFT JOIN admin_level c ON c.IDX = b.ADMIN_LEVEL_IDX \n");
         sb.append("INNER JOIN activity d ON  d.IDX = a.ACTIVITY_IDX \n");
 
-        if(idx != 0){
-            sb.append("WHERE a.IDX = :idx \n");
+        if(ahId != 0){
+            sb.append("WHERE a.ah_id = :ahId \n");
         }
 
         // 쿼리조건 선언부
         Query query = em.createNativeQuery(sb.toString());
 
-        if(idx != 0){
-            query.setParameter("idx", idx);
+        if(ahId != 0){
+            query.setParameter("ahId", ahId);
         }
 
         return jpaResultMapper.uniqueResult(query, ActivityHistoryDto.class);
     }
 
     // ActivityHistory 단일 조회
-    // param : Integer companyIdx, String reason, Integer activityIdx
+    // param : Long companyId, String reason, Integer activityIdx
     @Override
-    public ActivityHistoryDto findByActivityHistoryByCompanyIdxAndReasonaAndAtivityIdx(Integer companyIdx, String reason, Integer activityIdx) {
+    public ActivityHistoryDto findByActivityHistoryBycompanyIdAndReasonaAndAtivityIdx(Long companyId, String ahReason) {
 
         EntityManager em = getEntityManager();
         StringBuilder sb = new StringBuilder();
@@ -222,16 +222,12 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
         sb.append("INNER JOIN activity d ON  d.IDX = a.ACTIVITY_IDX \n");
         sb.append("WHERE 1 = 1 \n");
 
-        if(companyIdx != 0){
-            sb.append("AND a.COMPANY_IDX = :companyIdx \n");
+        if(companyId != 0){
+            sb.append("AND a.company_id = :companyId \n");
         }
 
-        if(!reason.equals("")){
-            sb.append("AND a.REASON = :reason \n");
-        }
-
-        if(activityIdx != 0){
-            sb.append("AND a.ACTIVITY_IDX = :activityIdx \n");
+        if(!ahReason.equals("")){
+            sb.append("AND a.ah_reason = :ahReason \n");
         }
 
         sb.append("ORDER BY A.REGDATE DESC LIMIT 1 \n");
@@ -239,47 +235,43 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
         // 쿼리조건 선언부
         Query query = em.createNativeQuery(sb.toString());
 
-        if(companyIdx != 0){
-            query.setParameter("companyIdx", companyIdx);
+        if(companyId != 0){
+            query.setParameter("companyId", companyId);
         }
 
-        if(!reason.equals("")){
-            query.setParameter("reason", reason);
-        }
-
-        if(activityIdx != 0){
-            query.setParameter("activityIdx", activityIdx);
+        if(!ahReason.equals("")){
+            query.setParameter("ahReason", ahReason);
         }
 
         return jpaResultMapper.uniqueResult(query, ActivityHistoryDto.class);
     }
 
     // ActivityHistory 리스트 조회
-    // param : Integer companyIdx, Integer type
+    // param : Long companyId, Integer type
     @Override
-    public List<ActivityHistoryInfoListDto> findByActivityHistoryByCompanyIdxAndTypeList(Integer companyIdx, Integer type) {
+    public List<ActivityHistoryInfoListDto> findByActivityHistoryBycompanyIdAndTypeList(Long companyId, Integer ahType) {
 
         QActivityHistory activityHistory = QActivityHistory.activityHistory;
 
         JPQLQuery<ActivityHistoryInfoListDto> query = from(activityHistory)
                 .select(Projections.constructor(ActivityHistoryInfoListDto.class,
-                    activityHistory.idx,
-                    activityHistory.companyIdx,
+                    activityHistory.ahId,
+                    activityHistory.companyId,
                     activityHistory.adminId,
                     activityHistory.activityCode,
-                    activityHistory.activityDetail,
-                    activityHistory.reason,
-                    activityHistory.ipAddr,
-                    activityHistory.regdate,
-                    activityHistory.state
+                    activityHistory.ahActivityDetail,
+                    activityHistory.ahReason,
+                    activityHistory.ahIpAddr,
+                    activityHistory.ahState,
+                    activityHistory.insert_email
                 ));
 
-        if(companyIdx != null) {
-            query.where(activityHistory.companyIdx.eq(companyIdx));
+        if(companyId != null) {
+            query.where(activityHistory.companyId.eq(companyId));
         }
 
-        if(type != null) {
-            query.where(activityHistory.type.eq(type));
+        if(ahType != null) {
+            query.where(activityHistory.ahType.eq(ahType));
         }
 
         return query.fetch();
@@ -303,9 +295,9 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
     }
 
     // ActivityHistory 활동내역 통계 조회
-    // param : Integer companyIdx, int day
+    // param : Long companyId, int day
     @Override
-    public ActivityHistoryStatisticsDto findByActivityHistoryStatistics(Integer companyIdx, int day) {
+    public ActivityHistoryStatisticsDto findByActivityHistoryStatistics(Long companyId, int day) {
 
         EntityManager em = getEntityManager();
         StringBuilder sb = new StringBuilder();
@@ -313,22 +305,22 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
         // 네이티브 쿼리문
         sb.append("SELECT \n");
         sb.append("DATE_FORMAT(DATE_SUB(NOW(), INTERVAL :day DAY), '%Y-%m-%d') AS date, \n");
-        sb.append("(SELECT COUNT(*) FROM admin a WHERE DATE(a.REGDATE) = DATE_SUB(NOW(), INTERVAL :day DAY) AND a.COMPANY_IDX = :companyIdx) AS newMember, \n");
+        sb.append("(SELECT COUNT(*) FROM admin a WHERE DATE(a.REGDATE) = DATE_SUB(NOW(), INTERVAL :day DAY) AND a.COMPANY_IDX = :companyId) AS newMember, \n");
         sb.append("(SELECT COUNT(*) FROM activity_history a INNER JOIN activity b ON a.ACTIVITY_IDX = b.IDX \n");
-        sb.append("WHERE a.COMPANY_IDX = :companyIdx AND b.TYPE = 1 \n");
+        sb.append("WHERE a.COMPANY_IDX = :companyId AND b.TYPE = 1 \n");
         sb.append("AND DATE_FORMAT(a.REGDATE, '%Y-%m-%d') = DATE_FORMAT(DATE_SUB(NOW(), INTERVAL :day DAY), '%Y-%m-%d')) AS personalHistory, \n");
         sb.append("(SELECT COUNT(*) FROM activity_history a INNER JOIN activity b ON a.ACTIVITY_IDX = b.IDX \n");
-        sb.append("WHERE a.COMPANY_IDX = :companyIdx AND b.TYPE = 2 \n");
+        sb.append("WHERE a.COMPANY_IDX = :companyId AND b.TYPE = 2 \n");
         sb.append("AND DATE_FORMAT(a.REGDATE, '%Y-%m-%d') = DATE_FORMAT(DATE_SUB(NOW(), INTERVAL :day DAY), '%Y-%m-%d')) AS adminHistory, \n");
         sb.append("(SELECT COUNT(*) FROM activity_history a INNER JOIN `activity` b ON a.ACTIVITY_IDX = b.IDX \n");
-        sb.append("WHERE a.COMPANY_IDX = :companyIdx AND b.TYPE = 2 AND b.ACTIVITY = 1 \n");
+        sb.append("WHERE a.COMPANY_IDX = :companyId AND b.TYPE = 2 AND b.ACTIVITY = 1 \n");
         sb.append("AND DATE_FORMAT(a.REGDATE, '%Y-%m-%d') = DATE_FORMAT(DATE_SUB(NOW(), INTERVAL :day DAY), '%Y-%m-%d')) AS loginCount \n");
         sb.append("; \n");
 
         // 쿼리조건 선언부
         Query query = em.createNativeQuery(sb.toString());
 
-//        query.setParameter("companyIdx", companyIdx);
+//        query.setParameter("companyId", companyId);
         query.setParameter("day", day);
 
         return jpaResultMapper.uniqueResult(query, ActivityHistoryStatisticsDto.class);

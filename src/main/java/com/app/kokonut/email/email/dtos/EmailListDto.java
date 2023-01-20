@@ -16,19 +16,17 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailListDto implements Serializable {
+public class EmailListDto {
+
     // email 테이블
-    private Integer idx;
-
-    private Integer emailGroupIdx;
-
-    private String title;
-
-    private String contents;
-
-    private LocalDateTime regdate;
+    private Long emId;
+    private Long egId;
+    private String emTitle;
+    private String emContents;
+    private LocalDateTime insert_email;
 
     // email_group 테이블
-    private String name;
-    private String desc;
+    private String egName;
+    private String egDesc;
+
 }

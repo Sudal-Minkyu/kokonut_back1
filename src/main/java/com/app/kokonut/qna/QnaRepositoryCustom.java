@@ -21,7 +21,7 @@ public interface QnaRepositoryCustom {
     Page<QnaListDto> findQnaPage(String userRole, QnaSearchDto qnaSearchDto, Pageable pageable);
 
     // qna 내용 조회 - 기존 SelectQnaByIdx
-    QnaDetailDto findQnaByIdx(Integer idx);
+    QnaDetailDto findQnaByIdx(Long qnaId);
 
     // qna 답변 지연 게시글 조회 - 기존 SelectNonAnsweredQnaList
     List<QnaSchedulerDto> findNoneAnswerQnaByRegDate(LocalDateTime compareDate);
@@ -29,5 +29,5 @@ public interface QnaRepositoryCustom {
     // qna 등록 - 기존 InsertQna
     // qna 수정 - 기존 UpdateQna
     // qna 삭제 - 기존 DeleteQnaByIdx
-    // qna 전체 삭제 - 기존 DeleteByCompanyIdx
+    // qna 전체 삭제 - 기존 DeleteBycompanyId
 }

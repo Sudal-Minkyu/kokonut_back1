@@ -21,12 +21,12 @@ public class KnSettingDetailDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("키")
-    private Integer idx;
+    private Long stId;
 
     @ApiModelProperty("해외로그인차단(0:차단안함,1:차단)")
-    private Integer overseasBlock;
+    private Integer stOverseasBlock;
 
     @ApiModelProperty("휴면회원 전환 시(0:다른DB로 정보이관, 1:이관 없이 회원정보 삭제)")
-    private Integer dormantAccount;
+    private Integer stDormantAccount;
 
 }

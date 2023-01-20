@@ -43,7 +43,7 @@ public interface CompanyRepositoryCustom {
 //
 //    public void UpdateDormantAccumulate(HashMap<String, Object> paramMap);
 //
-//    public void DeleteByCompanyIdx(Long companyId);
+//    public void DeleteBycompanyId(Long companyId);
 //
 //    public void UpdateStopService(HashMap<String, Object> paramMap);
 //

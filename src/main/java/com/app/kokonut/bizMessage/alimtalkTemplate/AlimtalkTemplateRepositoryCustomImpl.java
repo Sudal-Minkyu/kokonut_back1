@@ -4,7 +4,6 @@ import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkMessageTemplateIn
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateInfoListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSearchDto;
-import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -39,7 +38,7 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
         QAlimtalkTemplate alimtalkTemplate  = QAlimtalkTemplate.alimtalkTemplate;
 
         JPQLQuery<AlimtalkTemplateListDto> query = from(alimtalkTemplate)
-                .where(alimtalkTemplate.companyIdx.eq(companyIdx))
+                .where(alimtalkTemplate.companyId.eq(companyId))
                 .select(Projections.constructor(AlimtalkTemplateListDto.class,
                         alimtalkTemplate.channelId,
                         alimtalkTemplate.templateCode,
@@ -77,8 +76,8 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
         QCompany company = QCompany.company;
 
         JPQLQuery<AlimtalkTemplateInfoListDto> query = from(alimtalkTemplate)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
-                .where(alimtalkTemplate.channelId.eq(channelId).and(alimtalkTemplate.companyIdx.eq(company.idx)))
+                .innerJoin(company).on(company.idx.eq(companyId))
+                .where(alimtalkTemplate.channelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.idx)))
                 .select(Projections.constructor(AlimtalkTemplateInfoListDto.class,
                         alimtalkTemplate.templateCode,
                         alimtalkTemplate.status
@@ -98,8 +97,8 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
         QCompany company = QCompany.company;
 
         JPQLQuery<AlimtalkMessageTemplateInfoListDto> query = from(alimtalkTemplate)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
-                .where(alimtalkTemplate.channelId.eq(channelId).and(alimtalkTemplate.companyIdx.eq(company.idx)))
+                .innerJoin(company).on(company.idx.eq(companyId))
+                .where(alimtalkTemplate.channelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.idx)))
                 .select(Projections.constructor(AlimtalkMessageTemplateInfoListDto.class,
                         alimtalkTemplate.templateCode,
                         alimtalkTemplate.messageType,

@@ -1,7 +1,6 @@
 package com.app.kokonut.service;
 
 import com.app.kokonut.service.dtos.KnServiceDto;
-import com.app.kokonut.service.entity.QService;
 import com.app.kokonut.setting.KnSetting;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
@@ -37,20 +36,19 @@ public class KnServiceRepositoryCustomImpl extends QuerydslRepositorySupport imp
              FROM `service`
             WHERE 1 = 1
          */
-        QService service = QService.service;
-        JPQLQuery<KnServiceDto> query = from(service)
+        QKnService knService = QKnService.knService;
+        JPQLQuery<KnServiceDto> query = from(knService)
                 .select(Projections.constructor(KnServiceDto.class,
-                        service.idx,
-                        service.ksService,
-                        service.ksPrice,
-                        service.ksPerPrice
+                        knService.srId,
+                        knService.srService,
+                        knService.srPrice,
+                        knService.srPerPrice
                 ));
-        final List<KnServiceDto> knServiceDtos = Objects.requireNonNull(query.fetchAll()).fetch();
-        return knServiceDtos;
+        return Objects.requireNonNull(query.fetchAll()).fetch();
     }
 
     @Override
-    public KnServiceDto findServiceByIdx(Integer idx) {
+    public KnServiceDto findServiceByIdx(Long srId) {
         /*
            SELECT `IDX`
                 , `SERVICE`
@@ -60,15 +58,15 @@ public class KnServiceRepositoryCustomImpl extends QuerydslRepositorySupport imp
             WHERE 1 = 1
               AND `IDX` = #{idx}
          */
-        QService service = QService.service;
-        JPQLQuery<KnServiceDto> query = from(service)
+        QKnService knService = QKnService.knService;
+        JPQLQuery<KnServiceDto> query = from(knService)
                 .select(Projections.constructor(KnServiceDto.class,
-                        service.idx,
-                        service.ksService,
-                        service.ksPrice,
-                        service.ksPerPrice
+                        knService.srId,
+                        knService.srService,
+                        knService.srPrice,
+                        knService.srPerPrice
                 ));
-        query.where(service.idx.eq(idx));
+        query.where(knService.srId.eq(srId));
         return query.fetchOne();
     }
 }

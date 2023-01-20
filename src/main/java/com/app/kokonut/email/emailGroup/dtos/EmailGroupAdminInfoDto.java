@@ -17,11 +17,11 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailGroupAdminInfoDto implements Serializable {
+public class EmailGroupAdminInfoDto {
 
     /**
      * 관리자 키(문자열, 구분자: ',')
      */
     @ApiModelProperty("관리자 키(문자열, 구분자: ',')")
-    private String adminIdList;
+    private String egAdminIdList;
 }

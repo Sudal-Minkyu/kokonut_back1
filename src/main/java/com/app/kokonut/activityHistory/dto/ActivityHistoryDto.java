@@ -12,7 +12,7 @@ import java.util.Date;
  * Date : 2022-11-03
  * Time :
  * Remark : ActivityHistory 단일 조회 Dto
- * 사용 메서드 : findByActivityHistoryByIdx, findByActivityHistoryByCompanyIdxAndReasonaAtivityIdx
+ * 사용 메서드 : findByActivityHistoryByIdx, findByActivityHistoryBycompanyIdAndReasonaAtivityIdx
  */
 @Data
 @NoArgsConstructor
@@ -21,8 +21,8 @@ public class ActivityHistoryDto {
 
     // activity_hisotroy 테이블
     private Integer idx;
-    private Integer companyIdx;
-    private Integer adminId;
+    private Long companyId;
+    private Long adminId;
     private Integer activityIdx;
     private String activityDetail;
 

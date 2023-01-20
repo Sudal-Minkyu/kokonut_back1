@@ -35,13 +35,13 @@ public class EmailGroupRestController {
     }
 
     @ApiOperation(value="이메일 그룹 상세조회", notes="이메일 그룹 상세조회")
-    @GetMapping(value = "/emailGroupDetail/{idx}") // -> 기존의 코코넛 호출 메서드명 : SelectEmailGroupByIdx
+    @GetMapping(value = "/emailGroupDetail/{egId}") // -> 기존의 코코넛 호출 메서드명 : SelectEmailGroupByIdx
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> emailGroupDetail(@PathVariable("idx") Integer idx) {
-        return emailGroupService.emailGroupDetail(idx);
+    public ResponseEntity<Map<String,Object>> emailGroupDetail(@PathVariable("egId") Long egId) {
+        return emailGroupService.emailGroupDetail(egId);
     }
 
     @ApiOperation(value="이메일 그룹 저장", notes="이메일 그룹 저장")
@@ -57,8 +57,8 @@ public class EmailGroupRestController {
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> deleteEmailGroup(@RequestParam(name="idx") Integer idx){
-        return emailGroupService.deleteEmailGroup(idx);
+    public ResponseEntity<Map<String,Object>> deleteEmailGroup(@RequestParam(name="egId") Long egId){
+        return emailGroupService.deleteEmailGroup(egId);
     }
 
     @ApiOperation(value="이메일 그룹 수정", notes="이메일 그룹 수정")

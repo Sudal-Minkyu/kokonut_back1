@@ -63,10 +63,10 @@ public class QnaService {
         log.info("qnaList 호출");
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        // 접속 정보에서 idx 가져오기
+        // 접속 정보에서 qnaId 가져오기
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-        qnaSearchDto.setadminId(admin.getIdx());
+        qnaSearchDto.setAdminId(admin.getAdminId());
 
         Page<QnaListDto> qnaListDtos = qnaRepository.findQnaPage(userRole, qnaSearchDto, pageable);
 
@@ -74,18 +74,18 @@ public class QnaService {
     }
 
     @Transactional
-    public ResponseEntity<Map<String, Object>> qnaDetail(String userRole, String email, Integer idx) {
+    public ResponseEntity<Map<String, Object>> qnaDetail(String userRole, String email, Long qnaId) {
         log.info("qnaDetail 호출");
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        if(idx == null){
-            log.error("idx 값을 찾을 수 없습니다.");
+        if(qnaId == null){
+            log.error("qnaId 값을 찾을 수 없습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO053.getCode(), ResponseErrorCode.KO053.getDesc()));
         }else{
             log.info("1:1 문의 게시글 상세보기");
-            QnaDetailDto qnaDetailDto = qnaRepository.findQnaByIdx(idx);
+            QnaDetailDto qnaDetailDto = qnaRepository.findQnaByIdx(qnaId);
             if(qnaDetailDto == null){
-                log.error("해당 idx의 1:1 문의 게시글을 조회할 수 없습니다. 문의 게시글 idx : "+idx);
+                log.error("해당 qnaId의 1:1 문의 게시글을 조회할 수 없습니다. 문의 게시글 qnaId : "+qnaId);
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO054.getCode(), ResponseErrorCode.KO054.getDesc()));
             }else{
                 Admin admin = adminRepository.findByEmail(email)
@@ -98,7 +98,7 @@ public class QnaService {
                     return ResponseEntity.ok(res.success(data));
                 }else{
                     // 시스템 사용자가 아니면 본인이 작성한 문의글만 확인 가능.
-                    if(admin.getIdx() == qnaDetailDto.getadminId()){
+                    if(admin.getAdminId() == qnaDetailDto.getAdminId()){
                         // TODO 첨부 파일 목록 조회
                         log.info("1:1 문의 게시글 상세보기 조회 성공 : " + qnaDetailDto.getIdx() + ", " + qnaDetailDto.getContent());
                         data.put("qnaDetailDto",  qnaDetailDto);
@@ -127,21 +127,21 @@ public class QnaService {
             Qna qna = new Qna();
             Qna saveQna = new Qna();
 
-            // 접속 정보에서 idx 가져오기
+            // 접속 정보에서 qnaId 가져오기
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
 
             // 1:1 문의 등록
-            qna.setadminId(admin.getIdx());
-            qna.setTitle(qnaQuestionSaveDto.getTitle());
-            qna.setContent(qnaQuestionSaveDto.getContent());
-            qna.setType(qnaQuestionSaveDto.getType());
-            qna.setRegdate(LocalDateTime.now());
+            qna.setAdminId(admin.getAdminId());
+            qna.setQnaTitle(qnaQuestionSaveDto.getTitle());
+            qna.setQnaContent(qnaQuestionSaveDto.getContent());
+            qna.setQnaType(qnaQuestionSaveDto.getType());
+            qna.setInsert_date(LocalDateTime.now());
             saveQna = qnaRepository.save(qna);
-            log.info("1:1 문의 게시글 등록 완료 saveQna : "+saveQna.getIdx());
+            log.info("1:1 문의 게시글 등록 완료 saveQna : "+saveQna.getQnaId());
 
             // 파일 업로드 처리
-            log.info("파일 업로드 처리 시작 saveQna : "+saveQna.getIdx());
+            log.info("파일 업로드 처리 시작 saveQna : "+saveQna.getQnaId());
             List<MultipartFile> multipartFiles = qnaQuestionSaveDto.getMultipartFiles();
             if(multipartFiles.isEmpty()){
                 log.info("첨부파일 없음.");
@@ -149,12 +149,12 @@ public class QnaService {
                 log.info("첨부파일 있음. 파일 업로드 시작. multipartFiles 처리해야할 건 수 : "+multipartFiles.size());
                 for (MultipartFile multipartFile: multipartFiles) {
                     QnaFile qnaFile = new QnaFile();
-                    qnaFile.setQnaIdx(saveQna.getIdx());
+                    qnaFile.setQnaId(saveQna.getQnaId());
 
                     // file original name
                     String originalFilename = Normalizer.normalize(Objects.requireNonNull(multipartFile.getOriginalFilename()), Normalizer.Form.NFC);
                     log.info("originalFilename : "+originalFilename);
-                    qnaFile.setCfOriginalFilename(originalFilename);
+                    qnaFile.setQfOriginalFilename(originalFilename);
 
                     // file size
                     long fileSize = multipartFile.getSize();
@@ -168,13 +168,13 @@ public class QnaService {
                     // file name 서버 저장 시 중복 명 처리
                     String fileName = UUID.randomUUID().toString().replace("-", "")+ext;
                     log.info("fileName : "+fileName);
-                    qnaFile.setCfFilename(fileName);
+                    qnaFile.setQfFilename(fileName);
 
                     // S3에 저장 할 파일 주소
                     SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
                     String filePath = AWSURL+qnaS3Folder+date.format(new Date());
                     log.info("filePath : "+filePath);
-                    qnaFile.setCfPath(filePath);
+                    qnaFile.setQfPath(filePath);
 
                     // S3에 파일 업로드
                     String storedFileName = awsS3Util.imageFileUpload(multipartFile, fileName, qnaS3Folder+date.format(new Date()));
@@ -230,18 +230,18 @@ public class QnaService {
             log.info("1:1 문의 게시글 답변 등록 시작");
             Qna saveQna = new Qna();
 
-            // 접속 정보에서 idx 가져오기
+            // 접속 정보에서 qnaId 가져오기
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
 
-            if(qnaAnswerSaveDto.getIdx() != null){
+            if(qnaAnswerSaveDto.getqnaId() != null){
                 //저장내용 세팅
-                Optional<Qna> savedQna = qnaRepository.findById(qnaAnswerSaveDto.getIdx());
+                Optional<Qna> savedQna = qnaRepository.findById(qnaAnswerSaveDto.getqnaId());
                 if(savedQna.isEmpty()){
-                    log.error("해당 문의글을 찾을 수 없습니다. 문의글 idx : " + qnaAnswerSaveDto.getIdx());
+                    log.error("해당 문의글을 찾을 수 없습니다. 문의글 qnaId : " + qnaAnswerSaveDto.getqnaId());
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO054.getCode(), ResponseErrorCode.KO054.getDesc()));
                 }else{
-                    saveQna.setIdx(qnaAnswerSaveDto.getIdx());
+                    saveQna.setqnaId(qnaAnswerSaveDto.getqnaId());
                     // 문의 내용
                     saveQna.setadminId(savedQna.get().getadminId());
                     saveQna.setTitle(savedQna.get().getTitle());
@@ -249,13 +249,13 @@ public class QnaService {
                     saveQna.setType(savedQna.get().getType());
                     saveQna.setRegdate(savedQna.get().getRegdate());
                     // 답변 내용
-                    saveQna.setAnsIdx(admin.getIdx());
+                    saveQna.setAnsqnaId(admin.getqnaId());
                     saveQna.setState(1);
                     // TODO : answer를 셋 해줄때 XssPreventer를 적용해서 Xss 공격에 대비해야함.
                     saveQna.setAnswer(qnaAnswerSaveDto.getAnswer());
                     saveQna.setAnswerDate(LocalDateTime.now());
                     qnaRepository.save(saveQna);
-                    log.info("1:1 문의 게시글 답변 등록이 완료되었습니다. : " +  saveQna.getAnswer() + " idx : "+saveQna.getIdx());
+                    log.info("1:1 문의 게시글 답변 등록이 완료되었습니다. : " +  saveQna.getAnswer() + " qnaId : "+saveQna.getqnaId());
 
                     // 답변 등록 안내 메일 보내기
                     String title = "[Kokonut] 문의글 답변 등록 안내 메일입니다.";

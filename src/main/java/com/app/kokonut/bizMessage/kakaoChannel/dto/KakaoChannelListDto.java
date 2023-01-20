@@ -19,7 +19,7 @@ public class KakaoChannelListDto {
 
     private Integer idx;
 
-    private Integer companyIdx;
+    private Long companyId;
 
     private String channelId;
 

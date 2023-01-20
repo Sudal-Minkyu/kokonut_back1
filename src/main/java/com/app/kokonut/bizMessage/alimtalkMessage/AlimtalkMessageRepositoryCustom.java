@@ -21,6 +21,6 @@ public interface AlimtalkMessageRepositoryCustom {
 
     List<AlimtalkMessageInfoListDto> findByAlimtalkMessageInfoList(Long companyId, String state); // state 값이 "1" 일 경우 status 성공, 실패, 발송취소, 발송요청성공, 발송요청실패 일 경우만 조회
 
-    AlimtalkMessageResultDetailDto findByAlimtalkMessageResultDetail(String requestId);
+    AlimtalkMessageResultDetailDto findByAlimtalkMessageResultDetail(String amRequestId);
 
 }

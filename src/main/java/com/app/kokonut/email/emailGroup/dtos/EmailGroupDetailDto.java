@@ -23,25 +23,25 @@ public class EmailGroupDetailDto implements Serializable {
      * 키
      */
     @ApiModelProperty("키")
-    private Integer idx;
+    private Long egId;
 
     /**
      * 관리자 키(문자열, 구분자: ',')
      */
     @ApiModelProperty("관리자 키(문자열, 구분자: ',')")
-    private String adminIdList;
+    private String egAdminIdList;
 
 
     /**
      * 그룹명
      */
     @ApiModelProperty("그룹명")
-    private String name;
+    private String egName;
 
 
     /**
      * 그룹설명
      */
     @ApiModelProperty("그룹설명")
-    private String desc;
+    private String egDesc;
 }

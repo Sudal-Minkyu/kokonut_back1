@@ -24,7 +24,7 @@ public class AdminRemoveDto implements Serializable {
      * ADMIN IDX
      */
     @ApiModelProperty("ADMIN IDX")
-    private Integer adminId;
+    private Long adminId;
 
 
     /**

@@ -1,4 +1,4 @@
-package com.app.kokonut.collectInformation.dto;
+package com.app.kokonut.collectInformation.dtos;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -19,12 +19,12 @@ import java.io.Serializable;
 public class CollectInfoDetailDto implements Serializable {
 
     @ApiModelProperty("주키")
-    private Integer idx;
+    private Long ciId;
 
     @ApiModelProperty("제목")
-    private String title;
+    private String ciTitle;
 
     @ApiModelProperty("내용")
-    private String content;
+    private String ciContent;
 
 }

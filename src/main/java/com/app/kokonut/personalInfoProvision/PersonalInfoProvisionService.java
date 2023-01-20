@@ -129,7 +129,7 @@ public class PersonalInfoProvisionService {
 //
 //        // 별도수집인 경우 별도수집 대상 목록을 미리 저장한다.
 //        if(data.getRecipientType() == 2 && (data.getType() == 1 || data.getType() == 2) && data.getAgreeYn() == 'Y' && data.getAgreeType() == 2) {
-//            String tableName = dynamicUserService.SelectTableName(data.getCompanyIdx());
+//            String tableName = dynamicUserService.SelectTableName(data.getCompanyId());
 //            List<Map<String, Object>> userList = dynamicUserService.SelectUserListByTableName(tableName);
 //
 //            if(data.getTargetStatus().equals("ALL")) {
@@ -254,8 +254,8 @@ public class PersonalInfoProvisionService {
 //                paramMap.putAll(searchMap);
 //            }
 //
-//            paramMap.put("companyIdx", authUser.getUser().getCompanyIdx());
-            personalInfoProvisionSetDto.getPersonalInfoProvisionMapperDto().setCompanyIdx(13);
+//            paramMap.put("companyId", authUser.getUser().getCompanyId());
+            personalInfoProvisionSetDto.getPersonalInfoProvisionMapperDto().setcompanyId(13);
 
 //            if(!paramMap.containsKey("state")) {
 //                throw new Exception("not found state");
