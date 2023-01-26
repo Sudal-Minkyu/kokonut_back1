@@ -1,6 +1,6 @@
 package com.app.kokonut.email.email;
 
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
 
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;

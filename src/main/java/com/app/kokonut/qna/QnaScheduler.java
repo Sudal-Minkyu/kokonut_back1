@@ -52,9 +52,9 @@ public class QnaScheduler {
 		if(!noneAnswerQnas.isEmpty()){
 			// 메일 문자열 작성
 			for(QnaSchedulerDto noneAnswerQna : noneAnswerQnas){
-				data.append(noneAnswerQna.getTitle());
+				data.append(noneAnswerQna.getQnaTitle());
 				data.append("(");
-				data.append(noneAnswerQna.getRegdate());
+				data.append(noneAnswerQna.getInsert_date());
 				data.append(")");
 				data.append(",<br>");
 				/* 문의드립니다. (2022-12-29T11:22:30.303030),
@@ -71,8 +71,8 @@ public class QnaScheduler {
 				// 메일 전송을 위해 HTML형태로 내용을 만들어서 만들어진 화면에 붙여서 메일 보냄. TODO 화면단 만들어지면 추가 개발
 				String contents = "응답하지 않은 문의 글 안내.<br>"+data.toString();
 				for(AdminEmailInfoDto systemAdminInfo : systemAdminInfoDtos){
-					String toEmail = systemAdminInfo.getEmail();
-					String toName = systemAdminInfo.getName();
+					String toEmail = systemAdminInfo.getKnEmail();
+					String toName = systemAdminInfo.getKnName();
 
 					log.info("Scheduler :: toEmail" + toEmail + ", toName" + toName);
 					if (toEmail == null || toName == null ){

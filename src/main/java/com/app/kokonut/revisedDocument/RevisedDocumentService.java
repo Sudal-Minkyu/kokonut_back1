@@ -1,7 +1,7 @@
 package com.app.kokonut.revisedDocument;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
 import com.app.kokonut.keydata.KeyDataService;
 import com.app.kokonut.revisedDocument.dtos.RevDocSaveDto;
 import com.app.kokonut.revisedDocument.dtos.RevDocListDto;
@@ -94,15 +94,12 @@ public class RevisedDocumentService {
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
             Long adminId = admin.getAdminId();
-            String adminName = admin.getKnName();
-            Long companyId =admin.getCompanyId();
 
             revDoc.setAdminId(adminId);
             revDoc.setInsert_email(email);
             revDoc.setInsert_date(LocalDateTime.now());
-            revDoc.setCompanyId(companyId);
-            revDoc.setRdEnforceStartDate(revDocSaveDto.getEnforceStartDate());
-            revDoc.setRdEnforceEndDate(revDocSaveDto.getEnforceEndDate());
+            revDoc.setRdEnforceStartDate(revDocSaveDto.getRdEnforceStartDate());
+            revDoc.setRdEnforceEndDate(revDocSaveDto.getRdEnforceEndDate());
 
             Long savedId = revisedDocumentRepository.save(revDoc).getRdId();
             log.info("개정문서 등록 완료, idx : "+ savedId);

@@ -19,18 +19,9 @@ import java.time.LocalDateTime;
 public class QnaAnswerSaveDto {
 
     @ApiModelProperty("키")
-    private Integer idx;
-
-    @ApiModelProperty("상태(0:답변대기,1:답변완료)")
-    private Integer state;
-
-    @ApiModelProperty("질문 답변자")
-    private Integer ansIdx;
+    private Long qnaId;
 
     @ApiModelProperty("답변 내용")
-    private String answer;
-
-    @ApiModelProperty("답변일")
-    private LocalDateTime answerDate;
+    private String qnaAnswer;
 
 }

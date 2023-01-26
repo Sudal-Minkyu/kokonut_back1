@@ -255,7 +255,7 @@ public class PersonalInfoProvisionService {
 //            }
 //
 //            paramMap.put("companyId", authUser.getUser().getCompanyId());
-            personalInfoProvisionSetDto.getPersonalInfoProvisionMapperDto().setcompanyId(13);
+//            personalInfoProvisionSetDto.getPersonalInfoProvisionMapperDto().setCompanyId(13L);
 
 //            if(!paramMap.containsKey("state")) {
 //                throw new Exception("not found state");

@@ -2,7 +2,7 @@ package com.app.kokonut.qna;
 
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
 import com.app.kokonut.common.component.AwsS3Util;
 import com.app.kokonut.configs.MailSender;
 import com.app.kokonut.keydata.KeyDataService;
@@ -66,9 +66,8 @@ public class QnaService {
         // 접속 정보에서 qnaId 가져오기
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-        qnaSearchDto.setAdminId(admin.getAdminId());
 
-        Page<QnaListDto> qnaListDtos = qnaRepository.findQnaPage(userRole, qnaSearchDto, pageable);
+        Page<QnaListDto> qnaListDtos = qnaRepository.findQnaPage(userRole, email, qnaSearchDto, pageable);
 
         return ResponseEntity.ok(res.ResponseEntityPage(qnaListDtos));
     }
@@ -93,14 +92,14 @@ public class QnaService {
                 if("[SYSTEM]".equals(userRole)) {
                     // 시스템 사용자면 모두 조회 가능
                     // TODO 첨부 파일 목록 조회
-                    log.info("1:1 문의 게시글 상세보기 조회 성공 : " + qnaDetailDto.getIdx() + ", " + qnaDetailDto.getContent());
+                    log.info("1:1 문의 게시글 상세보기 조회 성공 : " + qnaDetailDto.getQnaId() + ", " + qnaDetailDto.getQnaContent());
                     data.put("qnaDetailDto",  qnaDetailDto);
                     return ResponseEntity.ok(res.success(data));
                 }else{
                     // 시스템 사용자가 아니면 본인이 작성한 문의글만 확인 가능.
                     if(admin.getAdminId() == qnaDetailDto.getAdminId()){
                         // TODO 첨부 파일 목록 조회
-                        log.info("1:1 문의 게시글 상세보기 조회 성공 : " + qnaDetailDto.getIdx() + ", " + qnaDetailDto.getContent());
+                        log.info("1:1 문의 게시글 상세보기 조회 성공 : " + qnaDetailDto.getQnaId() + ", " + qnaDetailDto.getQnaContent());
                         data.put("qnaDetailDto",  qnaDetailDto);
                         return ResponseEntity.ok(res.success(data));
                     }else{
@@ -133,9 +132,9 @@ public class QnaService {
 
             // 1:1 문의 등록
             qna.setAdminId(admin.getAdminId());
-            qna.setQnaTitle(qnaQuestionSaveDto.getTitle());
-            qna.setQnaContent(qnaQuestionSaveDto.getContent());
-            qna.setQnaType(qnaQuestionSaveDto.getType());
+            qna.setQnaTitle(qnaQuestionSaveDto.getQnaTitle());
+            qna.setQnaContent(qnaQuestionSaveDto.getQnaContent());
+            qna.setQnaType(qnaQuestionSaveDto.getQnaType());
             qna.setInsert_date(LocalDateTime.now());
             saveQna = qnaRepository.save(qna);
             log.info("1:1 문의 게시글 등록 완료 saveQna : "+saveQna.getQnaId());
@@ -216,7 +215,7 @@ public class QnaService {
         }
     }
     @Transactional
-    public ResponseEntity<Map<String, Object>> answerSave(String userRole, String email, QnaAnswerSaveDto qnaAnswerSaveDto) throws IOException {
+    public ResponseEntity<Map<String, Object>> answerSave(String userRole, String email, QnaAnswerSaveDto qnaAnswerSaveDto) {
         log.info("answerSave 호출");
 
         AjaxResponse res = new AjaxResponse();
@@ -228,38 +227,34 @@ public class QnaService {
         }else{
             // 문의글 답변 내용 등록
             log.info("1:1 문의 게시글 답변 등록 시작");
-            Qna saveQna = new Qna();
+//            Qna saveQna = new Qna();
 
             // 접속 정보에서 qnaId 가져오기
             Admin admin = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
 
-            if(qnaAnswerSaveDto.getqnaId() != null){
+            if(qnaAnswerSaveDto.getQnaId() != null){
                 //저장내용 세팅
-                Optional<Qna> savedQna = qnaRepository.findById(qnaAnswerSaveDto.getqnaId());
+                Optional<Qna> savedQna = qnaRepository.findById(qnaAnswerSaveDto.getQnaId());
                 if(savedQna.isEmpty()){
-                    log.error("해당 문의글을 찾을 수 없습니다. 문의글 qnaId : " + qnaAnswerSaveDto.getqnaId());
+                    log.error("해당 문의글을 찾을 수 없습니다. 문의글 qnaId : " + qnaAnswerSaveDto.getQnaId());
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO054.getCode(), ResponseErrorCode.KO054.getDesc()));
                 }else{
-                    saveQna.setqnaId(qnaAnswerSaveDto.getqnaId());
-                    // 문의 내용
-                    saveQna.setadminId(savedQna.get().getadminId());
-                    saveQna.setTitle(savedQna.get().getTitle());
-                    saveQna.setContent(savedQna.get().getContent());
-                    saveQna.setType(savedQna.get().getType());
-                    saveQna.setRegdate(savedQna.get().getRegdate());
                     // 답변 내용
-                    saveQna.setAnsqnaId(admin.getqnaId());
-                    saveQna.setState(1);
+                    savedQna.get().setQnaState(1);
+
                     // TODO : answer를 셋 해줄때 XssPreventer를 적용해서 Xss 공격에 대비해야함.
-                    saveQna.setAnswer(qnaAnswerSaveDto.getAnswer());
-                    saveQna.setAnswerDate(LocalDateTime.now());
-                    qnaRepository.save(saveQna);
-                    log.info("1:1 문의 게시글 답변 등록이 완료되었습니다. : " +  saveQna.getAnswer() + " qnaId : "+saveQna.getqnaId());
+                    savedQna.get().setQnaAnswer(qnaAnswerSaveDto.getQnaAnswer());
+                    savedQna.get().setModify_id(admin.getAdminId());
+                    savedQna.get().setModify_email(email);
+                    savedQna.get().setModify_date(LocalDateTime.now());
+
+                    qnaRepository.save(savedQna.get());
+                    log.info("1:1 문의 게시글 답변 등록이 완료되었습니다. : " +  savedQna.get().getQnaAnswer() + " qnaId : "+savedQna.get().getQnaId());
 
                     // 답변 등록 안내 메일 보내기
                     String title = "[Kokonut] 문의글 답변 등록 안내 메일입니다.";
-                    String contents = "문의하신 글에 답변이 등록되었습니다.<br> 답변내용 : "+saveQna.getAnswer();
+                    String contents = "문의하신 글에 답변이 등록되었습니다.<br> 답변내용 : "+savedQna.get().getQnaAnswer();
                     // TODO : 답변 내용을 조회, 해당 내용을 HTML 태그를 붙여서 메일로 전송해준다. 화면단과 개발할 때 추가 개발해야함.
                     mailSender.sendMail(email, null, title, contents);
                 }

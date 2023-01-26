@@ -1,5 +1,6 @@
 package com.app.kokonut.personalInfoProvision;
 
+import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionDto;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionListDto;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionMapperDto;

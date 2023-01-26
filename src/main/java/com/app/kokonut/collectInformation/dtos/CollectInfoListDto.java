@@ -20,15 +20,15 @@ import java.time.LocalDateTime;
 public class CollectInfoListDto implements Serializable {
 
     @ApiModelProperty("주키")
-    private Integer idx;
+    private Long ciId;
 
     @ApiModelProperty("제목")
-    private String title;
+    private String ciTitle;
 
     @ApiModelProperty("등록자 이름")
     private String registerName;
 
     @ApiModelProperty("등록일")
-    private LocalDateTime regdate;
+    private LocalDateTime insert_date;
 
 }

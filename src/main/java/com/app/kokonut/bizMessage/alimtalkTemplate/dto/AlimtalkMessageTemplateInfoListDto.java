@@ -1,8 +1,12 @@
 package com.app.kokonut.bizMessage.alimtalkTemplate.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.Column;
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author Woody
@@ -16,18 +20,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AlimtalkMessageTemplateInfoListDto {
 
-    private String templateCode;
+    private String atTemplateCode;
 
-    private String messageType;
+    private String atMessageType;
 
-    private String extraContent;
+    private String atExtraContent;
 
-    private String adContent;
+    private String atAdContent;
 
-    private String emphasizeType;
+    private String atEmphasizeType;
 
-    private String emphasizeTitle;
+    private String atEmphasizeTitle;
 
-    private String emphasizeSubTitle;
+    private String atEmphasizeSubTitle;
 
 }

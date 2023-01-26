@@ -20,21 +20,24 @@ import java.time.LocalDateTime;
 public class RevDocListDto implements Serializable {
 
     @ApiModelProperty("키")
-    private Integer idx;
+    private Long rdId;
 
     @ApiModelProperty("시행시작일자")
-    private LocalDateTime enforceStartDate;
+    private LocalDateTime rdEnforceStartDate;
 
     @ApiModelProperty("시행종료일자")
-    private LocalDateTime enforceEndDate;
+    private LocalDateTime rdEnforceEndDate;
 
     @ApiModelProperty("등록자이름")
-    private String registerName;
+    private String knName;
 
     @ApiModelProperty("등록일자")
-    private LocalDateTime regdate;
+    private LocalDateTime insert_date;
 
     // reviseDocumentFile 테이블
+    private String rdfOriginalFilename;
+    private String rdfPath;
+    private String rdfFilename;
 
 //    TODO 공통 키 작업 완료 후 테스트 코드 작성 후 추가 개발
 //    @ApiModelProperty("원래 파일명")

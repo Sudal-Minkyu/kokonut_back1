@@ -49,7 +49,7 @@ public class TotalDbDownloadRepositoryCustomImpl extends QuerydslRepositorySuppo
                         totalDbDownload.tdApplyDate,
                         totalDbDownload.tdState,
                         totalDbDownload.tdReturnReason,
-                        totalDbDownload.td_download_date
+                        totalDbDownload.tdDownloadDate
                 ));
 
         if(totalDbDownloadSearchDto.getTdState() != null){

@@ -1,7 +1,7 @@
 package com.app.kokonut.auth.jwt;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

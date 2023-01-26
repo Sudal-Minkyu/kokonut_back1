@@ -48,9 +48,9 @@ public class PersonalInfoProvisionMapperDto {
         return Objects.requireNonNullElse(reason, 0);
     }
 
-    public Integer getadminId() {
-        return Objects.requireNonNullElse(adminId, 0);
-    }
+//    public Long getadminId() {
+//        return Objects.requireNonNullElse(adminId, 0L);
+//    }
 
     public Integer getRecipientType() {
         return Objects.requireNonNullElse(recipientType, 0);

@@ -1,6 +1,5 @@
 package com.app.kokonut.bizMessage.alimtalkTemplate;
 
-import com.app.kokonut.admin.entity.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,10 +14,10 @@ public interface AlimtalkTemplateRepository extends JpaRepository<AlimtalkTempla
 
     @Transactional
     @Modifying
-    @Query("delete from AlimtalkTemplate a where a.channelId = :channelId")
-    void findByAlimtalkTemplateDelete(String channelId);
+    @Query("delete from AlimtalkTemplate a where a.kcChannelId = :kcChannelId")
+    void findByAlimtalkTemplateDelete(String kcChannelId);
 
-    @Query("select a from AlimtalkTemplate a where a.templateCode = :templateCode and a.channelId = :channelId and a.companyId = :companyId")
-    Optional<AlimtalkTemplate> findByAlimtalkTemplate(String templateCode, String channelId, Long companyId);
+    @Query("select a from AlimtalkTemplate a where a.atTemplateCode = :atTemplateCode and a.kcChannelId = :channelId and a.companyId = :companyId")
+    Optional<AlimtalkTemplate> findByAlimtalkTemplate(String atTemplateCode, String kcChannelId, Long companyId);
 
 }

@@ -20,29 +20,16 @@ import java.util.List;
 @NoArgsConstructor
 public class QnaQuestionSaveDto {
 
-    @ApiModelProperty("키")
-    private Integer idx;
-
-    @ApiModelProperty("질문자(사용자 키)")
-    private Long adminId;
-
     @ApiModelProperty("제목")
-    private String title;
+    private String qnaTitle;
 
     @ApiModelProperty("문의내용")
-    private String content;
+    private String qnaContent;
 
     @ApiModelProperty("첨부파일 목록")
     private List<MultipartFile> multipartFiles; // AS-IS fileGroupId
 
     @ApiModelProperty("분류(0:기타,1:회원정보,2:사업자정보,3:Kokonut서비스,4:결제)")
-    private Integer type;
-
-    @ApiModelProperty("질문등록일시")
-    private LocalDateTime regdate;
-
-    // Admin Table
-    @ApiModelProperty("질문자 이메일")
-    private String email;
+    private Integer qnaType;
 
 }

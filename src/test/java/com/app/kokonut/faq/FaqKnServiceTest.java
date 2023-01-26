@@ -1,8 +1,8 @@
 package com.app.kokonut.faq;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.Admin;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.qna.Qna;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

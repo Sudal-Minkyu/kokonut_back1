@@ -1,7 +1,9 @@
 package com.app.kokonut.revisedDocument;
 
+import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.revisedDocument.dtos.RevDocListDto;
 import com.app.kokonut.revisedDocument.dtos.RevDocSearchDto;
+import com.app.kokonut.revisedDocumentFile.QRevisedDocumentFile;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -22,7 +24,9 @@ import java.util.Objects;
  */
 @Repository
 public class RevisedDocumentRepositoryCustomImpl extends QuerydslRepositorySupport implements RevisedDocumentRepositoryCustom {
+
     public final JpaResultMapper jpaResultMapper;
+
     public RevisedDocumentRepositoryCustomImpl(JpaResultMapper jpaResultMapper) {
         super(RevisedDocument.class);
         this.jpaResultMapper = jpaResultMapper;
@@ -46,25 +50,30 @@ public class RevisedDocumentRepositoryCustomImpl extends QuerydslRepositorySuppo
 	  ORDER BY A.`REGDATE` DESC
 	    *
 	    */
-        QRevisedDocument doc  = QRevisedDocument.revisedDocument;
-        QRevisedDocumentFile file  = QRevisedDocumentFile.revisedDocumentFile;
+        QRevisedDocument revisedDocument  = QRevisedDocument.revisedDocument;
+        QRevisedDocumentFile revisedDocumentFile  = QRevisedDocumentFile.revisedDocumentFile;
+        QAdmin admin  = QAdmin.admin;
 
-        JPQLQuery<RevDocListDto> query = from(doc)
-                //.leftJoin(file).on(doc.idx.eq(file.revisedDocumentIdx))
+        JPQLQuery<RevDocListDto> query = from(revisedDocument)
+                .innerJoin(admin).on(revisedDocument.adminId.eq(admin.adminId))
+                .innerJoin(revisedDocumentFile).on(revisedDocument.rdId.eq(revisedDocumentFile.rdId))
                 .select(Projections.constructor(RevDocListDto.class,
-                        doc.idx,
-                        doc.enforceStartDate,
-                        doc.enforceEndDate,
-                        doc.registerName,
-                        doc.regdate
-                        //, file.cfOriginalFilename
+                        revisedDocument.rdId,
+                        revisedDocument.rdEnforceStartDate,
+                        revisedDocument.rdEnforceEndDate,
+                        admin.knName,
+                        revisedDocument.insert_date,
+                        revisedDocumentFile.rdfOriginalFilename,
+                        revisedDocumentFile.rdfPath,
+                        revisedDocumentFile.rdfFilename
                 ));
-        query.where(doc.companyId.eq(companyId),
-                doc.regdate.between(revDocSearchDto.getStimeStart(), revDocSearchDto.getStimeEnd())
+
+            query.where(revisedDocument.companyId.eq(companyId).and(revisedDocument.insert_date.between(revDocSearchDto.getStimeStart(), revDocSearchDto.getStimeEnd()))
         );
 
-        query.orderBy(doc.regdate.desc());
+        query.orderBy(revisedDocument.insert_date.desc());
         final List<RevDocListDto> revDocListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(revDocListDtos, pageable, query.fetchCount());
     }
+
 }

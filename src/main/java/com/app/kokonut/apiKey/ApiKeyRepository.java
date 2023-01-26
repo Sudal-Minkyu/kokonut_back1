@@ -18,12 +18,12 @@ import java.util.Optional;
 @Repository
 public interface ApiKeyRepository extends JpaRepository<ApiKey, Long>, JpaSpecificationExecutor<ApiKey>, ApiKeyRepositoryCustom {
 
-    Optional<ApiKey> findApiKeyBycompanyIdAndType(Long companyId, Integer type);
-
-    @Query("select a from ApiKey a where a.companyId = :companyId and a.type = :type and (a.validityStart <= :validityStart and :validityStart < a.validityEnd)")
-    Optional<ApiKey> findApiKeyBycompanyIdAndTypeDate(@Param("companyId") Long companyId, @Param("type") Integer type, @Param("validityStart") Date validityStart);
-
-    Optional<ApiKey> findApiKeyBycompanyId(Long companyId);
+//    Optional<ApiKey> findApiKeyBycompanyIdAndType(Long companyId, Integer type);
+//
+//    @Query("select a from ApiKey a where a.companyId = :companyId and a.type = :type and (a.validityStart <= :validityStart and :validityStart < a.validityEnd)")
+//    Optional<ApiKey> findApiKeyBycompanyIdAndTypeDate(@Param("companyId") Long companyId, @Param("type") Integer type, @Param("validityStart") Date validityStart);
+//
+//    Optional<ApiKey> findApiKeyBycompanyId(Long companyId);
 
 //     List<HashMap<String, Object>> SelectApiKeyList(HashMap<String, Object> paramMap); // 변경전 - RepositoryCustom 완료 @@@@
 //

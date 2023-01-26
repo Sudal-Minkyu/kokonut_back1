@@ -2,10 +2,9 @@ package com.app.kokonut.admin;
 
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
-import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
 import com.app.kokonut.admin.entity.QAdmin;
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;

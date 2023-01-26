@@ -53,8 +53,8 @@ public class AlimtalkMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
                     .or(alimtalkMessage.amRequestId.containsIgnoreCase(alimtalkMessageSearchDto.getSearchText())));
         }
 
-        if(alimtalkMessageSearchDto.getStatus() != null){
-            query.where(alimtalkMessage.amStatus.eq(alimtalkMessageSearchDto.getStatus()));
+        if(alimtalkMessageSearchDto.getAmStatus() != null){
+            query.where(alimtalkMessage.amStatus.eq(alimtalkMessageSearchDto.getAmStatus()));
         }
 
         if(alimtalkMessageSearchDto.getStimeStart() != null){

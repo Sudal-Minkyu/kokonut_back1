@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AlimtalkTemplateInfoListDto {
 
-    private String templateCode;
+    private String atTemplateCode;
 
-    private String status;
+    private String atStatus;
 
 }

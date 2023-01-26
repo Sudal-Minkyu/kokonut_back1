@@ -112,18 +112,18 @@ public class CompanyService {
         Optional<Company> optionalCompany = companyRepository.findById(companyId);
 
         if(optionalCompany.isPresent()){
-            if(optionalCompany.get().getCompanyEncryptText() == null) {
+            if(optionalCompany.get().getCpEncryptText() == null) {
                 log.error("해당 기업의 encryptText 데이터가 존재하지 않습니다.");
                 return null;
             }
 
-            if(optionalCompany.get().getCompanyDataKey() == null) {
+            if(optionalCompany.get().getCpDataKey() == null) {
                 log.error("해당 기업의 dataKey 데이터가 존재하지 않습니다.");
                 return null;
             }
 
-            String encrpyText = optionalCompany.get().getCompanyEncryptText();
-            String dataKey = optionalCompany.get().getCompanyDataKey();
+            String encrpyText = optionalCompany.get().getCpEncryptText();
+            String dataKey = optionalCompany.get().getCpDataKey();
             AwsKmsResultDto awsKmsResultDto = awsKmsUtil.decrypt(encrpyText, dataKey);
 
             if(awsKmsResultDto.getResult().equals("success")){
@@ -134,17 +134,17 @@ public class CompanyService {
                 AwsKmsResultDto enc = awsKmsUtil.encrypt(decryptText);
                 if(enc.getResult().equals("success")) {
                     log.info("KMS 키 업데이트 시작");
-                    optionalCompany.get().setCompanyEncryptText(enc.getEncryptText());
-                    optionalCompany.get().setCompanyDataKey(enc.getDataKey());
+                    optionalCompany.get().setCpEncryptText(enc.getEncryptText());
+                    optionalCompany.get().setCpDataKey(enc.getDataKey());
                     companyRepository.save(optionalCompany.get());
                     log.info("KMS 키 업데이트 성공");
 
                     log.info("KMS 발급 이력 저장(Insert) 로직 시작");
                     AwsKmsHistory awsKmsHistory = new AwsKmsHistory();
-                    awsKmsHistory.setType("DEC");
-                    awsKmsHistory.setRegdate(LocalDateTime.now());
+                    awsKmsHistory.setAkhType("DEC");
+                    awsKmsHistory.setAkhRegdate(LocalDateTime.now());
                     AwsKmsHistory saveAwsKmsHistory =  awsKmsHistoryRepository.save(awsKmsHistory);
-                    log.info("KMS 이력 저장 saveAwsKmsHistory : "+saveAwsKmsHistory.getIdx());
+                    log.info("KMS 이력 저장 saveAwsKmsHistory : "+saveAwsKmsHistory.getAkhIdx());
                 }
 
                 return decryptText;

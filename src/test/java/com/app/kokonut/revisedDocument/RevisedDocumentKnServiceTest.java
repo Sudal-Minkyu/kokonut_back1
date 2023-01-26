@@ -1,8 +1,8 @@
 package com.app.kokonut.revisedDocument;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.Admin;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.revisedDocument.dtos.RevDocSaveDto;
 import com.app.kokonut.revisedDocumentFile.RevisedDocumentFileRepository;
 import org.junit.jupiter.api.*;

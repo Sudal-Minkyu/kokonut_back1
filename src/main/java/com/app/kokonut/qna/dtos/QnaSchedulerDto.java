@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 public class QnaSchedulerDto implements Serializable {
 
     @ApiModelProperty("키")
-    private Integer idx;
+    private Long qnaId;
 
     @ApiModelProperty("제목")
-    private String title;
+    private String qnaTitle;
 
     @ApiModelProperty("질문등록일시")
-    private LocalDateTime regdate;
+    private LocalDateTime insert_date;
 
 }

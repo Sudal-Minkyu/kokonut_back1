@@ -9,6 +9,12 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * @author Joy
+ * LocalDateTime : 2023-01-05
+ * Time :
+ * Remark : 운영 셋팅관련 Table Entity
+ */
 @Entity
 @EqualsAndHashCode(of = "stId")
 @Data

@@ -1,7 +1,7 @@
 package com.app.kokonut.notice;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
 import com.app.kokonut.notice.dtos.*;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;

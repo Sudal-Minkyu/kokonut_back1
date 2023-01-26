@@ -1,7 +1,7 @@
 package com.app.kokonut.setting;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.setting.dtos.KnSettingDetailDto;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +23,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class KnSettingService {
-    private final AjaxResponse res = new AjaxResponse();
-    private final HashMap<String, Object> data = new HashMap<>();
+
     private final KnKnSettingRepository knSettingRepository;
     private final AdminRepository adminRepository;
 
@@ -35,6 +34,9 @@ public class KnSettingService {
 
     public ResponseEntity<Map<String, Object>> settingDetail(String userRole, String email) {
         log.info("settingDetail 호출, userRole : " + userRole);
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
 
         // 접속정보에서 companyId 가져오기
         Admin admin = adminRepository.findByEmail(email)
@@ -65,6 +67,10 @@ public class KnSettingService {
 
     public ResponseEntity<Map<String, Object>> settingSave(String userRole, String email, KnSettingDetailDto knSettingDetailDto) {
         log.info("settingSave 호출, userRole : " + userRole);
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
         // 접속정보에서 companyId 가져오기
         Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));

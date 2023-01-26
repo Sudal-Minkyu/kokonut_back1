@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -24,32 +26,32 @@ public class AlimtalkTemplateListDto {
      * 채널ID
      */
     @ApiModelProperty("채널ID")
-    private String channelId;
+    private String kcChannelId;
 
 
     /**
      * 템플릿 코드
      */
     @ApiModelProperty("템플릿 코드")
-    private String templateCode;
+    private String atTemplateCode;
 
 
     /**
      * 템플릿 이름
      */
     @ApiModelProperty("템플릿 이름")
-    private String templateName;
+    private String atTemplateName;
 
     /**
      * 등록일시
      */
     @ApiModelProperty("등록일시")
-    private Date regdate;
+    private LocalDateTime insert_date;
 
     /**
      * 상태: ACCEPT - 수락 REGISTER - 등록 INSPECT - 검수 중 COMPLETE - 완료 REJECT - 반려
      */
     @ApiModelProperty("상태: ACCEPT - 수락 REGISTER - 등록 INSPECT - 검수 중 COMPLETE - 완료 REJECT - 반려")
-    private String status;
+    private String atStatus;
 
 }

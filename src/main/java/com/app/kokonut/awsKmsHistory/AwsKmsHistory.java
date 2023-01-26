@@ -14,7 +14,7 @@ import java.util.Date;
 @EqualsAndHashCode(of = "akhIdx")
 @Data
 @NoArgsConstructor
-@Table(name="aws_kms_history")
+@Table(name="kn_aws_kms_history")
 public class AwsKmsHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -40,6 +40,6 @@ public class AwsKmsHistory implements Serializable {
      */
     @ApiModelProperty("호출 날짜")
     @Column(name = "akh_regdate", nullable = false)
-    private LocalDateTime akh_regdate;
+    private LocalDateTime akhRegdate;
 
 }

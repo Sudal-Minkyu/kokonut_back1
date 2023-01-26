@@ -79,7 +79,7 @@ public class ActivityHistoryRestController {
         ActivityHistorySearchDto activityHistorySearchDto = new ActivityHistorySearchDto();
         activityHistorySearchDto.setType(type);
 //        activityHistorySearchDto.setcompanyId(apiKeyInfo.getCompanyId());
-        activityHistorySearchDto.setcompanyId(2);
+        activityHistorySearchDto.setCompanyId(2L);
 
         List<ActivityHistoryListDto> activityHistoryListDtos = activityHistoryService.findByActivityHistoryList(activityHistorySearchDto);
 

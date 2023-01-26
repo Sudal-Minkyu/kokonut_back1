@@ -5,7 +5,7 @@ import com.app.kokonut.activityHistory.ActivityHistoryRepository;
 import com.app.kokonut.activityHistory.ActivityHistoryService;
 import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
 import com.app.kokonut.company.Company;
 import com.app.kokonut.company.CompanyRepository;
 import org.junit.jupiter.api.AfterEach;

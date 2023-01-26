@@ -9,6 +9,12 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * @author Joy
+ * Date : 2023-01-14
+ * Time :
+ * Remark : 개인정보 처리방침 개정문서 테이블
+ */
 @Entity
 @EqualsAndHashCode(of = "rdId")
 @Data
@@ -23,13 +29,6 @@ public class RevisedDocument implements Serializable {
     @Column(name = "rd_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rdId;
-
-    /**
-     * 회사(Company) 키
-     */
-    @Column(name = "company_id")
-    @ApiModelProperty("회사(Company) 키")
-    private Long companyId;
 
     /**
      * 등록자

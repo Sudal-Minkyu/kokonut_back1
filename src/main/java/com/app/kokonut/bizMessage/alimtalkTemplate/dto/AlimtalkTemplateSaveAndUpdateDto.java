@@ -1,9 +1,11 @@
 package com.app.kokonut.bizMessage.alimtalkTemplate.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.List;
 
 /**
@@ -17,25 +19,23 @@ import java.util.List;
 @AllArgsConstructor
 public class AlimtalkTemplateSaveAndUpdateDto {
 
-    private String channelId; // 채널ID
+    private String kcChannelId; // 채널ID
 
-    private String templateCode; // 템플릿 코드
+    private String atTemplateCode; // 템플릿 코드
 
-    private String templateName; // 템플릿이름
+    private String atTemplateName; // 템플릿이름
 
-    private String templateContent; // 템플릿내용 -> 요건 디비에 안넣는듯?
+    private String atMessageType; // 메세지 유형(BA:기본형, EX:부가정보형, AD:광고 추가형, MI:복합형)
 
-    private String messageType; // 메세지 유형(BA:기본형, EX:부가정보형, AD:광고 추가형, MI:복합형)
+    private String atExtraContent; // 부가 정보 내용
 
-    private String extraContent; // 부가 정보 내용
+    private String atAdContent; // 광고 추가 내용
 
-    private String adContent; // 광고 추가 내용
+    private String atEmphasizeType; // 알림톡 강조표기 유형
 
-    private String emphasizeType; // 알림톡 강조표기 유형
+    private String atEmphasizeTitle; // 알림톡 강조표시 제목
 
-    private String emphasizeTitle; // 알림톡 강조표시 제목
-
-    private String emphasizeSubTitle; // 알림톡 강조표시 부제목
+    private String atEmphasizeSubTitle; // 알림톡 강조표시 부제목
 
     private Integer securityFlag; // 보안설정여부
 

@@ -149,10 +149,11 @@ public class KakaoChannelService {
                 Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
 
                 KakaoChannel kakaoChannel = new KakaoChannel();
-                kakaoChannel.setChannelId(channelId);
-                kakaoChannel.setcompanyId(companyId);
-                kakaoChannel.setStatus("INACTIVE");
-                kakaoChannel.setRegdate(LocalDateTime.now());
+                kakaoChannel.setKcChannelId(channelId);
+                kakaoChannel.setCompanyId(companyId);
+                kakaoChannel.setKcStatus("INACTIVE");
+                kakaoChannel.setInsert_email(email);
+                kakaoChannel.setInsert_date(LocalDateTime.now());
                 kakaoChannelRepository.save(kakaoChannel);
             } else {
                 log.error("관리자 승인을 위해 차단으로 상태값 변경 실패");

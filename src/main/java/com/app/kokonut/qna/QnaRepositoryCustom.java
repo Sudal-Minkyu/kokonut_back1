@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface QnaRepositoryCustom {
     // qna 목록 조회 - 기존 SelectQnaList, SelectQnaListCount
-    Page<QnaListDto> findQnaPage(String userRole, QnaSearchDto qnaSearchDto, Pageable pageable);
+    Page<QnaListDto> findQnaPage(String userRole, String email, QnaSearchDto qnaSearchDto, Pageable pageable);
 
     // qna 내용 조회 - 기존 SelectQnaByIdx
     QnaDetailDto findQnaByIdx(Long qnaId);

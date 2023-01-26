@@ -1,9 +1,11 @@
 package com.app.kokonut.activityHistory.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -20,10 +22,9 @@ import java.util.Date;
 public class ActivityHistoryDto {
 
     // activity_hisotroy 테이블
-    private Integer idx;
-    private Long companyId;
+    private Long ahId;
     private Long adminId;
-    private Integer activityIdx;
+
     private String activityDetail;
 
     private String reason;

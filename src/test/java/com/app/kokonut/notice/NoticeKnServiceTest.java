@@ -1,8 +1,8 @@
 package com.app.kokonut.notice;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.Admin;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.notice.dtos.NoticeDetailDto;
 import com.app.kokonut.notice.dtos.NoticeSearchDto;
 import org.junit.jupiter.api.*;

@@ -1,8 +1,8 @@
 package com.app.kokonutuser;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.Admin;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.company.Company;
 import com.app.kokonut.company.CompanyRepository;
 import org.junit.jupiter.api.AfterEach;

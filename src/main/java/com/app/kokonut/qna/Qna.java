@@ -28,13 +28,6 @@ public class Qna implements Serializable {
     private Long qnaId;
 
     /**
-     * 회사(Company) 키
-     */
-    @Column(name = "company_id")
-    @ApiModelProperty("회사(Company) 키")
-    private Long companyId;
-
-    /**
      * 등록자
      */
     @ApiModelProperty("등록자")

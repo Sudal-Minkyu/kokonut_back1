@@ -1,7 +1,6 @@
 package com.app.kokonut.totalDBDownload;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * @author Woody
+ * LocalDateTime : 2023-01-25
+ * Time :
+ * Remark : 유저테이블 DB 다운로드 신청 Table Entity
+ */
 @Entity
 @EqualsAndHashCode(of = "tdId")
 @Data

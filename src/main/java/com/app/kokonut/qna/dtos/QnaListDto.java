@@ -45,4 +45,5 @@ public class QnaListDto implements Serializable {
     // Admin Table
     @ApiModelProperty("문의자 이름")
     private String knName;
+
 }

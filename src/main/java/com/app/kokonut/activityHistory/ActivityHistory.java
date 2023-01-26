@@ -36,11 +36,6 @@ public class ActivityHistory implements Serializable {
     @Column(name = "admin_id")
     private Long adminId;
 
-    // 회사 IDX
-    @Column(name = "company_id")
-    @ApiModelProperty("회사(Company) 키")
-    private Long companyId;
-
     // 1:고객정보처리,2:관리자활동,3:회원DB관리이력
     @Column(name = "ah_type")
     @ApiModelProperty("1:고객정보처리,2:관리자활동,3:회원DB관리이력")

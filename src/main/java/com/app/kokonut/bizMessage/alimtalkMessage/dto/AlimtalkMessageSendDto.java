@@ -22,28 +22,28 @@ public class AlimtalkMessageSendDto {
     private List<AlimtalkMessageSendSubDto> alimtalkMessageSendSubDtoList; // 버튼타입 리스트 -> 기존의 프론트에선 recipients로 보내줌
 
     @NotBlank(message = "채널ID 값은 필수 값입니다.")
-    private String channelId; // 채널ID -> plusFriendId 랑 같은 의미
+    private String kcChannelId; // 채널ID -> plusFriendId 랑 같은 의미
 
     @NotBlank(message = "템플릿코드 값은 필수 값입니다.")
-    private String templateCode; // 템플릿 코드
+    private String atTemplateCode; // 템플릿 코드
 
     private String templateContent; // 템플릿내용 -> 프론트에선 content 로 보내줌
 
-    private String messageType; // 메세지 유형(BA:기본형, EX:부가정보형, AD:광고 추가형, MI:복합형)
+    private String atMessageType; // 메세지 유형(BA:기본형, EX:부가정보형, AD:광고 추가형, MI:복합형)
 
-    private String extraContent; // 부가 정보 내용
+    private String atExtraContent; // 부가 정보 내용
 
-    private String adContent; // 광고 추가 내용
+    private String atAdContent; // 광고 추가 내용
 
-    private String emphasizeType; // 알림톡 강조표기 유형
+    private String atEmphasizeType; // 알림톡 강조표기 유형
 
-    private String emphasizeTitle; // 알림톡 강조표시 제목
+    private String atEmphasizeTitle; // 알림톡 강조표시 제목
 
-    private String emphasizeSubTitle; // 알림톡 강조표시 부제목
+    private String atEmphasizeSubTitle; // 알림톡 강조표시 부제목
 
-    private String transmitType; // 즉시발송 : immediate, 예약발송 : reservation -> transmitDateType에서 transmitType 으로변경
+    private String amTransmitType; // 즉시발송 : immediate, 예약발송 : reservation -> transmitDateType에서 transmitType 으로변경
 
-    private String reservationDate; // 예약발송 일경우 : 날짜 시간 분
+    private String amReservationDate; // 예약발송 일경우 : 날짜 시간 분
 
     private Integer btnSize; // 버튼추가 개수
 

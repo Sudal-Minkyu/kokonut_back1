@@ -43,6 +43,7 @@ public class QnaRestController {
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
+
     public ResponseEntity<Map<String,Object>> qnaList(@RequestBody QnaSearchDto qnaSearchDto, Pageable pageable) {
         // TODO 1:1 문의자 이름 마스킹 처리
         String email = SecurityUtil.getCurrentJwt().getEmail();
@@ -55,12 +56,13 @@ public class QnaRestController {
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> qnaDetail(@PathVariable("idx") Integer idx) {
+
+    public ResponseEntity<Map<String,Object>> qnaDetail(@PathVariable("idx") Long qnaId) {
         // TODO 파일 저장 변경으로 인해 첨부 파일 조회 부분 변경 필요.
         // TODO 1:1 문의자 이름 마스킹 처리
         String email = SecurityUtil.getCurrentJwt().getEmail();
         String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return qnaService.qnaDetail(userRole, email, idx);
+        return qnaService.qnaDetail(userRole, email, qnaId);
     }
 
     @ApiOperation(value="QnA 문의 등록", notes="QnA 문의 등록", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

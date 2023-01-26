@@ -1,6 +1,5 @@
 package com.app.kokonut.admin;
 
-import com.app.kokonut.admin.entity.Admin;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +44,7 @@ public class AdminService {
             Admin admin = adminRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+userEmail));
 
-            log.info("해당 유저의 권한 : "+admin.getRoleName());
+            log.info("해당 유저의 권한 : "+admin.getARoleCode().getDesc());
         }
 
         return ResponseEntity.ok(res.success(data));

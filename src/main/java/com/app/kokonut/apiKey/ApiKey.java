@@ -55,48 +55,6 @@ public class ApiKey implements Serializable {
     private String akKey;
 
     /**
-     * 타입(1:일반,2:테스트)
-     */
-    @Column(name = "ak_type")
-    @ApiModelProperty("타입(1:일반,2:테스트)")
-    private Integer akType;
-
-    /**
-     * 설명
-     */
-    @Column(name = "ak_note")
-    @ApiModelProperty("설명")
-    private String akNote;
-
-    /**
-     * 유효기한 시작일자
-     */
-    @ApiModelProperty("유효기한 시작일자")
-    @Column(name = "ak_validity_start")
-    private LocalDateTime akValidityStart;
-
-    /**
-     * 유효기한 종료일자
-     */
-    @Column(name = "ak_validity_end")
-    @ApiModelProperty("유효기한 종료일자")
-    private LocalDateTime akValidityEnd;
-
-    /**
-     * 테스트기간 누적데이터 지속사용여부(0:일괄삭제,1:지속사용)
-     */
-    @Column(name = "ak_use_accumulate")
-    @ApiModelProperty("테스트기간 누적데이터 지속사용여부(0:일괄삭제,1:지속사용)")
-    private Integer akUseAccumulate;
-
-    /**
-     * 발급상태(1:신규,2:재발급)
-     */
-    @Column(name = "ak_state")
-    @ApiModelProperty("발급상태(1:신규,2:재발급)")
-    private Integer akState;
-
-    /**
      * 사용여부
      */
     @Column(name = "ak_use_yn")
@@ -111,6 +69,41 @@ public class ApiKey implements Serializable {
     private String akReason;
 
     /**
+     * 허용 IP 1
+     */
+    @Column(name = "ak_agree_ip_1")
+    @ApiModelProperty("허용 IP 1")
+    private String akAgreeIp1;
+
+    /**
+     * 허용 IP 2
+     */
+    @Column(name = "ak_agree_ip_2")
+    @ApiModelProperty("허용 IP 2")
+    private String akAgreeIp2;
+
+    /**
+     * 허용 IP 3
+     */
+    @Column(name = "ak_agree_ip_3")
+    @ApiModelProperty("허용 IP 3")
+    private String akAgreeIp3;
+
+    /**
+     * 허용 IP 4
+     */
+    @Column(name = "ak_agree_ip_4")
+    @ApiModelProperty("허용 IP 4")
+    private String akAgreeIp4;
+
+    /**
+     * 허용 IP 5
+     */
+    @Column(name = "ak_agree_ip_5")
+    @ApiModelProperty("허용 IP 5")
+    private String akAgreeIp5;
+
+    /**
      * 등록자 email
      */
     @ApiModelProperty("등록자 email")
@@ -123,14 +116,6 @@ public class ApiKey implements Serializable {
     @ApiModelProperty("등록 날짜")
     @Column(name = "insert_date", nullable = false)
     private LocalDateTime insert_date;
-
-
-    /**
-     * 수정자
-     */
-    @ApiModelProperty("수정자 id")
-    @Column(name = "modify_id")
-    private Long modify_id;
 
     /**
      * 수정자 이름

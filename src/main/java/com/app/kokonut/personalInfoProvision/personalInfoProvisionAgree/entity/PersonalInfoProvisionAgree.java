@@ -2,15 +2,18 @@ package com.app.kokonut.personalInfoProvision.personalInfoProvisionAgree.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Time;
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@Data
 @Entity
-@Table(name = "personal_info_provision_agree")
+@EqualsAndHashCode(of = "ppaId")
+@Data
+@NoArgsConstructor
+@Table(name="kn_personal_info_provision_agree")
 public class PersonalInfoProvisionAgree implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,57 +23,50 @@ public class PersonalInfoProvisionAgree implements Serializable {
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "ppa_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
+    private Long ppaId;
 
     /**
      * personal_info_provision 관리번호
      */
-    @Column(name = "NUMBER", nullable = false)
+    @Column(name = "pi_number", nullable = false)
     @ApiModelProperty("personal_info_provision 관리번호")
-    private String number;
+    private String piNumber;
 
     /**
-     * 동의 일
+     * 동의 날짜
      */
-    @ApiModelProperty("동의 일")
-    @Column(name = "AGREE_DATE")
-    private Date agreeDate;
-
-    /**
-     * 동의 시간
-     */
-    @ApiModelProperty("동의 시간")
-    @Column(name = "AGREE_TIME")
-    private Time agreeTime;
-
-    /**
-     * 등록일
-     */
-    @ApiModelProperty("등록일")
-    @Column(name = "REGDATE")
-    private Date regdate;
-
-    /**
-     * 대상 아이디
-     */
-    @ApiModelProperty("대상 아이디")
-    @Column(name = "ID", nullable = false)
-    private String id;
-
-    /**
-     * 파일그룹 아이디
-     */
-    @ApiModelProperty("파일그룹 아이디")
-    @Column(name = "FILE_GROUP_ID")
-    private String fileGroupId;
+    @ApiModelProperty("동의 날짜")
+    @Column(name = "ppa_agree_date")
+    private LocalDateTime ppaAgreeDate;
 
     /**
      * 주의사항 동의여부 (Y/N)
      */
     @ApiModelProperty("주의사항 동의여부 (Y/N)")
-    @Column(name = "AGREE_YN", nullable = false)
-    private String agreeYn;
+    @Column(name = "ppa_agree_yn", nullable = false)
+    private String ppaAgreeYn;
+
+    /**
+     * 대상 id
+     */
+    @ApiModelProperty("대상 id")
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
+    /**
+     * 등록자 email
+     */
+    @ApiModelProperty("등록자 email")
+    @Column(name = "insert_email", nullable = false)
+    private String insert_email;
+
+    /**
+     * 등록 날짜
+     */
+    @ApiModelProperty("등록 날짜")
+    @Column(name = "insert_date", nullable = false)
+    private LocalDateTime insert_date;
 
 }

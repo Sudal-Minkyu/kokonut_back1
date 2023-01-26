@@ -16,12 +16,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AlimtalkMessageInfoListDto {
 
-    private Integer idx;
+    private Long amId;
 
-    private String requestId;
+    private String amRequestId;
 
-    private String transmitType;
+    private String amTransmitType;
 
-    private String status;
+    private String amStatus;
 
 }

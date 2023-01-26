@@ -23,7 +23,7 @@ public class PersonalInfoProvisionDto {
      * 키
      */
     @ApiModelProperty("키")
-    private Integer idx;
+    private Long piId;
 
 
     /**
@@ -44,21 +44,21 @@ public class PersonalInfoProvisionDto {
      * 관리번호
      */
     @ApiModelProperty("관리번호")
-    private String number;
+    private String piNumber;
 
 
     /**
      * 필요사유 (1: 서비스운영, 2: 이벤트/프로모션, 3: 제휴, 4: 광고/홍보)
      */
     @ApiModelProperty("필요사유 (1: 서비스운영, 2: 이벤트/프로모션, 3: 제휴, 4: 광고/홍보)")
-    private Integer reason;
+    private Integer piReason;
 
 
     /**
      * 항목유형 (1: 회원정보 전체 항목, 2: 개인 식별 정보를 포함한 일부 항목, 3: 개인 식별 정보를 포함하지 않는 일부 항목)
      */
     @ApiModelProperty("항목유형 (1: 회원정보 전체 항목, 2: 개인 식별 정보를 포함한 일부 항목, 3: 개인 식별 정보를 포함하지 않는 일부 항목)")
-    private Integer type;
+    private Integer piType;
 
 
     /**

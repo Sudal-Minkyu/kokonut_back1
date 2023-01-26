@@ -64,7 +64,7 @@ public class AlimtalkMessageService {
 
         AjaxResponse res = new AjaxResponse();
 
-        // 해당 이메일을 통해 회사 IDX 조회
+        // 해당 이메일을 통해 회사 amId 조회
         Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
         List<AlimtalkMessageInfoListDto> alimtalkMessageInfoListDtos = alimtalkMessageRepository.findByAlimtalkMessageInfoList(companyId, "1");
 
@@ -73,21 +73,21 @@ public class AlimtalkMessageService {
 
             NaverCloudPlatformResultDto result;
 
-            int idx = alimtalkMessageInfoListDto.getIdx();
-            String requestId = alimtalkMessageInfoListDto.getRequestId();
-            String transmitType = alimtalkMessageInfoListDto.getTransmitType();
-            String status = alimtalkMessageInfoListDto.getStatus();
+            Long amId = alimtalkMessageInfoListDto.getAmId();
+            String amRequestId = alimtalkMessageInfoListDto.getAmRequestId();
+            String amTransmitType = alimtalkMessageInfoListDto.getAmTransmitType();
+            String amStatus = alimtalkMessageInfoListDto.getAmStatus();
             String updateSatus;
 
-            log.info("status 현재 상태 : "+status);
+            log.info("amRequestId 현재 상태 : "+amRequestId);
 
-            if(transmitType.equals("reservation")) {
+            if(amTransmitType.equals("reservation")) {
                 log.info("예약발송 조회");
-                result = naverCloudPlatformService.getReserveState(requestId, NaverCloudPlatformService.typeAlimTalk);
+                result = naverCloudPlatformService.getReserveState(amRequestId, NaverCloudPlatformService.typeAlimTalk);
                 System.out.println("reservation result : " + result);
             } else {
                 log.info("즉시발송 조회");
-                result = naverCloudPlatformService.getMessages(requestId, NaverCloudPlatformService.typeAlimTalk);
+                result = naverCloudPlatformService.getMessages(amRequestId, NaverCloudPlatformService.typeAlimTalk);
                 System.out.println("immediate result : " + result);
             }
 
@@ -98,14 +98,14 @@ public class AlimtalkMessageService {
                 HashMap<String, Object> map = new HashMap<>();
                 map = (HashMap<String, Object>)gson.fromJson(obj, map.getClass());
 
-                if(transmitType.equals("reservation")) {
+                if(amTransmitType.equals("reservation")) {
                     updateSatus = map.containsKey("reserveStatus")?map.get("reserveStatus").toString() : "";
                 } else {
                     updateSatus = map.containsKey("statusName") ? map.get("statusName").toString() : "";
                 }
 
                 if(!updateSatus.equals("")) {
-                    Optional<AlimtalkMessage> optionalAlimtalkMessage = alimtalkMessageRepository.findById(idx);
+                    Optional<AlimtalkMessage> optionalAlimtalkMessage = alimtalkMessageRepository.findById(amId);
                     if(optionalAlimtalkMessage.isPresent()){
                         optionalAlimtalkMessage.get().setAmStatus(updateSatus);
                         alimtalkMessageList.add(optionalAlimtalkMessage.get());
@@ -145,7 +145,7 @@ public class AlimtalkMessageService {
         for(AlimtalkMessageTemplateInfoListDto alimtalkMessageTemplateInfoListDto : alimtalkMessageTemplateInfoListDtos) {
 
             if(templateCode == null) {
-                templateCode = alimtalkMessageTemplateInfoListDto.getTemplateCode();
+                templateCode = alimtalkMessageTemplateInfoListDto.getAtTemplateCode();
             }
 
             NaverCloudPlatformResultDto result = naverCloudPlatformService.getTemplates(channelId, templateCode, "");
@@ -154,24 +154,24 @@ public class AlimtalkMessageService {
                 ObjectMapper mapper = new ObjectMapper();
                 template = mapper.readValue(result.getResultText(), new TypeReference<>() {});
 
-                String messageType = alimtalkMessageTemplateInfoListDto.getTemplateCode();
+                String messageType = alimtalkMessageTemplateInfoListDto.getAtTemplateCode();
                 template.get(0).put("messageType", messageType);
 
                 if("EX".equals(messageType) || "MI".equals(messageType) ) {
-                    String extraContent = alimtalkMessageTemplateInfoListDto.getExtraContent();
+                    String extraContent = alimtalkMessageTemplateInfoListDto.getAtExtraContent();
                     template.get(0).put("extraContent", extraContent);
                 }
                 if("AD".equals(messageType) || "MI".equals(messageType) ) {
-                    String adContent = alimtalkMessageTemplateInfoListDto.getAdContent();
+                    String adContent = alimtalkMessageTemplateInfoListDto.getAtAdContent();
                     template.get(0).put("adContent", adContent);
                 }
 
-                String emphasizeType = alimtalkMessageTemplateInfoListDto.getEmphasizeType();
+                String emphasizeType = alimtalkMessageTemplateInfoListDto.getAtEmphasizeType();
                 template.get(0).put("emphasizeType", emphasizeType);
 
                 if("TEXT".equals(emphasizeType)) {
-                    String emphasizeTitle = alimtalkMessageTemplateInfoListDto.getEmphasizeTitle();
-                    String emphasizeSubTitle = alimtalkMessageTemplateInfoListDto.getEmphasizeSubTitle();
+                    String emphasizeTitle = alimtalkMessageTemplateInfoListDto.getAtEmphasizeTitle();
+                    String emphasizeSubTitle = alimtalkMessageTemplateInfoListDto.getAtEmphasizeSubTitle();
                     template.get(0).put("emphasizeTitle", emphasizeTitle);
                     template.get(0).put("emphasizeSubTitle", emphasizeSubTitle);
                 }
@@ -199,7 +199,7 @@ public class AlimtalkMessageService {
         }
 
         // 예약발송 일 경우 -> 발송시간설정은 필수값임
-        if(alimtalkMessageSendDto.getTransmitType().equals("reservation") && alimtalkMessageSendDto.getReservationDate() == null) {
+        if(alimtalkMessageSendDto.getAmTransmitType().equals("reservation") && alimtalkMessageSendDto.getAmReservationDate() == null) {
             log.error("예약발송일 경우 보낼시간을 설정해주세요.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO024.getCode(), ResponseErrorCode.KO024.getDesc()));
         }
@@ -216,10 +216,10 @@ public class AlimtalkMessageService {
             AlimtalkMessage alimTalkMessage = new AlimtalkMessage();
             alimTalkMessage.setCompanyId(companyId);
             alimTalkMessage.setAmRequestId(response.get("requestId").toString());
-            alimTalkMessage.setKcChannelId(alimtalkMessageSendDto.getChannelId());
-            alimTalkMessage.setAmTransmitType(alimtalkMessageSendDto.getTransmitType());
-            if(alimtalkMessageSendDto.getTransmitType().equals("reservation")) {
-                String reservationDateStr = alimtalkMessageSendDto.getReservationDate();
+            alimTalkMessage.setKcChannelId(alimtalkMessageSendDto.getKcChannelId());
+            alimTalkMessage.setAmTransmitType(alimtalkMessageSendDto.getAmTransmitType());
+            if(alimtalkMessageSendDto.getAmTransmitType().equals("reservation")) {
+                String reservationDateStr = alimtalkMessageSendDto.getAmReservationDate();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
                 LocalDateTime reservationDate = LocalDateTime.parse(reservationDateStr, formatter);
                 log.info("예약발송시간 : "+reservationDate);

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author Joy
- * Date : 2023-01-94
+ * Date : 2023-01-14
  * Time :
  * Remark : 개인정보 처리방침 - 처리방침 문서 조회, 저장 위한 DTO
  */
@@ -21,10 +21,10 @@ import java.time.LocalDateTime;
 public class RevDocSaveDto implements Serializable {
 
     @ApiModelProperty("시행시작일자")
-    private LocalDateTime enforceStartDate;
+    private LocalDateTime rdEnforceStartDate;
 
     @ApiModelProperty("시행종료일자")
-    private LocalDateTime enforceEndDate;
+    private LocalDateTime rdEnforceEndDate;
 
     private MultipartFile multipartFile;
 

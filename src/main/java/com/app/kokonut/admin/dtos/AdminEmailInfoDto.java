@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminEmailInfoDto {
-    private String email;
-    private String name;
+    private String knEmail;
+    private String knName;
 }

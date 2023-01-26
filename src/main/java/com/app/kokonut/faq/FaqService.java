@@ -1,7 +1,7 @@
 package com.app.kokonut.faq;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
 import com.app.kokonut.faq.dtos.FaqAnswerListDto;
 import com.app.kokonut.faq.dtos.FaqDetailDto;
 import com.app.kokonut.faq.dtos.FaqListDto;

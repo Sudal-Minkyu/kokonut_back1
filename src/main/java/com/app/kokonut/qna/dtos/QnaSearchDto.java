@@ -18,13 +18,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class QnaSearchDto {
 
-    private Long qnaId;
-
     private Integer qnaState;  // 상태(0:답변대기,1:답변완료)
 
     private Integer qnaType;   // 분류(0:기타,1:회원정보,2:사업자정보,3:Kokonut서비스,4:결제)
-
-    private Long adminId;
 
     private LocalDateTime stimeStart; // 시작 날짜
 

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "cfId")
 @Data
 @NoArgsConstructor
-@Table(name="company_file")
+@Table(name="kn_company_file")
 public class CompanyFile {
 
     @Id
@@ -25,7 +25,7 @@ public class CompanyFile {
     private Long companyId;
 
     @ApiModelProperty("S3 파일 경로")
-    @Column(name = "cp_path")
+    @Column(name = "cf_path")
     private String cfPath;
 
     @ApiModelProperty("S3 파일 명")

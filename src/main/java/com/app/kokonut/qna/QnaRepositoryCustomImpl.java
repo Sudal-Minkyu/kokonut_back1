@@ -1,7 +1,7 @@
 package com.app.kokonut.qna;
 
 import com.app.kokonut.admin.entity.QAdmin;
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.qna.dtos.QnaDetailDto;
 import com.app.kokonut.qna.dtos.QnaListDto;
 import com.app.kokonut.qna.dtos.QnaSchedulerDto;
@@ -36,7 +36,7 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 
     // qna 목록 조회
     @Override
-    public Page<QnaListDto> findQnaPage(String userRole, QnaSearchDto qnaSearchDto, Pageable pageable) {
+    public Page<QnaListDto> findQnaPage(String userRole, String email, QnaSearchDto qnaSearchDto, Pageable pageable) {
         /*
          *
         SELECT A.`IDX`
@@ -59,7 +59,7 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         QAdmin admin  = QAdmin.admin;
 
         JPQLQuery<QnaListDto> query = from(qna)
-                .leftJoin(admin).on(admin.adminId.eq(qna.adminId))
+                .innerJoin(admin).on(admin.adminId.eq(qna.adminId))
                 .select(Projections.constructor(QnaListDto.class,
                         qna.qnaId,
                         qna.adminId,
@@ -78,8 +78,8 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         if(qnaSearchDto.getQnaType() != null){
             query.where(qna.qnaType.eq(qnaSearchDto.getQnaType()));
         }
-        if((qnaSearchDto.getAdminId() != null) &&(!AuthorityRole.ROLE_SYSTEM.getDesc().equals(userRole))){
-            query.where(qna.adminId.eq(qnaSearchDto.getAdminId()));
+        if(email != null && !AuthorityRole.ROLE_SYSTEM.getDesc().equals(userRole)){
+            query.where(admin.knEmail.eq(email));
         }
         if(qnaSearchDto.getStimeStart() != null){
             query.where(qna.insert_date.goe(qnaSearchDto.getStimeStart()));

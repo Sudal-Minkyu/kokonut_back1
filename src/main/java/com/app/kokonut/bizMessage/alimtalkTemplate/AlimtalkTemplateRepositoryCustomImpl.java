@@ -4,6 +4,7 @@ import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkMessageTemplateIn
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateInfoListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSearchDto;
+import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -40,30 +41,30 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
         JPQLQuery<AlimtalkTemplateListDto> query = from(alimtalkTemplate)
                 .where(alimtalkTemplate.companyId.eq(companyId))
                 .select(Projections.constructor(AlimtalkTemplateListDto.class,
-                        alimtalkTemplate.channelId,
-                        alimtalkTemplate.templateCode,
-                        alimtalkTemplate.templateName,
-                        alimtalkTemplate.regdate,
-                        alimtalkTemplate.status
+                        alimtalkTemplate.kcChannelId,
+                        alimtalkTemplate.atTemplateCode,
+                        alimtalkTemplate.atTemplateName,
+                        alimtalkTemplate.insert_date,
+                        alimtalkTemplate.atStatus
                 ));
 
-        if(alimtalkTemplateSearchDto.getTemplateName() != null){
-            query.where(alimtalkTemplate.templateName.containsIgnoreCase(alimtalkTemplateSearchDto.getTemplateName()));
+        if(alimtalkTemplateSearchDto.getAtTemplateName() != null){
+            query.where(alimtalkTemplate.atTemplateName.containsIgnoreCase(alimtalkTemplateSearchDto.getAtTemplateName()));
         }
 
-        if(alimtalkTemplateSearchDto.getStatus() != null){
-            query.where(alimtalkTemplate.status.eq(alimtalkTemplateSearchDto.getStatus()));
+        if(alimtalkTemplateSearchDto.getAtStatus() != null){
+            query.where(alimtalkTemplate.atStatus.eq(alimtalkTemplateSearchDto.getAtStatus()));
         }
 
         if(alimtalkTemplateSearchDto.getStimeStart() != null){
-            query.where(alimtalkTemplate.regdate.goe(alimtalkTemplateSearchDto.getStimeStart()));
+            query.where(alimtalkTemplate.insert_date.goe(alimtalkTemplateSearchDto.getStimeStart()));
         }
 
         if(alimtalkTemplateSearchDto.getStimeEnd() != null){
-            query.where(alimtalkTemplate.regdate.loe(alimtalkTemplateSearchDto.getStimeEnd()));
+            query.where(alimtalkTemplate.insert_date.loe(alimtalkTemplateSearchDto.getStimeEnd()));
         }
 
-        query.orderBy(alimtalkTemplate.regdate.desc());
+        query.orderBy(alimtalkTemplate.insert_date.desc());
 
         final List<AlimtalkTemplateListDto> alimtalkTemplateListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(alimtalkTemplateListDtos, pageable, query.fetchCount());
@@ -76,15 +77,15 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
         QCompany company = QCompany.company;
 
         JPQLQuery<AlimtalkTemplateInfoListDto> query = from(alimtalkTemplate)
-                .innerJoin(company).on(company.idx.eq(companyId))
-                .where(alimtalkTemplate.channelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.idx)))
+                .innerJoin(company).on(company.companyId.eq(companyId))
+                .where(alimtalkTemplate.kcChannelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.companyId)))
                 .select(Projections.constructor(AlimtalkTemplateInfoListDto.class,
-                        alimtalkTemplate.templateCode,
-                        alimtalkTemplate.status
+                        alimtalkTemplate.atTemplateCode,
+                        alimtalkTemplate.atStatus
                 ));
 
         if(state.equals("1")){
-            query.where(alimtalkTemplate.status.eq("ACCEPT").or(alimtalkTemplate.status.eq("REGISTER")).or(alimtalkTemplate.status.eq("INSPECT")));
+            query.where(alimtalkTemplate.atStatus.eq("ACCEPT").or(alimtalkTemplate.atStatus.eq("REGISTER")).or(alimtalkTemplate.atStatus.eq("INSPECT")));
         }
 
         return query.fetch();
@@ -97,16 +98,16 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
         QCompany company = QCompany.company;
 
         JPQLQuery<AlimtalkMessageTemplateInfoListDto> query = from(alimtalkTemplate)
-                .innerJoin(company).on(company.idx.eq(companyId))
-                .where(alimtalkTemplate.channelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.idx)))
+                .innerJoin(company).on(company.companyId.eq(companyId))
+                .where(alimtalkTemplate.kcChannelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.companyId)))
                 .select(Projections.constructor(AlimtalkMessageTemplateInfoListDto.class,
-                        alimtalkTemplate.templateCode,
-                        alimtalkTemplate.messageType,
-                        alimtalkTemplate.extraContent,
-                        alimtalkTemplate.adContent,
-                        alimtalkTemplate.emphasizeType,
-                        alimtalkTemplate.emphasizeTitle,
-                        alimtalkTemplate.emphasizeSubTitle
+                        alimtalkTemplate.atTemplateCode,
+                        alimtalkTemplate.atMessageType,
+                        alimtalkTemplate.atExtraContent,
+                        alimtalkTemplate.atAdContent,
+                        alimtalkTemplate.atEmphasizeType,
+                        alimtalkTemplate.atEmphasizeTitle,
+                        alimtalkTemplate.atEmphasizeSubTitle
                 ));
 
         return query.fetch();

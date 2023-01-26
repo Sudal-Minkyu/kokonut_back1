@@ -60,14 +60,14 @@ public class AlimtalkTemplateService {
 
         List<AlimtalkTemplate> alimtalkTemplateList = new ArrayList<>();
         for (KakaoChannelByChannelIdListDto kakaoChannelByChannelIdListDto : kakaoChannelByChannelIdListDtos) {
-            String channelId = kakaoChannelByChannelIdListDto.getChannelId();
+            String channelId = kakaoChannelByChannelIdListDto.getKcChannelId();
 
             List<AlimtalkTemplateInfoListDto> alimtalkTemplateInfoListDtos = alimtalkTemplateRepository.findByAlimtalkTemplateInfoList(companyId, channelId, "1");
 
             for (AlimtalkTemplateInfoListDto alimtalkTemplateInfoListDto : alimtalkTemplateInfoListDtos) {
 
-                String templateCode = alimtalkTemplateInfoListDto.getTemplateCode();
-                String status = alimtalkTemplateInfoListDto.getStatus();
+                String templateCode = alimtalkTemplateInfoListDto.getAtTemplateCode();
+                String status = alimtalkTemplateInfoListDto.getAtStatus();
 
                 // 상태 값이 변경 가능한 상태면 계속 상태 값 조회 - 상태값 : ACCEPT - 수락 REGISTER - 등록 INSPECT - 검수 중 COMPLETE - 완료 REJECT - 반려
                 if (!status.equals("COMPLETE") && !status.equals("REJECT")) {
@@ -85,8 +85,8 @@ public class AlimtalkTemplateService {
 
                         Optional<AlimtalkTemplate> optionalAlimtalkTemplate = alimtalkTemplateRepository.findByAlimtalkTemplate(templateCode, channelId, companyId);
                         if (optionalAlimtalkTemplate.isPresent()) {
-                            optionalAlimtalkTemplate.get().setTemplateName(templateName);
-                            optionalAlimtalkTemplate.get().setStatus(currentState);
+                            optionalAlimtalkTemplate.get().setAtTemplateName(templateName);
+                            optionalAlimtalkTemplate.get().setAtStatus(currentState);
                             alimtalkTemplateList.add(optionalAlimtalkTemplate.get());
                         }
                     }
@@ -122,26 +122,27 @@ public class AlimtalkTemplateService {
 
             AlimtalkTemplate alimtalkTemplate = new AlimtalkTemplate();
             alimtalkTemplate.setCompanyId(companyId);
-            alimtalkTemplate.setKcChannelId(alimtalkTemplateSaveAndUpdateDto.getChannelId());
-            alimtalkTemplate.setAtTemplateCode(alimtalkTemplateSaveAndUpdateDto.getTemplateCode());
+            alimtalkTemplate.setKcChannelId(alimtalkTemplateSaveAndUpdateDto.getKcChannelId());
+            alimtalkTemplate.setAtTemplateCode(alimtalkTemplateSaveAndUpdateDto.getAtTemplateCode());
 
-            String messageType = alimtalkTemplateSaveAndUpdateDto.getMessageType();
+            String messageType = alimtalkTemplateSaveAndUpdateDto.getAtMessageType();
             alimtalkTemplate.setAtMessageType(messageType);
             if(messageType.equals("EX")){
-                alimtalkTemplate.setExtraContent(alimtalkTemplateSaveAndUpdateDto.getExtraContent());
+                alimtalkTemplate.setAtExtraContent(alimtalkTemplateSaveAndUpdateDto.getAtExtraContent());
             } else if(messageType.equals("AD")) {
-                alimtalkTemplate.setAdContent(alimtalkTemplateSaveAndUpdateDto.getAdContent());
+                alimtalkTemplate.setAtAdContent(alimtalkTemplateSaveAndUpdateDto.getAtAdContent());
             }
 
-            String emphasizeType = alimtalkTemplateSaveAndUpdateDto.getEmphasizeType();
-            alimtalkTemplate.setEmphasizeType(emphasizeType);
+            String emphasizeType = alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeType();
+            alimtalkTemplate.setAtEmphasizeType(emphasizeType);
             if(emphasizeType.equals("TEXT")){
-                alimtalkTemplate.setEmphasizeTitle(alimtalkTemplateSaveAndUpdateDto.getEmphasizeTitle());
-                alimtalkTemplate.setEmphasizeSubTitle(alimtalkTemplateSaveAndUpdateDto.getEmphasizeSubTitle());
+                alimtalkTemplate.setAtEmphasizeTitle(alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeTitle());
+                alimtalkTemplate.setAtEmphasizeSubTitle(alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeSubTitle());
             }
 
-            alimtalkTemplate.setSecurityFlag(alimtalkTemplateSaveAndUpdateDto.getSecurityFlag());
-            alimtalkTemplate.setRegdate(LocalDateTime.now());
+            alimtalkTemplate.setAtSecurityFlag(alimtalkTemplateSaveAndUpdateDto.getSecurityFlag());
+            alimtalkTemplate.setInsert_email(email);
+            alimtalkTemplate.setInsert_date(LocalDateTime.now());
 
             alimtalkTemplateRepository.save(alimtalkTemplate);
         }
@@ -168,27 +169,27 @@ public class AlimtalkTemplateService {
             Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
 
             Optional<AlimtalkTemplate> optionalAlimtalkTemplate
-                    = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateSaveAndUpdateDto.getTemplateCode(), alimtalkTemplateSaveAndUpdateDto.getChannelId(), companyId);
+                    = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateSaveAndUpdateDto.getAtTemplateCode(), alimtalkTemplateSaveAndUpdateDto.getKcChannelId(), companyId);
             if (optionalAlimtalkTemplate.isPresent()) {
 
-                String messageType = alimtalkTemplateSaveAndUpdateDto.getMessageType();
-                optionalAlimtalkTemplate.get().setMessageType(messageType);
+                String messageType = alimtalkTemplateSaveAndUpdateDto.getAtMessageType();
+                optionalAlimtalkTemplate.get().setAtMessageType(messageType);
                 if(messageType.equals("EX")){
-                    optionalAlimtalkTemplate.get().setExtraContent(alimtalkTemplateSaveAndUpdateDto.getExtraContent());
+                    optionalAlimtalkTemplate.get().setAtExtraContent(alimtalkTemplateSaveAndUpdateDto.getAtExtraContent());
                 } else if(messageType.equals("AD")) {
-                    optionalAlimtalkTemplate.get().setAdContent(alimtalkTemplateSaveAndUpdateDto.getAdContent());
+                    optionalAlimtalkTemplate.get().setAtAdContent(alimtalkTemplateSaveAndUpdateDto.getAtAdContent());
                 }
 
-                String emphasizeType = alimtalkTemplateSaveAndUpdateDto.getEmphasizeType();
-                optionalAlimtalkTemplate.get().setEmphasizeType(emphasizeType);
+                String emphasizeType = alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeType();
+                optionalAlimtalkTemplate.get().setAtEmphasizeType(emphasizeType);
                 if(emphasizeType.equals("TEXT")){
-                    optionalAlimtalkTemplate.get().setEmphasizeTitle(alimtalkTemplateSaveAndUpdateDto.getEmphasizeTitle());
-                    optionalAlimtalkTemplate.get().setEmphasizeSubTitle(alimtalkTemplateSaveAndUpdateDto.getEmphasizeSubTitle());
+                    optionalAlimtalkTemplate.get().setAtEmphasizeTitle(alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeTitle());
+                    optionalAlimtalkTemplate.get().setAtEmphasizeSubTitle(alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeSubTitle());
                 }
 
-                optionalAlimtalkTemplate.get().setSecurityFlag(alimtalkTemplateSaveAndUpdateDto.getSecurityFlag());
-
-                optionalAlimtalkTemplate.get().setModifyDate(LocalDateTime.now());
+                optionalAlimtalkTemplate.get().setAtSecurityFlag(alimtalkTemplateSaveAndUpdateDto.getSecurityFlag());
+                optionalAlimtalkTemplate.get().setModify_email(email);
+                optionalAlimtalkTemplate.get().setModify_date(LocalDateTime.now());
 
                 alimtalkTemplateRepository.save(optionalAlimtalkTemplate.get());
 
@@ -212,14 +213,14 @@ public class AlimtalkTemplateService {
         Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
 
         Optional<AlimtalkTemplate> optionalAlimtalkTemplate
-                = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateDeleteDto.getTemplateCode(), alimtalkTemplateDeleteDto.getChannelId(), companyId);
+                = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateDeleteDto.getAtTemplateCode(), alimtalkTemplateDeleteDto.getKcChannelId(), companyId);
 
         if(email.equals("test@kokonut.me")){
             log.error("체험하기모드는 이용할 수 없습니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO000.getCode(), ResponseErrorCode.KO000.getDesc()));
         } else {
-            String channelId = alimtalkTemplateDeleteDto.getChannelId();
-            String templateCode = alimtalkTemplateDeleteDto.getTemplateCode();
+            String channelId = alimtalkTemplateDeleteDto.getKcChannelId();
+            String templateCode = alimtalkTemplateDeleteDto.getAtTemplateCode();
 
             NaverCloudPlatformResultDto result = naverCloudPlatformService.deleteTemplates(channelId, templateCode);
 

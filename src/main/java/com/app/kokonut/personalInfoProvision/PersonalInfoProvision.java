@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * @author Woody
  * LocalDateTime : 2022-11-01
  * Time :
- * Remark : personal_info_provision Table Entity
+ * Remark : 정보제공관리 Table Entity
  */
 @Entity
 @EqualsAndHashCode(of = "piId")

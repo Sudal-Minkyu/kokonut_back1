@@ -2,14 +2,19 @@ package com.app.kokonut.personalInfoProvision.personalInfoDownloadHistory;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
-@Data
 @Entity
-@Table(name = "personal_info_download_history")
+@EqualsAndHashCode(of = "pdhId")
+@Data
+@NoArgsConstructor
+@Table(name="kn_personal_info_download_history")
 public class PersonalInfoDownloadHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,78 +24,78 @@ public class PersonalInfoDownloadHistory implements Serializable {
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "pdh_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
+    private Long pdhId;
 
     /**
      * personal_info_provision 고유번호
      */
-    @Column(name = "NUMBER")
+    @Column(name = "pi_number")
     @ApiModelProperty("personal_info_provision 고유번호")
-    private String number;
-
-    /**
-     * 등록일
-     */
-    @ApiModelProperty("등록일")
-    @Column(name = "REGDATE", nullable = false)
-    private Date regdate;
+    private String piNumber;
 
     /**
      * 보유기간 만료일
      */
     @ApiModelProperty("보유기간 만료일")
-    @Column(name = "RETENTION_DATE", nullable = false)
-    private Date retentionDate;
+    @Column(name = "pdh_retention_date", nullable = false)
+    private LocalDateTime pdhRetentionDate;
 
     /**
      * 이메일
      */
     @ApiModelProperty("이메일")
-    @Column(name = "EMAIL", nullable = false)
-    private String email;
+    @Column(name = "pdh_email", nullable = false)
+    private String pdhEmail;
 
     /**
      * 파일명
      */
     @ApiModelProperty("파일명")
-    @Column(name = "FILE_NAME", nullable = false)
-    private String fileName;
+    @Column(name = "pdh_file_name", nullable = false)
+    private String pdhFileName;
 
     /**
      * 주의사항 동의여부 (Y/N)
      */
     @ApiModelProperty("주의사항 동의여부 (Y/N)")
-    @Column(name = "AGREE_YN", nullable = false)
-    private String agreeYn;
-
-    /**
-     * 정보제공 파기 파일그룹 아이디
-     */
-    @ApiModelProperty("정보제공 파기 파일그룹 아이디")
-    @Column(name = "DESTRUCTION_FILE_GROUP_ID")
-    private String destructionFileGroupId;
+    @Column(name = "pdh_agree_yn", nullable = false)
+    private String pdhAgreeYn;
 
     /**
      * 정보제공 파기 주의사항 동의여부 (Y/N)
      */
     @ApiModelProperty("정보제공 파기 주의사항 동의여부 (Y/N)")
-    @Column(name = "DESTRUCTION_AGREE_YN", nullable = false)
-    private String destructionAgreeYn;
+    @Column(name = "pdh_destruction_agree_yn", nullable = false)
+    private String pdhDestructionAgreeYn;
 
     /**
      * 정보제공 파기 최근 등록일
      */
-    @Column(name = "DESTRUCTION_DATE")
+    @Column(name = "pdh_destruction_date")
     @ApiModelProperty("정보제공 파기 최근 등록일")
-    private Date destructionDate;
+    private LocalDateTime pdhDestructionDate;
 
     /**
      * 정보제공 파기 등록자
      */
     @ApiModelProperty("정보제공 파기 등록자")
-    @Column(name = "DESTRUNCTION_REGISTER_NAME")
-    private String destrunctionRegisterName;
+    @Column(name = "pdh_destruction_register_name")
+    private String pdhDestructionRegisterName;
+
+    /**
+     * 등록자 email
+     */
+    @ApiModelProperty("등록자 email")
+    @Column(name = "insert_email", nullable = false)
+    private String insert_email;
+
+    /**
+     * 등록 날짜
+     */
+    @ApiModelProperty("등록 날짜")
+    @Column(name = "insert_date", nullable = false)
+    private LocalDateTime insert_date;
 
 }

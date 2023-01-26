@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "fmrId")
 @Data
 @NoArgsConstructor
-@Table(name="friendtalk_message_recipient")
+@Table(name="kn_friendtalk_message_recipient")
 public class FriendtalkMessageRecipient implements Serializable {
 
     private static final long serialVersionUID = 1L;

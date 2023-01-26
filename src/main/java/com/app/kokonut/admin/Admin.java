@@ -1,6 +1,6 @@
-package com.app.kokonut.admin.entity;
+package com.app.kokonut.admin;
 
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,8 +1,8 @@
 package com.app.kokonut.auth;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.Admin;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
 import com.app.kokonut.common.component.AwsKmsUtil;
@@ -215,17 +215,17 @@ public class AuthService {
 //        }
 
         String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
-        company.setCompanyCode(keyGenerateService.keyGenerate("kn_company", "kokonut"+nowDate, "system"));
-        company.setCompanyName(signUp.getCompanyName());
-        company.setCompanyRepresentative(signUp.getRepresentative());
-        company.setCompanyTel(signUp.getCompanyTel());
-        company.setCompanyBusinessType(signUp.getBusinessType());
-        company.setCompanyBusinessNumber(businessNumber);
-        company.setCompanyAddress(signUp.getCompanyAddress());
-        company.setCompanyAddressNumber(signUp.getCompanyAddressNumber());
-        company.setCompanyAddressDetail(signUp.getCompanyAddressDetail());
-        company.setCompanyEncryptText(encryptText);
-        company.setCompanyDataKey(dataKey);
+        company.setCpCode(keyGenerateService.keyGenerate("kn_company", "kokonut"+nowDate, "system"));
+        company.setCpName(signUp.getCompanyName());
+        company.setCpRepresentative(signUp.getRepresentative());
+        company.setCpTel(signUp.getCompanyTel());
+        company.setCpBusinessType(signUp.getBusinessType());
+        company.setCpBusinessNumber(businessNumber);
+        company.setCpAddress(signUp.getCompanyAddress());
+        company.setCpAddressNumber(signUp.getCompanyAddressNumber());
+        company.setCpAddressDetail(signUp.getCompanyAddressDetail());
+        company.setCpEncryptText(encryptText);
+        company.setCpDataKey(dataKey);
         company.setInsert_email(signUp.getEmail());
         company.setInsert_date(LocalDateTime.now());
         Company saveCompany = companyRepository.save(company);
@@ -233,10 +233,10 @@ public class AuthService {
 
         log.info("KMS 발급 이력 저장(Insert) 로직 시작");
         AwsKmsHistory awsKmsHistory = new AwsKmsHistory();
-        awsKmsHistory.setType("ENC");
-        awsKmsHistory.setRegdate(LocalDateTime.now());
+        awsKmsHistory.setAkhType("ENC");
+        awsKmsHistory.setAkhRegdate(LocalDateTime.now());
         AwsKmsHistory saveAwsKmsHistory =  awsKmsHistoryRepository.save(awsKmsHistory);
-        log.info("KMS 이력 저장 saveAwsKmsHistory : "+saveAwsKmsHistory.getIdx());
+        log.info("KMS 이력 저장 saveAwsKmsHistory : "+saveAwsKmsHistory.getAkhIdx());
 
         log.info("Admin 저장(Insert) 로직 시작");
         // 회원가입 사업자 Defalut 값
@@ -551,7 +551,7 @@ public class AuthService {
         }
 
         boolean auth;
-        auth = googleOTP.checkCode(googleOtpCertification.getOtpValue(), googleOtpCertification.getOtpKey());
+        auth = googleOTP.checkCode(googleOtpCertification.getOtpValue(), googleOtpCertification.getKnOtpKey());
 
 
         if(!auth){
@@ -572,7 +572,7 @@ public class AuthService {
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         
-        Optional<Admin> optionalAdmin = adminRepository.findByEmail(googleOtpSave.getEmail());
+        Optional<Admin> optionalAdmin = adminRepository.findByEmail(googleOtpSave.getKnEmail());
 
         if (optionalAdmin.isEmpty()) {
             log.error("해당 유저가 존재하지 않습니다.");
@@ -583,7 +583,7 @@ public class AuthService {
             log.info("OTP Key 등록 할 이메일 : " + optionalAdmin.get().getKnEmail());
 
             //현재암호비교
-            if (!passwordEncoder.matches(googleOtpSave.getPassword(), optionalAdmin.get().getPassword())){
+            if (!passwordEncoder.matches(googleOtpSave.getKnPassword(), optionalAdmin.get().getPassword())){
                 log.error("입력한 비밀번호가 일치하지 않습니다.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO013.getCode(), ResponseErrorCode.KO013.getDesc()));
             }
@@ -601,7 +601,7 @@ public class AuthService {
             optionalAdmin.get().setModify_email(optionalAdmin.get().getKnEmail());
             optionalAdmin.get().setModifyDate(LocalDateTime.now());
 
-            optionalAdmin.get().setKnOtpKey(googleOtpSave.getOtpKey());
+            optionalAdmin.get().setKnOtpKey(googleOtpSave.getKnOtpKey());
             adminRepository.save(optionalAdmin.get());
 
             // 변경이후 시스템관리자에게 메일보내기 시작 추가하기 12/05 Woody

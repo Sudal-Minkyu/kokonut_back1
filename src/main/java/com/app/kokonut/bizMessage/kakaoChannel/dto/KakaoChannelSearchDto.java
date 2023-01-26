@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class KakaoChannelSearchDto {
 
-    private String status; // 채널 상태
+    private String kcStatus; // 채널 상태
 
-    private String channelName; // 채널명
+    private String kcChannelName; // 채널명
 
     private LocalDateTime stimeStart; // 시작 날짜
 

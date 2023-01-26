@@ -1,4 +1,4 @@
-package com.app.kokonut.admin.entity.enums;
+package com.app.kokonut.admin.enums;
 
 /**
  * @author Woody

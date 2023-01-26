@@ -4,7 +4,7 @@ import com.app.kokonut.activityHistory.ActivityHistoryService;
 import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
 import com.app.kokonut.collectInformation.dtos.CollectInfoDetailDto;
 import com.app.kokonut.collectInformation.dtos.CollectInfoListDto;
 import com.app.kokonut.collectInformation.dtos.CollectInfoSearchDto;
