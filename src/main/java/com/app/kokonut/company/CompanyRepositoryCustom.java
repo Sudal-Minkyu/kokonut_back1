@@ -19,7 +19,7 @@ public interface CompanyRepositoryCustom {
 //
 //    public void UpdateCompany(HashMap<String, Object> paramMap);
 //
-//    public void UpdateAdminIdxOfCompany(HashMap<String, Object> paramMap);
+//    public void UpdateadminIdOfCompany(HashMap<String, Object> paramMap);
 //
 //    public int SelectCompanyCountByBusinessNumber(HashMap<String, Object> paramMap);
 //
@@ -43,7 +43,7 @@ public interface CompanyRepositoryCustom {
 //
 //    public void UpdateDormantAccumulate(HashMap<String, Object> paramMap);
 //
-//    public void DeleteByCompanyIdx(int companyIdx);
+//    public void DeleteBycompanyId(Long companyId);
 //
 //    public void UpdateStopService(HashMap<String, Object> paramMap);
 //

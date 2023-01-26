@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TotalDbDownloadSearchDto {
 
-    private Integer state; // 상태(1:다운로드요청, 2:다운로드대기, 3:다운로드완료, 4:다운로드반려)
+    private Integer tdState; // 상태(1:다운로드요청, 2:다운로드대기, 3:다운로드완료, 4:다운로드반려)
     private LocalDateTime stimeStart;
     private LocalDateTime stimeEnd;
 

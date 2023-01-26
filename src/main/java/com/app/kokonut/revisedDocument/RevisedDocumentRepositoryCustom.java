@@ -1,7 +1,7 @@
 package com.app.kokonut.revisedDocument;
 
-import com.app.kokonut.revisedDocument.dto.RevDocListDto;
-import com.app.kokonut.revisedDocument.dto.RevDocSearchDto;
+import com.app.kokonut.revisedDocument.dtos.RevDocListDto;
+import com.app.kokonut.revisedDocument.dtos.RevDocSearchDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,10 +13,10 @@ import org.springframework.data.domain.Pageable;
  */
 public interface RevisedDocumentRepositoryCustom {
     // 개정문서 목록 조회 - 기존 SelectRevisedDocumentList, SelectRevisedDocumentListCount
-    Page<RevDocListDto> findRevDocPage(Integer companyIdx, RevDocSearchDto revDocSearchDto, Pageable pageable);
+    Page<RevDocListDto> findRevDocPage(Long companyId, RevDocSearchDto revDocSearchDto, Pageable pageable);
 
     // 개정문서 상세 조회 - 기존 SelectRevisedDocumentByIdx
     // 개정문서 등록 - InsertRevisedDocument
     // 개정문서 삭제 - 기존 DeleteRevisedDocumentByIdx
-    // 개정문서 전체 삭제 - 기존 DeleteByCompanyIdx
+    // 개정문서 전체 삭제 - 기존 DeleteBycompanyId
 }

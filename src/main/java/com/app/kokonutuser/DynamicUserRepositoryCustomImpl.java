@@ -1,6 +1,5 @@
 package com.app.kokonutuser;
 
-import com.app.kokonutdormant.dtos.KokonutDormantFieldCheckDto;
 import com.app.kokonutuser.dtos.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +32,8 @@ public class DynamicUserRepositoryCustomImpl implements DynamicUserRepositoryCus
 
     // 유저테이블 중복 체크 메서드
     @Override
-    public int selectExistUserTable(String businessNumber) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM Information_schema.tables WHERE table_name = "+"'"+businessNumber+"'"+") AS flag";
+    public int selectExistUserTable(String companyCode) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM Information_schema.tables WHERE table_name = "+"'"+companyCode+"'"+") AS flag";
 //        log.info("중복체크 sql : "+sql);
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }

@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AlimtalkTemplateSearchDto {
 
-    private String status; // 검수 상태
+    private String atStatus; // 검수 상태
 
-    private String templateName; // 템플릿명
+    private String atTemplateName; // 템플릿명
 
     private LocalDateTime stimeStart; // 시작 날짜
 

@@ -25,63 +25,63 @@ public class AuthRequestDto {
 
         @NotBlank(message = "이메일은 필수 입력값 입니다.")
         @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
-        private String email;
+        private String knEmail;
 
         @NotBlank(message = "회사명은 필수 입력값 입니다.")
-        private String companyName;
+        private String cpName;
 
         @NotBlank(message = "대표자명은 필수 입력값 입니다.")
-        private String representative;
+        private String cpRepresentative;
 
         @NotBlank(message = "이름은 필수 입력값 입니다.")
-        private String name;
+        private String knName;
 
         @NotBlank(message = "핸드폰번호는 필수 입력값 입니다.")
-        private String phoneNumber;
+        private String knPhoneNumber;
 
         @NotBlank(message = "비밀번호는 필수 입력값 입니다.")
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$", message = "비밀번호는 8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
-        private String password;
+        private String knPassword;
 
-        private String passwordConfirm; // 비밀번호 체크
+        private String knPasswordConfirm; // 비밀번호 체크
 
         @NotBlank(message = "사업자등록번호는 필수 입력값 입니다.")
-        private String businessNumber;
+        private String cpBusinessNumber;
 
         private MultipartFile multipartFile; // 사업자등록등 -> 기존 Kokonut에선 file이라는 변수로 받아옴.
 
         @NotBlank(message = "업태/업종은 필수 입력값 입니다.")
-        private String businessType;
+        private String cpBusinessType;
 
         @NotBlank(message = "사업자 전화번호는 필수 입력값 입니다.")
-        private String companyTel;
+        private String cpTel;
 
         @NotBlank(message = "사업자 우편번호는 필수 입력값 입니다.")
-        private String companyAddressNumber;
+        private String cpAddressNumber;
 
         @NotBlank(message = "기업주소는 필수 입력값 입니다.")
-        private String companyAddress;
+        private String cpAddress;
 
-        private String companyAddressDetail;
+        private String cpAddressDetail;
 
         @Builder
-        public SignUp(String email, String companyName, String representative, String name, String phoneNumber, String password,
-                      String passwordConfirm, String businessNumber, MultipartFile multipartFile, String businessType, String companyTel,
-                      String companyAddressNumber, String companyAddress, String companyAddressDetail) {
-            this.email = email;
-            this.companyName = companyName;
-            this.representative = representative;
-            this.name = name;
-            this.phoneNumber = phoneNumber;
-            this.password = password;
-            this.passwordConfirm = passwordConfirm;
-            this.businessNumber = businessNumber;
+        public SignUp(String knEmail, String cpName, String cpRepresentative, String knName, String knPhoneNumber, String knPassword,
+                      String knPasswordConfirm, String cpBusinessNumber, MultipartFile multipartFile, String cpBusinessType, String cpTel,
+                      String cpAddressNumber, String cpAddress, String cpAddressDetail) {
+            this.knEmail = knEmail;
+            this.cpName = cpName;
+            this.cpRepresentative = cpRepresentative;
+            this.knName = knName;
+            this.knPhoneNumber = knPhoneNumber;
+            this.knPassword = knPassword;
+            this.knPasswordConfirm = knPasswordConfirm;
+            this.cpBusinessNumber = cpBusinessNumber;
             this.multipartFile = multipartFile;
-            this.businessType = businessType;
-            this.companyTel = companyTel;
-            this.companyAddressNumber = companyAddressNumber;
-            this.companyAddress = companyAddress;
-            this.companyAddressDetail = companyAddressDetail;
+            this.cpBusinessType = cpBusinessType;
+            this.cpTel = cpTel;
+            this.cpAddressNumber = cpAddressNumber;
+            this.cpAddress = cpAddress;
+            this.cpAddressDetail = cpAddressDetail;
         }
     }
 
@@ -93,13 +93,13 @@ public class AuthRequestDto {
 
         @NotBlank(message = "이메일은 필수 입력값입니다.")
         @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
-        private String email;
+        private String knEmail;
 
         @NotBlank(message = "비밀번호는 필수 입력값입니다.")
-        private String password;
+        private String knPassword;
 
         public UsernamePasswordAuthenticationToken toAuthentication() {
-            return new UsernamePasswordAuthenticationToken(email, password);
+            return new UsernamePasswordAuthenticationToken(knEmail, knPassword);
         }
 
     }

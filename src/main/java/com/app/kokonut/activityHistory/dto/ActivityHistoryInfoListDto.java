@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Date;
  * Date : 2022-11-03
  * Time :
  * Remark : ActivityHistory 정보 조회 Dto
- * 사용 메서드 : findByActivityHistoryByCompanyIdxAndType
+ * 사용 메서드 : findByActivityHistoryBycompanyIdAndType
  */
 @Data
 @NoArgsConstructor
@@ -19,15 +20,15 @@ import java.util.Date;
 public class ActivityHistoryInfoListDto {
 
     // activity_hisotroy 테이블
-    private Integer idx;
-    private Integer companyIdx;
-    private Integer adminIdx;
+    private Long ahId;
+    private Long companyId;
+    private Long adminId;
     private ActivityCode activityCode;
     private String activityDetail;
-    private String reason;
-    private String ipAddr;
-    private Date regdate;
-    private Integer state;
+    private String ahReason;
+    private String ahIpAddr;
+    private Integer ahState;
+    private LocalDateTime insert_email;
 
     public String getActivityIdx() {
         return activityCode.getDesc();

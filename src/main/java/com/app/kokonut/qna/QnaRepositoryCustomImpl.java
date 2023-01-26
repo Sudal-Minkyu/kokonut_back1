@@ -1,12 +1,11 @@
 package com.app.kokonut.qna;
 
-import com.app.kokonut.admin.entity.QAdmin;
-import com.app.kokonut.qna.dto.QnaDetailDto;
-import com.app.kokonut.qna.dto.QnaListDto;
-import com.app.kokonut.qna.dto.QnaSchedulerDto;
-import com.app.kokonut.qna.dto.QnaSearchDto;
-import com.app.kokonut.qna.entity.QQna;
-import com.app.kokonut.qna.entity.Qna;
+import com.app.kokonut.admin.QAdmin;
+import com.app.kokonut.admin.enums.AuthorityRole;
+import com.app.kokonut.qna.dtos.QnaDetailDto;
+import com.app.kokonut.qna.dtos.QnaListDto;
+import com.app.kokonut.qna.dtos.QnaSchedulerDto;
+import com.app.kokonut.qna.dtos.QnaSearchDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -37,7 +36,7 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 
     // qna 목록 조회
     @Override
-    public Page<QnaListDto> findQnaPage(String userRole, QnaSearchDto qnaSearchDto, Pageable pageable) {
+    public Page<QnaListDto> findQnaPage(String userRole, String email, QnaSearchDto qnaSearchDto, Pageable pageable) {
         /*
          *
         SELECT A.`IDX`
@@ -45,7 +44,7 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 			 , A.`TITLE`
 			 , A.`TYPE`
 			 , A.`REGDATE`
-			 , A.`STATE`
+			 , A.`qnaState`
 			 , A.`ANSWER_DATE`
 			 , B.`NAME` AS `MASKING_NAME` -- 김**개, 홍*동, 최*선
 		FROM `qna` A
@@ -60,43 +59,43 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         QAdmin admin  = QAdmin.admin;
 
         JPQLQuery<QnaListDto> query = from(qna)
-                .leftJoin(admin).on(admin.idx.eq(qna.adminIdx))
+                .innerJoin(admin).on(admin.adminId.eq(qna.adminId))
                 .select(Projections.constructor(QnaListDto.class,
-                        qna.idx,
-                        qna.adminIdx,
-                        qna.title,
-                        qna.type,
-                        qna.regdate,
-                        qna.state,
-                        qna.answerDate,
-                        admin.name
+                        qna.qnaId,
+                        qna.adminId,
+                        qna.qnaTitle,
+                        qna.qnaType,
+                        qna.insert_date,
+                        qna.qnaState,
+                        qna.modify_date,
+                        admin.knName
                 ));
 
         // 조건에 따른 where 절 추가
-        if(qnaSearchDto.getState() != null){
-            query.where(qna.state.eq(qnaSearchDto.getState()));
+        if(qnaSearchDto.getQnaState() != null){
+            query.where(qna.qnaState.eq(qnaSearchDto.getQnaState()));
         }
-        if(qnaSearchDto.getType() != null){
-            query.where(qna.type.eq(qnaSearchDto.getType()));
+        if(qnaSearchDto.getQnaType() != null){
+            query.where(qna.qnaType.eq(qnaSearchDto.getQnaType()));
         }
-        if((qnaSearchDto.getAdminIdx() != null) &&(!"[SYSTEM]".equals(userRole))){
-            query.where(qna.adminIdx.eq(qnaSearchDto.getAdminIdx()));
+        if(email != null && !AuthorityRole.ROLE_SYSTEM.getDesc().equals(userRole)){
+            query.where(admin.knEmail.eq(email));
         }
         if(qnaSearchDto.getStimeStart() != null){
-            query.where(qna.regdate.goe(qnaSearchDto.getStimeStart()));
+            query.where(qna.insert_date.goe(qnaSearchDto.getStimeStart()));
         }
         if(qnaSearchDto.getStimeEnd() != null){
-            query.where(qna.regdate.loe(qnaSearchDto.getStimeEnd()));
+            query.where(qna.insert_date.loe(qnaSearchDto.getStimeEnd()));
         }
 
-        query.orderBy(qna.regdate.desc());
+        query.orderBy(qna.insert_date.desc());
 
         final List<QnaListDto> QnaListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(QnaListDtos, pageable, query.fetchCount());
     }
 
     @Override
-    public QnaDetailDto findQnaByIdx(Integer idx) {
+    public QnaDetailDto findQnaByIdx(Long qnaId) {
         /*
          *
         SELECT A.`IDX`
@@ -106,7 +105,7 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 			 , A.`FILE_GROUP_ID`
 			 , A.`TYPE`
 			 , A.`REGDATE`
-			 , A.`STATE`
+			 , A.`qnaState`
 			 , A.`ANS_IDX`
 			 , A.`ANSWER`
 			 , A.`ANSWER_DATE`
@@ -124,27 +123,26 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 
         QQna qna  = QQna.qna;
         QAdmin adminQ  = QAdmin.admin;  // 질문자 정보
-        QAdmin adminA = QAdmin.admin;   // 답변자 정보
+        QAdmin adminB = QAdmin.admin;   // 답변자 정보
 
         JPQLQuery<QnaDetailDto> query = from(qna)
                 .select(Projections.constructor(QnaDetailDto.class,
-                        qna.idx,
-                        qna.adminIdx,
-                        qna.title,
-                        qna.content,
-                        qna.fileGroupId,
-                        qna.type,
-                        qna.regdate,
-                        qna.state,
-                        qna.answer,
-                        qna.answerDate,
-                        adminQ.email,
-                        adminQ.name.as("maskingName"),
-                        adminA.name.as("ansName")
+                        qna.qnaId,
+                        qna.adminId,
+                        qna.qnaTitle,
+                        qna.qnaContent,
+                        qna.qnaType,
+                        qna.insert_date,
+                        qna.qnaState,
+                        qna.qnaAnswer,
+                        qna.modify_date,
+                        adminQ.knEmail,
+                        adminQ.knName.as("maskingName"),
+                        adminB.knName.as("ansName")
                 ));
-        query.leftJoin(adminA).on(qna.adminIdx.eq(adminA.idx)); // 답변자 이름을 구하기 위한 조인
-        query.leftJoin(adminQ).on(qna.adminIdx.eq(adminQ.idx)); // 질문자 이름을 구하기 위한 조인
-        query.where(qna.idx.eq(idx));
+        query.leftJoin(adminB).on(qna.adminId.eq(adminB.adminId)); // 답변자 이름을 구하기 위한 조인
+        query.leftJoin(adminQ).on(qna.adminId.eq(adminQ.adminId)); // 질문자 이름을 구하기 위한 조인
+        query.where(qna.qnaId.eq(qnaId));
         return query.fetchOne();
     }
 
@@ -153,12 +151,12 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
         QQna qna  = QQna.qna;
         JPQLQuery<QnaSchedulerDto> query = from(qna)
                 .select(Projections.constructor(QnaSchedulerDto.class,
-                        qna.idx,
-                        qna.title,
-                        qna.regdate));
-        query.where(qna.regdate.loe(compareDate),
-                qna.answer.isNull(),
-                qna.answerDate.isNull());
+                        qna.qnaId,
+                        qna.qnaTitle,
+                        qna.insert_date));
+        query.where(qna.insert_date.loe(compareDate),
+                qna.qnaAnswer.isNull(),
+                qna.insert_date.isNull());
 
         return query.fetch();
     }
@@ -173,21 +171,21 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 //
 //                .select(Projections.constructor(QnaAnswerSaveDto.class,
 //                        qna.idx,
-//                        qna.adminIdx,
+//                        qna.adminId,
 //                        qna.title,
 //                        qna.content,
 //                        qna.fileGroupId,
 //                        qna.type,
 //                        qna.regdate,
-//                        qna.state,
+//                        qna.qnaState,
 //                        qna.answer,
 //                        qna.answerDate,
 //                        adminQ.email,
 //                        adminQ.name.as("maskingName"),
 //                        adminA.name.as("ansName")
 //                ));
-//        query.leftJoin(adminA).on(qna.adminIdx.eq(adminA.idx)); // 답변자 이름을 구하기 위한 조인
-//        query.leftJoin(adminQ).on(qna.adminIdx.eq(adminQ.idx)); // 질문자 이름을 구하기 위한 조인
+//        query.leftJoin(adminA).on(qna.adminId.eq(adminA.idx)); // 답변자 이름을 구하기 위한 조인
+//        query.leftJoin(adminQ).on(qna.adminId.eq(adminQ.idx)); // 질문자 이름을 구하기 위한 조인
 //        query.where(qna.idx.eq(idx));
 //
 //        return null;

@@ -1,6 +1,6 @@
 package com.app.kokonut.totalDBDownload;
 
-import com.app.kokonut.admin.entity.QAdmin;
+import com.app.kokonut.admin.QAdmin;
 import com.app.kokonut.company.QCompany;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadListDto;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadSearchDto;
@@ -40,31 +40,31 @@ public class TotalDbDownloadRepositoryCustomImpl extends QuerydslRepositorySuppo
         QCompany company  = QCompany.company;
 
         JPQLQuery<TotalDbDownloadListDto> query = from(totalDbDownload)
-                .innerJoin(admin).on(totalDbDownload.adminIdx.eq(admin.idx))
-                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
+                .innerJoin(admin).on(totalDbDownload.adminId.eq(admin.adminId))
+                .innerJoin(company).on(company.companyId.eq(admin.companyId))
                 .select(Projections.constructor(TotalDbDownloadListDto.class,
-                        totalDbDownload.idx,
-                        admin.name,
-                        totalDbDownload.reason,
-                        totalDbDownload.applyDate,
-                        totalDbDownload.state,
-                        totalDbDownload.returnReason,
-                        totalDbDownload.downloadDate
+                        totalDbDownload.tdId,
+                        admin.knName,
+                        totalDbDownload.tdReason,
+                        totalDbDownload.tdApplyDate,
+                        totalDbDownload.tdState,
+                        totalDbDownload.tdReturnReason,
+                        totalDbDownload.tdDownloadDate
                 ));
 
-        if(totalDbDownloadSearchDto.getState() != null){
-            query.where(totalDbDownload.state.eq(totalDbDownloadSearchDto.getState()));
+        if(totalDbDownloadSearchDto.getTdState() != null){
+            query.where(totalDbDownload.tdState.eq(totalDbDownloadSearchDto.getTdState()));
         }
 
         if(totalDbDownloadSearchDto.getStimeStart() != null){
-            query.where(totalDbDownload.regdate.goe(totalDbDownloadSearchDto.getStimeStart()));
+            query.where(totalDbDownload.insert_date.goe(totalDbDownloadSearchDto.getStimeStart()));
         }
 
         if(totalDbDownloadSearchDto.getStimeEnd() != null){
-            query.where(totalDbDownload.regdate.loe(totalDbDownloadSearchDto.getStimeEnd()));
+            query.where(totalDbDownload.insert_date.loe(totalDbDownloadSearchDto.getStimeEnd()));
         }
 
-        query.orderBy(totalDbDownload.idx.desc());
+        query.orderBy(totalDbDownload.tdId.desc());
 
         final List<TotalDbDownloadListDto> totalDbDownloadListDtoList = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(totalDbDownloadListDtoList, pageable, query.fetchCount());

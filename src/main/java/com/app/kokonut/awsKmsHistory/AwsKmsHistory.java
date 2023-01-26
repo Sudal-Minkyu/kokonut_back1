@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@EqualsAndHashCode(of = "idx")
+@EqualsAndHashCode(of = "akhIdx")
 @Data
 @NoArgsConstructor
-@Table(name="aws_kms_history")
+@Table(name="kn_aws_kms_history")
 public class AwsKmsHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,22 +24,22 @@ public class AwsKmsHistory implements Serializable {
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "akh_idx", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
+    private Long akhIdx;
 
     /**
      * 호출 타입
      */
-    @Column(name = "TYPE")
+    @Column(name = "akh_type")
     @ApiModelProperty("호출 타입")
-    private String type;
+    private String akhType;
 
     /**
      * 호출 날짜
      */
     @ApiModelProperty("호출 날짜")
-    @Column(name = "REGDATE", nullable = false)
-    private LocalDateTime regdate;
+    @Column(name = "akh_regdate", nullable = false)
+    private LocalDateTime akhRegdate;
 
 }

@@ -1,9 +1,11 @@
 package com.app.kokonut.activityHistory.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -12,7 +14,7 @@ import java.util.Date;
  * Date : 2022-11-03
  * Time :
  * Remark : ActivityHistory 단일 조회 Dto
- * 사용 메서드 : findByActivityHistoryByIdx, findByActivityHistoryByCompanyIdxAndReasonaAtivityIdx
+ * 사용 메서드 : findByActivityHistoryByIdx, findByActivityHistoryBycompanyIdAndReasonaAtivityIdx
  */
 @Data
 @NoArgsConstructor
@@ -20,10 +22,9 @@ import java.util.Date;
 public class ActivityHistoryDto {
 
     // activity_hisotroy 테이블
-    private Integer idx;
-    private Integer companyIdx;
-    private Integer adminIdx;
-    private Integer activityIdx;
+    private Long ahId;
+    private Long adminId;
+
     private String activityDetail;
 
     private String reason;

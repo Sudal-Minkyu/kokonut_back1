@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
  * Remark : TotalDbDownload Repository
  */
 @Repository
-public interface TotalDbDownloadRepository extends JpaRepository<TotalDbDownload, Integer>, JpaSpecificationExecutor<TotalDbDownload>, TotalDbDownloadRepositoryCustom {
+public interface TotalDbDownloadRepository extends JpaRepository<TotalDbDownload, Long>, JpaSpecificationExecutor<TotalDbDownload>, TotalDbDownloadRepositoryCustom {
 
 }

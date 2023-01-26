@@ -11,8 +11,10 @@ import org.springframework.stereotype.Repository;
  * Remark :
  */
 @Repository
-public interface CompanyRepository extends JpaRepository<Company, Integer>, JpaSpecificationExecutor<Company>, CompanyRepositoryCustom {
+public interface CompanyRepository extends JpaRepository<Company, Long>, JpaSpecificationExecutor<Company>, CompanyRepositoryCustom {
 
-    boolean existsByBusinessNumber(String businessNumber);
+    boolean existsByCpBusinessNumber(String businessNumber);
+
+    boolean existsByCpCode(String companyCode);
 
 }

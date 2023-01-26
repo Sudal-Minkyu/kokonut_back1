@@ -17,17 +17,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class KakaoChannelListDto {
 
-    private Integer idx;
+    private Long kcId;
 
-    private Integer companyIdx;
+    private Long companyId;
 
-    private String channelId;
+    private String kcChannelId;
 
-    private String channelName;
+    private String kcChannelName;
 
-    private String status;
+    private String kcStatus;
 
-    private LocalDateTime regdate;
+    private LocalDateTime insert_date;
 
     // 회사명 호출
     private String companyName;

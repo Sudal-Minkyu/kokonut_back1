@@ -1,14 +1,13 @@
 package com.app.kokonut.faq;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
+import com.app.kokonut.admin.Admin;
+import com.app.kokonut.faq.dtos.FaqAnswerListDto;
+import com.app.kokonut.faq.dtos.FaqDetailDto;
+import com.app.kokonut.faq.dtos.FaqListDto;
+import com.app.kokonut.faq.dtos.FaqSearchDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.faq.dto.FaqAnswerListDto;
-import com.app.kokonut.faq.dto.FaqDetailDto;
-import com.app.kokonut.faq.dto.FaqListDto;
-import com.app.kokonut.faq.dto.FaqSearchDto;
-import com.app.kokonut.faq.entity.Faq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,13 +31,6 @@ public class FaqService {
         this.faqRepository = faqRepository;
         this.adminRepository = adminRepository;
     }
-
-    /**
-     * 자주묻는질문 목록 보기
-     * @param userRole      권한
-     * @param faqSearchDto  자주 묻는 질문 검색 조건
-     * @param pageable      페이징 처리를 위한 정보
-     */
     public ResponseEntity<Map<String, Object>> faqList(String userRole, FaqSearchDto faqSearchDto, Pageable pageable) {
         log.info("faqList 호출, userRole : "+ userRole);
         AjaxResponse res = new AjaxResponse();
@@ -53,127 +45,112 @@ public class FaqService {
         }
     }
 
-    /**
-     * 자주묻는질문 상세 보기
-     * @param userRole  권한
-     * @param idx       자주 묻는 질문 인덱스
-     */
-    public ResponseEntity<Map<String, Object>> faqDetail(String userRole, Integer idx) {
+    public ResponseEntity<Map<String, Object>> faqDetail(String userRole, Long faqId) {
         log.info("faqDetail 호출, userRole : "+ userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        if(!"[SYSTEM]".equals(userRole)){
-            log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
-        }else{
-            if(idx == null){
-                log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO049.getCode(), ResponseErrorCode.KO049.getDesc()));
-            }else{
-                log.info("자주묻는 질문 상세 조회, idx : " + idx);
-                FaqDetailDto faqDetailDto = faqRepository.findFaqByIdx(idx);
+        if("[SYSTEM]".equals(userRole)){
+            if(faqId != null){
+                log.info("자주묻는 질문 상세 조회, faqId : " + faqId);
+                FaqDetailDto faqDetailDto = faqRepository.findFaqByIdx(faqId);
                 if(faqDetailDto != null){
-                    log.info("자주묻는 질문 상세 조회 성공, idx : " + faqDetailDto.getIdx() + ", Question : " + faqDetailDto.getQuestion());
+                    // 조회 성공
+                    log.info("자주묻는 질문 상세 조회 성공, faqId : " + faqDetailDto.getFaqId() + ", Question : " + faqDetailDto.getFaqQuestion());
                     data.put("faqDetailDto",  faqDetailDto);
                     return ResponseEntity.ok(res.success(data));
                 }else{
-                    log.error("자주묻는 질문 상세 조회 실패, idx : " +idx);
+                    // 조회 실패
+                    log.error("자주묻는 질문 상세 조회 실패, faqId : " +faqId);
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO050.getCode(), ResponseErrorCode.KO050.getDesc()));
                 }
+            }else{
+                log.error("faqId 값을 확인 할 수 없습니다.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO049.getCode(), ResponseErrorCode.KO049.getDesc()));
             }
+        }else{
+            log.error("접근권한이 없습니다. userRole : " + userRole);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
-    /**
-     * 자주묻는질문 등록/수정
-     * @param userRole      권한
-     * @param email         자주묻는 질문 등록/수정자 email
-     * @param faqDetailDto  자주묻는 질문 상세 내용
-     */
     @Transactional
     public ResponseEntity<Map<String, Object>> faqSave(String userRole, String email, FaqDetailDto faqDetailDto) {
         log.info("faqSave 호출, userRole : "+userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        if(!"[SYSTEM]".equals(userRole)){
-            log.error("접근권한이 없습니다. userRole : " + userRole);
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
-        }else{
-            // 접속 정보에서 관리자 정보 가져오기, idx, name
-            Admin admin = adminRepository.findByEmail(email)
+        if("[SYSTEM]".equals(userRole)){
+            // 접속 정보에서 관리자 정보 가져오기, faqId, name
+            Admin admin = adminRepository.findByKnEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
-            Integer adminIdx = admin.getIdx();
-            String adminName = admin.getName();
+            Long adminId = admin.getAdminId();
+            String adminName = admin.getKnName();
 
-            if(faqDetailDto.getIdx() != null){
+            if(faqDetailDto.getFaqId() != null){
                 log.info("자주묻는 질문 등록");
                 FaqDetailDto insertDetailDto = faqDetailDto;
                 log.info("등록자, 등록일시, 내용 세팅");
                 Faq insertFaq = new Faq();
 
-                insertFaq.setAdminIdx(adminIdx);
-                insertFaq.setRegisterName(adminName);
-                insertFaq.setRegdate(LocalDateTime.now());
+                insertFaq.setAdminId(adminId);
+                insertFaq.setInsert_email(email);
+                insertFaq.setInsert_date(LocalDateTime.now());
 
-                insertFaq.setQuestion(insertDetailDto.getQuestion());
-                insertFaq.setAnswer(insertDetailDto.getAnswer());
-                insertFaq.setType(insertDetailDto.getType());
+                insertFaq.setFaqQuestion(insertDetailDto.getFaqQuestion());
+                insertFaq.setFaqAnswer(insertDetailDto.getFaqAnswer());
+                insertFaq.setFaqType(insertDetailDto.getFaqType());
 
-                Integer savedIdx = faqRepository.save(insertFaq).getIdx();
-                log.info("자주묻는 질문 등록 완료. idx : " + savedIdx);
+                Long savedfaqId = faqRepository.save(insertFaq).getFaqId();
+                log.info("자주묻는 질문 등록 완료. faqId : " + savedfaqId);
             }else{
-                log.info("자주묻는 질문 수정, idx : " + faqDetailDto.getIdx());
-                Optional<Faq> updateFaq = faqRepository.findById(faqDetailDto.getIdx());
+                log.info("자주묻는 질문 수정, faqId : " + faqDetailDto.getFaqId());
+                Optional<Faq> updateFaq = faqRepository.findById(faqDetailDto.getFaqId());
                 if(updateFaq.isEmpty()){
-                    log.error("자주묻는 질문 수정 실패, 게시글을 발견할 수 없습니다. 요청 idx : " + faqDetailDto.getIdx());
+                    log.error("자주묻는 질문 수정 실패, 게시글을 발견할 수 없습니다. 요청 faqId : " + faqDetailDto.getFaqId());
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO050.getCode(), ResponseErrorCode.KO050.getDesc()));
                 }else{
                     log.info("수정자, 수정일시 세팅");
-                    updateFaq.get().setModifierIdx(adminIdx);
-                    updateFaq.get().setModifierName(adminName);
-                    updateFaq.get().setModifyDate(LocalDateTime.now());
+                    updateFaq.get().setModify_id(adminId);
+                    updateFaq.get().setModify_email(email);
+                    updateFaq.get().setModify_date(LocalDateTime.now());
                     log.info("내용 세팅");
-                    if(faqDetailDto.getQuestion() != null){
-                        updateFaq.get().setQuestion(faqDetailDto.getQuestion());
+                    if(faqDetailDto.getFaqQuestion() != null){
+                        updateFaq.get().setFaqQuestion(faqDetailDto.getFaqQuestion());
                     }
-                    if(faqDetailDto.getAnswer() != null){
-                        updateFaq.get().setAnswer(faqDetailDto.getAnswer());
+                    if(faqDetailDto.getFaqAnswer() != null){
+                        updateFaq.get().setFaqAnswer(faqDetailDto.getFaqAnswer());
                     }
-                    if(faqDetailDto.getType() != null){
-                        updateFaq.get().setType(faqDetailDto.getType());
+                    if(faqDetailDto.getFaqType() != null){
+                        updateFaq.get().setFaqType(faqDetailDto.getFaqType());
                     }
-                    Integer updatedIdx = faqRepository.save(updateFaq.get()).getIdx();
-                    log.info("자주묻는 질문 수정 완료. idx : " + updatedIdx);
+                    Long updatedfaqId = faqRepository.save(updateFaq.get()).getFaqId();
+                    log.info("자주묻는 질문 수정 완료. faqId : " + updatedfaqId);
                 }
             }
             return ResponseEntity.ok(res.success(data));
+        }else{
+            log.error("접근권한이 없습니다. userRole : " + userRole);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
         }
     }
 
-    /**
-     * 자주묻는질문 삭제
-     * @param userRole      권한
-     * @param email         자주묻는 질문 삭제자 email
-     * @param idx  자주묻는 질문 인덱스
-     */
     @Transactional
-    public ResponseEntity<Map<String, Object>> faqDelete(String userRole, String email, Integer idx) {
+    public ResponseEntity<Map<String, Object>> faqDelete(String userRole, String email, Long faqId) {
         log.info("faqDelete 호출, userRole : " +userRole);
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        if(!"[SYSTEM]".equals(userRole)){
+        if("[SYSTEM]".equals(userRole)){
+            if(faqId != null){
+                log.info("자주묻는 질문 삭제 시작.");
+                faqRepository.deleteById(faqId);
+                log.info("자주묻는 질문 삭제 완료. faqId : "+faqId);
+                return ResponseEntity.ok(res.success(data));
+            }else{
+                log.error("faqId 값을 확인 할 수 없습니다.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO049.getCode(), ResponseErrorCode.KO049.getDesc()));
+            }
+        }else {
             log.error("접근권한이 없습니다. userRole : " + userRole);
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO001.getCode(), ResponseErrorCode.KO001.getDesc()));
-        }else {
-            if(idx == null){
-                log.error("idx 값을 확인 할 수 없습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO049.getCode(), ResponseErrorCode.KO049.getDesc()));
-            }else{
-                log.info("자주묻는 질문 삭제 시작.");
-                faqRepository.deleteById(idx);
-                log.info("자주묻는 질문 삭제 완료. idx : "+idx);
-                return ResponseEntity.ok(res.success(data));
-            }
         }
     }
 }

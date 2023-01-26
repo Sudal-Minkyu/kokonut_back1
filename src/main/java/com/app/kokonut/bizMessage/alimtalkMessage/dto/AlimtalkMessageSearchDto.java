@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AlimtalkMessageSearchDto {
 
-    private String status; // 검수 상태
+    private String amStatus; // 검수 상태
 
     private String searchText; // templateCode + requestId
 

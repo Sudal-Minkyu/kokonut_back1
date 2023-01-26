@@ -2,7 +2,7 @@ package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.*;
 import com.app.kokonut.configs.ExcelService;
-import com.app.kokonut.downloadHistory.DownloadHistoryRepository;
+import com.app.kokonut.totalDBDownloadHistory.TotalDbDownloadHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +20,11 @@ public class ActivityHistoryService {
     private final ActivityHistoryRepository activityHistoryRepository;
 
     private final ExcelService excelService;
-    private final DownloadHistoryRepository downloadHistoryRepository;
+    private final TotalDbDownloadHistoryRepository downloadHistoryRepository;
 
     @Autowired
     public ActivityHistoryService(ActivityHistoryRepository activityHistoryRepository,
-                                  ExcelService excelService, DownloadHistoryRepository downloadHistoryRepository) {
+                                  ExcelService excelService, TotalDbDownloadHistoryRepository downloadHistoryRepository) {
         this.activityHistoryRepository = activityHistoryRepository;
         this.excelService = excelService;
         this.downloadHistoryRepository = downloadHistoryRepository;
@@ -77,16 +77,16 @@ public class ActivityHistoryService {
     }
 
     // 활동내역 정보 리스트 조회
-    public List<ActivityHistoryInfoListDto> findByActivityHistoryByCompanyIdxAndTypeList(Integer companyIdx, Integer type) {
-        return activityHistoryRepository.findByActivityHistoryByCompanyIdxAndTypeList(companyIdx, type);
+    public List<ActivityHistoryInfoListDto> findByActivityHistoryBycompanyIdAndTypeList(Long companyId, Integer ahType) {
+        return activityHistoryRepository.findByActivityHistoryBycompanyIdAndTypeList(companyId, ahType);
     }
 
-//    public List<Map<String, Object>> SelectActivityHistoryList(Integer type, Integer companyIdx){
+//    public List<Map<String, Object>> SelectActivityHistoryList(Integer type, Long companyId){
 //        Map<String, Object> map = new HashMap<String, Object>();
 //        map.put("TYPE", type);
-//        map.put("COMPANY_IDX", companyIdx);
+//        map.put("COMPANY_IDX", companyId);
 //
-//        return activityHistoryRepository.SelectByTypeAndCompanyIdx(map);
+//        return activityHistoryRepository.SelectByTypeAndcompanyId(map);
 //    }
 
 //    /**
@@ -100,56 +100,55 @@ public class ActivityHistoryService {
      * 활동내역 상세보기
      * @param idx
      */
-    public ActivityHistoryDto findByActivityHistoryByIdx(Integer idx) {
+    public ActivityHistoryDto findByActivityHistoryByIdx(Long idx) {
         return activityHistoryRepository.findByActivityHistoryByIdx(idx);
     }
 
     /**
      * 활동내역 insert
-     * @param type - 1:고객정보처리, 2:관리자활동, 3:회원DB관리이력, 4:정보제공이력
-     * @param companyIdx
+     * @param ahType - 1:고객정보처리, 2:관리자활동, 3:회원DB관리이력, 4:정보제공이력
+     * @param companyId
      * @param activityCode
-     * @param activityDetail - 활동상세내역
-     * @param reason - 사유
-     * @param ipAddr - 접속IP주소
-     * @param state - 0:비정상, 1:정상
+     * @param ahActivityDetail - 활동상세내역
+     * @param ahReason - 사유
+     * @param ahIpAddr - 접속IP주소
+     * @param ahState - 0:비정상, 1:정상
      * @return save IDX
      * 기존 코코넛 : InsertActivityHistory
      */
-    public Integer insertActivityHistory(int type, int companyIdx, int adminIdx, ActivityCode activityCode, String activityDetail, String reason, String ipAddr, int state) {
+    public Long insertActivityHistory(int ahType, Long companyId, Long adminId, ActivityCode activityCode,
+                                      String ahActivityDetail, String ahReason, String ahIpAddr, int ahState) {
 
         ActivityHistory activityHistory = new ActivityHistory();
-        activityHistory.setType(type);
-        activityHistory.setCompanyIdx(companyIdx);
-        activityHistory.setAdminIdx(adminIdx);
+        activityHistory.setAhType(ahType);
+        activityHistory.setAdminId(adminId);
         activityHistory.setActivityCode(activityCode);
-        activityHistory.setActivityDetail(activityDetail);
-        activityHistory.setReason(reason);
-        activityHistory.setIpAddr(ipAddr);
-        activityHistory.setState(state);
-        activityHistory.setRegdate(LocalDateTime.now());
+        activityHistory.setAhActivityDetail(ahActivityDetail);
+        activityHistory.setAhReason(ahReason);
+        activityHistory.setAhIpAddr(ahIpAddr);
+        activityHistory.setAhState(ahState);
+        activityHistory.setInsert_date(LocalDateTime.now());
 
         activityHistory = activityHistoryRepository.save(activityHistory);
 
-        return activityHistory.getIdx();
+        return activityHistory.getAhId();
     }
 
     /**
      * 활동내역 Update
-     * @param idx - 키값
+     * @param ahId - 키값
      * @param activityDetail - 활동상세내역
-     * @param reason - 사유
-     * @param state - 0:비정상, 1:정상
+     * @param ahReason - 사유
+     * @param ahState - 0:비정상, 1:정상
      * 기존 코코넛 : UpdateActivityHistory
      */
-    public void updateActivityHistory(int idx, String activityDetail, String reason, int state) {
-
-        ActivityHistory activityHistory = activityHistoryRepository.findById(idx)
+    public void updateActivityHistory(Long ahId, String activityDetail, String ahReason, int ahState) {
+        ActivityHistory activityHistory = activityHistoryRepository.findById(ahId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ActivityHistory' 입니다."));
 
-        activityHistory.setActivityDetail(activityDetail);
-        activityHistory.setReason(reason);
-        activityHistory.setState(state);
+        activityHistory.setAhActivityDetail(activityDetail);
+        activityHistory.setAhReason(ahReason);
+        activityHistory.setAhState(ahState);
 
         activityHistoryRepository.save(activityHistory);
     }
@@ -161,7 +160,7 @@ public class ActivityHistoryService {
 //    public void DeleteActivityHistoryByIdx(int idx) {
 //        activityHistoryRepository.DeleteActivityHistoryByIdx(idx);
 //    }
-    public void deleteActivityHistoryByIdx(int idx) {
+    public void deleteActivityHistoryByIdx(Long idx) {
         ActivityHistory activityHistory = activityHistoryRepository.findById(idx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ActivityHistory' 입니다."));
 
@@ -170,36 +169,35 @@ public class ActivityHistoryService {
 
     /**
      * 활동내역 사유 변경
-     * @param reason
-     * @param idx
+     * @param ahId
+     * @param ahReason
      */
 //    public void UpdateActivityHistoryReasonByIdx(HashMap<String, Object> paramMap) {
 //        activityHistoryRepository.UpdateActivityHistoryReasonByIdx(paramMap);
 //    }
-    public void updateActivityHistoryReasonByIdx(int idx, String reason) {
-        ActivityHistory activityHistory = activityHistoryRepository.findById(idx)
+    public void updateActivityHistoryReasonByIdx(Long ahId, String ahReason) {
+        ActivityHistory activityHistory = activityHistoryRepository.findById(ahId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'ActivityHistory' 입니다."));
-        activityHistory.setReason(reason);
+        activityHistory.setAhReason(ahReason);
         activityHistoryRepository.save(activityHistory);
     }
 
     /**
-     * 활동내역 상세보기 (companyIdx, reason, activityIdx)
-     * @param companyIdx
-     * @param reason
-     * @param activityIdx
+     * 활동내역 상세보기 (companyId, reason, activityIdx)
+     * @param companyId
+     * @param ahReason
      */
-    public ActivityHistoryDto findByActivityHistoryByCompanyIdxAndReasonaAndAtivityIdx(Integer companyIdx, String reason, Integer activityIdx) {
-        return activityHistoryRepository.findByActivityHistoryByCompanyIdxAndReasonaAndAtivityIdx(companyIdx, reason, activityIdx);
+    public ActivityHistoryDto findByActivityHistoryBycompanyIdAndReasonaAndAtivityIdx(Long companyId, String ahReason) {
+        return activityHistoryRepository.findByActivityHistoryBycompanyIdAndReasonaAndAtivityIdx(companyId, ahReason);
     }
 
     /**
      * 활동내역 통계
-     * @param companyIdx
+     * @param companyId
      * @param day - 날짜
      */
-    public ActivityHistoryStatisticsDto findByActivityHistoryStatistics(Integer companyIdx, int day) {
-        return activityHistoryRepository.findByActivityHistoryStatistics(companyIdx, day);
+    public ActivityHistoryStatisticsDto findByActivityHistoryStatistics(Long companyId, int day) {
+        return activityHistoryRepository.findByActivityHistoryStatistics(companyId, day);
     }
 
     /**

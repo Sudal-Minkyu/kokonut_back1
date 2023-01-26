@@ -105,8 +105,8 @@ public class DynamicDormantRepositoryCustomImpl implements DynamicDormantReposit
 
     // 휴면테이블 중복 체크 메서드
     @Override
-    public int selectExistDormantTable(String businessNumber) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM Information_schema.tables WHERE table_name = "+"'"+businessNumber+"'"+") AS flag";
+    public int selectExistDormantTable(String companyCode) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM Information_schema.tables WHERE table_name = "+"'"+companyCode+"'"+") AS flag";
 //        log.info("중복체크 sql : "+sql);
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }

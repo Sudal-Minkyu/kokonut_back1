@@ -1,7 +1,6 @@
 package com.app.kokonut.email.emailHistory;
 
-import com.app.kokonut.email.emailHistory.dto.EmailHistoryDto;
-import com.app.kokonut.email.emailHistory.entity.EmailHistory;
+import com.app.kokonut.email.emailHistory.dtos.EmailHistoryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,20 +28,20 @@ public class EmailHistoryService {
             return false;
         } else {
             log.info("### saveEmailHistory 저장 시작");
-            reciveHistory.setFrom(emailHistoryDto.getFrom());
-            reciveHistory.setFromName(emailHistoryDto.getFromName());
-            reciveHistory.setTo(emailHistoryDto.getTo());
-            reciveHistory.setToName(emailHistoryDto.getToName());
-            reciveHistory.setTitle(emailHistoryDto.getTitle());
-            reciveHistory.setContents(emailHistoryDto.getContents());
+            reciveHistory.setEhFrom(emailHistoryDto.getEhFrom());
+            reciveHistory.setEhFromName(emailHistoryDto.getEhFromName());
+            reciveHistory.setEhTo(emailHistoryDto.getEhTo());
+            reciveHistory.setEhToName(emailHistoryDto.getEhToName());
+            reciveHistory.setEhTitle(emailHistoryDto.getEhTitle());
+            reciveHistory.setEhContents(emailHistoryDto.getEhContents());
 
             log.info("### saveEmailHistory 저장");
             EmailHistory saveHistory = emailHistoryRepository.save(reciveHistory);
-            if (emailHistoryRepository.existsById(saveHistory.getIdx())) {
-                log.info("### 이메일 전송이력 저장에 성공했습니다. : " + saveHistory.getIdx());
+            if (emailHistoryRepository.existsById(saveHistory.getEhId())) {
+                log.info("### 이메일 전송이력 저장에 성공했습니다. : " + saveHistory.getEhId());
                 return true;
             } else {
-                log.info("### 이메일 전송이력 저장에 실패했습니다. : " + saveHistory.getIdx());
+                log.info("### 이메일 전송이력 저장에 실패했습니다. : " + saveHistory.getEhId());
                 return false;
             }
         }

@@ -1,10 +1,8 @@
 package com.app.kokonut.collectInformation;
 
-import com.app.kokonut.collectInformation.dto.CollectInfoDetailDto;
-import com.app.kokonut.collectInformation.dto.CollectInfoListDto;
-import com.app.kokonut.collectInformation.dto.CollectInfoSearchDto;
-import com.app.kokonut.collectInformation.entity.CollectInformation;
-import com.app.kokonut.collectInformation.entity.QCollectInformation;
+import com.app.kokonut.collectInformation.dtos.CollectInfoDetailDto;
+import com.app.kokonut.collectInformation.dtos.CollectInfoListDto;
+import com.app.kokonut.collectInformation.dtos.CollectInfoSearchDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -33,7 +31,7 @@ public class CollectInformationRepositoryCustomImpl extends QuerydslRepositorySu
     }
 
     @Override
-    public Page<CollectInfoListDto> findCollectInfoPage(Integer companyIdx, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
+    public Page<CollectInfoListDto> findCollectInfoPage(Long companyId, CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
         /*
            SELECT `IDX`
 	            , `TITLE`
@@ -42,30 +40,30 @@ public class CollectInformationRepositoryCustomImpl extends QuerydslRepositorySu
              FROM `collect_information`
             WHERE 1 = 1
 	          AND ( `TITLE` LIKE CONCAT('%', #{searchText}, '%') )
-	          AND `COMPANY_IDX` = #{companyIdx}
+	          AND `COMPANY_IDX` = #{companyId}
             ORDER BY `REGDATE` DESC
          */
         QCollectInformation collectInfo = QCollectInformation.collectInformation;
         JPQLQuery<CollectInfoListDto> query = from(collectInfo)
                 .select(Projections.constructor(CollectInfoListDto.class,
-                        collectInfo.idx,
-                        collectInfo.title,
-                        collectInfo.registerName,
-                        collectInfo.regdate
+                        collectInfo.ciId,
+                        collectInfo.ciTitle,
+                        collectInfo.insert_email,
+                        collectInfo.insert_date
                         ));
-        query.where(collectInfo.companyIdx.eq(companyIdx));
+        query.where(collectInfo.companyId.eq(companyId));
         // 조건에 따른 where 절 추가
         if(collectInfoSearchDto.getSearchText() != null){
-            query.where(collectInfo.title.contains(collectInfoSearchDto.getSearchText()));
+            query.where(collectInfo.ciTitle.contains(collectInfoSearchDto.getSearchText()));
         }
-        query.orderBy(collectInfo.regdate.desc());
+        query.orderBy(collectInfo.insert_date.desc());
 
         final List<CollectInfoListDto> collectInfoListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(collectInfoListDtos, pageable, query.fetchCount());
     }
 
     @Override
-    public CollectInfoDetailDto findCollectInfoByIdx(Integer idx) {
+    public CollectInfoDetailDto findCollectInfoByIdx(Long ciId) {
         /*
            SELECT `IDX`
                 , `TITLE`
@@ -77,28 +75,28 @@ public class CollectInformationRepositoryCustomImpl extends QuerydslRepositorySu
         QCollectInformation collectInfo = QCollectInformation.collectInformation;
         JPQLQuery<CollectInfoDetailDto> query = from(collectInfo)
                 .select(Projections.constructor(CollectInfoDetailDto.class,
-                        collectInfo.idx,
-                        collectInfo.title,
-                        collectInfo.content
+                        collectInfo.ciId,
+                        collectInfo.ciTitle,
+                        collectInfo.ciContent
                 ));
-        query.where(collectInfo.idx.eq(idx));
+        query.where(collectInfo.ciId.eq(ciId));
         return query.fetchOne();
     }
 
 //    @Override
-//    public List findCollectInfoIdxByCompayId(Integer companyIdx) {
+//    public List findCollectInfoIdxByCompayId(Long companyId) {
 //        /*
 //           SELECT `IDX`
 //             FROM `collect_information`
 //            WHERE 1 = 1
-//	          AND `COMPANY_IDX` = #{companyIdx}
+//	          AND `COMPANY_IDX` = #{companyId}
 //         */
 //        QCollectInformation collectInfo = QCollectInformation.collectInformation;
-//        JPQLQuery<Integer> query = from(collectInfo)
+//        JPQLQuery<Long> query = from(collectInfo)
 //                .select(Projections.constructor(Integer.class,
 //                        collectInfo.idx
 //                ));
-//        query.where(collectInfo.companyIdx.eq(companyIdx));
+//        query.where(collectInfo.companyId.eq(companyId));
 //        return query.fetchAll().fetch();
 //    }
 }

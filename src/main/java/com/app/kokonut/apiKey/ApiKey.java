@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * @author Woody
@@ -17,10 +16,10 @@ import java.util.Date;
  * Remark : api_key Table Entity
  */
 @Entity
-@EqualsAndHashCode(of = "idx")
+@EqualsAndHashCode(of = "akId")
 @Data
 @NoArgsConstructor
-@Table(name="api_key")
+@Table(name="kn_api_key")
 public class ApiKey implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,121 +29,106 @@ public class ApiKey implements Serializable {
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "ak_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
+    private Long akId;
 
     /**
      * 회사(Company) 키
      */
-    @Column(name = "COMPANY_IDX")
+    @Column(name = "company_id")
     @ApiModelProperty("회사(Company) 키")
-    private Integer companyIdx;
+    private Long companyId;
 
     /**
      * 등록자
      */
     @ApiModelProperty("등록자")
-    @Column(name = "ADMIN_IDX")
-    private Integer adminIdx;
-
-    /**
-     * 등록자 이름
-     */
-    @ApiModelProperty("등록자 이름")
-    @Column(name = "REGISTER_NAME")
-    private String registerName;
+    @Column(name = "admin_id")
+    private Long adminId;
 
     /**
      * API KEY
      */
     @ApiModelProperty("API KEY")
-    @Column(name = "\"KEY\"", nullable = false)
-    private String key;
-
-    /**
-     * 등록일시
-     */
-    @ApiModelProperty("등록일시")
-    @Column(name = "REGDATE", nullable = false)
-    private LocalDateTime regdate;
-
-    /**
-     * 타입(1:일반,2:테스트)
-     */
-    @Column(name = "TYPE")
-    @ApiModelProperty("타입(1:일반,2:테스트)")
-    private Integer type;
-
-    /**
-     * 설명
-     */
-    @Column(name = "NOTE")
-    @ApiModelProperty("설명")
-    private String note;
-
-    /**
-     * 유효기한 시작일자
-     */
-    @ApiModelProperty("유효기한 시작일자")
-    @Column(name = "VALIDITY_START")
-    private Date validityStart;
-
-    /**
-     * 유효기한 종료일자
-     */
-    @Column(name = "VALIDITY_END")
-    @ApiModelProperty("유효기한 종료일자")
-    private Date validityEnd;
-
-    /**
-     * 테스트기간 누적데이터 지속사용여부(0:일괄삭제,1:지속사용)
-     */
-    @Column(name = "USE_ACCUMULATE")
-    @ApiModelProperty("테스트기간 누적데이터 지속사용여부(0:일괄삭제,1:지속사용)")
-    private Integer useAccumulate;
-
-    /**
-     * 발급상태(1:신규,2:재발급)
-     */
-    @Column(name = "STATE")
-    @ApiModelProperty("발급상태(1:신규,2:재발급)")
-    private Integer state;
+    @Column(name = "ak_key", nullable = false)
+    private String akKey;
 
     /**
      * 사용여부
      */
-    @Column(name = "USE_YN")
+    @Column(name = "ak_use_yn")
     @ApiModelProperty("사용여부")
-    private String useYn;
+    private String akUseYn;
 
     /**
      * 해제사유
      */
-    @Column(name = "REASON")
+    @Column(name = "ak_reason")
     @ApiModelProperty("해제사유")
-    private String reason;
+    private String akReason;
 
     /**
-     * 수정자
+     * 허용 IP 1
      */
-    @ApiModelProperty("수정자")
-    @Column(name = "MODIFIER_IDX")
-    private Integer modifierIdx;
+    @Column(name = "ak_agree_ip_1")
+    @ApiModelProperty("허용 IP 1")
+    private String akAgreeIp1;
+
+    /**
+     * 허용 IP 2
+     */
+    @Column(name = "ak_agree_ip_2")
+    @ApiModelProperty("허용 IP 2")
+    private String akAgreeIp2;
+
+    /**
+     * 허용 IP 3
+     */
+    @Column(name = "ak_agree_ip_3")
+    @ApiModelProperty("허용 IP 3")
+    private String akAgreeIp3;
+
+    /**
+     * 허용 IP 4
+     */
+    @Column(name = "ak_agree_ip_4")
+    @ApiModelProperty("허용 IP 4")
+    private String akAgreeIp4;
+
+    /**
+     * 허용 IP 5
+     */
+    @Column(name = "ak_agree_ip_5")
+    @ApiModelProperty("허용 IP 5")
+    private String akAgreeIp5;
+
+    /**
+     * 등록자 email
+     */
+    @ApiModelProperty("등록자 email")
+    @Column(name = "insert_email", nullable = false)
+    private String insert_email;
+
+    /**
+     * 등록 날짜
+     */
+    @ApiModelProperty("등록 날짜")
+    @Column(name = "insert_date", nullable = false)
+    private LocalDateTime insert_date;
 
     /**
      * 수정자 이름
      */
-    @ApiModelProperty("수정자 이름")
-    @Column(name = "MODIFIER_NAME")
-    private String modifierName;
+    @ApiModelProperty("수정자 email")
+    @Column(name = "modify_email")
+    private String modify_email;
 
     /**
-     * 수정일자
+     * 수정 날짜
      */
-    @ApiModelProperty("수정일자")
-    @Column(name = "MODIFY_DATE")
-    private LocalDateTime modifyDate;
-
+    @ApiModelProperty("수정 날짜")
+    @Column(name = "modify_date")
+    private LocalDateTime modify_date;
 
 }

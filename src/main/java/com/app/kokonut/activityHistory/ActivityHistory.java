@@ -17,65 +17,68 @@ import java.time.LocalDateTime;
  * Remark : ActivityHistory Table Entity
  */
 @Entity
-@EqualsAndHashCode(of = "idx")
+@EqualsAndHashCode(of = "ahId")
 @Data
 @NoArgsConstructor
-@Table(name="activity_history")
+@Table(name="kn_activity_history")
 public class ActivityHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "ah_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
-
+    private Long ahId;
 
     // 계정 IDX
     @ApiModelProperty("관리자키")
-    @Column(name = "ADMIN_IDX")
-    private Integer adminIdx;
-
-    // 회사 IDX
-    @Column(name = "COMPANY_IDX")
-    @ApiModelProperty("회사(Company) 키")
-    private Integer companyIdx;
+    @Column(name = "admin_id")
+    private Long adminId;
 
     // 1:고객정보처리,2:관리자활동,3:회원DB관리이력
-    @Column(name = "TYPE")
+    @Column(name = "ah_type")
     @ApiModelProperty("1:고객정보처리,2:관리자활동,3:회원DB관리이력")
-    private Integer type;
+    private Integer ahType;
 
     // 활동 관리 코드
     @Enumerated(EnumType.STRING)
     @ApiModelProperty("ActivityCode Enum 관리")
-    @Column(name="ACTIVITY_CODE")
+    @Column(name="ah_activity_code")
     private ActivityCode activityCode;
 
     // 활동 상세 내역
     @ApiModelProperty("활동 상세 내역")
-    @Column(name = "ACTIVITY_DETAIL")
-    private String activityDetail;
+    @Column(name = "ah_activity_detail")
+    private String ahActivityDetail;
 
     // 사유
     @ApiModelProperty("사유")
-    @Column(name = "REASON")
-    private String reason;
+    @Column(name = "ah_reason")
+    private String ahReason;
 
     // 접속IP주소
-    @Column(name = "IP_ADDR")
     @ApiModelProperty("접속IP주소")
-    private String ipAddr;
+    @Column(name = "ah_ip_addr")
+    private String ahIpAddr;
 
     // 0:비정상,1:정상
-    @Column(name = "STATE")
+    @Column(name = "ah_state")
     @ApiModelProperty("0:비정상,1:정상")
-    private Integer state;
+    private Integer ahState;
 
-    // 활동일시
-    @ApiModelProperty("활동일시")
-    @Column(name = "REGDATE", nullable = false)
-    private LocalDateTime regdate;
+    /**
+     * 등록자 email
+     */
+    @ApiModelProperty("등록자 email")
+    @Column(name = "insert_email", nullable = false)
+    private String insert_email;
+
+    /**
+     * 등록 날짜
+     */
+    @ApiModelProperty("등록 날짜")
+    @Column(name = "insert_date", nullable = false)
+    private LocalDateTime insert_date;
 
 }

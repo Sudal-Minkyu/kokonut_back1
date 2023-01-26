@@ -1,11 +1,9 @@
 package com.app.kokonut.notice;
 
-import com.app.kokonut.notice.dto.NoticeContentListDto;
-import com.app.kokonut.notice.dto.NoticeDetailDto;
-import com.app.kokonut.notice.dto.NoticeListDto;
-import com.app.kokonut.notice.dto.NoticeSearchDto;
-import com.app.kokonut.notice.entity.Notice;
-import com.app.kokonut.notice.entity.QNotice;
+import com.app.kokonut.notice.dtos.NoticeContentListDto;
+import com.app.kokonut.notice.dtos.NoticeDetailDto;
+import com.app.kokonut.notice.dtos.NoticeListDto;
+import com.app.kokonut.notice.dtos.NoticeSearchDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -55,29 +53,29 @@ public class NoticeRepositoryCustomImpl extends QuerydslRepositorySupport implem
         QNotice notice = QNotice.notice;
         JPQLQuery<NoticeListDto> query = from(notice)
                 .select(Projections.constructor(NoticeListDto.class,
-                        notice.idx,
-                        notice.isNotice,
-                        notice.title,
-                        notice.viewCount,
-                        notice.registDate,
-                        notice.regdate,
-                        notice.state
+                        notice.ntId,
+                        notice.ntIsNotice,
+                        notice.ntTitle,
+                        notice.ntViewCount,
+                        notice.ntRegistDate,
+                        notice.insert_date,
+                        notice.ntState
                 ));
 
         // 조건에 따른 where 절 추가
         if((noticeSearchDto.getStimeStart() != null) && (noticeSearchDto.getStimeEnd() != null)){
-            query.where(notice.regdate.between(noticeSearchDto.getStimeStart(), noticeSearchDto.getStimeEnd()));
+            query.where(notice.insert_date.between(noticeSearchDto.getStimeStart(), noticeSearchDto.getStimeEnd()));
         }
         if(noticeSearchDto.getState() != null){
-            query.where(notice.state.eq(noticeSearchDto.getState()));
+            query.where(notice.ntState.eq(noticeSearchDto.getState()));
         }
         if(noticeSearchDto.getIsNotice() != null){
-            query.where(notice.isNotice.eq(noticeSearchDto.getIsNotice()));
+            query.where(notice.ntIsNotice.eq(noticeSearchDto.getIsNotice()));
         }
         if(noticeSearchDto.getSearchText() != null){
-            query.where(notice.content.contains(noticeSearchDto.getSearchText()));
+            query.where(notice.ntContent.contains(noticeSearchDto.getSearchText()));
         }
-        query.orderBy(notice.isNotice.desc(), notice.regdate.desc());
+        query.orderBy(notice.ntIsNotice.desc(), notice.insert_date.desc());
 
         final List<NoticeListDto> NoticeListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(NoticeListDtos, pageable, query.fetchCount());
@@ -98,38 +96,38 @@ public class NoticeRepositoryCustomImpl extends QuerydslRepositorySupport implem
         QNotice notice = QNotice.notice;
         JPQLQuery<NoticeContentListDto> query = from(notice)
                 .select(Projections.constructor(NoticeContentListDto.class,
-                        notice.title,
-                        notice.content,
-                        notice.registDate
+                        notice.ntTitle,
+                        notice.ntContent,
+                        notice.ntRegistDate
                 ));
 
-        query.where(notice.state.eq(1));
-        query.where(notice.registDate.loe(LocalDateTime.now())); // <=
-        query.orderBy(notice.isNotice.desc(), notice.registDate.desc()); //상단공지, 날짜
+        query.where(notice.ntState.eq(1));
+        query.where(notice.ntRegistDate.loe(LocalDateTime.now())); // <=
+        query.orderBy(notice.ntIsNotice.desc(), notice.ntRegistDate.desc()); //상단공지, 날짜
 
         final List<NoticeContentListDto> NoticeContentListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(NoticeContentListDtos, pageable, query.fetchCount());
     }
 
     @Override
-    public NoticeDetailDto findNoticeByIdx(Integer idx) {
+    public NoticeDetailDto findNoticeByIdx(Long ntId) {
         QNotice notice = QNotice.notice;
         JPQLQuery<NoticeDetailDto> query = from(notice)
                 .select(Projections.constructor(NoticeDetailDto.class,
-                        notice.idx,
-                        notice.isNotice,
-                        notice.title,
-                        notice.content,
-                        notice.viewCount,
-                        notice.registerName,
-                        notice.registDate,
-                        notice.regdate,
-                        notice.modifierName,
-                        notice.modifyDate,
-                        notice.state,
-                        notice.stopDate
+                        notice.ntId,
+                        notice.ntIsNotice,
+                        notice.ntTitle,
+                        notice.ntContent,
+                        notice.ntViewCount,
+                        notice.ntRegisterName,
+                        notice.ntRegistDate,
+                        notice.insert_date,
+                        notice.modify_email,
+                        notice.modify_date,
+                        notice.ntState,
+                        notice.ntStopDate
                 ));
-        query.where(notice.idx.eq(idx));
+        query.where(notice.ntId.eq(ntId));
         return query.fetchOne();
     }
 

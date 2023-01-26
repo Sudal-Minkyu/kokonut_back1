@@ -30,8 +30,8 @@ public class DynamicRemoveRepositoryCustomImpl implements DynamicRemoveRepositor
 
     // 유저테이블 중복 체크 메서드
     @Override
-    public int selectExistTable(String businessNumber) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM Information_schema.tables WHERE table_name = "+"'"+businessNumber+"'"+") AS flag";
+    public int selectExistTable(String companyCode) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM Information_schema.tables WHERE table_name = "+"'"+companyCode+"'"+") AS flag";
 //        log.info("중복체크 sql : "+sql);
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }

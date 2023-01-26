@@ -1,6 +1,5 @@
 package com.app.kokonut.notice;
 
-import com.app.kokonut.notice.entity.Notice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -10,6 +9,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * Time :
  * Remark : NoticeRepository 공지사항
  */
-public interface NoticeRepository extends JpaRepository<Notice, Integer>, JpaSpecificationExecutor<Notice>, NoticeRepositoryCustom {
+public interface NoticeRepository extends JpaRepository<Notice, Long>, JpaSpecificationExecutor<Notice>, NoticeRepositoryCustom {
 
 }

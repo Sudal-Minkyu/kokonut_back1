@@ -17,12 +17,12 @@ import java.util.List;
  */
 public interface AlimtalkTemplateRepositoryCustom {
 
-    Page<AlimtalkTemplateListDto> findByAlimtalkTemplatePage(AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, int companyIdx, Pageable pageable);
+    Page<AlimtalkTemplateListDto> findByAlimtalkTemplatePage(AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, Long companyId, Pageable pageable);
 
     // state = "1"일 경우 status 값 : "ACCEPT - 수락 REGISTER - 등록 INSPECT - 검수중" 만 조회
-    List<AlimtalkTemplateInfoListDto> findByAlimtalkTemplateInfoList(int companyIdx, String channelId, String state);
+    List<AlimtalkTemplateInfoListDto> findByAlimtalkTemplateInfoList(Long companyId, String channelId, String state);
 
     // 알림톡 메세지의 템플릿조회용
-    List<AlimtalkMessageTemplateInfoListDto> findByAlimtalkMessageTemplateInfoList(int companyIdx, String channelId);
+    List<AlimtalkMessageTemplateInfoListDto> findByAlimtalkMessageTemplateInfoList(Long companyId, String channelId);
 
 }

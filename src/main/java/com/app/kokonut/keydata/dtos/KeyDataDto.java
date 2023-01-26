@@ -18,6 +18,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class KeyDataDto {
 
-    private String keyValue;
+    private String kdKeyValue;
 
 }

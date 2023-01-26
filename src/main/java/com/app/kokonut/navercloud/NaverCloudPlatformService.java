@@ -522,25 +522,25 @@ public class NaverCloudPlatformService {
         JSONArray toArr = new JSONArray();
 
         // 필수값
-        bodyJson.put("channelId", alimtalkTemplateSaveAndUpdateDto.getChannelId());
-        bodyJson.put("templateCode", alimtalkTemplateSaveAndUpdateDto.getTemplateCode());
-        bodyJson.put("templateName", alimtalkTemplateSaveAndUpdateDto.getTemplateName());
-        bodyJson.put("content", alimtalkTemplateSaveAndUpdateDto.getTemplateContent());
-        bodyJson.put("messageType", alimtalkTemplateSaveAndUpdateDto.getMessageType());
-        bodyJson.put("emphasizeType", alimtalkTemplateSaveAndUpdateDto.getEmphasizeType());
+        bodyJson.put("channelId", alimtalkTemplateSaveAndUpdateDto.getKcChannelId());
+        bodyJson.put("templateCode", alimtalkTemplateSaveAndUpdateDto.getAtTemplateCode());
+        bodyJson.put("templateName", alimtalkTemplateSaveAndUpdateDto.getAtTemplateName());
+        bodyJson.put("content", alimtalkTemplateSaveAndUpdateDto.getAtAdContent());
+        bodyJson.put("messageType", alimtalkTemplateSaveAndUpdateDto.getAtMessageType());
+        bodyJson.put("emphasizeType", alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeType());
         bodyJson.put("securityFlag", alimtalkTemplateSaveAndUpdateDto.getSecurityFlag());
 
-		if(alimtalkTemplateSaveAndUpdateDto.getExtraContent() != null) {
-			bodyJson.put("extraContent", alimtalkTemplateSaveAndUpdateDto.getExtraContent());
+		if(alimtalkTemplateSaveAndUpdateDto.getAtExtraContent() != null) {
+			bodyJson.put("extraContent", alimtalkTemplateSaveAndUpdateDto.getAtExtraContent());
 		}
-		if(alimtalkTemplateSaveAndUpdateDto.getAdContent() != null) {
-			bodyJson.put("adContent", alimtalkTemplateSaveAndUpdateDto.getAdContent());
+		if(alimtalkTemplateSaveAndUpdateDto.getAtAdContent() != null) {
+			bodyJson.put("adContent", alimtalkTemplateSaveAndUpdateDto.getAtAdContent());
 		}
-		if(alimtalkTemplateSaveAndUpdateDto.getEmphasizeTitle() != null) {
-			bodyJson.put("emphasizeTitle", alimtalkTemplateSaveAndUpdateDto.getEmphasizeTitle());
+		if(alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeTitle() != null) {
+			bodyJson.put("emphasizeTitle", alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeTitle());
 		}
-		if(alimtalkTemplateSaveAndUpdateDto.getEmphasizeSubTitle() != null) {
-			bodyJson.put("emphasizeSubTitle", alimtalkTemplateSaveAndUpdateDto.getEmphasizeSubTitle());
+		if(alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeSubTitle() != null) {
+			bodyJson.put("emphasizeSubTitle", alimtalkTemplateSaveAndUpdateDto.getAtEmphasizeSubTitle());
 		}
 
         if(alimtalkTemplateSaveAndUpdateDto.getBtnSize() != null) {
@@ -888,12 +888,12 @@ public class NaverCloudPlatformService {
         JSONArray toButtonArr = new JSONArray();
 
         // 필수값
-        String templateCode = alimtalkMessageSendDto.getTemplateCode();
-        String plusFriendId = alimtalkMessageSendDto.getChannelId();
+        String templateCode = alimtalkMessageSendDto.getAtTemplateCode();
+        String plusFriendId = alimtalkMessageSendDto.getKcChannelId();
         String content = alimtalkMessageSendDto.getTemplateContent();
 
-        String emphasizeType = alimtalkMessageSendDto.getEmphasizeType();
-        String emphasizeTitle = alimtalkMessageSendDto.getEmphasizeTitle();
+        String emphasizeType = alimtalkMessageSendDto.getAtEmphasizeType();
+        String emphasizeTitle = alimtalkMessageSendDto.getAtEmphasizeTitle();
 
         bodyJson.put("plusFriendId", plusFriendId);
         bodyJson.put("templateCode", templateCode);
@@ -950,11 +950,11 @@ public class NaverCloudPlatformService {
 		}
 
         //발송타입(즉시, 예약)
-        String transmitDateType = alimtalkMessageSendDto.getTransmitType();
+        String transmitDateType = alimtalkMessageSendDto.getAmTransmitType();
 
         // 예약발송 일 경우
         if(transmitDateType.equals("reservation")) {
-            String reservationDate = alimtalkMessageSendDto.getReservationDate();
+            String reservationDate = alimtalkMessageSendDto.getAmReservationDate();
             if (reservationDate != null) {
                 bodyJson.put("reserveTime", reservationDate);
             }
@@ -1208,7 +1208,7 @@ public class NaverCloudPlatformService {
         JSONObject image = new JSONObject();
 
         // 필수값
-        String plusFriendId = friendtalkMessageSendDto.getChannelId();
+        String plusFriendId = friendtalkMessageSendDto.getKcChannelId();
         String content = friendtalkMessageSendDto.getMessageContent();
 
         bodyJson.put("plusFriendId", plusFriendId);

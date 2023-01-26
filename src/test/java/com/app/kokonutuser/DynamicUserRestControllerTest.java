@@ -1,8 +1,8 @@
 package com.app.kokonutuser;
 
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.Admin;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.auth.AuthService;
 import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
@@ -80,11 +80,11 @@ class DynamicUserRestControllerTest {
         Company company = new Company();
         company.setBusinessNumber("123456");
         company.setRegdate(LocalDateTime.now());
-        int companyIdx = companyRepository.save(company).getIdx();
+        Long companyId = companyRepository.save(company).getIdx();
 
         Admin admin = Admin.builder()
                 .email(testemail)
-                .companyIdx(companyIdx)
+                .companyId(companyId)
                 .password(passwordEncoder.encode(password))
                 .phoneNumber(testphoneNumber)
                 .otpKey(googleOtpGenerateDto.getOtpKey())

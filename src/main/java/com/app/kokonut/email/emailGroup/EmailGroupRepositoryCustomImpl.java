@@ -1,9 +1,7 @@
 package com.app.kokonut.email.emailGroup;
 
-import com.app.kokonut.email.emailGroup.dto.EmailGroupAdminInfoDto;
-import com.app.kokonut.email.emailGroup.dto.EmailGroupListDto;
-import com.app.kokonut.email.emailGroup.entity.EmailGroup;
-import com.app.kokonut.email.emailGroup.entity.QEmailGroup;
+import com.app.kokonut.email.emailGroup.dtos.EmailGroupAdminInfoDto;
+import com.app.kokonut.email.emailGroup.dtos.EmailGroupListDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -34,7 +32,7 @@ public class EmailGroupRepositoryCustomImpl extends QuerydslRepositorySupport im
     // EmailGroup 단일 조회
     // param : idx emailGroupIdx
     @Override
-    public EmailGroupAdminInfoDto findEmailGroupAdminInfoByIdx(Integer idx) {
+    public EmailGroupAdminInfoDto findEmailGroupAdminInfoByIdx(Long egId) {
         /*
            SELECT `ADMIN_IDX_LIST`
 		    FROM `email_group`
@@ -45,9 +43,9 @@ public class EmailGroupRepositoryCustomImpl extends QuerydslRepositorySupport im
         QEmailGroup emailGroup = QEmailGroup.emailGroup;
 
         JPQLQuery<EmailGroupAdminInfoDto> query = from(emailGroup)
-                .where(emailGroup.idx.eq(idx),emailGroup.useYn.eq("Y"))
+                .where(emailGroup.egId.eq(egId),emailGroup.egUseYn.eq("Y"))
                 .select(Projections.constructor(EmailGroupAdminInfoDto.class,
-                        emailGroup.adminIdxList
+                        emailGroup.egAdminIdList
                 ));
 
         return query.fetchOne();
@@ -68,14 +66,14 @@ public class EmailGroupRepositoryCustomImpl extends QuerydslRepositorySupport im
         QEmailGroup emailGroup  = QEmailGroup.emailGroup;
 
         JPQLQuery<EmailGroupListDto> query = from(emailGroup)
-                .where(emailGroup.useYn.eq("Y"))
+                .where(emailGroup.egUseYn.eq("Y"))
                 .select(Projections.constructor(EmailGroupListDto.class,
-                                emailGroup.idx,
-                                emailGroup.adminIdxList,
-                                emailGroup.name,
-                                emailGroup.desc
+                                emailGroup.egId,
+                                emailGroup.egAdminIdList,
+                                emailGroup.egName,
+                                emailGroup.egDesc
                 ));
-        query.orderBy(emailGroup.regdate.desc());
+        query.orderBy(emailGroup.insert_date.desc());
 
         final List<EmailGroupListDto> emailGroupListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(emailGroupListDtos, pageable, query.fetchCount());
@@ -86,14 +84,14 @@ public class EmailGroupRepositoryCustomImpl extends QuerydslRepositorySupport im
     public List<EmailGroupListDto> findEmailGroupDetails() {
         QEmailGroup emailGroup  = QEmailGroup.emailGroup;
         JPQLQuery<EmailGroupListDto> query = from(emailGroup)
-                .where(emailGroup.useYn.eq("Y"))
+                .where(emailGroup.egUseYn.eq("Y"))
                 .select(Projections.constructor(EmailGroupListDto.class,
-                        emailGroup.idx,
-                        emailGroup.adminIdxList,
-                        emailGroup.name,
-                        emailGroup.desc
+                        emailGroup.egId,
+                        emailGroup.egAdminIdList,
+                        emailGroup.egName,
+                        emailGroup.egDesc
                 ));
-        query.orderBy(emailGroup.regdate.desc());
+        query.orderBy(emailGroup.insert_date.desc());
 
         return query.fetch();
     }

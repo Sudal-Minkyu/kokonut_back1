@@ -20,11 +20,11 @@ import java.util.Objects;
 public class PersonalInfoProvisionMapperDto {
 
     @NotNull(message = "기업 ID가 존재하지 않습니다.")
-    private Integer companyIdx;
+    private Long companyId;
 
     private Integer reason;
 
-    private Integer adminIdx;
+    private Long adminId;
 
     private Integer recipientType;
     private String recipientEmail;
@@ -48,9 +48,9 @@ public class PersonalInfoProvisionMapperDto {
         return Objects.requireNonNullElse(reason, 0);
     }
 
-    public Integer getAdminIdx() {
-        return Objects.requireNonNullElse(adminIdx, 0);
-    }
+//    public Long getadminId() {
+//        return Objects.requireNonNullElse(adminId, 0L);
+//    }
 
     public Integer getRecipientType() {
         return Objects.requireNonNullElse(recipientType, 0);

@@ -21,4 +21,5 @@ public class JwtFilterDto {
         this.email = email;
         this.role = role;
     }
+
 }

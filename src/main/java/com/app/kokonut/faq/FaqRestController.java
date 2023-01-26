@@ -1,9 +1,8 @@
 package com.app.kokonut.faq;
 
 import com.app.kokonut.auth.jwt.SecurityUtil;
-import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.faq.dto.FaqDetailDto;
-import com.app.kokonut.faq.dto.FaqSearchDto;
+import com.app.kokonut.faq.dtos.FaqDetailDto;
+import com.app.kokonut.faq.dtos.FaqSearchDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -35,45 +34,47 @@ public class FaqRestController {
     @ApiOperation(value="Faq 목록 조회", notes="자주 묻는 질문 목록 조회")
     @GetMapping(value = "/faqList") // -> 기존의 코코넛 호출 메서드명 : list - SystemFaqController, FaqController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> faqList(@RequestBody FaqSearchDto faqSearchDto, Pageable pageable) {
-        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        return faqService.faqList(jwtFilterDto.getRole(), faqSearchDto, pageable);
+        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        return faqService.faqList(userRole, faqSearchDto, pageable);
     }
 
     @ApiOperation(value="Faq 내용 조회", notes="자주 묻는 질문 내용 조회")
-    @GetMapping(value = "/faqDetail/{idx}") // -> 기존의 코코넛 호출 메서드명 : detailView - SystemFaqController, FaqController
+    @GetMapping(value = "/faqDetail/{faqId}") // -> 기존의 코코넛 호출 메서드명 : detailView - SystemFaqController, FaqController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> faqDetail(@PathVariable("idx") Integer idx) {
-        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        return faqService.faqDetail(jwtFilterDto.getRole(), idx);
+    public ResponseEntity<Map<String,Object>> faqDetail(@PathVariable("faqId") Long faqId) {
+        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        return faqService.faqDetail(userRole, faqId);
     }
 
     @ApiOperation(value="Faq 등록, 수정", notes="자주 묻는 질문 등록, 수정")
     @PostMapping(value = "/faqSave") // -> 기존의 코코넛 호출 메서드명 : save - SystemFaqController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> faqSave(@RequestBody FaqDetailDto faqDetailDto) {
-        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        return faqService.faqSave(jwtFilterDto.getRole(), jwtFilterDto.getEmail(), faqDetailDto);
+        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        String email = SecurityUtil.getCurrentJwt().getEmail();
+        return faqService.faqSave(userRole, email, faqDetailDto);
     }
 
     @ApiOperation(value="Faq 삭제", notes="자주 묻는 질문 삭제")
     @PostMapping(value = "/faqDelete") // -> 기존의 코코넛 호출 메서드명 : delete - SystemFaqController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> faqDelete(@RequestParam(name="idx") Integer idx) {
-        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        return faqService.faqDelete(jwtFilterDto.getRole(), jwtFilterDto.getEmail(), idx);
+    public ResponseEntity<Map<String,Object>> faqDelete(@RequestParam(name="faqId") Long faqId) {
+        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        String email = SecurityUtil.getCurrentJwt().getEmail();
+        return faqService.faqDelete(userRole, email, faqId);
     }
 
 

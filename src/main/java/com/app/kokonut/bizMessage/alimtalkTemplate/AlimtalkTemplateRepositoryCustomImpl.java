@@ -34,80 +34,80 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
     }
 
     @Override
-    public Page<AlimtalkTemplateListDto> findByAlimtalkTemplatePage(AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, int companyIdx, Pageable pageable) {
+    public Page<AlimtalkTemplateListDto> findByAlimtalkTemplatePage(AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, Long companyId, Pageable pageable) {
 
         QAlimtalkTemplate alimtalkTemplate  = QAlimtalkTemplate.alimtalkTemplate;
 
         JPQLQuery<AlimtalkTemplateListDto> query = from(alimtalkTemplate)
-                .where(alimtalkTemplate.companyIdx.eq(companyIdx))
+                .where(alimtalkTemplate.companyId.eq(companyId))
                 .select(Projections.constructor(AlimtalkTemplateListDto.class,
-                        alimtalkTemplate.channelId,
-                        alimtalkTemplate.templateCode,
-                        alimtalkTemplate.templateName,
-                        alimtalkTemplate.regdate,
-                        alimtalkTemplate.status
+                        alimtalkTemplate.kcChannelId,
+                        alimtalkTemplate.atTemplateCode,
+                        alimtalkTemplate.atTemplateName,
+                        alimtalkTemplate.insert_date,
+                        alimtalkTemplate.atStatus
                 ));
 
-        if(alimtalkTemplateSearchDto.getTemplateName() != null){
-            query.where(alimtalkTemplate.templateName.containsIgnoreCase(alimtalkTemplateSearchDto.getTemplateName()));
+        if(alimtalkTemplateSearchDto.getAtTemplateName() != null){
+            query.where(alimtalkTemplate.atTemplateName.containsIgnoreCase(alimtalkTemplateSearchDto.getAtTemplateName()));
         }
 
-        if(alimtalkTemplateSearchDto.getStatus() != null){
-            query.where(alimtalkTemplate.status.eq(alimtalkTemplateSearchDto.getStatus()));
+        if(alimtalkTemplateSearchDto.getAtStatus() != null){
+            query.where(alimtalkTemplate.atStatus.eq(alimtalkTemplateSearchDto.getAtStatus()));
         }
 
         if(alimtalkTemplateSearchDto.getStimeStart() != null){
-            query.where(alimtalkTemplate.regdate.goe(alimtalkTemplateSearchDto.getStimeStart()));
+            query.where(alimtalkTemplate.insert_date.goe(alimtalkTemplateSearchDto.getStimeStart()));
         }
 
         if(alimtalkTemplateSearchDto.getStimeEnd() != null){
-            query.where(alimtalkTemplate.regdate.loe(alimtalkTemplateSearchDto.getStimeEnd()));
+            query.where(alimtalkTemplate.insert_date.loe(alimtalkTemplateSearchDto.getStimeEnd()));
         }
 
-        query.orderBy(alimtalkTemplate.regdate.desc());
+        query.orderBy(alimtalkTemplate.insert_date.desc());
 
         final List<AlimtalkTemplateListDto> alimtalkTemplateListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(alimtalkTemplateListDtos, pageable, query.fetchCount());
     }
 
     @Override
-    public List<AlimtalkTemplateInfoListDto> findByAlimtalkTemplateInfoList(int companyIdx, String channelId, String state) {
+    public List<AlimtalkTemplateInfoListDto> findByAlimtalkTemplateInfoList(Long companyId, String channelId, String state) {
 
         QAlimtalkTemplate alimtalkTemplate = QAlimtalkTemplate.alimtalkTemplate;
         QCompany company = QCompany.company;
 
         JPQLQuery<AlimtalkTemplateInfoListDto> query = from(alimtalkTemplate)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
-                .where(alimtalkTemplate.channelId.eq(channelId).and(alimtalkTemplate.companyIdx.eq(company.idx)))
+                .innerJoin(company).on(company.companyId.eq(companyId))
+                .where(alimtalkTemplate.kcChannelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.companyId)))
                 .select(Projections.constructor(AlimtalkTemplateInfoListDto.class,
-                        alimtalkTemplate.templateCode,
-                        alimtalkTemplate.status
+                        alimtalkTemplate.atTemplateCode,
+                        alimtalkTemplate.atStatus
                 ));
 
         if(state.equals("1")){
-            query.where(alimtalkTemplate.status.eq("ACCEPT").or(alimtalkTemplate.status.eq("REGISTER")).or(alimtalkTemplate.status.eq("INSPECT")));
+            query.where(alimtalkTemplate.atStatus.eq("ACCEPT").or(alimtalkTemplate.atStatus.eq("REGISTER")).or(alimtalkTemplate.atStatus.eq("INSPECT")));
         }
 
         return query.fetch();
     }
 
     @Override
-    public List<AlimtalkMessageTemplateInfoListDto> findByAlimtalkMessageTemplateInfoList(int companyIdx, String channelId) {
+    public List<AlimtalkMessageTemplateInfoListDto> findByAlimtalkMessageTemplateInfoList(Long companyId, String channelId) {
 
         QAlimtalkTemplate alimtalkTemplate = QAlimtalkTemplate.alimtalkTemplate;
         QCompany company = QCompany.company;
 
         JPQLQuery<AlimtalkMessageTemplateInfoListDto> query = from(alimtalkTemplate)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
-                .where(alimtalkTemplate.channelId.eq(channelId).and(alimtalkTemplate.companyIdx.eq(company.idx)))
+                .innerJoin(company).on(company.companyId.eq(companyId))
+                .where(alimtalkTemplate.kcChannelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.companyId)))
                 .select(Projections.constructor(AlimtalkMessageTemplateInfoListDto.class,
-                        alimtalkTemplate.templateCode,
-                        alimtalkTemplate.messageType,
-                        alimtalkTemplate.extraContent,
-                        alimtalkTemplate.adContent,
-                        alimtalkTemplate.emphasizeType,
-                        alimtalkTemplate.emphasizeTitle,
-                        alimtalkTemplate.emphasizeSubTitle
+                        alimtalkTemplate.atTemplateCode,
+                        alimtalkTemplate.atMessageType,
+                        alimtalkTemplate.atExtraContent,
+                        alimtalkTemplate.atAdContent,
+                        alimtalkTemplate.atEmphasizeType,
+                        alimtalkTemplate.atEmphasizeTitle,
+                        alimtalkTemplate.atEmphasizeSubTitle
                 ));
 
         return query.fetch();

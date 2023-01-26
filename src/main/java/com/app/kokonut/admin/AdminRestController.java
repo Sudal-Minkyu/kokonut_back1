@@ -39,7 +39,10 @@ public class AdminRestController {
 
     @GetMapping("/authorityCheck")
     @ApiOperation(value = "JWT토큰 테스트" , notes = "JWT 토큰이 유효한지 테스트하는 메서드")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+    })
     public ResponseEntity<Map<String,Object>> authorityCheck() {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         return adminService.authorityCheck(jwtFilterDto.getEmail());
@@ -47,7 +50,10 @@ public class AdminRestController {
 
     // 사업자 호출
     @GetMapping("/masterTest")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+    })
     public ResponseEntity<Map<String,Object>> masterTest() {
         log.info("ROLE_MASTER TEST");
         return ResponseEntity.ok(res.success(data));
@@ -55,7 +61,10 @@ public class AdminRestController {
 
     // 관리자 호출
     @GetMapping("/adminTest")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")})
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+    })
     public ResponseEntity<Map<String,Object>> adminTest() {
         log.info("ROLE_ADMIN TEST");
         return ResponseEntity.ok(res.success(data));

@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
  * Remark : 문의 참고 파일업로드 Repository
  */
 @Repository
-public interface QnaFileRepository extends JpaRepository<QnaFile, Integer>, JpaSpecificationExecutor<QnaFile> {
+public interface QnaFileRepository extends JpaRepository<QnaFile, Long>, JpaSpecificationExecutor<QnaFile> {
 
 }

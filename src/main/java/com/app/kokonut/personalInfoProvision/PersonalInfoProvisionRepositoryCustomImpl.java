@@ -1,6 +1,6 @@
 package com.app.kokonut.personalInfoProvision;
 
-import com.app.kokonut.admin.entity.QAdmin;
+import com.app.kokonut.admin.QAdmin;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionDto;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionListDto;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionMapperDto;
@@ -39,9 +39,9 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
         QPersonalInfoProvision personalInfoProvision = QPersonalInfoProvision.personalInfoProvision;
 
         JPQLQuery<PersonalInfoProvisionNumberDto> query = from(personalInfoProvision)
-                .where(personalInfoProvision.number.like("%"+ prefix +"%")).limit(1)
+                .where(personalInfoProvision.piNumber.like("%"+ prefix +"%")).limit(1)
                 .select(Projections.constructor(PersonalInfoProvisionNumberDto.class,
-                        personalInfoProvision.number
+                        personalInfoProvision.piNumber
                 ));
 
         return query.fetchOne();
@@ -49,36 +49,35 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
 
     // PersonalInfoProvision 조회
     @Override
-    public PersonalInfoProvisionDto findByNumberProvision(String number) {
+    public PersonalInfoProvisionDto findByNumberProvision(String piNumber) {
 
         QPersonalInfoProvision personalInfoProvision = QPersonalInfoProvision.personalInfoProvision;
         QAdmin admin = QAdmin.admin;
 
         JPQLQuery<PersonalInfoProvisionDto> query = from(personalInfoProvision)
-                .innerJoin(admin).on(admin.idx.eq(personalInfoProvision.adminIdx))
-                .where(personalInfoProvision.number.eq(number))
+                .innerJoin(admin).on(admin.adminId.eq(personalInfoProvision.adminId))
+                .where(personalInfoProvision.piNumber.eq(piNumber))
                 .select(Projections.constructor(PersonalInfoProvisionDto.class,
-                        personalInfoProvision.idx,
-                        personalInfoProvision.companyIdx,
-                        personalInfoProvision.adminIdx,
-                        personalInfoProvision.number,
-                        personalInfoProvision.reason,
-                        personalInfoProvision.type,
-                        personalInfoProvision.recipientType,
-                        personalInfoProvision.agreeYn,
-                        personalInfoProvision.agreeType,
-                        personalInfoProvision.regdate,
-                        personalInfoProvision.purpose,
-                        personalInfoProvision.tag,
-                        personalInfoProvision.startDate,
-                        personalInfoProvision.expDate,
-                        personalInfoProvision.period,
-                        personalInfoProvision.retentionPeriod,
-                        personalInfoProvision.columns,
-                        personalInfoProvision.recipientEmail,
-                        personalInfoProvision.targets,
-                        personalInfoProvision.targetStatus,
-                        admin.name
+                        personalInfoProvision.piId,
+                        personalInfoProvision.companyId,
+                        personalInfoProvision.adminId,
+                        personalInfoProvision.piNumber,
+                        personalInfoProvision.piReason,
+                        personalInfoProvision.piType,
+                        personalInfoProvision.piRecipientType,
+                        personalInfoProvision.piAgreeYn,
+                        personalInfoProvision.piAgreeType,
+                        personalInfoProvision.piPurpose,
+                        personalInfoProvision.piTag,
+                        personalInfoProvision.piStartDate,
+                        personalInfoProvision.piExpDate,
+                        personalInfoProvision.piRetentionPeriod,
+                        personalInfoProvision.piColumns,
+                        personalInfoProvision.piRecipientEmail,
+                        personalInfoProvision.piTargets,
+                        personalInfoProvision.piTargetStatus,
+                        personalInfoProvision.insert_date,
+                        admin.knName
                 ));
 
         return query.fetchOne();
@@ -92,8 +91,8 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
 //        select * from (
 //                select
 //                a.IDX as idx,
-//                a.COMPANY_IDX as companyIdx,
-//                a.ADMIN_IDX as adminIdx,
+//                a.COMPANY_IDX as companyId,
+//                a.ADMIN_IDX as adminId,
 //                a.NUMBER as number,
 //                a.REASON as reason,
 //                a.TYPE as type,
@@ -152,7 +151,7 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
         // 네이티브 쿼리문
         sb.append("SELECT * FROM ( \n");
         sb.append("SELECT \n");
-        sb.append("a.IDX as idx, a.COMPANY_IDX as companyIdx, a.ADMIN_IDX as adminIdx, \n");
+        sb.append("a.IDX as idx, a.COMPANY_IDX as companyId, a.ADMIN_IDX as adminId, \n");
         sb.append("a.NUMBER as number, a.REASON as reason, a.TYPE as type, a.RECIPIENT_TYPE as recipientType, \n");
         sb.append("a.AGREE_YN as agreeYn, a.AGREE_TYPE as agreeType, a.REGDATE as regdate, \n");
         sb.append("a.PURPOSE as purpose, a.TAG as tag, a.START_DATE as startDate, a.EXP_DATE as expDate, \n");
@@ -177,14 +176,14 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
         sb.append("LEFT JOIN personal_info_download_history c ON c.NUMBER= a.NUMBER \n");
         sb.append("WHERE 1=1 \n");
 
-        sb.append("AND a.COMPANY_IDX = :companyIdx \n");
+        sb.append("AND a.COMPANY_IDX = :companyId \n");
 
         if(personalInfoProvisionMapperDto.getReason() != 0 && personalInfoProvisionMapperDto.getReason() != null){
             sb.append("AND a.REASON = :reason \n");
         }
 
-        if(personalInfoProvisionMapperDto.getAdminIdx() != 0 && personalInfoProvisionMapperDto.getAdminIdx() != null){
-            sb.append("AND a.ADMIN_IDX = :adminIdx \n");
+        if(personalInfoProvisionMapperDto.getAdminId() != 0 && personalInfoProvisionMapperDto.getAdminId() != null){
+            sb.append("AND a.ADMIN_IDX = :adminId \n");
         }
 
         if(personalInfoProvisionMapperDto.getRecipientType() != 0 && personalInfoProvisionMapperDto.getRecipientType() != null){
@@ -225,7 +224,7 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
         // 쿼리조건 선언부
         Query query = em.createNativeQuery(sb.toString());
 
-        query.setParameter("companyIdx", personalInfoProvisionMapperDto.getCompanyIdx());
+        query.setParameter("companyId", personalInfoProvisionMapperDto.getCompanyId());
 
         if(personalInfoProvisionMapperDto.getState() != 0 && personalInfoProvisionMapperDto.getState() != null){
             query.setParameter("state", personalInfoProvisionMapperDto.getState());
@@ -235,8 +234,8 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
             query.setParameter("reason", personalInfoProvisionMapperDto.getReason());
         }
 
-        if(personalInfoProvisionMapperDto.getAdminIdx() != 0 && personalInfoProvisionMapperDto.getAdminIdx() != null){
-            query.setParameter("adminIdx", personalInfoProvisionMapperDto.getAdminIdx());
+        if(personalInfoProvisionMapperDto.getAdminId() != 0 && personalInfoProvisionMapperDto.getAdminId() != null){
+            query.setParameter("adminId", personalInfoProvisionMapperDto.getAdminId());
         }
 
         if(personalInfoProvisionMapperDto.getRecipientType() != 0 && personalInfoProvisionMapperDto.getRecipientType() != null){

@@ -19,16 +19,16 @@ public class KeyDataRepositoryCustomImpl extends QuerydslRepositorySupport imple
         super(KeyData.class);
     }
 
-    // keyValue 조회
+    // kdKeyValue 조회
     @Override
-    public KeyDataDto findByKeyValue(String keyName) {
+    public KeyDataDto findByKeyValue(String kdKeyName) {
 
         QKeyData keyData = QKeyData.keyData;
 
         JPQLQuery<KeyDataDto> query = from(keyData)
-                .where(keyData.keyName.eq(keyName))
+                .where(keyData.kdKeyName.eq(kdKeyName))
                 .select(Projections.constructor(KeyDataDto.class,
-                        keyData.keyValue
+                        keyData.kdKeyValue
                 ));
 
         return query.fetchOne();
@@ -36,14 +36,14 @@ public class KeyDataRepositoryCustomImpl extends QuerydslRepositorySupport imple
 
     // AWS S3 keyData 조회
     @Override
-    public String findByAWSKey(String keyName) {
+    public String findByAWSKey(String kdKeyName) {
 
         QKeyData keyData = QKeyData.keyData;
 
         JPQLQuery<String> query = from(keyData)
-                .where(keyData.keyGroup.eq("aws_s3").and(keyData.keyName.eq(keyName)))
+                .where(keyData.kdKeyGroup.eq("aws_s3").and(keyData.kdKeyName.eq(kdKeyName)))
                 .select(Projections.constructor(String.class,
-                        keyData.keyValue
+                        keyData.kdKeyValue
                 ));
 
         return query.fetchOne();
@@ -51,14 +51,14 @@ public class KeyDataRepositoryCustomImpl extends QuerydslRepositorySupport imple
 
     // KMS keyData 조회
     @Override
-    public String findByKMSKey(String keyName) {
+    public String findByKMSKey(String kdKeyName) {
 
         QKeyData keyData = QKeyData.keyData;
 
         JPQLQuery<String> query = from(keyData)
-                .where(keyData.keyGroup.eq("kms").and(keyData.keyName.eq(keyName)))
+                .where(keyData.kdKeyGroup.eq("kms").and(keyData.kdKeyName.eq(kdKeyName)))
                 .select(Projections.constructor(String.class,
-                        keyData.keyValue
+                        keyData.kdKeyValue
                 ));
 
         return query.fetchOne();
@@ -66,14 +66,14 @@ public class KeyDataRepositoryCustomImpl extends QuerydslRepositorySupport imple
 
     // NCLOUD keyData 조회
     @Override
-    public String findByNCLOUDKey(String keyName) {
+    public String findByNCLOUDKey(String kdKeyName) {
 
         QKeyData keyData = QKeyData.keyData;
 
         JPQLQuery<String> query = from(keyData)
-                .where(keyData.keyGroup.eq("ncloud").and(keyData.keyName.eq(keyName)))
+                .where(keyData.kdKeyGroup.eq("ncloud").and(keyData.kdKeyName.eq(kdKeyName)))
                 .select(Projections.constructor(String.class,
-                        keyData.keyValue
+                        keyData.kdKeyValue
                 ));
 
         return query.fetchOne();
@@ -81,14 +81,14 @@ public class KeyDataRepositoryCustomImpl extends QuerydslRepositorySupport imple
 
     // NICE keyData 조회
     @Override
-    public String findByNICEKey(String keyName) {
+    public String findByNICEKey(String kdKeyName) {
 
         QKeyData keyData = QKeyData.keyData;
 
         JPQLQuery<String> query = from(keyData)
-                .where(keyData.keyGroup.eq("nice").and(keyData.keyName.eq(keyName)))
+                .where(keyData.kdKeyGroup.eq("nice").and(keyData.kdKeyName.eq(kdKeyName)))
                 .select(Projections.constructor(String.class,
-                        keyData.keyValue
+                        keyData.kdKeyValue
                 ));
 
         return query.fetchOne();

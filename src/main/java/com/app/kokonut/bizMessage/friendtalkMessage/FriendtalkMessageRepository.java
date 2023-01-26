@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FriendtalkMessageRepository extends JpaRepository<FriendtalkMessage, Integer>, JpaSpecificationExecutor<FriendtalkMessage>, FriendtalkMessageRepositoryCustom {
+public interface FriendtalkMessageRepository extends JpaRepository<FriendtalkMessage, Long>, JpaSpecificationExecutor<FriendtalkMessage>, FriendtalkMessageRepositoryCustom {
 
 }

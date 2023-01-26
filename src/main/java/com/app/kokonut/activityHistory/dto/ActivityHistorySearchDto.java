@@ -24,7 +24,7 @@ public class ActivityHistorySearchDto {
     private Date stimeStart;
     private Date stimeEnd;
 
-    private Integer companyIdx;
+    private Long companyId;
 
     private String searchText;
 }

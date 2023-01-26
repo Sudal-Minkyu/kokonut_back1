@@ -3,7 +3,6 @@ package com.app.kokonut.auth;
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,7 +53,7 @@ public class AuthRestController {
     @PostMapping("/authToken")
     @ApiOperation(value = "로그인 - 로그인 성공후 JWT 토큰 발급" , notes = "JWT 엑세스토큰과 리플레쉬토큰을 발급해준다.")
     public ResponseEntity<Map<String,Object>> authToken(@Validated AuthRequestDto.Login login) {
-        log.info("로그인한 이메일 : "+login.getEmail());
+        log.info("로그인한 이메일 : "+login.getKnEmail());
         return authService.authToken(login);
     }
 

@@ -19,20 +19,20 @@ import java.util.Date;
 @AllArgsConstructor
 public class TotalDbDownloadListDto {
 
-    private Integer idx;
+    private Long tdId;
 
-    private Integer adminName; // 요청자 명
+    private String adminName; // 요청자 명
 
-    private String reason; // 요청사유
+    private String tdReason; // 요청사유
 
-    private LocalDateTime applyDate; // 요청일자
+    private LocalDateTime tdApplyDate; // 요청일자
 
 //    private String link; // 다운로드 링크
 
-    private Integer state; // 상태(1:다운로드요청, 2:다운로드 승인, 3:다운로드완료, 4:반려)
+    private Integer tdState; // 상태(1:다운로드요청, 2:다운로드 승인, 3:다운로드완료, 4:반려)
 
-    private String returnReason; // 반려사유
+    private String tdReturnReason; // 반려사유
 
-    private LocalDateTime downloadDate; // 다운로드 일자
+    private LocalDateTime tdDownloadDate; // 다운로드 일자
 
 }

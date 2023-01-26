@@ -4,7 +4,6 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.bizMessage.alimtalkTemplate.AlimtalkTemplateRepository;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelSearchDto;
-import com.app.kokonut.bizMessage.kakaoChannel.entity.KakaoChannel;
 import com.app.kokonut.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.navercloud.dto.NaverCloudPlatformResultDto;
 import com.app.kokonut.common.AjaxResponse;
@@ -54,7 +53,7 @@ public class KakaoChannelService {
         AjaxResponse res = new AjaxResponse();
 
         // 해당 이메일을 통해 회사 IDX 조회
-        int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
 
         // 사용자가 체험하기를 제외한 모든 채널 조회후 업데이트??..
         if(!email.equals("test@kokonut.me")) {
@@ -79,7 +78,7 @@ public class KakaoChannelService {
             }
         }
 
-        Page<KakaoChannelListDto> kakaoChannelListDtos = kakaoChannelRepository.findByKakaoChannelPage(kakaoChannelSearchDto, companyIdx, pageable);
+        Page<KakaoChannelListDto> kakaoChannelListDtos = kakaoChannelRepository.findByKakaoChannelPage(kakaoChannelSearchDto, companyId, pageable);
 
         return ResponseEntity.ok(res.ResponseEntityPage(kakaoChannelListDtos));
     }
@@ -147,13 +146,14 @@ public class KakaoChannelService {
 
             if(naverCloudPlatformResultDto.getResultCode().equals(200)) {
                 // 카카오 채널 등록 INSERT
-                int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
+                Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
 
                 KakaoChannel kakaoChannel = new KakaoChannel();
-                kakaoChannel.setChannelId(channelId);
-                kakaoChannel.setCompanyIdx(companyIdx);
-                kakaoChannel.setStatus("INACTIVE");
-                kakaoChannel.setRegdate(LocalDateTime.now());
+                kakaoChannel.setKcChannelId(channelId);
+                kakaoChannel.setCompanyId(companyId);
+                kakaoChannel.setKcStatus("INACTIVE");
+                kakaoChannel.setInsert_email(email);
+                kakaoChannel.setInsert_date(LocalDateTime.now());
                 kakaoChannelRepository.save(kakaoChannel);
             } else {
                 log.error("관리자 승인을 위해 차단으로 상태값 변경 실패");

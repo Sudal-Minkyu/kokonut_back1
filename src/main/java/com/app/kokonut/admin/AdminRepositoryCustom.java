@@ -13,11 +13,11 @@ import java.util.List;
  */
 public interface AdminRepositoryCustom {
 
-    AdminOtpKeyDto findByOtpKey(String email);
+    AdminOtpKeyDto findByOtpKey(String aEmail);
 
-    AdminCompanyInfoDto findByCompanyInfo(String email);
+    AdminCompanyInfoDto findByCompanyInfo(String aEmail);
 
-    AdminEmailInfoDto findByEmailInfo(Integer idx);
+    AdminEmailInfoDto findByKnEmailInfo(Long adminId);
 
     List<AdminEmailInfoDto> findSystemAdminEmailInfo();
 

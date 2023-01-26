@@ -3,8 +3,6 @@ package com.app.kokonut.bizMessage.kakaoChannel;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelByChannelIdListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelListDto;
 import com.app.kokonut.bizMessage.kakaoChannel.dto.KakaoChannelSearchDto;
-import com.app.kokonut.bizMessage.kakaoChannel.entity.KakaoChannel;
-import com.app.kokonut.bizMessage.kakaoChannel.entity.QKakaoChannel;
 import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
@@ -35,56 +33,56 @@ public class KakaoChannelRepositoryCustomImpl extends QuerydslRepositorySupport 
     }
 
     @Override
-    public Page<KakaoChannelListDto> findByKakaoChannelPage(KakaoChannelSearchDto kakaoChannelSearchDto, int companyIdx, Pageable pageable) {
+    public Page<KakaoChannelListDto> findByKakaoChannelPage(KakaoChannelSearchDto kakaoChannelSearchDto, Long companyId, Pageable pageable) {
 
         QKakaoChannel kakaoChannel  = QKakaoChannel.kakaoChannel;
         QCompany company  = QCompany.company;
 
         JPQLQuery<KakaoChannelListDto> query = from(kakaoChannel)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
+                .innerJoin(company).on(company.companyId.eq(companyId))
                 .select(Projections.constructor(KakaoChannelListDto.class,
-                        kakaoChannel.idx,
-                        kakaoChannel.companyIdx,
-                        kakaoChannel.channelId,
-                        kakaoChannel.channelName,
-                        kakaoChannel.status,
-                        kakaoChannel.regdate,
-                        company.companyName
+                        kakaoChannel.kcId,
+                        kakaoChannel.companyId,
+                        kakaoChannel.kcChannelId,
+                        kakaoChannel.kcChannelName,
+                        kakaoChannel.kcStatus,
+                        kakaoChannel.insert_date,
+                        company.cpName
                 ));
 
-        if(kakaoChannelSearchDto.getChannelName() != null){
-            query.where(kakaoChannel.channelName.containsIgnoreCase(kakaoChannelSearchDto.getChannelName()));
+        if(kakaoChannelSearchDto.getKcChannelName() != null){
+            query.where(kakaoChannel.kcChannelName.containsIgnoreCase(kakaoChannelSearchDto.getKcChannelName()));
         }
 
-        if(kakaoChannelSearchDto.getStatus() != null){
-            query.where(kakaoChannel.status.eq(kakaoChannelSearchDto.getStatus()));
+        if(kakaoChannelSearchDto.getKcStatus() != null){
+            query.where(kakaoChannel.kcStatus.eq(kakaoChannelSearchDto.getKcStatus()));
         }
 
         if(kakaoChannelSearchDto.getStimeStart() != null){
-            query.where(kakaoChannel.regdate.goe(kakaoChannelSearchDto.getStimeStart()));
+            query.where(kakaoChannel.insert_date.goe(kakaoChannelSearchDto.getStimeStart()));
         }
 
         if(kakaoChannelSearchDto.getStimeEnd() != null){
-            query.where(kakaoChannel.regdate.loe(kakaoChannelSearchDto.getStimeEnd()));
+            query.where(kakaoChannel.insert_date.loe(kakaoChannelSearchDto.getStimeEnd()));
         }
 
-        query.orderBy(kakaoChannel.regdate.desc());
+        query.orderBy(kakaoChannel.insert_date.desc());
 
         final List<KakaoChannelListDto> kakaoChannelListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(kakaoChannelListDtos, pageable, query.fetchCount());
     }
 
     @Override
-    public List<KakaoChannelByChannelIdListDto> findByKakaoChannelIdList(int companyIdx) {
+    public List<KakaoChannelByChannelIdListDto> findByKakaoChannelIdList(Long companyId) {
 
         QKakaoChannel kakaoChannel = QKakaoChannel.kakaoChannel;
         QCompany company = QCompany.company;
 
         JPQLQuery<KakaoChannelByChannelIdListDto> query = from(kakaoChannel)
-                .innerJoin(company).on(company.idx.eq(companyIdx))
-                .where(kakaoChannel.companyIdx.eq(company.idx))
+                .innerJoin(company).on(company.companyId.eq(companyId))
+                .where(kakaoChannel.companyId.eq(company.companyId))
                 .select(Projections.constructor(KakaoChannelByChannelIdListDto.class,
-                        kakaoChannel.channelId
+                        kakaoChannel.kcChannelId
                 ));
 
         return query.fetch();

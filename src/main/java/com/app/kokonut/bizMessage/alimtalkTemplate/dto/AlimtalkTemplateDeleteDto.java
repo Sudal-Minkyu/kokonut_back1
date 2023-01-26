@@ -19,9 +19,9 @@ import java.util.List;
 public class AlimtalkTemplateDeleteDto {
 
     @NotBlank(message = "채널ID는 필수 값입니다.")
-    private String channelId; // 채널ID
+    private String kcChannelId; // 채널ID
 
     @NotBlank(message = "템플릿코드는 필수 값입니다.")
-    private String templateCode; // 템플릿 코드
+    private String atTemplateCode; // 템플릿 코드
 
 }

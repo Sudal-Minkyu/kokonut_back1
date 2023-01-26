@@ -2,10 +2,8 @@ package com.app.kokonut.admin;
 
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
-import com.app.kokonut.admin.entity.Admin;
-import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
-import com.app.kokonut.admin.entity.enums.AuthorityRole;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
@@ -33,13 +31,13 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
 
     // Admin OtpKey 단일 조회
     @Override
-    public AdminOtpKeyDto findByOtpKey(String email) {
+    public AdminOtpKeyDto findByOtpKey(String knEmail) {
         QAdmin admin = QAdmin.admin;
 
         JPQLQuery<AdminOtpKeyDto> query = from(admin)
-                .where(admin.email.eq(email))
+                .where(admin.knEmail.eq(knEmail))
                 .select(Projections.constructor(AdminOtpKeyDto.class,
-                        admin.otpKey
+                        admin.knOtpKey
                 ));
 
         return query.fetchOne();
@@ -47,32 +45,32 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
 
     // Admin 및 Company 정보 단일조회
     @Override
-    public AdminCompanyInfoDto findByCompanyInfo(String email) {
+    public AdminCompanyInfoDto findByCompanyInfo(String aEmail) {
 
         QAdmin admin = QAdmin.admin;
         QCompany company = QCompany.company;
 
         JPQLQuery<AdminCompanyInfoDto> query = from(admin)
-                .innerJoin(company).on(company.idx.eq(admin.companyIdx))
-                .where(admin.email.eq(email))
+                .innerJoin(company).on(company.companyId.eq(admin.companyId))
+                .where(admin.knEmail.eq(aEmail))
                 .select(Projections.constructor(AdminCompanyInfoDto.class,
-                        admin.idx,
-                        company.idx,
-                        company.businessNumber
+                        admin.adminId,
+                        company.companyId,
+                        company.cpCode
                 ));
 
         return query.fetchOne();
     }
 
     @Override
-    public AdminEmailInfoDto findByEmailInfo(Integer idx) {
+    public AdminEmailInfoDto findByKnEmailInfo(Long adminId) {
         QAdmin admin = QAdmin.admin;
 
         JPQLQuery<AdminEmailInfoDto> query = from(admin)
-                .where(admin.idx.eq(idx))
+                .where(admin.adminId.eq(adminId))
                 .select(Projections.constructor(AdminEmailInfoDto.class,
-                        admin.email,
-                        admin.name
+                        admin.knEmail,
+                        admin.knName
                 ));
         return query.fetchOne();
     }
@@ -82,10 +80,10 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
     public List<AdminEmailInfoDto> findSystemAdminEmailInfo() {
         QAdmin admin = QAdmin.admin;
         JPQLQuery<AdminEmailInfoDto> query = from(admin)
-                .where(admin.state.eq(1), admin.roleName.eq(AuthorityRole.ROLE_SYSTEM))
+                .where(admin.knState.eq(1), admin.knRoleCode.eq(AuthorityRole.ROLE_SYSTEM))
                 .select(Projections.constructor(AdminEmailInfoDto.class,
-                        admin.email,
-                        admin.name
+                        admin.knEmail,
+                        admin.knName
                 ));
         return query.fetch();
     }

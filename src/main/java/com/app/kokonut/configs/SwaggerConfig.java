@@ -1,6 +1,5 @@
 package com.app.kokonut.configs;
 
-import com.fasterxml.classmate.TypeResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -8,6 +7,7 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -22,24 +22,52 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
-    TypeResolver typeResolver = new TypeResolver();
-
     @Bean
-    public Docket api(){
-        return new Docket(DocumentationType.SWAGGER_2)
-//                .alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(MyPage.class)))
+    public Docket api1() {
+        final ApiInfo apiInfo = new ApiInfoBuilder().title("코코넛 API")
+                .description("<h3>코코넛 - JWT Token, ApiKey 없이 호출 가능한 RestAPI 문서</h3>")
+                .contact(new Contact("Kokonut", "https://kokonut.me", "contact@kokonut.me"))
+                .version("1.0").build();
+
+        return new Docket(DocumentationType.SWAGGER_2) // Swagger 2.0 기반의 문서 작성
+                .groupName("2. JWT Token, ApiKey 불필요")
+                .apiInfo(apiInfo)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.app.kokonut")) // 패키지 기준 추출
-                .paths(PathSelectors.ant("/api/**"))
-                .build()
-                .apiInfo(apiInfo());
+                .apis(RequestHandlerSelectors.basePackage("com.app"))
+                .paths(PathSelectors.ant("/v0/api/**"))
+                .build().useDefaultResponseMessages(false);
     }
 
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("KOKONUT API")
-                .description("KOKONUT RestController")
-                .build();
+    @Bean
+    public Docket api2() {
+        final ApiInfo apiInfo = new ApiInfoBuilder().title("코코넛 API")
+                .description("<h3>코코넛 - JWT Token, ApiKey 보유해야 호출 가능한 RestAPI</h3>")
+                .contact(new Contact("Kokonut", "https://kokonut.me", "contact@kokonut.me"))
+                .version("1.0").build();
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("1. JWT Token, ApiKey 필요")
+                .apiInfo(apiInfo)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.ant("/v2/api/**"))
+                .build().useDefaultResponseMessages(false);
+    }
+
+    @Bean
+    public Docket api3() {
+        final ApiInfo apiInfo = new ApiInfoBuilder().title("코코넛 API")
+                .description("<h3>코코넛 - JWT Token 만 보유시 호출 가능한 RestAPI</h3>")
+                .contact(new Contact("Kokonut", "https://kokonut.me", "contact@kokonut.me"))
+                .version("1.0").build();
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("3. ApiKey 필요")
+                .apiInfo(apiInfo)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.app"))
+                .paths(PathSelectors.ant("/v1/api/**"))
+                .build().useDefaultResponseMessages(false);
     }
 
 }

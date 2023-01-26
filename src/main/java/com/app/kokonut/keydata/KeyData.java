@@ -7,24 +7,24 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@EqualsAndHashCode(of = "keyName")
+@EqualsAndHashCode(of = "kdKeyName")
 @Data
 @NoArgsConstructor
-@Table(name="key_data")
+@Table(name="kn_key_data")
 public class KeyData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "key_name")
-    private String keyName;
+    @Column(name = "kd_key_name")
+    private String kdKeyName;
 
-    @Column(name = "key_value")
-    private String keyValue;
+    @Column(name = "kd_key_value")
+    private String kdKeyValue;
 
-    @Column(name = "key_group")
-    private String keyGroup;
+    @Column(name = "kd_key_group")
+    private String kdKeyGroup;
 
-    @Column(name = "key_description")
-    private String keyDescription;
+    @Column(name = "kd_key_description")
+    private String kdKeyDescription;
 
 }

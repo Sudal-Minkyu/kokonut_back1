@@ -16,12 +16,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FriendtalkMessageInfoListDto {
 
-    private Integer idx;
+    private Long fmId;
 
-    private String requestId;
+    private String fmRequestId;
 
-    private String transmitType;
+    private String fmTransmitType;
 
-    private String status;
+    private String fmStatus;
 
 }

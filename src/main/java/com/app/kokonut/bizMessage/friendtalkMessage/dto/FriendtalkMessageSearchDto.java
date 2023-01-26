@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class FriendtalkMessageSearchDto {
 
-    private String status; // 발송상태
+    private String fmStatus; // 발송상태
 
-    private String requestId; // 요청ID
+    private String fmRequestId; // 요청ID
 
     private LocalDateTime stimeStart; // 시작 날짜
 

@@ -23,7 +23,7 @@ public class FriendtalkMessageSendDto {
     private List<FriendtalkMessageSendSubDto> friendtalkMessageSendSubDtoList; // 버튼타입 리스트 -> 기존의  프론트에선 recipients로 보내줌
 
     @NotBlank(message = "채널ID 값은 필수 값입니다.")
-    private String channelId; // 채널ID -> plusFriendId 랑 같은 의미
+    private String kcChannelId; // 채널ID -> plusFriendId 랑 같은 의미
 
     @NotBlank(message = "메세지내용 값은 필수 값입니다.")
     private String messageContent; // 메세지내용 -> 기존의  프론트에선 content로 보내줌

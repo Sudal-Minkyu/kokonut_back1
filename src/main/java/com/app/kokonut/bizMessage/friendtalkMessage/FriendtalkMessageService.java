@@ -54,19 +54,19 @@ public class FriendtalkMessageService {
 
         AjaxResponse res = new AjaxResponse();
 
-        // 해당 이메일을 통해 회사 IDX 조회
-        int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
-        List<FriendtalkMessageInfoListDto> friendtalkMessageInfoListDtos = friendtalkMessageRepository.findByFriendtalkMessageInfoList(companyIdx, "1");
+        // 해당 이메일을 통해 회사 fmId 조회
+        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
+        List<FriendtalkMessageInfoListDto> friendtalkMessageInfoListDtos = friendtalkMessageRepository.findByFriendtalkMessageInfoList(companyId, "1");
 
         List<FriendtalkMessage> alimtalkMessageList = new ArrayList<>();
         for(FriendtalkMessageInfoListDto friendtalkMessageInfoListDto : friendtalkMessageInfoListDtos) {
 
             NaverCloudPlatformResultDto result;
 
-            int idx = friendtalkMessageInfoListDto.getIdx();
-            String requestId = friendtalkMessageInfoListDto.getRequestId();
-            String transmitType = friendtalkMessageInfoListDto.getTransmitType();
-            String status = friendtalkMessageInfoListDto.getStatus();
+            Long fmId = friendtalkMessageInfoListDto.getFmId();
+            String requestId = friendtalkMessageInfoListDto.getFmRequestId();
+            String transmitType = friendtalkMessageInfoListDto.getFmTransmitType();
+            String status = friendtalkMessageInfoListDto.getFmStatus();
             String updateSatus;
 
             log.info("status 현재 상태 : "+status);
@@ -96,9 +96,9 @@ public class FriendtalkMessageService {
                 }
 
                 if(!updateSatus.equals("")) {
-                    Optional<FriendtalkMessage> optionalFriendtalkMessage = friendtalkMessageRepository.findById(idx);
+                    Optional<FriendtalkMessage> optionalFriendtalkMessage = friendtalkMessageRepository.findById(fmId);
                     if(optionalFriendtalkMessage.isPresent()){
-                        optionalFriendtalkMessage.get().setStatus(updateSatus);
+                        optionalFriendtalkMessage.get().setFmStatus(updateSatus);
                         alimtalkMessageList.add(optionalFriendtalkMessage.get());
                     } else {
                         log.error("해당 친구톡 메세지를 찾을 수 없습니다.");
@@ -110,7 +110,7 @@ public class FriendtalkMessageService {
         // 전체 업데이트
         friendtalkMessageRepository.saveAll(alimtalkMessageList);
 
-        Page<FriendtalkMessageListDto> friendtalkMessageListDtos = friendtalkMessageRepository.findByFriendtalkMessagePage(friendtalkMessageSearchDto, companyIdx, pageable);
+        Page<FriendtalkMessageListDto> friendtalkMessageListDtos = friendtalkMessageRepository.findByFriendtalkMessagePage(friendtalkMessageSearchDto, companyId, pageable);
 
         return ResponseEntity.ok(res.ResponseEntityPage(friendtalkMessageListDtos));
     }
@@ -137,7 +137,7 @@ public class FriendtalkMessageService {
                 log.info("친구톡 이미지 업로드 시작");
 
                 File file = Utils.convertMultipartFileToFile(mFile);
-                result = naverCloudPlatformService.setImageFile(friendtalkMessageSendDto.getChannelId(), file, request.getContentType());
+                result = naverCloudPlatformService.setImageFile(friendtalkMessageSendDto.getKcChannelId(), file, request.getContentType());
                 if(result.getResultCode().equals(200)) {
                     HashMap<String,Object> response = Utils.convertJSONstringToMap(result.getResultText());
                     imageId = response.get("imageId").toString();
@@ -152,26 +152,27 @@ public class FriendtalkMessageService {
             if(result.getResultCode().equals(200)) {
                 log.info("발송성공후 친구톡 메세지 등록 정보 INSERT");
 
-                int companyIdx = adminRepository.findByCompanyInfo(email).getCompanyIdx();
-                int adminIdx = adminRepository.findByCompanyInfo(email).getAdminIdx();
+                Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
+                Long adminId = adminRepository.findByCompanyInfo(email).getAdminId();
 
                 HashMap<String, Object> response = Utils.convertJSONstringToMap(result.getResultText());
 
                 FriendtalkMessage friendtalkMessage = new FriendtalkMessage();
-                friendtalkMessage.setCompanyIdx(companyIdx);
-                friendtalkMessage.setRequestId(response.get("requestId").toString());
-                friendtalkMessage.setChannelId(friendtalkMessageSendDto.getChannelId());
-                friendtalkMessage.setTransmitType(friendtalkMessageSendDto.getTransmitType());
-                if(friendtalkMessage.getTransmitType().equals("reservation")) {
+                friendtalkMessage.setCompanyId(companyId);
+                friendtalkMessage.setFmRequestId(response.get("requestId").toString());
+                friendtalkMessage.setKcChannelId(friendtalkMessageSendDto.getKcChannelId());
+                friendtalkMessage.setFmTransmitType(friendtalkMessageSendDto.getTransmitType());
+                if(friendtalkMessage.getFmTransmitType().equals("reservation")) {
                     String reservationDateStr = friendtalkMessageSendDto.getReservationDate();
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
                     LocalDateTime reservationDate = LocalDateTime.parse(reservationDateStr, formatter);
                     log.info("예약발송시간 : "+reservationDate);
 
-                    friendtalkMessage.setReservationDate(reservationDate);
+                    friendtalkMessage.setFmReservationDate(reservationDate);
                 }
-                friendtalkMessage.setRegIdx(adminIdx);
-                friendtalkMessage.setRegdate(LocalDateTime.now());
+                friendtalkMessage.setAdminId(adminId);
+                friendtalkMessage.setInsert_email(email);
+                friendtalkMessage.setInsert_date(LocalDateTime.now());
 
                 FriendtalkMessage saveFriendtalkMessage = friendtalkMessageRepository.save(friendtalkMessage);
                 log.info("친구톡 메세지 인서트 성공");
@@ -180,10 +181,12 @@ public class FriendtalkMessageService {
 
                 for(FriendtalkMessageSendSubDto friendtalkMessageSendSubDto : friendtalkMessageSendDto.getFriendtalkMessageSendSubDtoList()){
                     FriendtalkMessageRecipient friendtalkMessageRecipient = new FriendtalkMessageRecipient();
-                    friendtalkMessageRecipient.setFriendtalkMessageIdx(saveFriendtalkMessage.getIdx());
-                    friendtalkMessageRecipient.setEmail(friendtalkMessageSendSubDto.getEmail());
-                    friendtalkMessageRecipient.setName(friendtalkMessageSendSubDto.getUserName());
-                    friendtalkMessageRecipient.setPhoneNumber(friendtalkMessageSendSubDto.getPhoneNumber());
+                    friendtalkMessageRecipient.setFmId(saveFriendtalkMessage.getFmId());
+                    friendtalkMessageRecipient.setFmrEmail(friendtalkMessageSendSubDto.getEmail());
+                    friendtalkMessageRecipient.setFmrName(friendtalkMessageSendSubDto.getUserName());
+                    friendtalkMessageRecipient.setFmrPhoneNumber(friendtalkMessageSendSubDto.getPhoneNumber());
+                    friendtalkMessageRecipient.setInsert_email(email);
+                    friendtalkMessageRecipient.setInsert_date(LocalDateTime.now());
                     friendtalkMessageRecipients.add(friendtalkMessageRecipient);
                 }
 

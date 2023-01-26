@@ -2,14 +2,24 @@ package com.app.kokonut.personalInfoProvision.personalInfoProvisionHistory.entit
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@Data
+/**
+ * @author Woody
+ * LocalDateTime : 2023-01-25
+ * Time :
+ * Remark : 정보제공관리 이력 Table Entity
+ */
 @Entity
-@Table(name = "personal_info_provision_history")
+@EqualsAndHashCode(of = "pphId")
+@Data
+@NoArgsConstructor
+@Table(name="kn_personal_info_provision_history")
 public class PersonalInfoProvisionHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,36 +29,57 @@ public class PersonalInfoProvisionHistory implements Serializable {
      */
     @Id
     @ApiModelProperty("키")
-    @Column(name = "IDX", nullable = false)
+    @Column(name = "pph_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
+    private Long pphId;
 
     /**
      * personal_info_provision 고유번호
      */
-    @Column(name = "NUMBER", nullable = false)
+    @Column(name = "pi_number", nullable = false)
     @ApiModelProperty("personal_info_provision 고유번호")
-    private String number;
-
-    /**
-     * 등록일
-     */
-    @ApiModelProperty("등록일")
-    @Column(name = "REGDATE", nullable = false)
-    private Date regdate;
+    private String piNumber;
 
     /**
      * 회사 키
      */
     @ApiModelProperty("회사 키")
-    @Column(name = "COMPANY_IDX", nullable = false)
-    private Integer companyIdx;
+    @Column(name = "company_id", nullable = false)
+    private Long companyId;
 
     /**
      * 관리자 키 (=수정자)
      */
-    @Column(name = "ADMIN_IDX")
+    @Column(name = "admin_id")
     @ApiModelProperty("관리자 키 (=수정자)")
-    private Integer adminIdx;
+    private Long adminId;
+
+    /**
+     * 등록자 email
+     */
+    @ApiModelProperty("등록자 email")
+    @Column(name = "insert_email", nullable = false)
+    private String insert_email;
+
+    /**
+     * 등록 날짜
+     */
+    @ApiModelProperty("등록 날짜")
+    @Column(name = "insert_date", nullable = false)
+    private LocalDateTime insert_date;
+
+    /**
+     * 수정자 이름
+     */
+    @ApiModelProperty("수정자 email")
+    @Column(name = "modify_email")
+    private String modify_email;
+
+    /**
+     * 수정 날짜
+     */
+    @ApiModelProperty("수정 날짜")
+    @Column(name = "modify_date")
+    private LocalDateTime modify_date;
 
 }
