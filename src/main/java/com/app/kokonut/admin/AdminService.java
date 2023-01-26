@@ -41,10 +41,10 @@ public class AdminService {
         } else{
             log.info("관리자로 바꿀 이메일 : "+userEmail);
 
-            Admin admin = adminRepository.findByEmail(userEmail)
+            Admin admin = adminRepository.findByKnEmail(userEmail)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+userEmail));
 
-            log.info("해당 유저의 권한 : "+admin.getARoleCode().getDesc());
+            log.info("해당 유저의 권한 : "+admin.getKnRoleCode().getDesc());
         }
 
         return ResponseEntity.ok(res.success(data));

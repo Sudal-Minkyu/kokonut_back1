@@ -1,6 +1,6 @@
 package com.app.kokonut.qna;
 
-import com.app.kokonut.admin.entity.QAdmin;
+import com.app.kokonut.admin.QAdmin;
 import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.qna.dtos.QnaDetailDto;
 import com.app.kokonut.qna.dtos.QnaListDto;

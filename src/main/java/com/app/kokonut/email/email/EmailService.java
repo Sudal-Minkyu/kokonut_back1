@@ -78,7 +78,7 @@ public class EmailService {
         HashMap<String, Object> data = new HashMap<>();
 
         // 접속한 사용자 인덱스
-        Admin admin = adminRepository.findByEmail(email)
+        Admin admin = adminRepository.findByKnEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
         emailDetailDto.setEmSenderAdminId(admin.getAdminId());
 
@@ -108,7 +108,7 @@ public class EmailService {
             Long emailGroupIdx = emailDetailDto.getEgId();
             EmailGroupAdminInfoDto emailGroupAdminInfoDto;
             emailGroupAdminInfoDto = emailGroupRepository.findEmailGroupAdminInfoByIdx(emailGroupIdx);
-            adminIdList = emailGroupAdminInfoDto.getAdminIdList();
+            adminIdList = emailGroupAdminInfoDto.getEgAdminIdList();
         }else{
             log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getDesc()));
@@ -117,10 +117,10 @@ public class EmailService {
         // mailSender 실질적인 이메일 전송 부분
         String[] toks = adminIdList.split(",");
         for(String tok : toks){
-            AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByEmailInfo(Long.valueOf(tok));
+            AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByKnEmailInfo(Long.valueOf(tok));
             if(adminEmailInfoDto != null){
-                String reciverEmail = adminEmailInfoDto.getEmail();
-                String reciverName = adminEmailInfoDto.getName();
+                String reciverEmail = adminEmailInfoDto.getKnEmail();
+                String reciverName = adminEmailInfoDto.getKnName();
 
                 log.info("### mailSender을 통해 건별 이메일 전송 시작");
                 log.info("### reciver idx : "+tok + ", senderEmail : " +email+", reciverEmail : "+ reciverEmail);
@@ -168,7 +168,7 @@ public class EmailService {
         // TODO 정상적으로 저장된 경우를 확인하는 방법 알아보기. save 처리가 되던 update 처리가 되던 결과적으로 해당 인덱스는 존재함.
         // sendEamil 객체에서 reciverType에 따라 어드민 인덱스를 조회, 해당 인덱스로 어드민 이메일을 확인한 다음 해당 이메일로 받는 내역을 조회한 다음. 해당 건수가 존재하면 받은걸로 친다고하기엔.
         // 하지만 이런 방법으로 할 경우 이전
-        if(emailRepository.existsByIdx(sendEmail.getEmId())){
+        if(emailRepository.existsByEmId(sendEmail.getEmId())){
             log.info("### 이메일 이력 저장에 성공했습니다. : "+sendEmail.getEmId());
             return ResponseEntity.ok(res.success(data));
         }else{
@@ -206,7 +206,7 @@ public class EmailService {
                     Long emailGroupIdx = emailDetailDto.getEgId();
                     // 메일 그룹 조회 쿼리 동작
                     EmailGroupAdminInfoDto emailGroupAdminInfoDto = emailGroupRepository.findEmailGroupAdminInfoByIdx(emailGroupIdx);
-                    adminIdList = emailGroupAdminInfoDto.getAdminIdList();
+                    adminIdList = emailGroupAdminInfoDto.getEgAdminIdList();
                 }else{
                     log.error("### 받는사람 타입(I:개별,G:그룹)을 알 수 없습니다. :" + receiverType);
                     return ResponseEntity.ok(res.fail(ResponseErrorCode.KO040.getCode(), ResponseErrorCode.KO040.getDesc()));
@@ -217,9 +217,9 @@ public class EmailService {
                 String[] toks = adminIdList.split(",");
                 for(int i = 0; i < toks.length; i++) {
                     String tok = toks[i];
-                    AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByEmailInfo(Long.valueOf(tok));
+                    AdminEmailInfoDto adminEmailInfoDto = adminRepository.findByKnEmailInfo(Long.valueOf(tok));
                     if(adminEmailInfoDto != null){
-                        emailList.append(adminEmailInfoDto.getEmail());
+                        emailList.append(adminEmailInfoDto.getKnEmail());
                         if(i < toks.length - 1) {
                             emailList.append(", ");
                         }
@@ -274,7 +274,7 @@ public class EmailService {
 
             List<String> emailList = new ArrayList<>();
             for (String adminId : adminIdList) {
-                String adminEmail = adminRepository.findByEmailInfo(Long.parseLong(adminId)).getEmail();
+                String adminEmail = adminRepository.findByKnEmailInfo(Long.parseLong(adminId)).getKnEmail();
                 emailList.add(adminEmail); // a001@00.oo.com, a002@00.oo.com, a003@00.oo.com
             }
             StringBuilder adminEmailList = new StringBuilder();

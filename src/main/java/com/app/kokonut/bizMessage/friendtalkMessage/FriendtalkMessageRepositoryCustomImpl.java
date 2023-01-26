@@ -3,6 +3,7 @@ package com.app.kokonut.bizMessage.friendtalkMessage;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageInfoListDto;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageListDto;
 import com.app.kokonut.bizMessage.friendtalkMessage.dto.FriendtalkMessageSearchDto;
+import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -39,29 +40,29 @@ public class FriendtalkMessageRepositoryCustomImpl extends QuerydslRepositorySup
         JPQLQuery<FriendtalkMessageListDto> query = from(friendtalkMessage)
                 .where(friendtalkMessage.companyId.eq(companyId))
                 .select(Projections.constructor(FriendtalkMessageListDto.class,
-                        friendtalkMessage.channelId,
-                        friendtalkMessage.requestId,
-                        friendtalkMessage.status,
-                        friendtalkMessage.regdate
+                        friendtalkMessage.kcChannelId,
+                        friendtalkMessage.fmRequestId,
+                        friendtalkMessage.fmStatus,
+                        friendtalkMessage.insert_date
                 ));
 
-        if(friendtalkMessageSearchDto.getRequestId() != null){
-            query.where(friendtalkMessage.requestId.containsIgnoreCase(friendtalkMessageSearchDto.getRequestId()));
+        if(friendtalkMessageSearchDto.getFmRequestId() != null){
+            query.where(friendtalkMessage.fmRequestId.containsIgnoreCase(friendtalkMessageSearchDto.getFmRequestId()));
         }
 
-        if(friendtalkMessageSearchDto.getStatus() != null){
-            query.where(friendtalkMessage.status.eq(friendtalkMessageSearchDto.getStatus()));
+        if(friendtalkMessageSearchDto.getFmStatus() != null){
+            query.where(friendtalkMessage.fmStatus.eq(friendtalkMessageSearchDto.getFmStatus()));
         }
 
         if(friendtalkMessageSearchDto.getStimeStart() != null){
-            query.where(friendtalkMessage.regdate.goe(friendtalkMessageSearchDto.getStimeStart()));
+            query.where(friendtalkMessage.insert_date.goe(friendtalkMessageSearchDto.getStimeStart()));
         }
 
         if(friendtalkMessageSearchDto.getStimeEnd() != null){
-            query.where(friendtalkMessage.regdate.loe(friendtalkMessageSearchDto.getStimeEnd()));
+            query.where(friendtalkMessage.insert_date.loe(friendtalkMessageSearchDto.getStimeEnd()));
         }
 
-        query.orderBy(friendtalkMessage.regdate.desc());
+        query.orderBy(friendtalkMessage.insert_date.desc());
 
         final List<FriendtalkMessageListDto> friendtalkMessageListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(friendtalkMessageListDtos, pageable, query.fetchCount());
@@ -74,18 +75,18 @@ public class FriendtalkMessageRepositoryCustomImpl extends QuerydslRepositorySup
         QCompany company = QCompany.company;
 
         JPQLQuery<FriendtalkMessageInfoListDto> query = from(friendtalkMessage)
-                .innerJoin(company).on(company.idx.eq(companyId))
-                .where(friendtalkMessage.companyId.eq(company.idx))
+                .innerJoin(company).on(company.companyId.eq(companyId))
+                .where(friendtalkMessage.companyId.eq(company.companyId))
                 .select(Projections.constructor(FriendtalkMessageInfoListDto.class,
-                        friendtalkMessage.idx,
-                        friendtalkMessage.requestId,
-                        friendtalkMessage.transmitType,
-                        friendtalkMessage.status
+                        friendtalkMessage.fmId,
+                        friendtalkMessage.fmRequestId,
+                        friendtalkMessage.fmTransmitType,
+                        friendtalkMessage.fmStatus
                 ));
 
         if(state.equals("1")){
             // state 값이 "1"일 경우 : statue 값이 success, fail, canceled, done, stale 은 제외한다.
-            query.where(friendtalkMessage.status.in("init", "processing", "reserved", "scheduled", "ready"));
+            query.where(friendtalkMessage.fmStatus.in("init", "processing", "reserved", "scheduled", "ready"));
         }
 
         return query.fetch();

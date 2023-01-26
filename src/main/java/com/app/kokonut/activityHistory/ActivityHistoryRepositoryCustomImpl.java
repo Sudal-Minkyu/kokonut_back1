@@ -1,6 +1,7 @@
 package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.*;
+import com.app.kokonut.admin.QAdmin;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -252,11 +253,12 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
     public List<ActivityHistoryInfoListDto> findByActivityHistoryBycompanyIdAndTypeList(Long companyId, Integer ahType) {
 
         QActivityHistory activityHistory = QActivityHistory.activityHistory;
+        QAdmin admin = QAdmin.admin;
 
         JPQLQuery<ActivityHistoryInfoListDto> query = from(activityHistory)
+                .innerJoin(admin).on(admin.adminId.eq(activityHistory.adminId))
                 .select(Projections.constructor(ActivityHistoryInfoListDto.class,
                     activityHistory.ahId,
-                    activityHistory.companyId,
                     activityHistory.adminId,
                     activityHistory.activityCode,
                     activityHistory.ahActivityDetail,
@@ -267,7 +269,7 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
                 ));
 
         if(companyId != null) {
-            query.where(activityHistory.companyId.eq(companyId));
+            query.where(admin.companyId.eq(companyId));
         }
 
         if(ahType != null) {

@@ -46,13 +46,13 @@ public class EmailRestController {
     }
 
     @ApiOperation(value="이메일 상세보기", notes="메일 상세 내용 조회")
-    @GetMapping("/sendEmail/detail/{idx}")
+    @GetMapping("/sendEmail/detail/{emId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> sendEmailDetail(@PathVariable("idx") Integer idx) {
-        return emailService.sendEmailDetail(idx);
+    public ResponseEntity<Map<String,Object>> sendEmailDetail(@PathVariable("emId") Long emId) {
+        return emailService.sendEmailDetail(emId);
     }
 
     @ApiOperation(value="이메일 발송 대상 조회", notes="메일 발송 대상 선택을 위한 조회 - 그룹")

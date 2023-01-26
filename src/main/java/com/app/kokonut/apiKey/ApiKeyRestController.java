@@ -1,8 +1,10 @@
 package com.app.kokonut.apiKey;
 
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
+import com.app.kokonut.apiKey.dtos.ApiKeySaveDto;
 import com.app.kokonut.apiKey.dtos.ApiKeySetDto;
 import com.app.kokonut.auth.jwt.SecurityUtil;
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.common.AjaxResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -22,13 +24,28 @@ import java.util.Map;
 @RequestMapping("/v1/api/ApiKey")
 public class ApiKeyRestController {
 
-//    private Logger logger = LoggerFactory.getLogger(ApiKeyRestController.class);
-
     private final ApiKeyService apiKeyService;
 
     @Autowired
     public ApiKeyRestController(ApiKeyService apiKeyService){
         this.apiKeyService = apiKeyService;
+    }
+
+
+    /**
+     * APIKey 발급 -> JWT토큰 존재해야 발급가능
+     */
+    @PostMapping("/apiKeyIssue")
+    @ApiOperation(value = "APIKey 발급", notes = "APIKey를 발급해준다.")
+    @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+    public ResponseEntity<Map<String,Object>> apiKeyIssue(@RequestBody ApiKeySaveDto apiKeySaveDto){
+        log.info("APIKey 발급");
+//        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        JwtFilterDto jwtFilterDto = JwtFilterDto.builder()
+                .email("woody@kokonut.me")
+                .role("ROLE")
+                .build();
+        return apiKeyService.apiKeyIssue(jwtFilterDto, apiKeySaveDto);
     }
 
 //    /**

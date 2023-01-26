@@ -17,7 +17,7 @@ public interface AdminRepositoryCustom {
 
     AdminCompanyInfoDto findByCompanyInfo(String aEmail);
 
-    AdminEmailInfoDto findByEmailInfo(Long adminId);
+    AdminEmailInfoDto findByKnEmailInfo(Long adminId);
 
     List<AdminEmailInfoDto> findSystemAdminEmailInfo();
 

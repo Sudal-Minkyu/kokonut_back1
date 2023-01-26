@@ -59,19 +59,19 @@ class AuthKnServiceTest {
     private final String phoneNumber = "01022223344";
 
     private final AuthRequestDto.SignUp signUp = AuthRequestDto.SignUp.builder()
-            .email(email)
-            .password(password)
-            .passwordConfirm(password)
-            .businessNumber("11112222")
-            .companyTel("01022223333")
-            .phoneNumber(phoneNumber)
-            .representative("테스트1")
-            .name("테스트명")
-            .businessType("Woody Test")
-            .companyName("회사명")
-            .companyAddressNumber("우편주소")
-            .companyAddress("주소")
-            .companyAddressDetail("상세주소")
+            .knEmail(email)
+            .knPassword(password)
+            .knPasswordConfirm(password)
+            .cpBusinessNumber("11112222")
+            .cpTel("01022223333")
+            .knPhoneNumber(phoneNumber)
+            .cpRepresentative("테스트1")
+            .knName("테스트명")
+            .cpBusinessType("Woody Test")
+            .cpName("회사명")
+            .cpAddressNumber("우편주소")
+            .cpAddress("주소")
+            .cpAddressDetail("상세주소")
             .build();
 
     private String testAccessToken = "";
@@ -110,19 +110,19 @@ class AuthKnServiceTest {
         GoogleOtpGenerateDto googleOtpGenerateDto = googleOTP.generate(testemail);
 
         Admin admin = Admin.builder()
-                .email(testemail)
-                .password(passwordEncoder.encode(password))
-                .phoneNumber(testphoneNumber)
-                .otpKey(googleOtpGenerateDto.getOtpKey())
-                .roleName(AuthorityRole.ROLE_MASTER)
-                .regdate(LocalDateTime.now())
+                .knEmail(testemail)
+                .knPassword(passwordEncoder.encode(password))
+                .knPhoneNumber(testphoneNumber)
+                .knOtpKey(googleOtpGenerateDto.getOtpKey())
+                .knRoleCode(AuthorityRole.ROLE_MASTER)
+                .insert_date(LocalDateTime.now())
                 .build();
 
         adminRepository.save(admin);
 
         Company company = new Company();
-        company.setBusinessNumber("123456");
-        company.setRegdate(LocalDateTime.now());
+        company.setCpBusinessNumber("123456");
+        company.setInsert_date(LocalDateTime.now());
         companyRepository.save(company);
 
         AuthRequestDto.Login login = new AuthRequestDto.Login();
@@ -160,12 +160,12 @@ class AuthKnServiceTest {
         // when
         ResponseEntity<Map<String,Object>> response =  authService.signUp(signUp, servletRequest, servletResponse);
 
-        Admin admin = adminRepository.findByEmail(email)
+        Admin admin = adminRepository.findByKnEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'Admin' 입니다."));
 
         // then
-        assertEquals(email,admin.getEmail());
-        assertEquals(AuthorityRole.ROLE_MASTER,admin.getRoleName());
+        assertEquals(email,admin.getKnEmail());
+        assertEquals(AuthorityRole.ROLE_MASTER,admin.getKnRoleCode());
 
         assertEquals("SUCCESS", Objects.requireNonNull(response.getBody()).get("message"));
         assertEquals(200, Objects.requireNonNull(response.getBody()).get("status"));
@@ -177,7 +177,7 @@ class AuthKnServiceTest {
     public void signUpTest2() throws IOException {
 
         // given
-        signUp.setEmail(testemail);
+        signUp.setKnEmail(testemail);
 
         // when
         ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, servletRequest, servletResponse);
@@ -194,7 +194,7 @@ class AuthKnServiceTest {
     public void signUpTest3() throws IOException {
 
         // given
-        signUp.setPhoneNumber(testphoneNumber);
+        signUp.setKnPhoneNumber(testphoneNumber);
 
         // when
         ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, servletRequest, servletResponse);
@@ -211,7 +211,7 @@ class AuthKnServiceTest {
     public void signUpTest4() throws IOException {
 
         // given
-        signUp.setPasswordConfirm("test");
+        signUp.setKnPasswordConfirm("test");
 
         // when
         ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, servletRequest, servletResponse);
@@ -228,7 +228,7 @@ class AuthKnServiceTest {
     public void signUpTest5() throws IOException {
 
         // given
-        signUp.setBusinessNumber("123456");
+        signUp.setCpBusinessNumber("123456");
 
         // when
         ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, servletRequest, servletResponse);
@@ -246,15 +246,15 @@ class AuthKnServiceTest {
     public String authTokenTest1() throws NoSuchAlgorithmException, InvalidKeyException {
 
         // given
-        Admin admin = adminRepository.findByEmail(testemail)
+        Admin admin = adminRepository.findByKnEmail(testemail)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'Admin' 입니다."));
 
         AuthRequestDto.Login login = new AuthRequestDto.Login();
-        login.setEmail(admin.getEmail());
+        login.setEmail(admin.getKnEmail());
         login.setPassword(password);
 
         Base32 codec = new Base32();
-        byte[] decodedKey = codec.decode(admin.getOtpKey());
+        byte[] decodedKey = codec.decode(admin.getKnOtpKey());
         long wave = new java.util.Date().getTime() / 30000;
         long hash = GoogleOTP.verify_code(decodedKey, wave + 2);
 
@@ -327,8 +327,8 @@ class AuthKnServiceTest {
 
         // given
         AuthRequestDto.Login login = new AuthRequestDto.Login();
-        login.setEmail(signUp.getEmail());
-        login.setPassword(signUp.getPassword());
+        login.setEmail(signUp.getKnEmail());
+        login.setPassword(signUp.getKnPassword());
         login.setOtpValue("123456");
 
         // when
@@ -364,15 +364,15 @@ class AuthKnServiceTest {
     public void authTokenTest3_4() throws NoSuchAlgorithmException, InvalidKeyException {
 
         // given
-        Admin admin = adminRepository.findByEmail(testemail)
+        Admin admin = adminRepository.findByKnEmail(testemail)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'Admin' 입니다."));
 
         AuthRequestDto.Login login = new AuthRequestDto.Login();
-        login.setEmail(admin.getEmail());
+        login.setEmail(admin.getKnEmail());
         login.setPassword("123456");
 
         Base32 codec = new Base32();
-        byte[] decodedKey = codec.decode(admin.getOtpKey());
+        byte[] decodedKey = codec.decode(admin.getKnOtpKey());
         long wave = new java.util.Date().getTime() / 30000;
         long hash = GoogleOTP.verify_code(decodedKey, wave + 2);
 
@@ -565,17 +565,17 @@ class AuthKnServiceTest {
     public void checkOTPTest1_1() throws NoSuchAlgorithmException, InvalidKeyException {
 
         // given
-        Admin admin = adminRepository.findByEmail(testemail)
+        Admin admin = adminRepository.findByKnEmail(testemail)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'Admin' 입니다."));
 
         Base32 codec = new Base32();
-        byte[] decodedKey = codec.decode(admin.getOtpKey());
+        byte[] decodedKey = codec.decode(admin.getKnOtpKey());
         long wave = new java.util.Date().getTime() / 30000;
         long hash = GoogleOTP.verify_code(decodedKey, wave + 2);
 
         // when
         AdminGoogleOTPDto.GoogleOtpCertification googleOtpCertification = new AdminGoogleOTPDto.GoogleOtpCertification();
-        googleOtpCertification.setOtpKey(admin.getOtpKey());
+        googleOtpCertification.setKnOtpKey(admin.getKnOtpKey());
         googleOtpCertification.setOtpValue(String.valueOf(hash));
 
         ResponseEntity<Map<String,Object>> response =  authService.checkOTP(googleOtpCertification);
@@ -594,12 +594,12 @@ class AuthKnServiceTest {
     public void checkOTPTest1_2() {
 
         // given
-        Admin admin = adminRepository.findByEmail(testemail)
+        Admin admin = adminRepository.findByKnEmail(testemail)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'Admin' 입니다."));
 
         // when
         AdminGoogleOTPDto.GoogleOtpCertification googleOtpCertification = new AdminGoogleOTPDto.GoogleOtpCertification();
-        googleOtpCertification.setOtpKey(admin.getOtpKey());
+        googleOtpCertification.setKnOtpKey(admin.getKnOtpKey());
         googleOtpCertification.setOtpValue("123456");
 
         ResponseEntity<Map<String,Object>> response =  authService.checkOTP(googleOtpCertification);
@@ -615,12 +615,12 @@ class AuthKnServiceTest {
     public void checkOTPTest1_3() {
 
         // given
-        Admin admin = adminRepository.findByEmail(testemail)
+        Admin admin = adminRepository.findByKnEmail(testemail)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 'Admin' 입니다."));
 
         // when
         AdminGoogleOTPDto.GoogleOtpCertification googleOtpCertification = new AdminGoogleOTPDto.GoogleOtpCertification();
-        googleOtpCertification.setOtpKey(admin.getOtpKey());
+        googleOtpCertification.setKnOtpKey(admin.getKnOtpKey());
         googleOtpCertification.setOtpValue("12a4b5c6");
 
         ResponseEntity<Map<String,Object>> response =  authService.checkOTP(googleOtpCertification);

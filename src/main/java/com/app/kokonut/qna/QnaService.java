@@ -64,7 +64,7 @@ public class QnaService {
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
         // 접속 정보에서 qnaId 가져오기
-        Admin admin = adminRepository.findByEmail(email)
+        Admin admin = adminRepository.findByKnEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
 
         Page<QnaListDto> qnaListDtos = qnaRepository.findQnaPage(userRole, email, qnaSearchDto, pageable);
@@ -87,7 +87,7 @@ public class QnaService {
                 log.error("해당 qnaId의 1:1 문의 게시글을 조회할 수 없습니다. 문의 게시글 qnaId : "+qnaId);
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO054.getCode(), ResponseErrorCode.KO054.getDesc()));
             }else{
-                Admin admin = adminRepository.findByEmail(email)
+                Admin admin = adminRepository.findByKnEmail(email)
                         .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
                 if("[SYSTEM]".equals(userRole)) {
                     // 시스템 사용자면 모두 조회 가능
@@ -127,7 +127,7 @@ public class QnaService {
             Qna saveQna = new Qna();
 
             // 접속 정보에서 qnaId 가져오기
-            Admin admin = adminRepository.findByEmail(email)
+            Admin admin = adminRepository.findByKnEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
 
             // 1:1 문의 등록
@@ -199,8 +199,8 @@ public class QnaService {
                 String contents = "문의하기 질문이 등록 되었습니다.<br> 등록자 이메일 : "+email;
 
                 for(AdminEmailInfoDto systemAdminInfo : systemAdminInfos){
-                    String toEmail = systemAdminInfo.getEmail();
-                    String toName = systemAdminInfo.getName();
+                    String toEmail = systemAdminInfo.getKnEmail();
+                    String toName = systemAdminInfo.getKnName();
                     log.info("toEmail" + toEmail + ", toName" + toName);
                     if (toEmail == null || toName == null ){
                         log.error("시스템관리자 메일 정보를 찾을 수 없습니다.");
@@ -230,7 +230,7 @@ public class QnaService {
 //            Qna saveQna = new Qna();
 
             // 접속 정보에서 qnaId 가져오기
-            Admin admin = adminRepository.findByEmail(email)
+            Admin admin = adminRepository.findByKnEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
 
             if(qnaAnswerSaveDto.getQnaId() != null){

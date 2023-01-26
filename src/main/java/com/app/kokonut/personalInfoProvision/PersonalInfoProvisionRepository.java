@@ -21,12 +21,15 @@ public interface PersonalInfoProvisionRepository extends JpaRepository<PersonalI
     /////////////////////////////////////////////////////////////////
 //    String selectProvisionLatestNumber(String prefix); // 변경전 - RepositoryCustom 완료 @@@@
 //    Map<String, Object> selectProvision(String number); // 변경전 - RepositoryCustom 완료 @@@@
-    Optional<PersonalInfoProvision> findPersonalInfoProvisionBycompanyIdAndNumber(Long companyId, String number); // selectProvisionByNumberAndcompanyId -> 변경후
-    Optional<PersonalInfoProvision> findPersonalInfoProvisionByRecipientEmailAndNumber(String number, String recipientEmail); // selectProvisionByNumberAndRecipientEmail -> 변경후
+
+//    Optional<PersonalInfoProvision> findPersonalInfoProvisionBycompanyIdAndNumber(Long companyId, String number); // selectProvisionByNumberAndcompanyId -> 변경후
+//    Optional<PersonalInfoProvision> findPersonalInfoProvisionByRecipientEmailAndNumber(String number, String recipientEmail); // selectProvisionByNumberAndRecipientEmail -> 변경후
+
 //    List<HashMap<String, Object>> selectProvisionList(HashMap<String, Object> map); // 변경전 - RepositoryCustom 완료 @@@@
 //    int selectProvisionListCount(Map<String, Object> map); // 변경전 - RepositoryCustom 완료 @@@@ -> selectProvisionList의 size() 해도 되지않을까?... 일단 이건 이렇게 조치
-    Optional<PersonalInfoProvision> findProvisionInfoProvisionByStartDate(Date startDate); // selectProvisionListByStartDate -> 변경후
-    Optional<PersonalInfoProvision> findProvisionInfoProvisionByRecipientEmail(String recipientEmail); // selectProvisionListByRecipientEmail -> 변경후
+
+//    Optional<PersonalInfoProvision> findProvisionInfoProvisionByStartDate(Date startDate); // selectProvisionListByStartDate -> 변경후
+//    Optional<PersonalInfoProvision> findProvisionInfoProvisionByRecipientEmail(String recipientEmail); // selectProvisionListByRecipientEmail -> 변경후
 
 //    int insertProvision(PersonalInfoProvisionDto personalInfoProvisionDto);
 //    int updateProvision(PersonalInfoProvisionDto personalInfoProvisionDto);

@@ -1,6 +1,6 @@
 package com.app.kokonut.revisedDocument;
 
-import com.app.kokonut.admin.entity.QAdmin;
+import com.app.kokonut.admin.QAdmin;
 import com.app.kokonut.revisedDocument.dtos.RevDocListDto;
 import com.app.kokonut.revisedDocument.dtos.RevDocSearchDto;
 import com.app.kokonut.revisedDocumentFile.QRevisedDocumentFile;
@@ -68,7 +68,7 @@ public class RevisedDocumentRepositoryCustomImpl extends QuerydslRepositorySuppo
                         revisedDocumentFile.rdfFilename
                 ));
 
-            query.where(revisedDocument.companyId.eq(companyId).and(revisedDocument.insert_date.between(revDocSearchDto.getStimeStart(), revDocSearchDto.getStimeEnd()))
+            query.where(admin.companyId.eq(companyId).and(revisedDocument.insert_date.between(revDocSearchDto.getStimeStart(), revDocSearchDto.getStimeEnd()))
         );
 
         query.orderBy(revisedDocument.insert_date.desc());

@@ -39,7 +39,7 @@ public class KnSettingService {
         HashMap<String, Object> data = new HashMap<>();
 
         // 접속정보에서 companyId 가져오기
-        Admin admin = adminRepository.findByEmail(email)
+        Admin admin = adminRepository.findByKnEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
         Long companyId = admin.getCompanyId();
 
@@ -72,7 +72,7 @@ public class KnSettingService {
         HashMap<String, Object> data = new HashMap<>();
 
         // 접속정보에서 companyId 가져오기
-        Admin admin = adminRepository.findByEmail(email)
+        Admin admin = adminRepository.findByKnEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
         Long companyId = admin.getCompanyId();
 
@@ -100,7 +100,7 @@ public class KnSettingService {
 //    public ResponseEntity<Map<String, Object>> settingDelete(String userRole, String email) {
 //        log.info("settingSave 호출, userRole : " + userRole);
 //        // 접속정보에서 companyId 가져오기
-//        Admin admin = adminRepository.findByEmail(email)
+//        Admin admin = adminRepository.findByKnEmail(email)
 //                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
 //        Long companyId = admin.getCompanyId();
 //

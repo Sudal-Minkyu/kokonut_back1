@@ -19,7 +19,7 @@ public interface KakaoChannelRepository extends JpaRepository<KakaoChannel, Long
 
     @Transactional
     @Modifying
-    @Query("delete from KakaoChannel a where a.channelId = :channelId")
-    void findByKakaoChannelDelete(String channelId);
+    @Query("delete from KakaoChannel a where a.kcChannelId = :kcChannelId")
+    void findByKakaoChannelDelete(String kcChannelId);
 
 }

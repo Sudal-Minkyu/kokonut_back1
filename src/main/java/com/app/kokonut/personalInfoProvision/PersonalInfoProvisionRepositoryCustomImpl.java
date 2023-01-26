@@ -1,6 +1,6 @@
 package com.app.kokonut.personalInfoProvision;
 
-import com.app.kokonut.admin.entity.QAdmin;
+import com.app.kokonut.admin.QAdmin;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionDto;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionListDto;
 import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionMapperDto;
@@ -182,7 +182,7 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
             sb.append("AND a.REASON = :reason \n");
         }
 
-        if(personalInfoProvisionMapperDto.getadminId() != 0 && personalInfoProvisionMapperDto.getadminId() != null){
+        if(personalInfoProvisionMapperDto.getAdminId() != 0 && personalInfoProvisionMapperDto.getAdminId() != null){
             sb.append("AND a.ADMIN_IDX = :adminId \n");
         }
 
@@ -234,8 +234,8 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
             query.setParameter("reason", personalInfoProvisionMapperDto.getReason());
         }
 
-        if(personalInfoProvisionMapperDto.getadminId() != 0 && personalInfoProvisionMapperDto.getadminId() != null){
-            query.setParameter("adminId", personalInfoProvisionMapperDto.getadminId());
+        if(personalInfoProvisionMapperDto.getAdminId() != 0 && personalInfoProvisionMapperDto.getAdminId() != null){
+            query.setParameter("adminId", personalInfoProvisionMapperDto.getAdminId());
         }
 
         if(personalInfoProvisionMapperDto.getRecipientType() != 0 && personalInfoProvisionMapperDto.getRecipientType() != null){

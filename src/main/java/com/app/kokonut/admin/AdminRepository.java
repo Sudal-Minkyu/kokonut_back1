@@ -9,12 +9,12 @@ import java.util.Optional;
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Long>, JpaSpecificationExecutor<Admin>, AdminRepositoryCustom {
 
-    Optional<Admin> findByEmail(String email);
+    Optional<Admin> findByKnEmail(String knEmail);
 
-    boolean existsByEmail(String email);
+    boolean existsByKnEmail(String knEmail);
 
-    boolean existsByPhoneNumber(String phoneNumber);
+    boolean existsByKnPhoneNumber(String knPhoneNumber);
 
-    boolean existsByEmailAuthNumber(String emailAuthNumber);
+    boolean existsByKnEmailAuthNumber(String knEmailAuthNumber);
 
 }

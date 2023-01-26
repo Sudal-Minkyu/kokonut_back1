@@ -3,7 +3,6 @@ package com.app.kokonut.admin;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
-import com.app.kokonut.admin.entity.QAdmin;
 import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
@@ -64,7 +63,7 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
     }
 
     @Override
-    public AdminEmailInfoDto findByEmailInfo(Long adminId) {
+    public AdminEmailInfoDto findByKnEmailInfo(Long adminId) {
         QAdmin admin = QAdmin.admin;
 
         JPQLQuery<AdminEmailInfoDto> query = from(admin)
@@ -81,7 +80,7 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
     public List<AdminEmailInfoDto> findSystemAdminEmailInfo() {
         QAdmin admin = QAdmin.admin;
         JPQLQuery<AdminEmailInfoDto> query = from(admin)
-                .where(admin.knState.eq(1), admin.aRoleCode.eq(AuthorityRole.ROLE_SYSTEM))
+                .where(admin.knState.eq(1), admin.knRoleCode.eq(AuthorityRole.ROLE_SYSTEM))
                 .select(Projections.constructor(AdminEmailInfoDto.class,
                         admin.knEmail,
                         admin.knName

@@ -75,7 +75,7 @@ public class CompanyService {
     /**
      * 회자 사업자 중복검사 체크
      */
-//    SelectCompanyCountByBusinessNumber -> "existsByBusinessNumber"로 대체
+//    SelectCompanyCountByBusinessNumber -> "existsByCpBusinessNumber"로 대체
 
     /**
      * 회사정보 상세보기

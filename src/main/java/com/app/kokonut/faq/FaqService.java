@@ -80,7 +80,7 @@ public class FaqService {
         HashMap<String, Object> data = new HashMap<>();
         if("[SYSTEM]".equals(userRole)){
             // 접속 정보에서 관리자 정보 가져오기, faqId, name
-            Admin admin = adminRepository.findByEmail(email)
+            Admin admin = adminRepository.findByKnEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
             Long adminId = admin.getAdminId();
             String adminName = admin.getKnName();

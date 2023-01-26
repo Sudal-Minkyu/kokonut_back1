@@ -26,17 +26,17 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return adminRepository.findByEmail(username)
+        return adminRepository.findByKnEmail(username)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+username));
     }
 
     // 해당하는 User의 데이터가 존재한다면 UserDetails 객체로 만들어서 리턴
     private UserDetails createUserDetails(Admin admin) {
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(admin.getRoleName().getDesc());
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(admin.getKnRoleCode().getDesc());
 
         return new User(
-                String.valueOf(admin.getEmail()),
+                String.valueOf(admin.getKnEmail()),
                 admin.getPassword(),
                 Collections.singleton(grantedAuthority)
         );

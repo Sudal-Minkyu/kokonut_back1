@@ -121,7 +121,6 @@ public class ActivityHistoryService {
 
         ActivityHistory activityHistory = new ActivityHistory();
         activityHistory.setAhType(ahType);
-        activityHistory.setCompanyId(companyId);
         activityHistory.setAdminId(adminId);
         activityHistory.setActivityCode(activityCode);
         activityHistory.setAhActivityDetail(ahActivityDetail);

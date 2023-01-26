@@ -107,7 +107,7 @@ public class DynamicUserService {
 		log.info("companyCode : "+companyCode);
 
 		// 사업자번호가 정상적으로 등록되어 있는지 확인
-		if (!companyRepository.existsByCompanyCode(companyCode)) {
+		if (!companyRepository.existsByCpCode(companyCode)) {
 			log.error("등록되지 않는 사업자번호입니다.");
 			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO000.getCode(), ResponseErrorCode.KO000.getDesc()));
 		}
@@ -286,7 +286,7 @@ public class DynamicUserService {
 //            activityHistory = activityHistoryService.InsertActivityHistory(2, companyId, adminId, 16, "", reason, CommonUtil.clientIp(), 0);
 
 		// 사업자번호가 정상적으로 등록되어 있는지 확인
-		if (!companyRepository.existsByCompanyCode(companyCode)) {
+		if (!companyRepository.existsByCpCode(companyCode)) {
 			log.error("등록되지 않는 사업자번호입니다.");
 			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO000.getCode(), ResponseErrorCode.KO000.getDesc()));
 		}

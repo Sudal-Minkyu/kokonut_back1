@@ -51,7 +51,7 @@ public class CollectInformationService {
         AjaxResponse res = new AjaxResponse();
 
         // 접속정보에서 필요한 정보 가져오기.
-        Admin admin = adminRepository.findByEmail(email)
+        Admin admin = adminRepository.findByKnEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
 
         Long companyId = admin.getCompanyId();
@@ -111,7 +111,7 @@ public class CollectInformationService {
         HashMap<String, Object> data = new HashMap<>();
 
         // 접속정보에서 필요한 정보 가져오기.
-        Admin admin = adminRepository.findByEmail(email)
+        Admin admin = adminRepository.findByKnEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
         AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 
@@ -194,7 +194,7 @@ public class CollectInformationService {
         HashMap<String, Object> data = new HashMap<>();
 
         // 접속정보에서 필요한 정보 가져오기.
-        Admin admin = adminRepository.findByEmail(email)
+        Admin admin = adminRepository.findByKnEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
         AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(email);
 

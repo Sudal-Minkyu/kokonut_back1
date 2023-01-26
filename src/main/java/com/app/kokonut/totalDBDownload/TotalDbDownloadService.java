@@ -103,7 +103,7 @@ public class TotalDbDownloadService {
         AdminOtpKeyDto adminOtpKeyDto = adminRepository.findByOtpKey(email);
         if(adminOtpKeyDto != null) {
             // OTP 검증 절차
-            boolean auth = googleOTP.checkCode(otpValue, adminOtpKeyDto.getOtpKey());
+            boolean auth = googleOTP.checkCode(otpValue, adminOtpKeyDto.getKnOtpKey());
 //			log.info("auth : " + auth);
 
             if (!auth) {

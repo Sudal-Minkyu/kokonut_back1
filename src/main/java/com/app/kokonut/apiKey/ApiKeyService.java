@@ -1,7 +1,15 @@
 package com.app.kokonut.apiKey;
 
+import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.apiKey.dtos.ApiKeySaveDto;
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
+import com.app.kokonut.common.AjaxResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Woody
@@ -12,22 +20,42 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApiKeyService {
 
+    private final ApiKeyRepository apiKeyRepository;
+    private final AdminRepository adminRepository;
+
+    public ApiKeyService(ApiKeyRepository apiKeyRepository, AdminRepository adminRepository){
+        this.apiKeyRepository = apiKeyRepository;
+        this.adminRepository = adminRepository;
+    }
+
+    public ResponseEntity<Map<String, Object>> apiKeyIssue(JwtFilterDto jwtFilterDto, ApiKeySaveDto apiKeySaveDto) {
+        log.info("apiKeyIssue 호출");
+
+        log.info("jwtFilterDto : "+jwtFilterDto);
+        log.info("apiKeySaveDto : "+apiKeySaveDto);
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+
+
+
+
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+
+
 //    private final AjaxResponse res = new AjaxResponse();
 //    private final HashMap<String, Object> data = new HashMap<>();
 //
-//    private final ApiKeyRepository apiKeyRepository;
-//    private final AdminRepository adminRepository;
 //
-//    public ApiKeyService(ApiKeyRepository apiKeyRepository, AdminRepository adminRepository){
-//        this.apiKeyRepository = apiKeyRepository;
-//        this.adminRepository = adminRepository;
-//    }
-//
-//    // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
-//    public Long validateApiKey(String apikey, String email) {
-//        return apiKeyRepository.findByCheck(apikey, email);
-//    }
-//
+    // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
+    public Long validateApiKey(String apikey, String email) {
+        return apiKeyRepository.findByCheck(apikey, email);
+    }
+
 //    /**
 //     * Api Key Insert
 //     */
@@ -389,7 +417,7 @@ public class ApiKeyService {
 //            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO067.getCode(), ResponseErrorCode.KO067.getDesc()));
 //        }else{
 //            // 이메일을 통해 계정 정보 가져오기.
-//            Admin admin = adminRepository.findByEmail(email)
+//            Admin admin = adminRepository.findByKnEmail(email)
 //                    .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
 //            Long adminId = admin.getAdminId();
 //            Long companyId = admin.getCompanyId();
@@ -439,7 +467,7 @@ public class ApiKeyService {
 //                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO000.getCode(), ResponseErrorCode.KO000.getDesc()));
 //            }else{
 //                // 이메일을 통해 계정 정보 가져오기.
-//                Admin admin = adminRepository.findByEmail(email)
+//                Admin admin = adminRepository.findByKnEmail(email)
 //                        .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
 //                Long adminId = admin.getAdminId();
 //                Long companyId = admin.getCompanyId();
@@ -493,7 +521,7 @@ public class ApiKeyService {
 //            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO067.getCode(), ResponseErrorCode.KO067.getDesc()));
 //        }else{
 //            // 이메일을 통해 계정 정보 가져오기.
-//            Admin admin = adminRepository.findByEmail(email)
+//            Admin admin = adminRepository.findByKnEmail(email)
 //                    .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + email));
 //            int modifierIdx = admin.getAdminId();
 //            String userName = admin.getKnName();

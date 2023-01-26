@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -74,6 +75,6 @@ public class EmailHistory implements Serializable {
      */
     @ApiModelProperty("발송일시")
     @Column(name = "eh_regdate", nullable = false)
-    private Date ehRegdate;
+    private LocalDateTime ehRegdate;
 
 }

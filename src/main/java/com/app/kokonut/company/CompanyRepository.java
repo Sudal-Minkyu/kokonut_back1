@@ -13,8 +13,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, Long>, JpaSpecificationExecutor<Company>, CompanyRepositoryCustom {
 
-    boolean existsByBusinessNumber(String businessNumber);
+    boolean existsByCpBusinessNumber(String businessNumber);
 
-    boolean existsByCompanyCode(String companyCode);
+    boolean existsByCpCode(String companyCode);
 
 }

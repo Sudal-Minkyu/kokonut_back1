@@ -1,6 +1,6 @@
 package com.app.kokonut.apiKey;
 
-import com.app.kokonut.admin.entity.QAdmin;
+import com.app.kokonut.admin.QAdmin;
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.company.QCompany;
@@ -396,21 +396,21 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 //        return query.fetch();
 //    }
 //
-//    // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
-//    @Override
-//    public Long findByCheck(String key, String email) {
-//
-//        QApiKey apiKey = QApiKey.apiKey;
-//        QAdmin admin = QAdmin.admin;
-//
-//        JPQLQuery<Long> query = from(apiKey)
-//                .innerJoin(admin).on(apiKey.adminId.eq(admin.adminId))
-//                .where(apiKey.key.eq(key).and(admin.email.eq(email)))
-//                .select(Projections.constructor(Long.class,
-//                        apiKey.count()
-//                ));
-//
-//        return query.fetchOne();
-//    }
+    // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
+    @Override
+    public Long findByCheck(String akKey, String knEmail) {
+
+        QApiKey apiKey = QApiKey.apiKey;
+        QAdmin admin = QAdmin.admin;
+
+        JPQLQuery<Long> query = from(apiKey)
+                .innerJoin(admin).on(apiKey.adminId.eq(admin.adminId))
+                .where(apiKey.akKey.eq(akKey).and(admin.knEmail.eq(knEmail)))
+                .select(Projections.constructor(Long.class,
+                        apiKey.count()
+                ));
+
+        return query.fetchOne();
+    }
 
 }

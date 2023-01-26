@@ -892,8 +892,8 @@ public class NaverCloudPlatformService {
         String plusFriendId = alimtalkMessageSendDto.getKcChannelId();
         String content = alimtalkMessageSendDto.getTemplateContent();
 
-        String emphasizeType = alimtalkMessageSendDto.getEmphasizeType();
-        String emphasizeTitle = alimtalkMessageSendDto.getEmphasizeTitle();
+        String emphasizeType = alimtalkMessageSendDto.getAtEmphasizeType();
+        String emphasizeTitle = alimtalkMessageSendDto.getAtEmphasizeTitle();
 
         bodyJson.put("plusFriendId", plusFriendId);
         bodyJson.put("templateCode", templateCode);
@@ -950,11 +950,11 @@ public class NaverCloudPlatformService {
 		}
 
         //발송타입(즉시, 예약)
-        String transmitDateType = alimtalkMessageSendDto.getTransmitType();
+        String transmitDateType = alimtalkMessageSendDto.getAmTransmitType();
 
         // 예약발송 일 경우
         if(transmitDateType.equals("reservation")) {
-            String reservationDate = alimtalkMessageSendDto.getReservationDate();
+            String reservationDate = alimtalkMessageSendDto.getAmReservationDate();
             if (reservationDate != null) {
                 bodyJson.put("reserveTime", reservationDate);
             }

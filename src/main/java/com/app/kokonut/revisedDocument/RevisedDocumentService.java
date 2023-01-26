@@ -68,7 +68,7 @@ public class RevisedDocumentService {
     public ResponseEntity<Map<String, Object>> revDocList(String userRole, String email, RevDocSearchDto revDocSearchDto, Pageable pageable) {
         log.info("revDocList 호출, userRole : " + userRole);
         // 접속 정보에서 idx 가져오기
-        Admin admin = adminRepository.findByEmail(email)
+        Admin admin = adminRepository.findByKnEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
         // TODO 메뉴 권한에 대한 체크 부분
         if ("[MASTER]".equals(userRole) || "[ADMIN]".equals(userRole)) {
@@ -91,7 +91,7 @@ public class RevisedDocumentService {
             RevisedDocument revDoc = new RevisedDocument();
 
             // 접속 정보에서 idx 가져오기
-            Admin admin = adminRepository.findByEmail(email)
+            Admin admin = adminRepository.findByKnEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
             Long adminId = admin.getAdminId();
 

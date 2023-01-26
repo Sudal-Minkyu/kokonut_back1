@@ -248,7 +248,7 @@ public class Admin implements UserDetails {
     @Enumerated(EnumType.STRING)
     @ApiModelProperty("권한(시스템관리자:ROLE_SYSTEM, 관리자 : ROLE_ADMIN, 마스터관리자:ROLE_MASTER)")
     @Column(name="kn_role_code")
-    private AuthorityRole aRoleCode;
+    private AuthorityRole knRoleCode;
 
     /**
      * 등록자 email
@@ -285,17 +285,10 @@ public class Admin implements UserDetails {
     @Column(name = "modify_date")
     private LocalDateTime modify_date;
 
-    /**
-     * 수정일시
-     */
-    @ApiModelProperty("수정일시")
-    @Column(name = "MODIFY_DATE")
-    private LocalDateTime modifyDate;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add(new SimpleGrantedAuthority(aRoleCode.getCode()));
+        authorities.add(new SimpleGrantedAuthority(knRoleCode.getCode()));
         return authorities;
     }
 
