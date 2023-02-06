@@ -34,7 +34,7 @@ public class PersonalInfoProvisionRestController {
     // 기존 코코넛 메서드 : provisionList
     @PostMapping("/save")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     @ApiOperation(value = "정보제공 저장 API", notes = "" +
@@ -49,7 +49,7 @@ public class PersonalInfoProvisionRestController {
     @ApiOperation(value = "정보제공 목록 조회 API", notes = "" +
             "PersonalInfoProvision 리스트를 조회한다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> personalInfoProvisionList(@RequestBody PersonalInfoProvisionSetDto personalInfoProvisionSetDto){

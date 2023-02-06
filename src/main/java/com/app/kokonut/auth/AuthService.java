@@ -1,29 +1,26 @@
 package com.app.kokonut.auth;
 
-import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.Admin;
+import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
-import com.app.kokonut.common.component.AwsKmsUtil;
-import com.app.kokonut.common.component.AwsS3Util;
-import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;
 import com.app.kokonut.awsKmsHistory.AwsKmsHistory;
 import com.app.kokonut.awsKmsHistory.AwsKmsHistoryRepository;
 import com.app.kokonut.awsKmsHistory.dto.AwsKmsResultDto;
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
+import com.app.kokonut.common.component.*;
 import com.app.kokonut.company.Company;
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.companyFile.CompanyFile;
 import com.app.kokonut.companyFile.CompanyFileRepository;
+import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.configs.KeyGenerateService;
 import com.app.kokonut.keydata.KeyDataService;
-import com.app.kokonut.common.AjaxResponse;
-import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.common.component.AriaUtil;;
-import com.app.kokonut.common.component.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +47,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
+;
 
 /**
  * @author Woody
@@ -341,7 +340,7 @@ public class AuthService {
     }
 
     // 로그인, 구글OTP 확인후 -> JWT 발급기능
-    public ResponseEntity<Map<String,Object>> authToken(AuthRequestDto.Login login) {
+    public ResponseEntity<Map<String,Object>> authToken(AuthRequestDto.Login login, HttpServletResponse response) {
         log.info("authToken 호출");
 
         AjaxResponse res = new AjaxResponse();
@@ -358,7 +357,7 @@ public class AuthService {
             return ResponseEntity.ok(res.success(data));
         }
         else {
-            if(login.getOtpValue() == null) {
+            if(login.getOtpValue() == null || login.getOtpValue().equals("")) {
                 log.error("구글 OTP 값이 존재하지 않습니다.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO010.getCode(),ResponseErrorCode.KO010.getDesc()));
             }
@@ -399,7 +398,14 @@ public class AuthService {
                             // 인증 정보를 기반으로 JWT 토큰 생성
                             AuthResponseDto.TokenInfo jwtToken = jwtTokenProvider.generateToken(authentication);
 
-                            data.put("jwtToken", jwtToken);
+                            data.put("jwtToken", jwtToken.getAccessToken());
+
+                            Cookie cookieRefreshToken = new Cookie("refreshToken", jwtToken.getRefreshToken());
+                            cookieRefreshToken.setMaxAge(jwtToken.getRefreshTokenExpirationTime());
+                            cookieRefreshToken.setPath("/");
+                            cookieRefreshToken.setHttpOnly(true);
+                            cookieRefreshToken.setSecure(true);
+                            response.addCookie(cookieRefreshToken);
 
                             // RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
                             redisTemplate.opsForValue().set("RT: " + authentication.getName(), jwtToken.getRefreshToken(), jwtToken.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
@@ -425,12 +431,6 @@ public class AuthService {
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        
-        // Refresh Token 검증
-        if (!jwtTokenProvider.validateToken(reissue.getRefreshToken())) {
-            log.error("유효하지 않은 토큰정보임");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO007.getCode(),ResponseErrorCode.KO007.getDesc()));
-        }
 
         // Access Token 에서 User knEmail 을 가져옵니다.
         Authentication authentication = jwtTokenProvider.getAuthentication(reissue.getAccessToken());
@@ -438,16 +438,22 @@ public class AuthService {
         // Redis 에서 User knEmail 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
         String refreshToken = redisTemplate.opsForValue().get("RT: "+authentication.getName());
 
+        // Refresh Token 검증
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            log.error("유효하지 않은 토큰정보임");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO007.getCode(),ResponseErrorCode.KO007.getDesc()));
+        }
+
         // 로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리
         if(ObjectUtils.isEmpty(refreshToken)) {
             log.error("로그아웃된 토큰임");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO006.getCode(),ResponseErrorCode.KO006.getDesc()));
         }
 
-        if(!refreshToken.equals(reissue.getRefreshToken())) {
-            log.error("Redis토큰과 받은 리플레쉬 토큰이 맞지않음");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO008.getCode(),ResponseErrorCode.KO008.getDesc()));
-        }
+//        if(!refreshToken.equals(reissue.getRefreshToken())) {
+//            log.error("Redis토큰과 받은 리플레쉬 토큰이 맞지않음");
+//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO008.getCode(),ResponseErrorCode.KO008.getDesc()));
+//        }
 
         // Redis 에서 해당 User knEmail 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
         if (redisTemplate.opsForValue().get("RT:" + authentication.getName()) != null) {
@@ -471,20 +477,22 @@ public class AuthService {
     }
 
     // 로그아웃 기능
-    public ResponseEntity<Map<String,Object>> logout(AuthRequestDto.Logout logout) {
+    public ResponseEntity<Map<String,Object>> logout(AuthRequestDto.Logout logout, HttpServletRequest request, HttpServletResponse response) {
         log.info("logout 호출");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        
+
+        String accessToken = logout.getAccessToken();
+
         // Access Token 검증
-        if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
+        if (!jwtTokenProvider.validateToken(accessToken)) {
             log.error("유효하지 않은 토큰정보임");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO006.getCode(),ResponseErrorCode.KO006.getDesc()));
         }
 
         // Access Token 에서 User knEmail 을 가져옵니다.
-        Authentication authentication = jwtTokenProvider.getAuthentication(logout.getAccessToken());
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
 
         // Redis 에서 해당 User knEmail 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
         if (redisTemplate.opsForValue().get("RT: "+authentication.getName()) != null) {
@@ -493,8 +501,11 @@ public class AuthService {
         }
 
         // 해당 Access Token 유효시간 가지고 와서 BlackList로 저장하기
-        Long expiration = jwtTokenProvider.getExpiration(logout.getAccessToken());
-        redisTemplate.opsForValue().set(logout.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
+        Long expiration = jwtTokenProvider.getExpiration(accessToken);
+        redisTemplate.opsForValue().set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+
+        // 쿠키리셋처리
+        Utils.cookieLogout(request, response);
 
         return ResponseEntity.ok(res.success(data));
     }
@@ -505,7 +516,8 @@ public class AuthService {
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        
+
+        log.info("knEmail : "+knEmail);
 //        String userknEmail = SecurityUtil.getCurrentUserknEmail();
 //        if(userknEmail.equals("anonymousUser")){
 //            log.error("사용하실 수 없는 토큰정보 입니다. 다시 로그인 해주세요.");
@@ -553,6 +565,8 @@ public class AuthService {
         boolean auth;
         auth = googleOTP.checkCode(googleOtpCertification.getOtpValue(), googleOtpCertification.getKnOtpKey());
 
+        AriaUtil aria = new AriaUtil();
+        String encValue = aria.Encrypt("authOtpKey11");
 
         if(!auth){
             log.error("입력된 구글 OTP 값이 일치하지 않습니다. 확인해주세요.");
@@ -560,6 +574,7 @@ public class AuthService {
         }
         else {
             data.put("auth", true);
+            data.put("authOtpKey", encValue);
             return ResponseEntity.ok(res.success(data));
         }
 

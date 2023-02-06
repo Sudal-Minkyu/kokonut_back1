@@ -67,7 +67,7 @@ public class DynamicUserRestController {
 	// 유저DB(테이블) 생성
 	@PostMapping(value = "/createUserDatabase")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String,Object>> createUserDatabase() {
@@ -82,7 +82,7 @@ public class DynamicUserRestController {
 	// 유저DB(테이블) 리스트조회 -> 기존 코코넛 URL : /member/user/list
 	@GetMapping(value = "/userListCall")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String,Object>> userListCall(@RequestBody KokonutUserSearchDto kokonutUserSearchDto) {
@@ -93,7 +93,7 @@ public class DynamicUserRestController {
 	// 유저생성(회원생성) -> 기존 코코넛 URL : /member/user/saveUser
 	@PostMapping(value = "/userSaveCall")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String,Object>> userSaveCall(@RequestBody HashMap<String,Object> paramMap) {
@@ -104,7 +104,7 @@ public class DynamicUserRestController {
 	// 유저정보 수정(회원수정) -> 기존 코코넛 URL : 없음
 	@PostMapping(value = "/userUpdateCall")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String,Object>> userUpdateCall(@RequestBody HashMap<String,Object> paramMap) {
@@ -115,7 +115,7 @@ public class DynamicUserRestController {
 	// 유저삭제(회원삭제) -> 기존 코코넛 URL : 없음
 	@PostMapping(value = "/userDeleteCall")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String,Object>> userDeleteCall(@RequestParam(name="TYPE", defaultValue = "") String TYPE,
@@ -127,7 +127,7 @@ public class DynamicUserRestController {
 	// 개인정보 일괄등록 - 엑셀파일 양식 다운로드 -> 기존 코코넛 URL : downloadExcelForm
 	@GetMapping(value = "/downloadExcelForm")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public void downloadExcelForm(HttpServletRequest request, HttpServletResponse response) {
@@ -138,7 +138,7 @@ public class DynamicUserRestController {
 	// 개인정보 일괄등록 - 엑셀파일 검사 -> 미리보여주기 기능 - 기존코코넛 메서드 : readUploadExcelFile #일단 보류 woody
 	@PostMapping(value = "/readUploadExcelFile")
 	@ApiImplicitParams({
-//			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+//			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 //			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String, Object>> readUploadExcelFile(@RequestParam(name="type", defaultValue = "") String type,
@@ -150,7 +150,7 @@ public class DynamicUserRestController {
 	// 개인정보 테이블 필드 추가 - 기존코코넛 메서드 : /member/userDB/save
 	@PostMapping(value = "/columSave")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String, Object>> columSave(@RequestBody KokonutColumSaveDto kokonutColumSaveDto) {
@@ -161,7 +161,7 @@ public class DynamicUserRestController {
 	// 개인정보 테이블 필드 수정 - 기존코코넛 메서드 : 없음
 	@PostMapping(value = "/columUpdate")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String, Object>> columUpdate(@RequestBody KokonutColumUpdateDto kokonutColumUpdateDto) throws Exception {
@@ -172,7 +172,7 @@ public class DynamicUserRestController {
 	// 개인정보 테이블 필드 삭제 - 기존코코넛 메서드 : 없음
 	@PostMapping(value = "/columDelete")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
 			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String, Object>> columDelete(@RequestParam(name="fieldName", defaultValue = "") String fieldName) {

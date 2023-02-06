@@ -12,9 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -48,13 +50,28 @@ public class AuthRestController {
         return authService.signUp(signUp, request, response);
     }
 
+    @GetMapping(value = "/cookieTest")
+    public void cookieTest(HttpServletRequest request) {
+        log.info("쿠키테스트");
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null) {
+            log.info("현재 쿠키값들 : "+ Arrays.toString(cookies));
+            for(Cookie cookie : cookies) {
+                log.info("cookie.getName() : "+cookie.getName());
+                log.info("cookie.getValue() : "+cookie.getValue());
+            }
+        } else {
+            log.info("cookies : null");
+        }
+    }
+
     // 로그인 성공 이후 JWT Token 발급 및 업데이트
     // "loginVerify" + "/otpVerify" 합쳐진 메서드
     @PostMapping("/authToken")
     @ApiOperation(value = "로그인 - 로그인 성공후 JWT 토큰 발급" , notes = "JWT 엑세스토큰과 리플레쉬토큰을 발급해준다.")
-    public ResponseEntity<Map<String,Object>> authToken(@Validated AuthRequestDto.Login login) {
+    public ResponseEntity<Map<String,Object>> authToken(@Validated AuthRequestDto.Login login, HttpServletResponse response) {
         log.info("로그인한 이메일 : "+login.getKnEmail());
-        return authService.authToken(login);
+        return authService.authToken(login, response);
     }
 
     @PostMapping("/reissue")
@@ -69,16 +86,17 @@ public class AuthRestController {
     @ApiOperation(value = "로그아웃 처리" , notes = "" +
             "1. Param 값으로 accessToken, refreshToken을 받는다." +
             "2. 받은 두 토큰을 검사하고 해당 토큰을 삭제처리 한다.")
-    public ResponseEntity<Map<String,Object>> logout(@Validated AuthRequestDto.Logout logout) {
-        return authService.logout(logout);
+//    public ResponseEntity<Map<String,Object>> logout(@Validated AuthRequestDto.Logout logout, HttpServletResponse response) {
+    public ResponseEntity<Map<String,Object>> logout(@Validated AuthRequestDto.Logout logout, HttpServletRequest request, HttpServletResponse response) {
+        return authService.logout(logout, request, response);
     }
 
     @GetMapping(value = "/otpQRcode")
     @ApiOperation(value = "구글 QRCode 보내기 " , notes = "" +
             "1. 로그인한 이메일 값을 받는다" +
             "2. 해당 유저 이메일을 통해 QRCode값을 반환한다.")
-    public ResponseEntity<Map<String,Object>> otpQRcode(@RequestParam(value="email") String email) {
-        return authService.otpQRcode(email);
+    public ResponseEntity<Map<String,Object>> otpQRcode(@RequestParam(value="knEmail", defaultValue = "") String knEmail) {
+        return authService.otpQRcode(knEmail);
     }
 
     @GetMapping(value = "/checkOTP")

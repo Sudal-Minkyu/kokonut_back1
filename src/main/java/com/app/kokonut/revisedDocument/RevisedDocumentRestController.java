@@ -43,7 +43,7 @@ public class RevisedDocumentRestController {
     @ApiOperation(value="개정문서 목록 조회", notes="처리방침 개정문서 목록 조회")
     @GetMapping(value = "/revDocList") // -> 기존의 코코넛 호출 메서드명 : list - MemberRevisedDocumentController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> revDocList(@RequestBody RevDocSearchDto revDocSearchDto, Pageable pageable) {
@@ -55,7 +55,7 @@ public class RevisedDocumentRestController {
     @ApiOperation(value="개정문서 등록", notes="처리방침 개정문서 등록", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PostMapping(value = "/revDocSave") // -> 기존의 코코넛 호출 메서드명 : save - MemberRevisedDocumentController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> revDocSave(@Parameter(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
@@ -66,7 +66,7 @@ public class RevisedDocumentRestController {
     }
 //    @ApiOperation(value="개정문서 삭제", notes="처리방침 개정문서 삭제")
 //    @PostMapping(value = "/revDocDelete") // -> 기존의 코코넛 호출 메서드명 : 서비스만 있음. 호출x,  - MemberRevisedDocumentController
-//    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")})
+//    @ApiImplicitParams({@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")})
 //    public ResponseEntity<Map<String,Object>> revDocDelete(@RequestParam(name="idx") Integer idx) {
 //        String userRole = SecurityUtil.getCurrentJwt().getRole();
 //        String email = SecurityUtil.getCurrentJwt().getEmail();

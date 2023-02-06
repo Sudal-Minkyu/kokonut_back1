@@ -37,14 +37,14 @@ public class ApiKeyRestController {
      */
     @PostMapping("/apiKeyIssue")
     @ApiOperation(value = "APIKey 발급", notes = "APIKey를 발급해준다.")
-    @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+    @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     public ResponseEntity<Map<String,Object>> apiKeyIssue(@RequestBody ApiKeySaveDto apiKeySaveDto){
         log.info("APIKey 발급");
-//        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        JwtFilterDto jwtFilterDto = JwtFilterDto.builder()
-                .email("woody@kokonut.me")
-                .role("ROLE")
-                .build();
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+//        JwtFilterDto jwtFilterDto = JwtFilterDto.builder()
+//                .email("woody@kokonut.me")
+//                .role("ROLE")
+//                .build();
         return apiKeyService.apiKeyIssue(jwtFilterDto, apiKeySaveDto);
     }
 
@@ -55,7 +55,7 @@ public class ApiKeyRestController {
 //    @ApiOperation(value = "ApiKey 리스트 호출 API", notes = "" +
 //            "시스템 관리자 > API 관리 > API key 리스트")
 //    @ApiImplicitParams({
-//            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+//            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
 //    })
 //    public ResponseEntity<Map<String,Object>> ApiKeyList(@RequestBody ApiKeySetDto apiKeySetDto){
 //
@@ -103,7 +103,7 @@ public class ApiKeyRestController {
 //     */
 //    @PostMapping("/apiKeyManagement")
 //    @ApiOperation(value = "ApiKey 발급 내역 조회", notes = "서비스 > API 연동관리 > API key 연동관리")
-//    @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+//    @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
 //    public ResponseEntity<Map<String,Object>> apiKeyManagement(){
 //        log.info("ApiKey 발급 내역 조회 호출");
 //
@@ -118,7 +118,7 @@ public class ApiKeyRestController {
 //     */
 //    @PostMapping("/testIssue")
 //    @ApiOperation(value = "테스트 ApiKey 발급", notes = "서비스 > API 연동관리 > API key 연동관리")
-//    @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+//    @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
 //    public ResponseEntity<Map<String,Object>> testIssue(){
 //        log.info("테스트 ApiKey 발급");
 //        String email = SecurityUtil.getCurrentJwt().getEmail();
@@ -128,7 +128,7 @@ public class ApiKeyRestController {
 //
 //    @PostMapping("/issue")
 //    @ApiOperation(value = "ApiKey 발급", notes = "서비스 > API 연동관리 > API key 연동관리, ApiKey 발급")
-//    @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+//    @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
 //    public ResponseEntity<Map<String,Object>> issue() throws NoSuchAlgorithmException {
 //        log.info("ApiKey 발급 호출");
 //        String email = SecurityUtil.getCurrentJwt().getEmail();
@@ -138,7 +138,7 @@ public class ApiKeyRestController {
 //
 //    @PostMapping("/reIssue")
 //    @ApiOperation(value = "ApiKey 재발급", notes = "서비스 > API 연동관리 > API key 연동관리, ApiKey 재발급")
-//    @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+//    @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
 //    public ResponseEntity<Map<String,Object>> reIssue() throws NoSuchAlgorithmException {
 //        log.info("ApiKey 재발급 호출");
 //        String email = SecurityUtil.getCurrentJwt().getEmail();
@@ -148,7 +148,7 @@ public class ApiKeyRestController {
 //
 //    @PostMapping("/modify")
 //    @ApiOperation(value = "ApiKey 수정", notes = "서비스 > API 연동관리 > API key 연동관리")
-//    @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+//    @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
 //    public ResponseEntity<Map<String,Object>> modify(@RequestParam(name="idx") Integer idx, @RequestParam(name="useYn") String useYn, @RequestParam(name="reason") String reason) {
 //        log.info("ApiKey 수정 호출");
 //        String email = SecurityUtil.getCurrentJwt().getEmail();

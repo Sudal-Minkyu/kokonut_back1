@@ -7,14 +7,15 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author Woody
@@ -24,10 +25,9 @@ import java.io.IOException;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends GenericFilterBean {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-//    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_TYPE = "Bearer";
+    private static final String BEARER_TYPE = "Authorization";
 
     private static final String APIKEY_TYPE = "ApiKey";
 
@@ -37,13 +37,29 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private final StringRedisTemplate redisTemplate;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        log.info("JwtAuthenticationFilter 여기왔다감");
 
-        // Request Header 에서 JWT 토큰 추출
-        String token = resolveToken((HttpServletRequest) request);
+        // 해더에서 JWT 토큰 추출
+//        String token = null;
+//        Cookie[] cookies = request.getCookies();
+//        if(cookies != null) {
+//            for(Cookie cookie : cookies) {
+//                if (cookie.getName().equals("accessToken")) {
+//                    token = cookie.getValue();
+//                }
+//            }
+//        }
+//        if(token == null) {
+        String token = resolveToken(request);
+//        }
         log.info("필터 거쳐감 Jwt Access Token : "+token);
 
-        String apikey = resolveApiKey((HttpServletRequest) request);
+//        if(token == null) {
+//            log.info("토큰이 만료되었습니다.");
+//        }
+
+        String apikey = resolveApiKey(request);
         log.info("필터 거쳐감 ApiKey : "+apikey);
 
         // validateToken으로 토큰 유효성 검사 + ApiKey 유효성 검사
@@ -56,7 +72,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 
     // Request Header 에서 토큰 정보 추출

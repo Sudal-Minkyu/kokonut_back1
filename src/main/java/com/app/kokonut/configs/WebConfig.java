@@ -13,10 +13,17 @@ import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Woody
@@ -65,11 +72,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowedHeaders("Bearer", "ApiKey")
-                .allowedMethods("GET", "POST")
-                .maxAge(900); // 타임아웃 15분으로 설정
+        registry
+            .addMapping("/**")
+            .allowedOriginPatterns("http://localhost:5173")
+            .allowedHeaders("Authorization", "Content-Type", "ApiKey", "Set-Cookie")
+            .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name())
+            .allowCredentials(true)
+            .maxAge(900); // 타임아웃 15분으로 설정
     }
 
     @Bean

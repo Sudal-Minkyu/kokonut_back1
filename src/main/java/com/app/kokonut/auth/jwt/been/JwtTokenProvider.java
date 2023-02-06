@@ -35,10 +35,10 @@ public class JwtTokenProvider {
 
     private final StringRedisTemplate redisTemplate;
 
-    private static final String AUTHORITIES_KEY = "auth";
+    private static final String AUTHORITIES_KEY = "Authorization";
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L;              // 30분
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L;    // 7일
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;              // 30분
+    private static final Integer REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 24 * 7;    // 7일
 
     private final Key key;
 

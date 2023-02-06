@@ -109,9 +109,6 @@ public class AuthRequestDto {
     public static class Reissue {
         @NotBlank(message = "accessToken을 입력해주세요.")
         private String accessToken;
-
-        @NotBlank(message = "refreshToken을 입력해주세요.")
-        private String refreshToken;
     }
 
     @Getter
@@ -120,8 +117,8 @@ public class AuthRequestDto {
         @NotBlank(message = "잘못된 요청입니다.")
         private String accessToken;
 
-        @NotBlank(message = "잘못된 요청입니다.")
-        private String refreshToken;
+//        @NotBlank(message = "잘못된 요청입니다.")
+//        private String refreshToken;
     }
 
 }

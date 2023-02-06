@@ -34,7 +34,7 @@ public class KakaoChannelRestController {
     // 카카오 채널 조회 -> 수정작업이 들어가서 Post로 설정
     @PostMapping(value = "/kakaoTalkChannelList")
         @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> kakaoTalkChannelList(@RequestBody KakaoChannelSearchDto kakaoChannelSearchDto, Pageable pageable) throws Exception {
@@ -45,7 +45,7 @@ public class KakaoChannelRestController {
     // 카카오톡 채널확인
     @GetMapping(value = "/postKakaoTalkChannels")
         @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> postKakaoTalkChannels(@RequestParam(name="channelId", defaultValue = "") String channelId,
@@ -57,7 +57,7 @@ public class KakaoChannelRestController {
     // 본인이증 확인확인 + 카카오톡 채널등록
     @PostMapping(value = "/kakaoTalkchannelToken")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> kakaoTalkchannelToken(@RequestParam(name="channelId", defaultValue = "") String channelId,
@@ -69,7 +69,7 @@ public class KakaoChannelRestController {
     // 카카오톡 채널 삭제
     @PostMapping(value = "/deleteKakaoTalkChannels")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> deleteKakaoTalkChannels(@RequestParam(name="channelId", defaultValue = "") String channelId) throws Exception {

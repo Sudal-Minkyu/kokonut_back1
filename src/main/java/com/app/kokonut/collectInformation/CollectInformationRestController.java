@@ -38,7 +38,7 @@ public class CollectInformationRestController {
     @ApiOperation(value="CollectInfo 목록 조회", notes="개인정보처리방침 목록 조회")
     @GetMapping(value = "/collectInfoList") // -> 기존의 코코넛 호출 메서드명 : list - MemberCollectInformationControlle
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoList(@RequestBody CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
@@ -50,7 +50,7 @@ public class CollectInformationRestController {
     @ApiOperation(value="CollectInfo 내용 조회", notes="개인정보처리방침 내용 조회")
     @GetMapping(value = "/collectInfoDetail") // -> 기존의 코코넛 호출 메서드명 : previewPopup - MemberCollectInformationControlle
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoDetail(@RequestParam(name="ciId") Long ciId) {
@@ -61,7 +61,7 @@ public class CollectInformationRestController {
     @ApiOperation(value="CollectInfo 등록, 수정", notes="개인정보처리방침 수정, 등록")
     @PostMapping(value = "/collectInfoSave") // -> 기존의 코코넛 호출 메서드명 : save - MemberCollectInformationControlle
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoSave(@RequestBody CollectInfoDetailDto collectInfoDetailDto) {
@@ -73,7 +73,7 @@ public class CollectInformationRestController {
     @ApiOperation(value="CollectInfo 삭제", notes="개인정보처리방침 삭제")
     @PostMapping(value = "/collectInfoDelete") // -> 기존의 코코넛 호출 메서드명 : delete - MemberCollectInformationControlle
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoDelete(@RequestParam(name="ciId") Long ciId) {

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -27,9 +28,6 @@ import java.util.Map;
 @RestController
 public class AdminRestController {
 
-    private final AjaxResponse res = new AjaxResponse();
-    private final HashMap<String, Object> data = new HashMap<>();
-
     private final AdminService adminService;
 
     @Autowired
@@ -40,34 +38,67 @@ public class AdminRestController {
     @GetMapping("/authorityCheck")
     @ApiOperation(value = "JWT토큰 테스트" , notes = "JWT 토큰이 유효한지 테스트하는 메서드")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
     })
     public ResponseEntity<Map<String,Object>> authorityCheck() {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        return adminService.authorityCheck(jwtFilterDto.getEmail());
+        return adminService.authorityCheck(jwtFilterDto);
     }
 
-    // 사업자 호출
+    // 시스템관리자 호출
+    @GetMapping("/systemTest")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+    })
+    public ResponseEntity<Map<String,Object>> systemTest() {
+        log.info("ROLE_SYSTEM TEST");
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.authorityCheck(jwtFilterDto);
+    }
+
+    // 대표관리자 호출
     @GetMapping("/masterTest")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
     })
     public ResponseEntity<Map<String,Object>> masterTest() {
         log.info("ROLE_MASTER TEST");
-        return ResponseEntity.ok(res.success(data));
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.authorityCheck(jwtFilterDto);
     }
 
-    // 관리자 호출
+    // 최고관리자 호출
     @GetMapping("/adminTest")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
     })
     public ResponseEntity<Map<String,Object>> adminTest() {
         log.info("ROLE_ADMIN TEST");
-        return ResponseEntity.ok(res.success(data));
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.authorityCheck(jwtFilterDto);
     }
+
+    // 일반관리자 호출
+    @GetMapping("/userTest")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+    })
+    public ResponseEntity<Map<String,Object>> userTest() {
+        log.info("ROLE_USER TEST");
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.authorityCheck(jwtFilterDto);
+    }
+
+    // 게스트 호출
+    @GetMapping("/guestTest")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+    })
+    public ResponseEntity<Map<String,Object>> guestTest() {
+        log.info("ROLE_GUEST TEST");
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.authorityCheck(jwtFilterDto);
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.app.kokonut.configs;
 
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.auth.jwt.been.JwtAccessDeniedHandler;
 import com.app.kokonut.auth.jwt.been.JwtAuthenticationEntryPoint;
 import com.app.kokonut.auth.jwt.been.JwtAuthenticationFilter;
@@ -7,12 +8,22 @@ import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Woody
@@ -32,34 +43,18 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         // JWT 필터 및 권한 제외 url
-        return (web) -> web.ignoring().antMatchers(
+        return web -> web.ignoring()
+            .antMatchers(
                 // 필터 제외항목 API : JWT, ApiKey 모두 불필요한 API
-                "/favicon.ico","/swagger*/**","/v2/api-docs","/webjars/**", "/v0/api/**",
-                // JWT 만 필요한 API
-                "/v1/api/**",
+                "/favicon.ico", "/swagger*/**", "/v2/api-docs", "/webjars/**", "/v0/api/**",
                 // 임시 제외항목 API : JWT, ApiKey 모두 필요한 API
                 "/v2/api/**");
     }
 
-//    @Bean -> Post는 무조건 막는데 확인해봐야됨
-//    @Order(0)
-//    public SecurityFilterChain resources(HttpSecurity http) throws Exception {
-//    return http.requestMatchers(matchers -> matchers
-//                    .antMatchers("/favicon.ico","/swagger*/**","/v2/api-docs","/webjars/**",
-//                            "/api/Auth/**", "/api/NiceId/**"
-//                            // 임시로 해둔 API들
-//                            , "/api/ApiKey/**", "/api/Qna/**", "/api/Notice/**", "/api/RevisedDocument/**",
-//                            "/api/DynamicUser/**", "/api/DynamicRemove/**", "/api/DynamicDormant/**"))
-//            .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
-//            .requestCache(RequestCacheConfigurer::disable)
-//            .securityContext(AbstractHttpConfigurer::disable)
-//            .sessionManagement(AbstractHttpConfigurer::disable)
-//            .build();
-//    }
-
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors().and()
             .httpBasic().disable()
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -72,14 +67,18 @@ public class SecurityConfig {
 
             .and()
             .authorizeRequests()
-            .antMatchers("/", "/swagger-ui/index.html/**").permitAll()
-            .antMatchers("/v1/api/Admin/masterTest", "/v1/api/Admin/**").hasAnyAuthority("MASTER", "SYSTEM")
-            .antMatchers("/v1/api/Admin/adminTest").hasAnyAuthority("ADMIN","SYSTEM")
-
+            .antMatchers("/swagger-ui/index.html/**").permitAll()
+            // 권한 : 권한(코코넛직원:ROLE_SYSTEM, 대표관리자:ROLE_MASTER, 최고관리자:ROLE_ADMIN, 일반관리자:ROLE_USER, 게스트:ROLE_GUEST)
+            // 권한에 따라 요청허용
+            .antMatchers("/v1/api/Admin/systemTest").hasAuthority(AuthorityRole.ROLE_SYSTEM.getDesc())
+            .antMatchers("/v1/api/Admin/masterTest").hasAnyAuthority(AuthorityRole.ROLE_MASTER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
+            .antMatchers("/v1/api/Admin/adminTest").hasAnyAuthority(AuthorityRole.ROLE_ADMIN.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
+            .antMatchers("/v1/api/Admin/userTest").hasAnyAuthority(AuthorityRole.ROLE_USER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
+            .antMatchers("/v1/api/Admin/guestTest").hasAnyAuthority(AuthorityRole.ROLE_GUEST.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
             .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
+
             .and()
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

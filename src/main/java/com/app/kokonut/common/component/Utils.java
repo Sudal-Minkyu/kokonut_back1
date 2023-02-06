@@ -4,10 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -139,4 +142,17 @@ public class Utils {
 		}
 	}
 
+	// 쿠키 리셋함수
+	public static void cookieLogout(HttpServletRequest request, HttpServletResponse response) {
+		Cookie[] cookies = request.getCookies();
+		if(cookies != null) {
+			for(Cookie cookie : cookies) {
+				if(cookie.getName().equals("refreshToken")) {
+					Cookie deleteCookie = new Cookie(cookie.getName(),"");
+					deleteCookie.setMaxAge(0);
+					response.addCookie(deleteCookie);
+				}
+			}
+		}
+	}
 }

@@ -45,7 +45,7 @@ public class KnSettingRestController {
     @ApiOperation(value="관리자 환경설정 조회", notes="관리자 환경설정 상세 조회")
     @PostMapping("/settingDetail") // -> 기존의 코코넛 호출 메서드명 : settingsUI, settingsUI - SystemSettingController, MemberSettingController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> settingDetail(){
@@ -57,7 +57,7 @@ public class KnSettingRestController {
     @ApiOperation(value="관리자 환경설정 저장", notes="관리자 환경설정 저장")
     @PostMapping("/settingSave") // -> 기존의 코코넛 호출 메서드명 : /save - MemberSettingController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
             @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> settingSave(KnSettingDetailDto knSettingDetailDto){
@@ -68,7 +68,7 @@ public class KnSettingRestController {
 
 //    @ApiOperation(value="관리자 환경설정 삭제", notes="관리자 환경설정 전체 삭제")
 //    @PostMapping("/settingDelete")
-//    @ApiImplicitParams({@ApiImplicitParam(name ="Bearer", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")})
+//    @ApiImplicitParams({@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")})
 //    public ResponseEntity<Map<String,Object>> settingDelete(){
 //        String userRole = SecurityUtil.getCurrentJwt().getRole();
 //        String email = SecurityUtil.getCurrentJwt().getEmail();

@@ -28,8 +28,8 @@ public class AdminGoogleOTPDto {
     @Setter
     public static class GoogleOtpSave {
 
-        @NotBlank(message = "구글OTP 값은 필수 입력 값입니다.")
-        private String otpValue;
+        @NotBlank(message = "인증 구글OTP 값은 필수 값입니다.")
+        private String authOtpKey;
 
         @NotBlank(message = "구글Key 값은 필수 값입니다.")
         private String knOtpKey;
@@ -39,9 +39,6 @@ public class AdminGoogleOTPDto {
 
         @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
         private String knPassword;
-
-        @NotBlank(message = "인증 구글OTP 값은 필수 값입니다.")
-        private String authOtpKey;
 
     }
 

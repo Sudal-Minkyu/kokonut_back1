@@ -4,6 +4,7 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.apiKey.dtos.ApiKeySaveDto;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,20 +29,20 @@ public class ApiKeyService {
         this.adminRepository = adminRepository;
     }
 
+    // ApiKey 발급
     public ResponseEntity<Map<String, Object>> apiKeyIssue(JwtFilterDto jwtFilterDto, ApiKeySaveDto apiKeySaveDto) {
         log.info("apiKeyIssue 호출");
-
         log.info("jwtFilterDto : "+jwtFilterDto);
         log.info("apiKeySaveDto : "+apiKeySaveDto);
-
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-
-
-
-
-
+//        if(apiKeySaveDto.getAkAgreeIp1() == null) {
+//            log.error("최소 하나의 IP설정은 필수입니다.");
+//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO074.getCode(), ResponseErrorCode.KO074.getDesc()));
+//        } else {
+//
+//        }
         return ResponseEntity.ok(res.success(data));
     }
 
