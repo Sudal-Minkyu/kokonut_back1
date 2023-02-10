@@ -1,4 +1,4 @@
-package com.app.kokonut.personalInfoProvision.personalInfoProvisionAgree.entity;
+package com.app.kokonutapi.personalInfoProvision.personalInfoProvisionAgree.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

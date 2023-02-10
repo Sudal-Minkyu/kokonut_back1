@@ -25,7 +25,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         // 쿠키리셋처리
         Utils.cookieLogout(request, response);
 
-        log.info("인증되지 않은 사용자가 접근시 막아주는 핸들러 작동");
+        log.info("인증되지 않은 사용자가 접근시 막아주는 핸들러 작동 (401 에러)");
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

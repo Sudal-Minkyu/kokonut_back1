@@ -1,4 +1,4 @@
-package com.app.kokonut.personalInfoProvision.dtos;
+package com.app.kokonutapi.personalInfoProvision.dtos;
 
 
 import lombok.AllArgsConstructor;

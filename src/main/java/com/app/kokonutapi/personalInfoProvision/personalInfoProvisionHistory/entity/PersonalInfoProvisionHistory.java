@@ -1,4 +1,4 @@
-package com.app.kokonut.personalInfoProvision.personalInfoProvisionHistory.entity;
+package com.app.kokonutapi.personalInfoProvision.personalInfoProvisionHistory.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

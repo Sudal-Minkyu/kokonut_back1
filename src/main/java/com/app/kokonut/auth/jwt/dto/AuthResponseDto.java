@@ -19,6 +19,6 @@ public class AuthResponseDto {
         private String grantType;
         private String accessToken;
         private String refreshToken;
-        private Integer refreshTokenExpirationTime;
+        private Long refreshTokenExpirationTime;
     }
 }

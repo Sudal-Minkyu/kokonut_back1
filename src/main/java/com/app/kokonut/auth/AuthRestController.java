@@ -26,7 +26,7 @@ import java.util.Map;
  * Remark : 로그인, 회원가입 등 JWT토큰 필요없이 호출할 수 있는 컨트롤러
  */
 @Slf4j
-@RequestMapping("/v0/api/Auth")
+@RequestMapping("/v1/api/Auth")
 @RestController
 public class AuthRestController {
 

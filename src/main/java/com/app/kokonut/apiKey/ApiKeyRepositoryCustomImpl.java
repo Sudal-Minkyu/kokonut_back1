@@ -1,6 +1,7 @@
 package com.app.kokonut.apiKey;
 
 import com.app.kokonut.admin.QAdmin;
+import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.company.QCompany;
@@ -396,16 +397,49 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 //        return query.fetch();
 //    }
 //
+
     // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
     @Override
-    public Long findByCheck(String akKey, String knEmail) {
+    public Long findByCheck(String akKey) {
 
         QApiKey apiKey = QApiKey.apiKey;
-        QAdmin admin = QAdmin.admin;
 
         JPQLQuery<Long> query = from(apiKey)
-                .innerJoin(admin).on(apiKey.adminId.eq(admin.adminId))
-                .where(apiKey.akKey.eq(akKey).and(admin.knEmail.eq(knEmail)))
+                .where(apiKey.akKey.eq(akKey))
+                .select(Projections.constructor(Long.class,
+                        apiKey.count()
+                ));
+
+        return query.fetchOne();
+    }
+
+    @Override
+    public ApiKeyInfoDto findByApiKeyInfo(String akKey) {
+
+        QApiKey apiKey = QApiKey.apiKey;
+        QCompany company = QCompany.company;
+        QAdmin admin = QAdmin.admin;
+
+        JPQLQuery<ApiKeyInfoDto> query = from(apiKey)
+                .innerJoin(admin).on(admin.adminId.eq(apiKey.adminId))
+                .innerJoin(company).on(company.companyId.eq(apiKey.companyId))
+                .where(apiKey.akKey.eq(akKey))
+                .select(Projections.constructor(ApiKeyInfoDto.class,
+                        admin.knEmail,
+                        apiKey.akUseYn
+                ));
+
+        return query.fetchOne();
+    }
+
+    // ApiKey가 유저의 IP를 허용했는지 체킹하는 메서드
+    @Override
+    public Long findByApiKeyCheck(String userIp) {
+
+        QApiKey apiKey = QApiKey.apiKey;
+
+        JPQLQuery<Long> query = from(apiKey)
+                .where(apiKey.akAgreeIp1.eq(userIp))
                 .select(Projections.constructor(Long.class,
                         apiKey.count()
                 ));

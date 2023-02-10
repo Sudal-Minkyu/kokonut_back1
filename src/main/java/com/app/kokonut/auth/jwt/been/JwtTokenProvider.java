@@ -37,8 +37,8 @@ public class JwtTokenProvider {
 
     private static final String AUTHORITIES_KEY = "Authorization";
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;              // 30분
-    private static final Integer REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 24 * 7;    // 7일
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;              // 30분
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;    // 7일
 
     private final Key key;
 
@@ -111,20 +111,23 @@ public class JwtTokenProvider {
     }
 
     // 토큰 정보를 검증하는 메서드
-    public boolean validateToken(String token) {
+    public int validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
+            return 200;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.error("잘못된 JWT 토큰입니다.");
+            return 901;
         } catch (ExpiredJwtException e) {
             log.error("만료된 JWT 토큰입니다.");
+            return 902;
         } catch (UnsupportedJwtException e) {
             log.error("지원되지 않는 JWT 토큰입니다.");
+            return 903;
         } catch (IllegalArgumentException e) {
             log.error("JWT 토큰이 맞지 않습니다.");
+            return 904;
         }
-        return false;
     }
 
     public Claims parseClaims(String accessToken) {
@@ -143,4 +146,5 @@ public class JwtTokenProvider {
         long now = new Date().getTime();
         return (expiration.getTime() - now);
     }
+
 }

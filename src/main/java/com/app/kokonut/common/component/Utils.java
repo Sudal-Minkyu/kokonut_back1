@@ -149,7 +149,10 @@ public class Utils {
 			for(Cookie cookie : cookies) {
 				if(cookie.getName().equals("refreshToken")) {
 					Cookie deleteCookie = new Cookie(cookie.getName(),"");
-					deleteCookie.setMaxAge(0);
+					deleteCookie.setMaxAge(-1);
+					deleteCookie.setPath("/");
+					deleteCookie.setHttpOnly(true);
+					deleteCookie.setSecure(true);
 					response.addCookie(deleteCookie);
 				}
 			}

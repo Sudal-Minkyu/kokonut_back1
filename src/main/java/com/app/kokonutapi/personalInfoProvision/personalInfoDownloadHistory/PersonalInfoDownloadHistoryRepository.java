@@ -1,4 +1,4 @@
-package com.app.kokonut.personalInfoProvision.personalInfoDownloadHistory;
+package com.app.kokonutapi.personalInfoProvision.personalInfoDownloadHistory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

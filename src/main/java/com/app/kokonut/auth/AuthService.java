@@ -401,7 +401,7 @@ public class AuthService {
                             data.put("jwtToken", jwtToken.getAccessToken());
 
                             Cookie cookieRefreshToken = new Cookie("refreshToken", jwtToken.getRefreshToken());
-                            cookieRefreshToken.setMaxAge(jwtToken.getRefreshTokenExpirationTime());
+                            cookieRefreshToken.setMaxAge(604800); // 쿠키 값을 30일로 셋팅
                             cookieRefreshToken.setPath("/");
                             cookieRefreshToken.setHttpOnly(true);
                             cookieRefreshToken.setSecure(true);
@@ -439,7 +439,7 @@ public class AuthService {
         String refreshToken = redisTemplate.opsForValue().get("RT: "+authentication.getName());
 
         // Refresh Token 검증
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
+        if (jwtTokenProvider.validateToken(refreshToken) == 400) {
             log.error("유효하지 않은 토큰정보임");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO007.getCode(),ResponseErrorCode.KO007.getDesc()));
         }
@@ -486,7 +486,7 @@ public class AuthService {
         String accessToken = logout.getAccessToken();
 
         // Access Token 검증
-        if (!jwtTokenProvider.validateToken(accessToken)) {
+        if (jwtTokenProvider.validateToken(accessToken) == 400) {
             log.error("유효하지 않은 토큰정보임");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO006.getCode(),ResponseErrorCode.KO006.getDesc()));
         }

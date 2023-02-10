@@ -1,9 +1,9 @@
-package com.app.kokonut.personalInfoProvision;
+package com.app.kokonutapi.personalInfoProvision;
 
 import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionSaveDto;
-import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionSetDto;
+import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionSaveDto;
+import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionSetDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/v2/api/PersonalInfoProvision")
+@RequestMapping("/v3/api/PersonalInfoProvision")
 public class PersonalInfoProvisionRestController {
 
     private final PersonalInfoProvisionService personalInfoProvisionService;
@@ -34,13 +35,13 @@ public class PersonalInfoProvisionRestController {
     // 기존 코코넛 메서드 : provisionList
     @PostMapping("/save")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = false, dataTypeClass = String.class, paramType = "header", example = ""),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = false, dataTypeClass = String.class, paramType = "header", example = "")
     })
     @ApiOperation(value = "정보제공 저장 API", notes = "" +
             "PersonalInfoProvision 저장")
-    public ResponseEntity<Map<String, Object>> provisionSave(@RequestBody PersonalInfoProvisionSaveDto personalInfoProvisionSaveDto){
-        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+    public ResponseEntity<Map<String, Object>> provisionSave(@RequestBody PersonalInfoProvisionSaveDto personalInfoProvisionSaveDto, HttpServletRequest request){
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwtOrApiKey(request);
         return personalInfoProvisionService.privisionSave(personalInfoProvisionSaveDto, jwtFilterDto.getEmail());
     }
 
@@ -49,8 +50,8 @@ public class PersonalInfoProvisionRestController {
     @ApiOperation(value = "정보제공 목록 조회 API", notes = "" +
             "PersonalInfoProvision 리스트를 조회한다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = false, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = false, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> personalInfoProvisionList(@RequestBody PersonalInfoProvisionSetDto personalInfoProvisionSetDto){
         return personalInfoProvisionService.personalInfoProvisionList(personalInfoProvisionSetDto);
@@ -66,6 +67,10 @@ public class PersonalInfoProvisionRestController {
             " * 2: 수집완료: 정보제공일 부터 정보제공 만료일 까지\n" +
             " * 3: 기간만료: 정보제공 만료일 이후\n" +
             " */")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = false, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="ApiKey", value="API Key",required = false, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+    })
     public ResponseEntity<Map<String,Object>> provisionListForAgree(@RequestBody PersonalInfoProvisionSetDto personalInfoProvisionSetDto) {
         return personalInfoProvisionService.provisionListForAgree(personalInfoProvisionSetDto);
     }

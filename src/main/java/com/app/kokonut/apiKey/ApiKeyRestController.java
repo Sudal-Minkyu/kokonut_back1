@@ -1,22 +1,19 @@
 package com.app.kokonut.apiKey;
 
-import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
 import com.app.kokonut.apiKey.dtos.ApiKeySaveDto;
-import com.app.kokonut.apiKey.dtos.ApiKeySetDto;
 import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
-import com.app.kokonut.common.AjaxResponse;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Slf4j
@@ -41,10 +38,6 @@ public class ApiKeyRestController {
     public ResponseEntity<Map<String,Object>> apiKeyIssue(@RequestBody ApiKeySaveDto apiKeySaveDto){
         log.info("APIKey 발급");
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-//        JwtFilterDto jwtFilterDto = JwtFilterDto.builder()
-//                .email("woody@kokonut.me")
-//                .role("ROLE")
-//                .build();
         return apiKeyService.apiKeyIssue(jwtFilterDto, apiKeySaveDto);
     }
 

@@ -1,6 +1,7 @@
 package com.app.kokonut.apiKey;
 
 import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
 import com.app.kokonut.apiKey.dtos.ApiKeySaveDto;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.common.AjaxResponse;
@@ -32,17 +33,21 @@ public class ApiKeyService {
     // ApiKey 발급
     public ResponseEntity<Map<String, Object>> apiKeyIssue(JwtFilterDto jwtFilterDto, ApiKeySaveDto apiKeySaveDto) {
         log.info("apiKeyIssue 호출");
+
         log.info("jwtFilterDto : "+jwtFilterDto);
         log.info("apiKeySaveDto : "+apiKeySaveDto);
+
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-//        if(apiKeySaveDto.getAkAgreeIp1() == null) {
-//            log.error("최소 하나의 IP설정은 필수입니다.");
-//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO074.getCode(), ResponseErrorCode.KO074.getDesc()));
-//        } else {
-//
-//        }
+
+        if(apiKeySaveDto.getAkAgreeIp1() == null) {
+            log.error("최소 하나의 IP설정은 필수입니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO074.getCode(), ResponseErrorCode.KO074.getDesc()));
+        } else {
+
+        }
+
         return ResponseEntity.ok(res.success(data));
     }
 
@@ -51,10 +56,19 @@ public class ApiKeyService {
 //    private final AjaxResponse res = new AjaxResponse();
 //    private final HashMap<String, Object> data = new HashMap<>();
 //
-//
+
     // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
-    public Long validateApiKey(String apikey, String email) {
-        return apiKeyRepository.findByCheck(apikey, email);
+    public Long validateApiKey(String apikey) {
+        return apiKeyRepository.findByCheck(apikey);
+    }
+
+    public ApiKeyInfoDto findByApiKeyInfo(String apikey) {
+        return apiKeyRepository.findByApiKeyInfo(apikey);
+    }
+
+    // 유저IP 체킹
+    public Long findByApiKeyCheck(String userIp) {
+        return apiKeyRepository.findByApiKeyCheck(userIp);
     }
 
 //    /**

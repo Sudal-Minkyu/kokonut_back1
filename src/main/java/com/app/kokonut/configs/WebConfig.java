@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
@@ -59,23 +60,23 @@ public class WebConfig implements WebMvcConfigurer {
                 .build();
     }
 
-//    // 인터셉터 설정
-//    @Bean
-//    public KokonutApiInterceptor customInterceptor() {
-//        return new KokonutApiInterceptor();
-//    }
-//
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(customInterceptor()).addPathPatterns("/v2/api/**");
-//    }
+    // 인터셉터 설정
+    @Bean
+    public KokonutApiInterceptor customInterceptor() {
+        return new KokonutApiInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(customInterceptor()).addPathPatterns("/v3/api/**");
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry
             .addMapping("/**")
             .allowedOriginPatterns("http://localhost:5173")
-            .allowedHeaders("Authorization", "Content-Type", "ApiKey", "Set-Cookie")
+            .allowedHeaders("Authorization", "Content-Type", "ApiKey")
             .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name())
             .allowCredentials(true)
             .maxAge(900); // 타임아웃 15분으로 설정

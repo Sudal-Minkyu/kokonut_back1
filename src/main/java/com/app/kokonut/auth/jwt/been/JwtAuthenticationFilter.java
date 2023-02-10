@@ -1,6 +1,6 @@
 package com.app.kokonut.auth.jwt.been;
 
-import com.app.kokonut.apiKey.ApiKeyService;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -11,11 +11,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * @author Woody
@@ -29,47 +27,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String BEARER_TYPE = "Authorization";
 
-    private static final String APIKEY_TYPE = "ApiKey";
-
-    private ApiKeyService apiKeyService;
-
     private final JwtTokenProvider jwtTokenProvider;
     private final StringRedisTemplate redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        log.info("JwtAuthenticationFilter 여기왔다감");
+        log.info("JwtAuthenticationFilter 호출");
 
-        // 해더에서 JWT 토큰 추출
-//        String token = null;
-//        Cookie[] cookies = request.getCookies();
-//        if(cookies != null) {
-//            for(Cookie cookie : cookies) {
-//                if (cookie.getName().equals("accessToken")) {
-//                    token = cookie.getValue();
-//                }
-//            }
-//        }
-//        if(token == null) {
         String token = resolveToken(request);
-//        }
-        log.info("필터 거쳐감 Jwt Access Token : "+token);
 
-//        if(token == null) {
-//            log.info("토큰이 만료되었습니다.");
-//        }
+        if(token != null) {
+            log.info("필터 거쳐감 Jwt Access Token : "+token);
 
-        String apikey = resolveApiKey(request);
-        log.info("필터 거쳐감 ApiKey : "+apikey);
-
-        // validateToken으로 토큰 유효성 검사 + ApiKey 유효성 검사
-        if (token != null && jwtTokenProvider.validateToken(token) ) {
-            // Redis 에 해당 accessToken logout 여부 확인
-            String isLogout = redisTemplate.opsForValue().get(token);
-            if (ObjectUtils.isEmpty(isLogout)) {
-                // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
-                Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            if(token.equals("kokonut")) {
+                log.info("로그인 이후 이용해주세요.");
+                throw new RuntimeException("로그인 이후 이용해주세요.");
+            } else {
+                // validateToken으로 토큰 유효성 검사 + ApiKey 유효성 검사
+                int result = jwtTokenProvider.validateToken(token);
+                if (result == 200) {
+                    // Redis 에 해당 accessToken logout 여부 확인
+                    String isLogout = redisTemplate.opsForValue().get(token);
+                    if (ObjectUtils.isEmpty(isLogout)) {
+                        // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
+                        Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                } else if(result == 901) {
+                    throw new io.jsonwebtoken.security.SecurityException("잘못된 JWT 토큰입니다.");
+                } else if(result == 902) {
+                    throw new RuntimeException("만료된 JWT 토큰입니다.");
+                } else if(result == 903) {
+                    throw new UnsupportedJwtException("지원되지 않는 JWT 토큰입니다.");
+                } else if(result == 904) {
+                    throw new IllegalArgumentException("JWT 토큰이 맞지 않습니다.");
+                } else {
+                    throw new RuntimeException("인증된 정보가 없습니다.");
+                }
             }
         }
         filterChain.doFilter(request, response);
@@ -78,11 +72,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // Request Header 에서 토큰 정보 추출
     private String resolveToken(HttpServletRequest request) {
         return request.getHeader(BEARER_TYPE);
-    }
-
-    // Request Header 에서 APIKEY 정보 추출
-    private String resolveApiKey(HttpServletRequest request) {
-        return request.getHeader(APIKEY_TYPE);
     }
 
 }

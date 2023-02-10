@@ -1,9 +1,9 @@
-package com.app.kokonut.personalInfoProvision;
+package com.app.kokonutapi.personalInfoProvision;
 
-import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionDto;
-import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionListDto;
-import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionMapperDto;
-import com.app.kokonut.personalInfoProvision.dtos.PersonalInfoProvisionNumberDto;
+import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionDto;
+import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionListDto;
+import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionMapperDto;
+import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionNumberDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

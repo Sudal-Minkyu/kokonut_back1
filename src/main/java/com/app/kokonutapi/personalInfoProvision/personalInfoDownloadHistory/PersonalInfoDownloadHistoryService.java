@@ -1,4 +1,4 @@
-package com.app.kokonut.personalInfoProvision.personalInfoDownloadHistory;
+package com.app.kokonutapi.personalInfoProvision.personalInfoDownloadHistory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

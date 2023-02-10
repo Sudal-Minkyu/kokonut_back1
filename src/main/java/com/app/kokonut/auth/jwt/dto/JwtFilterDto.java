@@ -22,4 +22,7 @@ public class JwtFilterDto {
         this.role = role;
     }
 
+    public JwtFilterDto() {
+
+    }
 }

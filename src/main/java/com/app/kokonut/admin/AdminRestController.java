@@ -24,7 +24,7 @@ import java.util.Map;
  * Remark :
  */
 @Slf4j
-@RequestMapping("/v1/api/Admin")
+@RequestMapping("/v2/api/Admin")
 @RestController
 public class AdminRestController {
 

@@ -46,7 +46,6 @@ public class ActivityHistoryRestController {
     @ApiOperation(value="활동이력 조회", notes="활동이력 목록을 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
 //    public ResponseEntity<GetListResponse> getList(
 //            @ApiParam(value="유형 (1: 고객정보처리이력, 2: 관리자활동이력)", required=true, example="1") @RequestParam Integer type,
