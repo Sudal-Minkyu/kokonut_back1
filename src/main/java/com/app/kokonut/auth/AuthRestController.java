@@ -37,6 +37,46 @@ public class AuthRestController {
         this.authService = authService;
     }
 
+    // 이메일 중복체크
+    @GetMapping(value = "/existsByKnEmail")
+    @ApiOperation(value = "이메일 중복확인 버튼" , notes = "" +
+            "1. 이메일 중복확인을 한다." +
+            "2. 결과의 대해 false 또는 true를 보낸다.")
+    public ResponseEntity<Map<String,Object>> existsKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail) {
+        return authService.existsKnEmail(knEmail);
+    }
+
+    // 이메일 인증번호 보내기(6자리 번호 형식, 유효기간 3분)
+    @GetMapping(value = "/numberSendKnEmail")
+    @ApiOperation(value = "이메일 인증번호 보내기 버튼" , notes = "" +
+            "1. 이메일 중복확인한 이메일의 대해 인증번호를 보낸다." +
+            "2. 번호를 레디스DB에 담는다. (유효기간은 3분)")
+    public ResponseEntity<Map<String,Object>> numberSendKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail) {
+        return authService.numberSendKnEmail(knEmail);
+    }
+
+    // 이메일 인증번호 검증
+    @GetMapping(value = "/numberCheckKnEmail")
+    @ApiOperation(value = "이메일 인증번호 보내기 검증" , notes = "" +
+            "1. 받은 인증번호를 받아 맞는지 확인한다.")
+    public ResponseEntity<Map<String,Object>> numberCheckKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail,
+                                                                 @RequestParam(value="ctNumber", defaultValue = "") String ctNumber) {
+        return authService.numberCheckKnEmail(knEmail, ctNumber);
+    }
+
+    // 리뉴얼 회원가입
+    @PostMapping(value = "/kokonutSignUp", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "사업자 회원가입" , notes = "" +
+            "1. Param 값으로 유저 이메일과 사용할 비밀번호를 받는다." +
+            "2. 이메일 중복체크를 한다." +
+            "3. 이메일 인증체크를 한다." +
+            "4. 회원가입 완료후 메일을 보낸다.")
+    public ResponseEntity<Map<String,Object>> kokonutSignUp(@Parameter(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                                                     @Validated AuthRequestDto.KokonutSignUp kokonutSignUp, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.info("사업자 회원가입 API 호출");
+        return authService.kokonutSignUp(kokonutSignUp, request, response);
+    }
+
     // 회원가입
     @PostMapping(value = "/signUp", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "사업자 회원가입" , notes = "" +
@@ -68,7 +108,10 @@ public class AuthRestController {
     // 로그인 성공 이후 JWT Token 발급 및 업데이트
     // "loginVerify" + "/otpVerify" 합쳐진 메서드
     @PostMapping("/authToken")
-    @ApiOperation(value = "로그인 - 로그인 성공후 JWT 토큰 발급" , notes = "JWT 엑세스토큰과 리플레쉬토큰을 발급해준다.")
+    @ApiOperation(value = "로그인 - 로그인 성공후 JWT 토큰 발급" , notes = "" +
+            "1. 입력한 아이디와 비밀번호와 OTP값을 보낸다." +
+            "2. 해당 이메일의 OTP값이 맞는지 확인하고, 로그인 여부를 체크한다." +
+            "3. 확인이 다 되면, 쿠키에 refreshToken을 저장하고, 결과값으로 accessToken을 보내준다.")
     public ResponseEntity<Map<String,Object>> authToken(@Validated AuthRequestDto.Login login, HttpServletResponse response) {
         log.info("로그인한 이메일 : "+login.getKnEmail());
         return authService.authToken(login, response);
@@ -115,6 +158,7 @@ public class AuthRestController {
     public ResponseEntity<Map<String,Object>> saveOTP(@Validated AdminGoogleOTPDto.GoogleOtpSave googleOtpSave) {
         return authService.saveOTP(googleOtpSave);
     }
+
 
 
 

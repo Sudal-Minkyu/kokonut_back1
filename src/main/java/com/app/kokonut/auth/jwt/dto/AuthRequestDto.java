@@ -18,6 +18,27 @@ import javax.validation.constraints.Pattern;
  */
 public class AuthRequestDto {
 
+    // 리뉴얼 회원가입Dto
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class KokonutSignUp {
+
+        @NotBlank(message = "이메일은 필수 입력값 입니다.")
+        @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
+        private String knEmail;
+
+        @NotBlank(message = "비밀번호는 필수 입력값 입니다.")
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$", message = "비밀번호는 8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
+        private String knPassword;
+
+        private String knPasswordConfirm; // 비밀번호 체크
+
+        private Boolean knEmailCheck; // 이메일인증 여부
+
+    }
+
+    // 기존 회원가입Dto
     @Getter
     @Setter
     @NoArgsConstructor
@@ -64,25 +85,6 @@ public class AuthRequestDto {
 
         private String cpAddressDetail;
 
-        @Builder
-        public SignUp(String knEmail, String cpName, String cpRepresentative, String knName, String knPhoneNumber, String knPassword,
-                      String knPasswordConfirm, String cpBusinessNumber, MultipartFile multipartFile, String cpBusinessType, String cpTel,
-                      String cpAddressNumber, String cpAddress, String cpAddressDetail) {
-            this.knEmail = knEmail;
-            this.cpName = cpName;
-            this.cpRepresentative = cpRepresentative;
-            this.knName = knName;
-            this.knPhoneNumber = knPhoneNumber;
-            this.knPassword = knPassword;
-            this.knPasswordConfirm = knPasswordConfirm;
-            this.cpBusinessNumber = cpBusinessNumber;
-            this.multipartFile = multipartFile;
-            this.cpBusinessType = cpBusinessType;
-            this.cpTel = cpTel;
-            this.cpAddressNumber = cpAddressNumber;
-            this.cpAddress = cpAddress;
-            this.cpAddressDetail = cpAddressDetail;
-        }
     }
 
     @Getter

@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,6 +46,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -100,6 +102,116 @@ public class AuthService {
         this.redisTemplate = redisTemplate;
         this.googleOTP = googleOTP;
         this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
+    }
+
+    // 이메일 중복확인
+    public ResponseEntity<Map<String, Object>> existsKnEmail(String knEmail) {
+        log.info("existsKnEmail 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        if (adminRepository.existsByKnEmail(knEmail)) {
+            log.error("이미 회원가입된 이메일입니다.");
+            data.put("result", false);
+        } else {
+            data.put("result", true);
+        }
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+    // 이메일 인증번호 보내기(6자리 번호 형식, 유효기간 3분)
+    public ResponseEntity<Map<String, Object>> numberSendKnEmail(String knEmail) {
+        log.info("numberSendKnEmail 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        // 인증번호(숫자6자리) 생성
+        String ctNumber = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 1000000));
+        log.info("생성된 인증번호 : "+ctNumber);
+
+        // 인증번호 메일전송
+        // 조이 요청 ->
+
+
+
+        // 인증번호 레디스에 담기
+        redisTemplate.opsForValue().set("CT: " + knEmail, ctNumber, 180000, TimeUnit.MILLISECONDS); // 제한시간 3분
+        log.info("레디스에 인증번호 저장성공");
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+    // 이메일 인증번호 검증
+    public ResponseEntity<Map<String, Object>> numberCheckKnEmail(String knEmail, String ctNumber) {
+        log.info("numberCheckKnEmail 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        String redisCtNumber = redisTemplate.opsForValue().get("CT: "+knEmail);
+//        log.info("redisCtNumber : "+redisCtNumber);
+
+        if(redisCtNumber != null) {
+            if(redisCtNumber.equals(ctNumber)) {
+                redisTemplate.delete("CT: " + knEmail);
+                log.info("redis 인증번호 체크완료");
+            } else {
+                log.error("해당 메일의 대한 인증번호가 존재하지 않습니다. 다시 인증번호를 받아주세요.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO076.getCode(), ResponseErrorCode.KO076.getDesc()));
+            }
+        } else {
+            log.error("제한시간 내에 입력하시지 않았습니다. 다시 인증번호를 받아주세요.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO075.getCode(), ResponseErrorCode.KO075.getDesc()));
+        }
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+    // 코코넛 회원가입 기능
+    @Transactional
+    public ResponseEntity<Map<String, Object>> kokonutSignUp(AuthRequestDto.KokonutSignUp kokonutSignUp, HttpServletRequest request, HttpServletResponse response) {
+        log.info("kokonutSignUp 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        if (adminRepository.existsByKnEmail(kokonutSignUp.getKnEmail())) {
+            log.error("이미 회원가입된 이메일입니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO005.getCode(), ResponseErrorCode.KO005.getDesc()));
+        }
+
+        if (!kokonutSignUp.getKnEmailCheck()) {
+            log.error("이메일인증을 해주시길 바랍니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO005.getCode(), ResponseErrorCode.KO005.getDesc()));
+        }
+
+        // 비밀번호 일치한지 체크
+        if (!kokonutSignUp.getKnPassword().equals(kokonutSignUp.getKnPasswordConfirm())) {
+            log.error("입력한 비밀번호가 서로 일치하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO037.getCode(), ResponseErrorCode.KO037.getDesc()));
+        }
+
+        log.info("회원가입 시작");
+        log.info("받아온 값 kokonutSignUp : "+kokonutSignUp);
+
+        Admin admin = new Admin();
+        admin.setKnEmail(kokonutSignUp.getKnEmail());
+        admin.setKnPassword(passwordEncoder.encode(kokonutSignUp.getKnPassword()));
+//        admin.setCompanyId(saveCompany.getCompanyId());
+        admin.setMasterId(0L); // 사업자는 0, 관리자가 등록한건 관리자IDX ?
+        admin.setKnRoleCode(AuthorityRole.ROLE_MASTER);
+        admin.setInsert_email(kokonutSignUp.getKnEmail());
+        admin.setInsert_date(LocalDateTime.now());
+        Admin saveAdmin = adminRepository.save(admin);
+        log.info("사업자 정보 저장 saveAdmin : "+saveAdmin.getAdminId());
+
+
+
+
+        return ResponseEntity.ok(res.success(data));
     }
 
     // 회원가입 기능
@@ -624,5 +736,4 @@ public class AuthService {
             return ResponseEntity.ok(res.success(data));
         }
     }
-
 }

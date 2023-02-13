@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/v1/api/ApiKey")
+@RequestMapping("/v2/api/ApiKey")
 public class ApiKeyRestController {
 
     private final ApiKeyService apiKeyService;
@@ -34,7 +34,7 @@ public class ApiKeyRestController {
      */
     @PostMapping("/apiKeyIssue")
     @ApiOperation(value = "APIKey 발급", notes = "APIKey를 발급해준다.")
-    @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+    @ApiImplicitParam(name ="Authorization",  value="JWT Token", required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     public ResponseEntity<Map<String,Object>> apiKeyIssue(@RequestBody ApiKeySaveDto apiKeySaveDto){
         log.info("APIKey 발급");
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
