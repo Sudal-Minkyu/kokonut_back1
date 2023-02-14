@@ -37,7 +37,6 @@ public class TotalDbDownloadRestController {
     @PostMapping(value = "/userDbDataDownloadApply")
     @ApiImplicitParams({
 			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String, Object>> userDbDataDownloadApply(@RequestParam(name="otpValue", defaultValue = "") String otpValue,
                                                                        @RequestParam(name="reason", defaultValue = "") String reason) {
@@ -49,7 +48,6 @@ public class TotalDbDownloadRestController {
     @PostMapping(value = "/userDbDataDownloadList")
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String, Object>> userDbDataDownloadList(@RequestBody TotalDbDownloadSearchDto totalDbDownloadSearchDto, Pageable pageable) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
@@ -60,7 +58,6 @@ public class TotalDbDownloadRestController {
     @PostMapping(value = "/userDbDataDownloadStart")
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public void userDbDataDownloadStart(@RequestParam(name="tdId", defaultValue = "") Long tdId, HttpServletRequest request, HttpServletResponse response) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();

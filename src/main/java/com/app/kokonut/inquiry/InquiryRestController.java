@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/v0/api/Inquiry")
+@RequestMapping("/v1/api/Inquiry")
 public class InquiryRestController {
 
 	private final InquiryService inquiryService;

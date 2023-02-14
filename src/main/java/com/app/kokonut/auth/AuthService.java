@@ -111,14 +111,11 @@ public class AuthService {
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-
+//        log.info("knEmail : "+knEmail);
         if (adminRepository.existsByKnEmail(knEmail)) {
-            log.error("이미 회원가입된 이메일입니다.");
-            data.put("result", false);
-        } else {
-            data.put("result", true);
+            log.info("이미 회원가입된 이메일입니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO005.getCode(), ResponseErrorCode.KO005.getDesc()));
         }
-
         return ResponseEntity.ok(res.success(data));
     }
 
@@ -133,14 +130,13 @@ public class AuthService {
         String ctNumber = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 1000000));
         log.info("생성된 인증번호 : "+ctNumber);
 
-        // 인증번호 메일전송
-        // 조이 요청 ->
+//        String originContents = ReqUtils.filter("코코넛 이메일 인증번호가 도착했습니다.<br>인증번호 : "+ctNumber); // ReqUtils.filter 처리 <p> -- > &lt;p&gt;, html 태그를 DB에 저장하기 위해 이스케이프문자로 치환
+//        String contents = mailSender.getHTML2("/mail/emailForm/" + originContents);
 
+        // 인증번호 메일전송
         // 이메일 전송을 위한 전처리 - filter, unfilter
         String title = ReqUtils.filter("코코넛 이메일 인증번호가 도착했습니다.");
-        String originContents = ReqUtils.filter("코코넛 이메일 인증번호가 도착했습니다.<br>인증번호 : "+ctNumber); // ReqUtils.filter 처리 <p> -- > &lt;p&gt;, html 태그를 DB에 저장하기 위해 이스케이프문자로 치환
         String contents = ReqUtils.unFilter("코코넛 이메일 인증번호가 도착했습니다.<br>인증번호 : "+ctNumber); // &lt;br&gt;이메일내용 --> <br>이메일내용, html 화면에 뿌리기 위해 특수문자를 치환
-//        contents = mailSender.getHTML2("/mail/emailForm/" + contents);
 
         String reciverEmail = knEmail;
         String reciverName = "kokonut";

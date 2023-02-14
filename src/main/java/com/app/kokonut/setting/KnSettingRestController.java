@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,7 +47,6 @@ public class KnSettingRestController {
     @PostMapping("/settingDetail") // -> 기존의 코코넛 호출 메서드명 : settingsUI, settingsUI - SystemSettingController, MemberSettingController
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
     public ResponseEntity<Map<String,Object>> settingDetail(){
         String userRole = SecurityUtil.getCurrentJwt().getRole();
@@ -58,9 +58,8 @@ public class KnSettingRestController {
     @PostMapping("/settingSave") // -> 기존의 코코넛 호출 메서드명 : /save - MemberSettingController
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
     })
-    public ResponseEntity<Map<String,Object>> settingSave(KnSettingDetailDto knSettingDetailDto){
+    public ResponseEntity<Map<String,Object>> settingSave(@RequestBody KnSettingDetailDto knSettingDetailDto){
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
         return knSettingService.settingSave(userRole, email, knSettingDetailDto);
