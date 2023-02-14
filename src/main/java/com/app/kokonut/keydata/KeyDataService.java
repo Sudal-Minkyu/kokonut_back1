@@ -199,6 +199,35 @@ public class KeyDataService {
         return keyDataNICEDto;
     }
 
+    public KeyDataMAILDto mail_key() {
+        log.info("mail_key 호출 시작");
+
+        String mailKeyName = "mail_host"; // concat@kokonut.me
+        String otpKeyName = "otp_url"; // 127.0.0.1
+
+        KeyDataMAILDto keyDataMAILDto = new KeyDataMAILDto();
+
+        String mail_host = keyDataRepository.findByMAILKey(mailKeyName);
+
+        if(mail_host == null) {
+            errorLog(mailKeyName, null);
+        } else {
+            keyDataMAILDto.setMAILHOST(mail_host);
+        }
+
+        String otp_url = keyDataRepository.findByOTPKey(otpKeyName);
+
+        if(otp_url == null) {
+            errorLog(otpKeyName, null);
+        } else {
+            keyDataMAILDto.setOTPURL(otp_url);
+        }
+
+        log.info("mail_key 호출 성공");
+
+        return keyDataMAILDto;
+    }
+
     // 키값 조회
     public String findByKeyValue(String kdKeyName) {
 //        log.info("findByKeyValue 호출 : "+keyName);

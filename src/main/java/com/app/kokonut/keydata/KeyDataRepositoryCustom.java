@@ -20,5 +20,9 @@ public interface KeyDataRepositoryCustom {
 
     String findByNICEKey(String kdKeyName); // NICE keyData 조회
 
+    String findByMAILKey(String kdKeyName); // MAIL keyData 조회
+
+    String findByOTPKey(String kdKeyName); // OTP keyData 조회
+
 
 }

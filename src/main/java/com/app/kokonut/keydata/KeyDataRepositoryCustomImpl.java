@@ -94,4 +94,32 @@ public class KeyDataRepositoryCustomImpl extends QuerydslRepositorySupport imple
         return query.fetchOne();
     }
 
+    // MAIL keyData 조회
+    @Override
+    public String findByMAILKey(String kdKeyName) {
+        QKeyData keyData = QKeyData.keyData;
+
+        JPQLQuery<String> query = from(keyData)
+                .where(keyData.kdKeyGroup.eq("mail").and(keyData.kdKeyName.eq(kdKeyName)))
+                .select(Projections.constructor(String.class,
+                        keyData.kdKeyValue
+                ));
+
+        return query.fetchOne();
+    }
+
+    // OTP keyData 조회
+    @Override
+    public String findByOTPKey(String kdKeyName) {
+        QKeyData keyData = QKeyData.keyData;
+
+        JPQLQuery<String> query = from(keyData)
+                .where(keyData.kdKeyGroup.eq("otp").and(keyData.kdKeyName.eq(kdKeyName)))
+                .select(Projections.constructor(String.class,
+                        keyData.kdKeyValue
+                ));
+
+        return query.fetchOne();
+    }
+
 }

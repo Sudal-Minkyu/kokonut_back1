@@ -3,6 +3,9 @@ package com.app.kokonut.configs;
 
 import com.app.kokonut.email.emailHistory.EmailHistoryRepository;
 import com.app.kokonut.email.emailHistory.EmailHistory;
+import com.app.kokonut.keydata.KeyDataService;
+import com.app.kokonut.keydata.dtos.KeyDataMAILDto;
+import com.app.kokonut.keydata.dtos.KeyDataNCLOUDDto;
 import com.app.kokonut.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.navercloud.dto.NCloudPlatformMailRequest;
 import com.app.kokonut.navercloud.dto.RecipientForRequest;
@@ -28,28 +31,28 @@ import java.util.List;
 @Service
 public class MailSender {
 
-	@Value("${kokonut.mail.host}") // TODO ncloud.email.host=contact@kokonut.me 공통 properties 로 추가
-	public String emailHost; // 보내는 사람의 이메일
-
-	@Value("${otp.hostUrl}")
-    public String myHost;
+	public final String mailHost; // 보내는 사람의 이메일
+	public final String myHost; // otp_url
 
 	private final  NaverCloudPlatformService naverCloudPlatformService;
 	private final EmailHistoryRepository emailHistoryRepository;
 
 	@Autowired
-	public MailSender(NaverCloudPlatformService naverCloudPlatformService, EmailHistoryRepository emailHistoryRepository) {
+	public MailSender(KeyDataService keyDataService, NaverCloudPlatformService naverCloudPlatformService, EmailHistoryRepository emailHistoryRepository) {
+		KeyDataMAILDto keyDataMAILDto = keyDataService.mail_key();
 		this.naverCloudPlatformService = naverCloudPlatformService;
 		this.emailHistoryRepository = emailHistoryRepository;
+		this.mailHost = keyDataMAILDto.getMAILHOST();
+		this.myHost = keyDataMAILDto.getOTPURL();
 	}
 
 	public boolean sendMail(String toEmail, String toName, String title, String contents) {
-		return sendMail(emailHost, "kokonut", toEmail, toName, title, contents);
+		return sendMail(mailHost, "kokonut", toEmail, toName, title, contents);
 	}
 
 	// 기존 코코넛 inquiryController에서 사용 중, 해당 기능 아직 리팩토링 전. 추후 변경 예정.
 	public boolean inquirySendMail(String toEmail, String toName, String title, String contents) {
-		return sendMail(toEmail, toName, emailHost, "kokonut", title, contents);
+		return sendMail(toEmail, toName, mailHost, "kokonut", title, contents);
 	}
 
 	@Transactional
