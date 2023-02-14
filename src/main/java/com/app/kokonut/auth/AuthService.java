@@ -20,12 +20,12 @@ import com.app.kokonut.companyFile.CompanyFile;
 import com.app.kokonut.companyFile.CompanyFileRepository;
 import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.configs.KeyGenerateService;
+import com.app.kokonut.configs.MailSender;
 import com.app.kokonut.keydata.KeyDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,8 +49,6 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-
-;
 
 /**
  * @author Woody
@@ -83,12 +81,14 @@ public class AuthService {
     private final StringRedisTemplate redisTemplate;
     private final GoogleOTP googleOTP;
 
+    private final MailSender mailSender;
+
     @Autowired
     public AuthService(KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository,
                        AwsKmsUtil awsKmsUtil, KeyGenerateService keyGenerateService, CompanyRepository companyRepository, CompanyFileRepository companyFileRepository,
                        AwsKmsHistoryRepository awsKmsHistoryRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
-                       StringRedisTemplate redisTemplate, GoogleOTP googleOTP) {
+                       StringRedisTemplate redisTemplate, GoogleOTP googleOTP, MailSender mailSender) {
         this.awsS3Util = awsS3Util;
         this.adminRepository = adminRepository;
         this.awsKmsUtil = awsKmsUtil;
@@ -102,6 +102,7 @@ public class AuthService {
         this.redisTemplate = redisTemplate;
         this.googleOTP = googleOTP;
         this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
+        this.mailSender = mailSender;
     }
 
     // 이메일 중복확인
@@ -135,7 +136,24 @@ public class AuthService {
         // 인증번호 메일전송
         // 조이 요청 ->
 
+        // 이메일 전송을 위한 전처리 - filter, unfilter
+        String title = ReqUtils.filter("코코넛 이메일 인증번호가 도착했습니다.");
+        String originContents = ReqUtils.filter("코코넛 이메일 인증번호가 도착했습니다.<br>인증번호 : "+ctNumber); // ReqUtils.filter 처리 <p> -- > &lt;p&gt;, html 태그를 DB에 저장하기 위해 이스케이프문자로 치환
+        String contents = ReqUtils.unFilter("코코넛 이메일 인증번호가 도착했습니다.<br>인증번호 : "+ctNumber); // &lt;br&gt;이메일내용 --> <br>이메일내용, html 화면에 뿌리기 위해 특수문자를 치환
+//        contents = mailSender.getHTML2("/mail/emailForm/" + contents);
 
+        String reciverEmail = knEmail;
+        String reciverName = "kokonut";
+
+        boolean mailSenderResult = mailSender.sendMail(reciverEmail, reciverName, title, contents);
+        if(mailSenderResult){
+            // mailSender 성공
+            log.error("### 메일전송 성공했습니다. reciver Email : "+ knEmail);
+        }else{
+            // mailSender 실패
+            log.error("### 해당 메일 전송에 실패했습니다. 관리자에게 문의하세요. reciverEmail : "+ knEmail);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO041.getCode(), ResponseErrorCode.KO041.getDesc()));
+        }
 
         // 인증번호 레디스에 담기
         redisTemplate.opsForValue().set("CT: " + knEmail, ctNumber, 180000, TimeUnit.MILLISECONDS); // 제한시간 3분
@@ -159,7 +177,7 @@ public class AuthService {
                 redisTemplate.delete("CT: " + knEmail);
                 log.info("redis 인증번호 체크완료");
             } else {
-                log.error("해당 메일의 대한 인증번호가 존재하지 않습니다. 다시 인증번호를 받아주세요.");
+                log.error("입력하신 인증번호가 일치하지 않습니다. 다시 입력해주세요.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO076.getCode(), ResponseErrorCode.KO076.getDesc()));
             }
         } else {
