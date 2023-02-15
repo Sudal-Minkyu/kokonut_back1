@@ -40,8 +40,8 @@ spring:
 #jwt:
 #  secret: ${JWT_Secret}
 
-otp:
-  hostUrl: ${KOKONUT_OTP_URL}
+#otp:
+#  hostUrl: ${KOKONUT_OTP_URL}
 
 #Custom
 kokonut:
@@ -66,8 +66,8 @@ kokonut:
 #      id: ${KOKONUT_AWS_KMS_ID}
 
   # 메일주소
-  mail:
-    host: ${KOKONUT_MAIL_HOST}
+#  mail:
+#    host: ${KOKONUT_MAIL_HOST}
 
   # iamport 관련 값
 #  iamport:

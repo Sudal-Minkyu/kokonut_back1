@@ -136,7 +136,7 @@ public class AuthService {
         // 인증번호 메일전송
         // 이메일 전송을 위한 전처리 - filter, unfilter
         String title = ReqUtils.filter("코코넛 이메일 인증번호가 도착했습니다.");
-        String contents = ReqUtils.unFilter("코코넛 이메일 인증번호가 도착했습니다.<br>인증번호 : "+ctNumber); // &lt;br&gt;이메일내용 --> <br>이메일내용, html 화면에 뿌리기 위해 특수문자를 치환
+        String contents = ReqUtils.unFilter("인증번호 : "+ctNumber); // &lt;br&gt;이메일내용 --> <br>이메일내용, html 화면에 뿌리기 위해 특수문자를 치환
 
         String reciverEmail = knEmail;
         String reciverName = "kokonut";

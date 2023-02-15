@@ -18,6 +18,7 @@ import com.app.kokonut.common.ResponseErrorCode;
 
 import com.app.kokonut.common.component.ReqUtils;
 
+import com.app.kokonut.keydata.KeyDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -38,17 +39,18 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class EmailService {
 
-    @Value("${otp.hostUrl}")
-    private String hostUrl;
+    private final String hostUrl; // otp_url
+
     private final EmailGroupRepository emailGroupRepository;
     private final AdminRepository adminRepository;
     private final EmailRepository emailRepository;
     private final MailSender mailSender;
 
     @Autowired
-    public EmailService(EmailRepository emailRepository,
+    public EmailService(KeyDataService keyDataService, EmailRepository emailRepository,
                         AdminRepository adminRepository,
                         EmailGroupRepository emailGroupRepository, MailSender mailSender) {
+        this.hostUrl = keyDataService.findByKeyValue("otp_url");
         this.emailRepository = emailRepository;
         this.adminRepository = adminRepository;
         this.emailGroupRepository = emailGroupRepository;
