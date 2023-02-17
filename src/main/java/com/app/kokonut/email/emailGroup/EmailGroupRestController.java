@@ -24,48 +24,54 @@ public class EmailGroupRestController {
     public EmailGroupRestController(EmailGroupService emailGroupService) {
         this.emailGroupService = emailGroupService;
     }
-    @ApiOperation(value="이메일 그룹 목록 조회", notes="이메일 그룹 목록 조회")
+    @ApiOperation(value="이메일 그룹 목록 조회", notes="" +
+            "1. 토큰과 페이지 처리를 위한 값을 받는다." +
+            "2. 이메일 그룹 목록을 조회한다")
     @GetMapping(value = "/emailGroupList") // -> 기존의 코코넛 호출 메서드명 : getEmailGroup
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> emailGroupList(@RequestBody Pageable pageable) {
         return emailGroupService.emailGroupList(pageable);
     }
 
-    @ApiOperation(value="이메일 그룹 상세조회", notes="이메일 그룹 상세조회")
+    @ApiOperation(value="이메일 그룹 상세조회", notes="" +
+            "1. 토큰과 조회하고자 하는 이메일 그룹의 아이디를 받는다." +
+            "2. 이메일 그룹의 상세 내용을 조회한다.")
     @GetMapping(value = "/emailGroupDetail/{egId}") // -> 기존의 코코넛 호출 메서드명 : SelectEmailGroupByIdx
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> emailGroupDetail(@PathVariable("egId") Long egId) {
         return emailGroupService.emailGroupDetail(egId);
     }
 
-    @ApiOperation(value="이메일 그룹 저장", notes="이메일 그룹 저장")
+    @ApiOperation(value="이메일 그룹 저장", notes="" +
+            "1. 이메일 그룹을 저장한다.")
     @PostMapping("/saveEmailGroup") // -> 기존의 코코넛 호출 메서드명 : save
-    @ApiImplicitParams({@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true,dataType="string",paramType = "header", example = "jwtKey")
+    })
     public ResponseEntity<Map<String,Object>> saveEmailGroup(@RequestBody EmailGroupDetailDto emailGroupDetailDto) {
         return emailGroupService.saveEmailGroup(emailGroupDetailDto);
     }
 
-    @ApiOperation(value="이메일 그룹 삭제", notes="이메일 그룹 사용상태 변경")
+    @ApiOperation(value="이메일 그룹 삭제", notes="" +
+            "1. 토큰과 삭제하고자 하는 이메일 그룹의 아이디를 받는다." +
+            "2. 이메일 그룹을 삭제한다.")
     @PostMapping("/deleteEmailGroup") // -> 기존의 코코넛 호출 메서드명 : delete
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> deleteEmailGroup(@RequestParam(name="egId") Long egId){
         return emailGroupService.deleteEmailGroup(egId);
     }
 
-    @ApiOperation(value="이메일 그룹 수정", notes="이메일 그룹 수정")
+    @ApiOperation(value="이메일 그룹 수정", notes="" +
+            "1. 이메일 그룹 내용을 수정한다.")
     @PostMapping("/updateEmailGroup") // -> 기존의 코코넛 호출 메서드명 : update
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> updateEmailGroup(@RequestBody EmailGroupDetailDto emailGroupDetailDto){
         return emailGroupService.UpdateEmailGroup(emailGroupDetailDto);

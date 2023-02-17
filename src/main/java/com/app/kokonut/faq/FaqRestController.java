@@ -31,33 +31,35 @@ public class FaqRestController {
         this.faqService = faqService;
     }
 
-    @ApiOperation(value="Faq 목록 조회", notes="자주 묻는 질문 목록 조회")
+    @ApiOperation(value="Faq 목록 조회", notes="" +
+            "1. 토큰과 페이지 처리를 위한 값을 받는다." +
+            "2. 자주 묻는 질문 목록을 조회한다.")
     @GetMapping(value = "/faqList") // -> 기존의 코코넛 호출 메서드명 : list - SystemFaqController, FaqController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> faqList(@RequestBody FaqSearchDto faqSearchDto, Pageable pageable) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         return faqService.faqList(userRole, faqSearchDto, pageable);
     }
 
-    @ApiOperation(value="Faq 내용 조회", notes="자주 묻는 질문 내용 조회")
+    @ApiOperation(value="Faq 내용 조회", notes="" +
+            "1. 토큰과 조회하고자 하는 자주묻는 질문 ID를 받는다." +
+            "2. 자주 묻는 질문 내용을 조회한다.")
     @GetMapping(value = "/faqDetail/{faqId}") // -> 기존의 코코넛 호출 메서드명 : detailView - SystemFaqController, FaqController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> faqDetail(@PathVariable("faqId") Long faqId) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         return faqService.faqDetail(userRole, faqId);
     }
 
-    @ApiOperation(value="Faq 등록, 수정", notes="자주 묻는 질문 등록, 수정")
+    @ApiOperation(value="Faq 등록, 수정", notes="" +
+            "1. 자주 묻는 질문 등록, 수정")
     @PostMapping(value = "/faqSave") // -> 기존의 코코넛 호출 메서드명 : save - SystemFaqController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> faqSave(@RequestBody FaqDetailDto faqDetailDto) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
@@ -65,11 +67,12 @@ public class FaqRestController {
         return faqService.faqSave(userRole, email, faqDetailDto);
     }
 
-    @ApiOperation(value="Faq 삭제", notes="자주 묻는 질문 삭제")
+    @ApiOperation(value="Faq 삭제", notes="" +
+            "1. 토큰과 삭제하고자 하는 자주묻는 질문 ID를 받는다." +
+            "2. 자주 묻는 질문을 삭제한다.")
     @PostMapping(value = "/faqDelete") // -> 기존의 코코넛 호출 메서드명 : delete - SystemFaqController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> faqDelete(@RequestParam(name="faqId") Long faqId) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();

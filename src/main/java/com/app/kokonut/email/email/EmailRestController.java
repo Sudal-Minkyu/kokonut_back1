@@ -24,42 +24,46 @@ public class EmailRestController {
     public EmailRestController(EmailService emailService) {
         this.emailService = emailService;
     }
-    @ApiOperation(value="이메일 목록 조회", notes="발송 메일 목록 조회")
+    @ApiOperation(value="이메일 목록 조회", notes="" +
+            "1. 토큰과 페이지 처리를 위한 값을 받는다." +
+            "2. 발송한 메일 목록을 조회한다.")
     @GetMapping(value = "/emailList") // -> 기존의 코코넛 호출 메서드명 : getEmail
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> emailList(Pageable pageable) {
          return emailService.emailList(pageable);
     }
 
-    @ApiOperation(value="이메일 보내기", notes="이메일 전송")
+    @ApiOperation(value="이메일 보내기", notes="" +
+            "1. 이메일을 전송한다.")
     @PostMapping("/sendEmail")
-    @ApiImplicitParams({@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true,dataType="string",paramType = "header")})
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token", required = true, dataType = "string" ,paramType = "header", example = "jwtKey")
+    })
     public ResponseEntity<Map<String,Object>> sendEmail(@RequestBody EmailDetailDto emailDetailDto) {
-
         // 접속한 사용자 이메일
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-
         return emailService.sendEmail(jwtFilterDto.getEmail(), emailDetailDto);
     }
 
-    @ApiOperation(value="이메일 상세보기", notes="메일 상세 내용 조회")
+    @ApiOperation(value="이메일 상세보기", notes="" +
+            "1. 조회하고자 하는 이메일 id 값을 받는다." +
+            "2. 메일 상세 내용을 조회한다.")
     @GetMapping("/sendEmail/detail/{emId}")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> sendEmailDetail(@PathVariable("emId") Long emId) {
         return emailService.sendEmailDetail(emId);
     }
 
-    @ApiOperation(value="이메일 발송 대상 조회", notes="메일 발송 대상 선택을 위한 조회 - 그룹")
+    @ApiOperation(value="이메일 발송 대상 조회", notes="" +
+            "1. 토큰과 페이지 처리를 위한 값을 받는다." +
+            "2. 메일 발송 대상 목록을 조회한다.")
     @GetMapping("/emailTargetGroupList") // -> 기존의 코코넛 호출 메서드명 : selectEmailTargetPopup
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> emailTargetGroupList(Pageable pageable) {
         return emailService.emailTargetGroupList(pageable);

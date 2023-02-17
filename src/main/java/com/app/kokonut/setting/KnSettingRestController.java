@@ -43,10 +43,11 @@ public class KnSettingRestController {
         this.knSettingService = knSettingService;
     }
 
-    @ApiOperation(value="관리자 환경설정 조회", notes="관리자 환경설정 상세 조회")
+    @ApiOperation(value="관리자 환경설정 조회", notes="" +
+            "1. 관리자 환경설정 상세 조회")
     @PostMapping("/settingDetail") // -> 기존의 코코넛 호출 메서드명 : settingsUI, settingsUI - SystemSettingController, MemberSettingController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> settingDetail(){
         String userRole = SecurityUtil.getCurrentJwt().getRole();
@@ -54,10 +55,11 @@ public class KnSettingRestController {
         return knSettingService.settingDetail(userRole, email);
     }
 
-    @ApiOperation(value="관리자 환경설정 저장", notes="관리자 환경설정 저장")
+    @ApiOperation(value="관리자 환경설정 저장", notes="" +
+            "1. 관리자 환경설정 저장")
     @PostMapping("/settingSave") // -> 기존의 코코넛 호출 메서드명 : /save - MemberSettingController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> settingSave(@RequestBody KnSettingDetailDto knSettingDetailDto){
         String userRole = SecurityUtil.getCurrentJwt().getRole();

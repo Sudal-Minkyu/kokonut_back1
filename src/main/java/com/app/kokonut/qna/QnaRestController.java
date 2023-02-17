@@ -37,26 +37,27 @@ public class QnaRestController {
     public QnaRestController(QnaService qnaService) {
         this.qnaService = qnaService;
     }
-    @ApiOperation(value="QnA 목록 조회", notes="QnA 문의 내역 조회")
+    @ApiOperation(value="QnA 목록 조회", notes="" +
+            "1. 토큰과 페이지 처리를 위한 값을 받는다." +
+            "2. QnA 문의 내역을 조회한다")
     @GetMapping(value = "/qnaList") // -> 기존의 코코넛 호출 메서드명 : list - SystemQnaController, MemberQnaController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-
     public ResponseEntity<Map<String,Object>> qnaList(@RequestBody QnaSearchDto qnaSearchDto, Pageable pageable) {
         // TODO 1:1 문의자 이름 마스킹 처리
         String email = SecurityUtil.getCurrentJwt().getEmail();
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         return qnaService.qnaList(userRole, email, qnaSearchDto, pageable);
     }
-    @ApiOperation(value="QnA 내용 조회", notes="QnA 문의 내용 조회")
+
+    @ApiOperation(value="QnA 내용 조회", notes="" +
+            "1. 토큰과 조회하고자 하는 QnA 문의 ID를 받는다." +
+            "2. QnA 문의 내용을 조회한다.")
     @GetMapping(value = "/qnaDetail/{idx}") // -> 기존의 코코넛 호출 메서드명 : detailView - SystemQnaController, MemberQnaController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-
     public ResponseEntity<Map<String,Object>> qnaDetail(@PathVariable("idx") Long qnaId) {
         // TODO 파일 저장 변경으로 인해 첨부 파일 조회 부분 변경 필요.
         // TODO 1:1 문의자 이름 마스킹 처리
@@ -65,11 +66,11 @@ public class QnaRestController {
         return qnaService.qnaDetail(userRole, email, qnaId);
     }
 
-    @ApiOperation(value="QnA 문의 등록", notes="QnA 문의 등록", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value="QnA 문의 등록", notes="" +
+            "1. QnA 문의를 등록한다.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PostMapping(value = "/questionSave") // -> 기존의 코코넛 호출 메서드명 : writeView, save - MemberQnaController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> questionSave(@Parameter(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @Validated QnaQuestionSaveDto qnaQuestionSaveDto, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -78,11 +79,11 @@ public class QnaRestController {
         return qnaService.questionSave(userRole, email, qnaQuestionSaveDto, request, response);
     }
 
-    @ApiOperation(value="QnA 답변 등록", notes="QnA 답변 등록")
+    @ApiOperation(value="QnA 답변 등록", notes="" +
+            "1. QnA 답변을 등록한다.")
     @PostMapping(value = "/answerSave") // -> 기존의 코코넛 호출 메서드명 : answer - SystemQnaController
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> answerSave(@RequestBody QnaAnswerSaveDto qnaAnswerSaveDto) throws IOException {
         String userRole =  SecurityUtil.getCurrentJwt().getRole();

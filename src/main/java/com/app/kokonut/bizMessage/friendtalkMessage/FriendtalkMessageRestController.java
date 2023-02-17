@@ -36,8 +36,7 @@ public class FriendtalkMessageRestController {
     // 친구톡 메시지 리스트 조회
     @PostMapping(value = "/friendTalkMessageList")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> friendTalkMessageList(@RequestBody FriendtalkMessageSearchDto friendtalkMessageSearchDto, Pageable pageable) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
@@ -47,8 +46,7 @@ public class FriendtalkMessageRestController {
     // 친구톡 메시지 발송
     @PostMapping(value = "/postFriendMessages")
     @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-            @ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> postFriendMessages(@ModelAttribute FriendtalkMessageSendDto friendtalkMessageSendDto, HttpServletRequest request) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
