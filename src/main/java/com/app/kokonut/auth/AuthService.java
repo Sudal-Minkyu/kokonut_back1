@@ -120,7 +120,7 @@ public class AuthService {
     }
 
     // 이메일 인증번호 보내기(6자리 번호 형식, 유효기간 3분)
-    public ResponseEntity<Map<String, Object>> numberSendKnEmail(String knEmail) {
+    public ResponseEntity<Map<String, Object>> numberSendKnEmail(String knEmail) throws IOException {
         log.info("numberSendKnEmail 호출");
 
         AjaxResponse res = new AjaxResponse();
@@ -130,14 +130,19 @@ public class AuthService {
         String ctNumber = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 1000000));
         log.info("생성된 인증번호 : "+ctNumber);
 
-//        String originContents = ReqUtils.filter("코코넛 이메일 인증번호가 도착했습니다.<br>인증번호 : "+ctNumber); // ReqUtils.filter 처리 <p> -- > &lt;p&gt;, html 태그를 DB에 저장하기 위해 이스케이프문자로 치환
-//        String contents = mailSender.getHTML2("/mail/emailForm/" + originContents);
-
         // 인증번호 메일전송
         // 이메일 전송을 위한 전처리 - filter, unfilter
         String title = ReqUtils.filter("코코넛 이메일 인증번호가 도착했습니다.");
-        String contents = ReqUtils.unFilter("인증번호 : "+ctNumber); // &lt;br&gt;이메일내용 --> <br>이메일내용, html 화면에 뿌리기 위해 특수문자를 치환
+        String contents = ReqUtils.unFilter("인증번호 : "+ctNumber);
 
+        // 템플릿 호출을 위한 데이터 세팅
+        HashMap<String, String> callTemplate = new HashMap<>();
+        callTemplate.put("template", "MailTemplate");
+        callTemplate.put("title", "인증번호 알림");
+        callTemplate.put("content", contents);
+
+        // 템플릿 TODO 템플릿 디자인 추가되면 수정
+//        contents = mailSender.getHTML5(callTemplate);
         String reciverEmail = knEmail;
         String reciverName = "kokonut";
 

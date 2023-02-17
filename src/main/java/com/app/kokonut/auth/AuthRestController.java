@@ -51,7 +51,7 @@ public class AuthRestController {
     @ApiOperation(value = "이메일 인증번호 보내기 버튼" , notes = "" +
             "1. 이메일 중복확인한 이메일의 대해 인증번호를 보낸다." +
             "2. 번호를 레디스DB에 담는다. (유효기간은 3분)")
-    public ResponseEntity<Map<String,Object>> numberSendKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail) {
+    public ResponseEntity<Map<String,Object>> numberSendKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail) throws IOException {
         return authService.numberSendKnEmail(knEmail);
     }
 

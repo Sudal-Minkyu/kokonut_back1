@@ -5,25 +5,20 @@ import com.app.kokonut.email.emailHistory.EmailHistoryRepository;
 import com.app.kokonut.email.emailHistory.EmailHistory;
 import com.app.kokonut.keydata.KeyDataService;
 import com.app.kokonut.keydata.dtos.KeyDataMAILDto;
-import com.app.kokonut.keydata.dtos.KeyDataNCLOUDDto;
 import com.app.kokonut.navercloud.NaverCloudPlatformService;
 import com.app.kokonut.navercloud.dto.NCloudPlatformMailRequest;
 import com.app.kokonut.navercloud.dto.RecipientForRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
 
@@ -113,5 +108,17 @@ public class MailSender {
 		InputStream is = conn.getInputStream();
 		return IOUtils.toString(is, StandardCharsets.UTF_8);
 	}
-
+	//TODO keyData 테이블에 데이터 추가후 사용
+	public String getHTML5(Map callTemplate) throws IOException {
+		String htmlURL = "http://192.168.0.32:5173/src/template/"+callTemplate.get("template")+".html";
+		URL url = new URL(htmlURL);
+		URLConnection conn = url.openConnection();
+		InputStream is = conn.getInputStream();
+		String renaderdHtml = IOUtils.toString(is, StandardCharsets.UTF_8);
+		Set<String>keySet = callTemplate.keySet();
+		for ( String key : keySet){
+			renaderdHtml = renaderdHtml.replace("{"+key+"}", callTemplate.get(key).toString());
+		}
+		return renaderdHtml;
+	}
 }
