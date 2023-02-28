@@ -1,11 +1,12 @@
 package com.app.kokonut.activityHistory.dto;
 
+import com.app.kokonut.admin.enums.AuthorityRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author Woody
@@ -19,32 +20,33 @@ import java.util.Date;
 @AllArgsConstructor
 public class ActivityHistoryListDto {
 
-    // activity_hisotroy 테이블
-    private Integer idx;
-    private Long companyId;
-    private Long adminId;
-    private Integer activityIdx;
-    private String activityDetail;
+    private String knName;
+    private String knEmail;
 
-    private String reason;
-    private String ipAddr;
-    private Timestamp regdate;
-    private Integer state;
+    private AuthorityRole knRoleCode;
 
-    // admin 테이블
-    private String maskingName;
-    private String name;
-    private String email;
+    private ActivityCode activityCode;
 
-    // admin_level 테이블
-    private String level;
+    private String ahActivityDetail;
 
-    // activity 테이블
-    private String isActivity;
-    private Integer type;
+//    private String ahReason;
 
-    // 반환 문자형
-    private String typeString;
-    private String stateString;
+    private LocalDateTime insert_date;
+
+    private String ahIpAddr;
+
+    private Integer ahState;
+
+    public String getKnRoleCode() {
+        return knRoleCode.getDesc();
+    }
+
+    public String getActivityCode() {
+        return activityCode.getDesc();
+    }
+
+    public String getInsert_date() {
+        return insert_date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm"));
+    }
 
 }

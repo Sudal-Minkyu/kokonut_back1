@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
+import org.springframework.data.web.PageableDefault;
 
 @Api(tags = "")
 @Validated
@@ -44,7 +45,7 @@ public class QnaRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-    public ResponseEntity<Map<String,Object>> qnaList(@RequestBody QnaSearchDto qnaSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String,Object>> qnaList(@RequestBody QnaSearchDto qnaSearchDto, @PageableDefault Pageable pageable) {
         // TODO 1:1 문의자 이름 마스킹 처리
         String email = SecurityUtil.getCurrentJwt().getEmail();
         String userRole = SecurityUtil.getCurrentJwt().getRole();

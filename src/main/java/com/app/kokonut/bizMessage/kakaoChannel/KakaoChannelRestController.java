@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import org.springframework.data.web.PageableDefault;
 
 /**
  * @author Woody
@@ -36,7 +37,7 @@ public class KakaoChannelRestController {
         @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-    public ResponseEntity<Map<String,Object>> kakaoTalkChannelList(@RequestBody KakaoChannelSearchDto kakaoChannelSearchDto, Pageable pageable) throws Exception {
+    public ResponseEntity<Map<String,Object>> kakaoTalkChannelList(@RequestBody KakaoChannelSearchDto kakaoChannelSearchDto, @PageableDefault Pageable pageable) throws Exception {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         return kakaoChannelService.kakaoTalkChannelList(jwtFilterDto.getEmail(), kakaoChannelSearchDto, pageable);
     }

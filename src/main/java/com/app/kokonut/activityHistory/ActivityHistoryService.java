@@ -1,21 +1,35 @@
 package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.*;
+import com.app.kokonut.admin.Admin;
+import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
+import com.app.kokonut.common.component.Utils;
 import com.app.kokonut.configs.ExcelService;
 import com.app.kokonut.totalDBDownloadHistory.TotalDbDownloadHistoryRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * @author Woody
  * Date : 2022-11-03
  * Remark :
  */
+@Slf4j
 @Service
 public class ActivityHistoryService {
+
+    private final AdminRepository adminRepository;
 
     private final ActivityHistoryRepository activityHistoryRepository;
 
@@ -23,46 +37,13 @@ public class ActivityHistoryService {
     private final TotalDbDownloadHistoryRepository downloadHistoryRepository;
 
     @Autowired
-    public ActivityHistoryService(ActivityHistoryRepository activityHistoryRepository,
+    public ActivityHistoryService(AdminRepository adminRepository, ActivityHistoryRepository activityHistoryRepository,
                                   ExcelService excelService, TotalDbDownloadHistoryRepository downloadHistoryRepository) {
+        this.adminRepository = adminRepository;
         this.activityHistoryRepository = activityHistoryRepository;
         this.excelService = excelService;
         this.downloadHistoryRepository = downloadHistoryRepository;
     }
-
-//    public String[] TYPE_LIST = {
-//            "",
-//            "고객정보처리",
-//            "관리자활동",
-//            "회원DB관리이력"
-//    };
-
-//    public String[] ACTIVITY_LIST = {
-//            "",
-//            "로그인",
-//            "회원정보변경",
-//            "회원정보삭제",
-//            "관리자추가",
-//            "관리자권한변경",
-//            "처리이력다운로드",
-//            "활동이력다운로드",
-//            "고객정보 열람",
-//            "고객정보 다운로드",
-//            "고객정보 처리",
-//            "회원정보 DB관리 변경",
-//            "회원DB 항목 관리 변경",
-//            "회원 관리 등록",
-//            "정보제공 목록",
-//            "정보 파기 관리",
-//            "테이블 생성",
-//            "전체DB다운로드",
-//            "회원 관리 변경"
-//    };
-
-//    public String[] STATE_LIST = {
-//            "정상",
-//            "비정상"
-//    };
 
     // Column 리스트 조회
     public List<Column> findByActivityHistoryColumnList() {
@@ -72,8 +53,48 @@ public class ActivityHistoryService {
     /**
      * 활동내역 리스트
      */
-    public List<ActivityHistoryListDto> findByActivityHistoryList(ActivityHistorySearchDto activityHistorySearchDto) {
-        return activityHistoryRepository.findByActivityHistoryList(activityHistorySearchDto);
+    public ResponseEntity<Map<String,Object>> findByActivityHistoryList(String email, String searchText, String stime, String actvityType, Pageable pageable) {
+        log.info("findByActivityHistoryList 호출");
+
+        log.info("email : "+email);
+        log.info("searchText : "+searchText);
+        log.info("stime : "+stime);
+        log.info("actvityType : "+actvityType);
+
+        AjaxResponse res = new AjaxResponse();
+
+        // 접속한 사용자 인덱스
+        Admin admin = adminRepository.findByKnEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
+
+        ActivityHistorySearchDto activityHistorySearchDto = new ActivityHistorySearchDto();
+        activityHistorySearchDto.setCompanyId(admin.getCompanyId());
+        activityHistorySearchDto.setSearchText(searchText);
+
+        if(!actvityType.equals("")) {
+            List<ActivityCode> activityCodeList = new ArrayList<>();
+            String[] employeeNamesSplit = actvityType.split(",");
+            ArrayList<String> actvityTypeList = new ArrayList<>(Arrays.asList(employeeNamesSplit));
+
+            for(String actvityCode : actvityTypeList) {
+                activityCodeList.add(ActivityCode.valueOf(actvityCode));
+            }
+            activityHistorySearchDto.setActivityCodeList(activityCodeList);
+        }
+
+        if(!stime.equals("")) {
+            List<LocalDateTime> stimeList = Utils.getStimeList(stime);
+            activityHistorySearchDto.setStimeStart(stimeList.get(0));
+            activityHistorySearchDto.setStimeEnd(stimeList.get(1));
+        }
+
+        Page<ActivityHistoryListDto> activityHistoryListDtos = activityHistoryRepository.findByActivityHistoryList(activityHistorySearchDto, pageable);
+        if(activityHistoryListDtos.getTotalPages() == 0) {
+            log.info("조회된 데이터가 없습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO003.getCode(), ResponseErrorCode.KO003.getDesc()));
+        }
+
+        return ResponseEntity.ok(res.ResponseEntityPage(activityHistoryListDtos));
     }
 
     // 활동내역 정보 리스트 조회

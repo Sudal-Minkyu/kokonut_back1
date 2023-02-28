@@ -1,14 +1,13 @@
 package com.app.kokonut.auth.jwt.been;
 
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
+import com.app.kokonut.auth.jwt.dto.RedisDao;
 import com.app.kokonut.keydata.KeyDataService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +16,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,22 +32,24 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final StringRedisTemplate redisTemplate;
+    private final KeyDataService keyDataService;
+
+    private final RedisDao redisDao;
 
     private static final String AUTHORITIES_KEY = "Authorization";
-    private static final String BEARER_TYPE = "Bearer";
+
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;              // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;    // 7일
 
-    private final Key key;
+    private Key key;
 
-    @Autowired
-    public JwtTokenProvider(KeyDataService keyDataService, StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    @PostConstruct
+    protected void init() {
         byte[] keyBytes = Decoders.BASE64.decode(keyDataService.findByKeyValue("jwt_secret"));
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
@@ -57,41 +60,64 @@ public class JwtTokenProvider {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        long now = (new Date()).getTime();
+        Date date = new Date();
 
         // Access Token 생성
-        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         String accessToken = Jwts.builder()
                 .claim("jwt", "claim 테스트입니다.") // claim 정보 삽입
                 .claim(AUTHORITIES_KEY, authorities)
                 .setSubject(authentication.getName())
-                .setExpiration(accessTokenExpiresIn)
+                .setIssuer("kokonut_atk")
+                .setIssuedAt(date)
+                .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRE_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
+                .claim(AUTHORITIES_KEY, authorities)
+                .setSubject(authentication.getName())
+                .setIssuer("kokonut_rtk")
+                .setIssuedAt(date)
+                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_EXPIRE_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set("RT: "+authentication.getName(), refreshToken);
-//        log.info("redis RT : {}", valueOperations.get("RT: "+authentication.getName()));
+//        Claims claims = tokenProvider.parseClaims(request.getHeader("Authorization"));
+        // 레디스 저장
+        redisDao.setValues("RT: "+authentication.getName(), refreshToken);
+        log.info("redis RT : {}", redisDao.getValues("RT: "+authentication.getName()));
 
         return AuthResponseDto.TokenInfo.builder()
-                .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .refreshTokenExpirationTime(REFRESH_TOKEN_EXPIRE_TIME)
                 .build();
     }
 
+    // 엑세스토큰 재발급
+    public String reissueAccessToken(Authentication authentication) {
+
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        Date date = new Date();
+
+        return Jwts.builder()
+                .claim(AUTHORITIES_KEY, authorities)
+                .setSubject(authentication.getName())
+                .setIssuer("kokonut_atk")
+                .setIssuedAt(date)
+                .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRE_TIME))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
-    public Authentication getAuthentication(String accessToken) {
+    public Authentication getAuthentication(String token) {
 
         // 토큰 복호화
-        Claims claims = parseClaims(accessToken);
+        Claims claims = parseClaims(token);
 
         if (claims.get(AUTHORITIES_KEY) == null) {
             log.error("권한 정보가 없는 토큰입니다.");
@@ -128,6 +154,11 @@ public class JwtTokenProvider {
             log.error("JWT 토큰이 맞지 않습니다.");
             return 904;
         }
+    }
+
+    // 어세스 토큰 헤더 설정
+    public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
+        response.setHeader("Authorization", accessToken);
     }
 
     public Claims parseClaims(String accessToken) {

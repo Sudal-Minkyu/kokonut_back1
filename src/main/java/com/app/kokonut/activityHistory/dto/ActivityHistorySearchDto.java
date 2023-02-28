@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Woody
@@ -17,14 +19,13 @@ import java.util.Date;
 @AllArgsConstructor
 public class ActivityHistorySearchDto {
 
-    private Integer type;
-
-    private Integer activityIdx;
-
-    private Date stimeStart;
-    private Date stimeEnd;
+    private LocalDateTime stimeStart;
+    private LocalDateTime stimeEnd;
 
     private Long companyId;
 
     private String searchText;
+    private List<ActivityCode> activityCodeList; // 선택한 활동
+
+
 }

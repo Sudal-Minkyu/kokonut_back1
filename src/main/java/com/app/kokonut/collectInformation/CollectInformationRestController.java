@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import org.springframework.data.web.PageableDefault;
 
 /**
  * @author Joy
@@ -41,7 +42,7 @@ public class CollectInformationRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     })
-    public ResponseEntity<Map<String,Object>> collectInfoList(@RequestBody CollectInfoSearchDto collectInfoSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String,Object>> collectInfoList(@RequestBody CollectInfoSearchDto collectInfoSearchDto, @PageableDefault Pageable pageable) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
         return collectInformationService.collectInfoList(userRole, email, collectInfoSearchDto, pageable);

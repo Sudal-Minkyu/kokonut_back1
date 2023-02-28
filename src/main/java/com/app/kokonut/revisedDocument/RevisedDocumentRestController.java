@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -47,7 +48,7 @@ public class RevisedDocumentRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-    public ResponseEntity<Map<String,Object>> revDocList(@RequestBody RevDocSearchDto revDocSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String,Object>> revDocList(@RequestBody RevDocSearchDto revDocSearchDto, @PageableDefault Pageable pageable) {
         String email = SecurityUtil.getCurrentJwt().getEmail();
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         return revisedDocumentService.revDocList(userRole, email, revDocSearchDto, pageable);

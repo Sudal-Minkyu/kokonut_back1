@@ -1,3 +1,8 @@
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
 
 plugins {
 	id 'org.springframework.boot' version '2.7.5'
@@ -42,8 +47,9 @@ dependencies {
 	implementation group: 'junit', name: 'junit', version: '4.13.2' // Junit 쓰기위함
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.0.0' // Modelmapper 쓰기위함
 	implementation group: 'com.amazonaws', name: 'aws-java-sdk-kms', version: '1.11.202' // AWS KMS 쓰기위함
-	implementation group: 'com.querydsl', name: 'querydsl-jpa', version: '5.0.0' // querydsl 쓰기위함
-	implementation group: 'com.querydsl', name: 'querydsl-apt', version: '5.0.0' // querydsl 쓰기위함
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}" // querydsl 쓰기위함
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}" // querydsl 쓰기위함
+
 	implementation group: 'org.qlrm', name: 'qlrm', version: '3.0.4' // querydsl 내에 네이티브 쿼리를 사용하기위함
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0' // Swagger 쓰기위함
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0' // Swagger 쓰기위함
@@ -68,7 +74,6 @@ dependencies {
 
 	// ~
 
-
 }
 
 tasks.named('test') {
@@ -81,26 +86,18 @@ tasks.named('test') {
  * Time :
  * Remark : queryDSL 설정 추가
  */
-// querydsl에서 사용할 경로 설정
 def querydslDir = "$buildDir/generated/querydsl"
 
-// JPA 사용 여부와 사용할 경로를 설정
 querydsl {
 	jpa = true
 	querydslSourcesDir = querydslDir
 }
-
-// build 시 사용할 sourceSet 추가
 sourceSets {
 	main.java.srcDir querydslDir
 }
-
-// querydsl 컴파일시 사용할 옵션 설정
 compileQuerydsl{
 	options.annotationProcessorPath = configurations.querydsl
 }
-
-// querydsl 이 compileClassPath 를 상속하도록 설정
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor

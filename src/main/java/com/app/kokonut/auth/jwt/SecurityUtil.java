@@ -4,11 +4,9 @@ import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 
 /**
  * @author Woody
@@ -23,6 +21,7 @@ public class SecurityUtil {
         log.info("SecurityUtil.getCurrentJwt 호출");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getName() == null) {
+            log.info("토큰이 없습니다.");
             throw new RuntimeException("인증된 정보가 없습니다.");
         }
 

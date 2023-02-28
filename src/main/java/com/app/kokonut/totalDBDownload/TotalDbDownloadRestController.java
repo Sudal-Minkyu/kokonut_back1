@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +50,7 @@ public class TotalDbDownloadRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
     })
-    public ResponseEntity<Map<String, Object>> userDbDataDownloadList(@RequestBody TotalDbDownloadSearchDto totalDbDownloadSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String, Object>> userDbDataDownloadList(@RequestBody TotalDbDownloadSearchDto totalDbDownloadSearchDto, @PageableDefault Pageable pageable) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         return totalDbDownloadService.userDbDataDownloadList(totalDbDownloadSearchDto, jwtFilterDto.getEmail(), pageable);
     }

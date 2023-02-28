@@ -8,6 +8,7 @@ import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;
+import com.app.kokonut.auth.jwt.dto.RedisDao;
 import com.app.kokonut.awsKmsHistory.AwsKmsHistory;
 import com.app.kokonut.awsKmsHistory.AwsKmsHistoryRepository;
 import com.app.kokonut.awsKmsHistory.dto.AwsKmsResultDto;
@@ -25,7 +26,6 @@ import com.app.kokonut.keydata.KeyDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,6 +43,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -78,7 +79,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final StringRedisTemplate redisTemplate;
+
+    private final RedisDao redisDao;
+
     private final GoogleOTP googleOTP;
 
     private final MailSender mailSender;
@@ -88,7 +91,7 @@ public class AuthService {
                        AwsKmsUtil awsKmsUtil, KeyGenerateService keyGenerateService, CompanyRepository companyRepository, CompanyFileRepository companyFileRepository,
                        AwsKmsHistoryRepository awsKmsHistoryRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
-                       StringRedisTemplate redisTemplate, GoogleOTP googleOTP, MailSender mailSender) {
+                       RedisDao redisDao, GoogleOTP googleOTP, MailSender mailSender) {
         this.awsS3Util = awsS3Util;
         this.adminRepository = adminRepository;
         this.awsKmsUtil = awsKmsUtil;
@@ -99,7 +102,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.redisTemplate = redisTemplate;
+        this.redisDao = redisDao;
         this.googleOTP = googleOTP;
         this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
         this.mailSender = mailSender;
@@ -111,6 +114,12 @@ public class AuthService {
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
+
+        if(knEmail.isEmpty()){
+            log.info("이메일을 입력해주세요.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO005.getCode(), ResponseErrorCode.KO005.getDesc()));
+        }
+
 //        log.info("knEmail : "+knEmail);
         if (adminRepository.existsByKnEmail(knEmail)) {
             log.info("이미 회원가입된 이메일입니다.");
@@ -157,7 +166,7 @@ public class AuthService {
         }
 
         // 인증번호 레디스에 담기
-        redisTemplate.opsForValue().set("CT: " + knEmail, ctNumber, 180000, TimeUnit.MILLISECONDS); // 제한시간 3분
+        redisDao.setValues("CT: " + knEmail, ctNumber, Duration.ofMillis(180000)); // 제한시간 3분
         log.info("레디스에 인증번호 저장성공");
 
         return ResponseEntity.ok(res.success(data));
@@ -170,12 +179,12 @@ public class AuthService {
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-        String redisCtNumber = redisTemplate.opsForValue().get("CT: "+knEmail);
+        String redisCtNumber = redisDao.getValues("CT: "+knEmail);
 //        log.info("redisCtNumber : "+redisCtNumber);
 
         if(redisCtNumber != null) {
             if(redisCtNumber.equals(ctNumber)) {
-                redisTemplate.delete("CT: " + knEmail);
+                redisDao.deleteValues("CT: " + knEmail);
                 log.info("redis 인증번호 체크완료");
             } else {
                 log.error("입력하신 인증번호가 일치하지 않습니다. 다시 입력해주세요.");
@@ -539,7 +548,7 @@ public class AuthService {
                             response.addCookie(cookieRefreshToken);
 
                             // RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
-                            redisTemplate.opsForValue().set("RT: " + authentication.getName(), jwtToken.getRefreshToken(), jwtToken.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+                            redisDao.setValues("RT: " + authentication.getName(), jwtToken.getRefreshToken(), Duration.ofMillis(jwtToken.getRefreshTokenExpirationTime()));
 
                             /* 해외 아이피 차단 여부 */
 //                            loginService.ResetPwdError(user.getIdx()); 패스워드에러카운트 리셋
@@ -567,7 +576,7 @@ public class AuthService {
         Authentication authentication = jwtTokenProvider.getAuthentication(reissue.getAccessToken());
 
         // Redis 에서 User knEmail 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
-        String refreshToken = redisTemplate.opsForValue().get("RT: "+authentication.getName());
+        String refreshToken = redisDao.getValues("RT: "+authentication.getName());
 
         // Refresh Token 검증
         if (jwtTokenProvider.validateToken(refreshToken) == 400) {
@@ -587,22 +596,22 @@ public class AuthService {
 //        }
 
         // Redis 에서 해당 User knEmail 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
-        if (redisTemplate.opsForValue().get("RT:" + authentication.getName()) != null) {
+//        if (redisDao.getValues("RT:" + authentication.getName()) != null) {
             // Refresh Token 삭제
-            redisTemplate.delete("RT:" + authentication.getName());
-        }
+//            redisDao.deleteValues("RT:" + authentication.getName());
+//        }
 
         // 해당 Access Token 유효시간 가지고 와서 BlackList 로 저장하기
         Long expiration = jwtTokenProvider.getExpiration(reissue.getAccessToken());
-        redisTemplate.opsForValue().set(reissue.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
+        redisDao.setValues(reissue.getAccessToken(), "logout", Duration.ofMillis(expiration));
 
         // 새로운 토큰 생성
         AuthResponseDto.TokenInfo jwtToken = jwtTokenProvider.generateToken(authentication);
 
         // RefreshToken Redis 업데이트
-        redisTemplate.opsForValue().set("RT: "+authentication.getName(), jwtToken.getRefreshToken(), jwtToken.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+//        redisDao.setValues("RT: "+authentication.getName(), jwtToken.getRefreshToken(), Duration.ofMillis(jwtToken.getRefreshTokenExpirationTime()));
 
-        data.put("jwtToken", jwtToken);
+        data.put("jwtToken", jwtToken.getAccessToken());
 
         return ResponseEntity.ok(res.success(data));
     }
@@ -619,21 +628,21 @@ public class AuthService {
         // Access Token 검증
         if (jwtTokenProvider.validateToken(accessToken) == 400) {
             log.error("유효하지 않은 토큰정보임");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO006.getCode(),ResponseErrorCode.KO006.getDesc()));
+//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO006.getCode(),ResponseErrorCode.KO006.getDesc()));
+        } else {
+            // Access Token 에서 User knEmail 을 가져옵니다.
+            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+
+            // Redis 에서 해당 User knEmail 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
+            if (redisDao.getValues("RT: "+authentication.getName()) != null) {
+                // Refresh Token 삭제
+                redisDao.deleteValues("RT: "+authentication.getName());
+            }
+
+            // 해당 Access Token 유효시간 가지고 와서 BlackList로 저장하기
+            Long expiration = jwtTokenProvider.getExpiration(accessToken);
+            redisDao.setValues(accessToken, "logout", Duration.ofMillis(expiration));
         }
-
-        // Access Token 에서 User knEmail 을 가져옵니다.
-        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-
-        // Redis 에서 해당 User knEmail 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
-        if (redisTemplate.opsForValue().get("RT: "+authentication.getName()) != null) {
-            // Refresh Token 삭제
-            redisTemplate.delete("RT: "+authentication.getName());
-        }
-
-        // 해당 Access Token 유효시간 가지고 와서 BlackList로 저장하기
-        Long expiration = jwtTokenProvider.getExpiration(accessToken);
-        redisTemplate.opsForValue().set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
 
         // 쿠키리셋처리
         Utils.cookieLogout(request, response);

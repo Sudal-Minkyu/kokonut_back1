@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import org.springframework.data.web.PageableDefault;
 
 /**
  * @author Woody
@@ -37,7 +38,7 @@ public class AlimtalkMessageRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-    public ResponseEntity<Map<String,Object>> alimTalkMessageList(@RequestBody AlimtalkMessageSearchDto alimtalkTemplateSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String,Object>> alimTalkMessageList(@RequestBody AlimtalkMessageSearchDto alimtalkTemplateSearchDto, @PageableDefault Pageable pageable) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         return alimtalkMessageService.alimTalkMessageList(jwtFilterDto.getEmail(), alimtalkTemplateSearchDto, pageable);
     }
@@ -78,7 +79,7 @@ public class AlimtalkMessageRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-    public ResponseEntity<Map<String,Object>> alimTalkMessageRecipientList(@RequestParam(name="searchText", defaultValue = "") String searchText, Pageable pageable) {
+    public ResponseEntity<Map<String,Object>> alimTalkMessageRecipientList(@RequestParam(name="searchText", defaultValue = "") String searchText, @PageableDefault Pageable pageable) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         return alimtalkMessageService.alimTalkMessageRecipientList(jwtFilterDto.getEmail(), searchText, pageable);
     }

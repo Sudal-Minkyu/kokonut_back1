@@ -1,6 +1,8 @@
 package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,7 +14,7 @@ import java.util.List;
  */
 public interface ActivityHistoryRepositoryCustom {
 
-    List<ActivityHistoryListDto> findByActivityHistoryList(ActivityHistorySearchDto activityHistorySearchDto); // SelectActivityHistoryList -> 변경후
+    Page<ActivityHistoryListDto> findByActivityHistoryList(ActivityHistorySearchDto activityHistorySearchDto, Pageable pageable);
 
     ActivityHistoryDto findByActivityHistoryByIdx(Long idx); // SelectActivityHistoryByIdx -> 변경후
 

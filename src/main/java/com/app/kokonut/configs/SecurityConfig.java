@@ -5,25 +5,15 @@ import com.app.kokonut.auth.jwt.been.JwtAccessDeniedHandler;
 import com.app.kokonut.auth.jwt.been.JwtAuthenticationEntryPoint;
 import com.app.kokonut.auth.jwt.been.JwtAuthenticationFilter;
 import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
+import com.app.kokonut.auth.jwt.dto.RedisDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Woody
@@ -38,7 +28,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtTokenProvider jwtTokenProvider;
-    private final StringRedisTemplate redisTemplate;
+    private final RedisDao redisDao;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -84,7 +74,7 @@ public class SecurityConfig {
             .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
 
             .and()
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisDao), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

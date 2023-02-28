@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -158,4 +158,26 @@ public class Utils {
 			}
 		}
 	}
+
+	// List<LocalDataTime> stimeList를 반환하는 함수
+	public static List<LocalDateTime> getStimeList(String stime) {
+		List<LocalDateTime> stimeList = new ArrayList<>();
+
+		String[] array = stime.split(" - ");
+		String stimeStartStr = array[0]+" 00:00:00.000";
+		String stimeEndStr = array[1]+" 00:00:00.000";
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+		LocalDateTime stimeStart = LocalDateTime.parse(stimeStartStr, formatter);
+		LocalDateTime stimeEnd = LocalDateTime.parse(stimeEndStr, formatter);
+
+		stimeList.add(stimeStart);
+		stimeList.add(stimeEnd);
+
+		return stimeList;
+	}
+
+
+
+
 }

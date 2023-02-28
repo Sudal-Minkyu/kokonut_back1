@@ -1,7 +1,6 @@
 package com.app.kokonutapi.personalInfoProvision;
 
 import com.app.kokonut.admin.QAdmin;
-import com.app.kokonut.personalInfoProvision.QPersonalInfoProvision;
 import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionDto;
 import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionListDto;
 import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionMapperDto;
@@ -60,7 +59,6 @@ public class PersonalInfoProvisionRepositoryCustomImpl extends QuerydslRepositor
                 .where(personalInfoProvision.piNumber.eq(piNumber))
                 .select(Projections.constructor(PersonalInfoProvisionDto.class,
                         personalInfoProvision.piId,
-                        personalInfoProvision.companyId,
                         personalInfoProvision.adminId,
                         personalInfoProvision.piNumber,
                         personalInfoProvision.piReason,

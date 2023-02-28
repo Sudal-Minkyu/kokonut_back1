@@ -5,12 +5,17 @@ import com.app.kokonut.admin.QAdmin;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Woody
@@ -28,123 +33,44 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
         this.jpaResultMapper = jpaResultMapper;
     }
 
-    // ActivityHistory 리스트 조회
+    // ActivityHistory 리스트 조회 -> querydsl방식으로 변경 : 관리자활동 이력(ah_type = 2)
     @Override
-    public List<ActivityHistoryListDto> findByActivityHistoryList(ActivityHistorySearchDto activityHistorySearchDto) {
+    public Page<ActivityHistoryListDto> findByActivityHistoryList(ActivityHistorySearchDto activityHistorySearchDto, Pageable pageable) {
+        QActivityHistory activityHistory = QActivityHistory.activityHistory;
+        QAdmin admin = QAdmin.admin;
 
-        // SQL Query
-//        select
-//        a.IDX, a.COMPANY_IDX, a.ADMIN_IDX, a.ACTIVITY_IDX, a.ACTIVITY_DETAIL,
-//                CASE[
-//        WHEN CHAR_LENGTH(b.NAME) > 2
-//        THEN
-//        CONCAT(
-//                SUBSTRING(b.NAME, 1, 1),
-//                LPAD('*', CHAR_LENGTH(b.NAME) - 2, '*'),
-//                SUBSTRING(NAME, CHAR_LENGTH(b.NAME), CHAR_LENGTH(b.NAME))
-//        )
-//        ELSE
-//        CONCAT(
-//                SUBSTRING(b.NAME, 1, 1),
-//                LPAD('*', CHAR_LENGTH(b.NAME) - 1, '*')
-//        )
-//        END as maskingName,
-//                b.NAME, b.EMAIL, c.LEVEL, d.ACTIVITY AS isActivity, d.TYPE
-//
-//        FROM activity_history a
-//        INNER JOIN admin b ON b.IDX = a.ADMIN_IDX
-//        LEFT JOIN admin_level c ON c.IDX = b.ADMIN_LEVEL_IDX
-//        INNER JOIN activity d ON  d.IDX = a.ACTIVITY_IDX
-//        WHERE 1 = 1
-//        ORDER BY a.REGDATE DESC
+        JPQLQuery<ActivityHistoryListDto> query = from(activityHistory)
+                .innerJoin(admin).on(admin.adminId.eq(activityHistory.adminId))
+                .select(Projections.constructor(ActivityHistoryListDto.class,
+                        admin.knName,
+                        admin.knEmail,
+                        admin.knRoleCode,
+                        activityHistory.activityCode,
+                        activityHistory.ahActivityDetail,
+                        activityHistory.insert_date,
+                        activityHistory.ahIpAddr,
+                        activityHistory.ahState
+                ));
 
-        EntityManager em = getEntityManager();
-        StringBuilder sb = new StringBuilder();
+        // 조회한 기업의 한해서만 조회되야함
+        query.where(admin.companyId.eq(activityHistorySearchDto.getCompanyId())).orderBy(activityHistory.ahId.desc());;
 
-        // 네이티브 쿼리문
-        sb.append("SELECT \n");
-        sb.append("a.IDX, a.COMPANY_IDX, a.ADMIN_IDX, a.ACTIVITY_IDX, a.ACTIVITY_DETAIL, \n");
-        sb.append("a.REASON, a.IP_ADDR, a.REGDATE, a.STATE, \n");
-        sb.append("CASE \n");
-        sb.append("WHEN CHAR_LENGTH(b.NAME) > 2 \n");
-        sb.append("THEN \n");
-        sb.append("CONCAT(SUBSTRING(b.NAME, 1, 1), \n");
-        sb.append("LPAD('*', CHAR_LENGTH(b.NAME) - 2, '*'), \n");
-        sb.append("SUBSTRING(NAME, CHAR_LENGTH(b.NAME), CHAR_LENGTH(b.NAME))) \n");
-        sb.append("ELSE \n");
-        sb.append("CONCAT(SUBSTRING(b.NAME, 1, 1), \n");
-        sb.append("LPAD('*', CHAR_LENGTH(b.NAME) - 1, '*')) \n");
-        sb.append("END as maskingName, \n");
-        sb.append("b.NAME, b.EMAIL, c.LEVEL, d.ACTIVITY AS isActivity, d.TYPE, \n");
-        sb.append("CASE \n");
-        sb.append("WHEN d.TYPE = 1 THEN '고객정보처리' \n");
-        sb.append("WHEN d.TYPE = 2 THEN '관리자활동' \n");
-        sb.append("WHEN d.TYPE = 3 THEN '회원DB관리이력' \n");
-        sb.append("END as typeString, \n");
-        sb.append("CASE \n");
-        sb.append("WHEN a.STATE = 1 THEN '정상' \n");
-        sb.append("WHEN a.STATE = 0 THEN '비정상' \n");
-        sb.append("END as stateString \n");
-        sb.append("FROM activity_history a \n");
-        sb.append("INNER JOIN admin b ON b.IDX = a.ADMIN_IDX \n");
-        sb.append("LEFT JOIN admin_level c ON c.IDX = b.ADMIN_LEVEL_IDX \n");
-        sb.append("INNER JOIN activity d ON  d.IDX = a.ACTIVITY_IDX \n");
-
-        sb.append("WHERE 1=1 \n");
-
-        if(activityHistorySearchDto.getType() != null){
-            if(activityHistorySearchDto.getType() == 4){
-                sb.append("AND d.TYPE IN ('2','3') \n");
-            }else{
-                sb.append("AND d.TYPE = :type \n");
-            }
+        if(!activityHistorySearchDto.getSearchText().equals("")) {
+            query.where(admin.knEmail.like("%"+ activityHistorySearchDto.getSearchText() +"%").or(admin.knName.like("%"+ activityHistorySearchDto.getSearchText() +"%")));
         }
 
-        if(activityHistorySearchDto.getActivityIdx() != null){
-            sb.append("AND a.ACTIVITY_IDX = :activityIdx \n");
+        if(activityHistorySearchDto.getActivityCodeList() != null) {
+            query.where(activityHistory.activityCode.in(activityHistorySearchDto.getActivityCodeList()));
         }
 
-        if(activityHistorySearchDto.getCompanyId() != null){
-            sb.append("AND a.COMPANY_IDX = :companyId \n");
+        if(activityHistorySearchDto.getStimeStart() != null && activityHistorySearchDto.getStimeEnd() != null) {
+            query.where(activityHistory.insert_date.goe(activityHistorySearchDto.getStimeStart()).and(activityHistory.insert_date.loe(activityHistorySearchDto.getStimeEnd())));
         }
 
-        if(activityHistorySearchDto.getStimeStart() != null && activityHistorySearchDto.getStimeEnd() != null){
-            sb.append("AND a.REGDATE BETWEEN :stimeStart AND :stimeEnd \n");
-        }
+//        query.where(activityHistory.ahType.eq(2));
 
-        if(activityHistorySearchDto.getSearchText() != null){
-            sb.append("AND b.NAME LIKE CONCAT('%',:searchText,'%') OR b.EMAIL LIKE CONCAT('%',:searchText,'%') \n");
-        }
-
-        sb.append("ORDER BY a.REGDATE DESC; \n");
-
-        // 쿼리조건 선언부
-        Query query = em.createNativeQuery(sb.toString());
-
-        if(activityHistorySearchDto.getType() != null){
-            if(activityHistorySearchDto.getType() != 4){
-                query.setParameter("type", activityHistorySearchDto.getType());
-            }
-        }
-
-        if(activityHistorySearchDto.getActivityIdx() != null){
-            query.setParameter("activityIdx", activityHistorySearchDto.getActivityIdx());
-        }
-
-        if(activityHistorySearchDto.getCompanyId() != null){
-            query.setParameter("companyId", activityHistorySearchDto.getCompanyId());
-        }
-
-        if(activityHistorySearchDto.getStimeStart() != null && activityHistorySearchDto.getStimeEnd() != null){
-            query.setParameter("stimeStart", activityHistorySearchDto.getStimeStart());
-            query.setParameter("stimeEnd", activityHistorySearchDto.getStimeEnd());
-        }
-
-        if(activityHistorySearchDto.getSearchText() != null){
-            query.setParameter("searchText", activityHistorySearchDto.getSearchText());
-        }
-
-        return jpaResultMapper.list(query, ActivityHistoryListDto.class);
+        final List<ActivityHistoryListDto> activityHistoryListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
+        return new PageImpl<>(activityHistoryListDtos, pageable, query.fetchCount());
     }
 
     // ActivityHistory 단일 조회

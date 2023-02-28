@@ -1,5 +1,6 @@
 package com.app.kokonut.notice;
 
+import org.springframework.data.web.PageableDefault;
 import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.notice.dtos.NoticeDetailDto;
 import com.app.kokonut.notice.dtos.NoticeSearchDto;
@@ -15,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+
 /**
  * @author Joy
  * Date : 2022-12-27
@@ -46,7 +48,7 @@ public class NoticeRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-    public ResponseEntity<Map<String,Object>> noticeList(@RequestBody NoticeSearchDto noticeSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String,Object>> noticeList(@RequestBody NoticeSearchDto noticeSearchDto, @PageableDefault Pageable pageable) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         return noticeService.noticeList(userRole, noticeSearchDto, pageable);
     }

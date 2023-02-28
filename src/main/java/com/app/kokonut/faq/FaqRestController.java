@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import org.springframework.data.web.PageableDefault;
 
 @Api(tags = "")
 @Validated
@@ -38,7 +39,7 @@ public class FaqRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-    public ResponseEntity<Map<String,Object>> faqList(@RequestBody FaqSearchDto faqSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String,Object>> faqList(@RequestBody FaqSearchDto faqSearchDto, @PageableDefault Pageable pageable) {
         String userRole = SecurityUtil.getCurrentJwt().getRole();
         return faqService.faqList(userRole, faqSearchDto, pageable);
     }

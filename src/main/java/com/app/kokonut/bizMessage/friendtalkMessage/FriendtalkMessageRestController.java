@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import org.springframework.data.web.PageableDefault;
 
 /**
  * @author Woody
@@ -38,7 +39,7 @@ public class FriendtalkMessageRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-    public ResponseEntity<Map<String,Object>> friendTalkMessageList(@RequestBody FriendtalkMessageSearchDto friendtalkMessageSearchDto, Pageable pageable) {
+    public ResponseEntity<Map<String,Object>> friendTalkMessageList(@RequestBody FriendtalkMessageSearchDto friendtalkMessageSearchDto, @PageableDefault Pageable pageable) {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         return friendtalkMessageService.friendTalkMessageList(jwtFilterDto.getEmail(), friendtalkMessageSearchDto, pageable);
     }

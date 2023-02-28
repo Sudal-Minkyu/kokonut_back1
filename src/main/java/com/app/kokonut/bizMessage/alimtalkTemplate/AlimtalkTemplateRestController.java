@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import org.springframework.data.web.PageableDefault;
 
 /**
  * @author Woody
@@ -38,7 +39,7 @@ public class AlimtalkTemplateRestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
-    public ResponseEntity<Map<String,Object>> alimTalkTemplateList(@RequestBody AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, Pageable pageable) throws Exception {
+    public ResponseEntity<Map<String,Object>> alimTalkTemplateList(@RequestBody AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, @PageableDefault Pageable pageable) throws Exception {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         return alimtalkTemplateService.alimTalkTemplateList(jwtFilterDto.getEmail(), alimtalkTemplateSearchDto, pageable);
     }

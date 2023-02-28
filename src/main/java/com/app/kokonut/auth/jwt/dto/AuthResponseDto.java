@@ -16,9 +16,17 @@ public class AuthResponseDto {
     @Getter
     @AllArgsConstructor
     public static class TokenInfo {
-        private String grantType;
+//        private String grantType;
         private String accessToken;
         private String refreshToken;
         private Long refreshTokenExpirationTime;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class Subject {
+        private String data1;
+    }
+
 }

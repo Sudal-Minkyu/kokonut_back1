@@ -1,6 +1,7 @@
 package com.app.kokonut.activityHistory;
 
 import com.app.kokonut.activityHistory.dto.ActivityCode;
+import com.app.kokonut.admin.enums.AuthorityRole;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,7 +37,7 @@ public class ActivityHistory implements Serializable {
     @Column(name = "admin_id")
     private Long adminId;
 
-    // 1:고객정보처리,2:관리자활동,3:회원DB관리이력
+    // 활동내역 1:고객정보처리,2:관리자활동,3:회원DB관리이력
     @Column(name = "ah_type")
     @ApiModelProperty("1:고객정보처리,2:관리자활동,3:회원DB관리이력")
     private Integer ahType;

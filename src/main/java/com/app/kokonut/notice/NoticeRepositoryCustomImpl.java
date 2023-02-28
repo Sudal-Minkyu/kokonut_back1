@@ -77,8 +77,8 @@ public class NoticeRepositoryCustomImpl extends QuerydslRepositorySupport implem
         }
         query.orderBy(notice.ntIsNotice.desc(), notice.insert_date.desc());
 
-        final List<NoticeListDto> NoticeListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
-        return new PageImpl<>(NoticeListDtos, pageable, query.fetchCount());
+        final List<NoticeListDto> noticeListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
+        return new PageImpl<>(noticeListDtos, pageable, query.fetchCount());
     }
 
     @Override
@@ -105,8 +105,8 @@ public class NoticeRepositoryCustomImpl extends QuerydslRepositorySupport implem
         query.where(notice.ntRegistDate.loe(LocalDateTime.now())); // <=
         query.orderBy(notice.ntIsNotice.desc(), notice.ntRegistDate.desc()); //상단공지, 날짜
 
-        final List<NoticeContentListDto> NoticeContentListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
-        return new PageImpl<>(NoticeContentListDtos, pageable, query.fetchCount());
+        final List<NoticeContentListDto> noticeContentListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
+        return new PageImpl<>(noticeContentListDtos, pageable, query.fetchCount());
     }
 
     @Override

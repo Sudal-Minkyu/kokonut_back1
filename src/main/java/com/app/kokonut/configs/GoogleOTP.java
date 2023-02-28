@@ -56,7 +56,7 @@ public class GoogleOTP {
 			int window = 3;
 			for (int i = -window; i <= window; ++i) {
 				long hash = verify_code(decodedKey, wave + i);
-				System.out.println("hash : " + hash);
+//				System.out.println("hash : " + hash);
 				if (hash == otpnum) result = true;
 			}
 		} catch (InvalidKeyException | NoSuchAlgorithmException e) {
