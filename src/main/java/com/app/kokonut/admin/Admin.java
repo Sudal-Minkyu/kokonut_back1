@@ -53,6 +53,10 @@ public class Admin implements UserDetails {
     @ApiModelProperty("회원타입(1:사업자,2:개인)")
     private Integer knUserType;
 
+    @Column(name = "kn_reg_type")
+    @ApiModelProperty("최초 회원가입인지 체크하는 장치 (0:최초로그인, 1:일반)")
+    private Integer knRegType; // 최초 회원가입인지 체크하는 장치 -> 최초회원가입일경우 로그인할때 OTP등록하라는 안내팝업 자동으로 나오게 작동
+
     /**
      * 이메일
      */

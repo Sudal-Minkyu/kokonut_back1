@@ -17,7 +17,7 @@ public interface AlimtalkTemplateRepository extends JpaRepository<AlimtalkTempla
     @Query("delete from AlimtalkTemplate a where a.kcChannelId = :kcChannelId")
     void findByAlimtalkTemplateDelete(String kcChannelId);
 
-    @Query("select a from AlimtalkTemplate a where a.atTemplateCode = :atTemplateCode and a.kcChannelId = :channelId and a.companyId = :companyId")
-    Optional<AlimtalkTemplate> findByAlimtalkTemplate(String atTemplateCode, String kcChannelId, Long companyId);
+    @Query("select a from AlimtalkTemplate a where a.atTemplateCode = :atTemplateCode and a.kcChannelId = :channelId")
+    Optional<AlimtalkTemplate> findByAlimtalkTemplate(String atTemplateCode, String kcChannelId);
 
 }

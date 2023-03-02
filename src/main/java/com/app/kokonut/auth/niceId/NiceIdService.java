@@ -35,9 +35,6 @@ import java.util.*;
 @Service
 public class NiceIdService {
 
-	private final AjaxResponse res = new AjaxResponse();
-	private final HashMap<String, Object> data = new HashMap<>();
-
 	public final String clientId;
 	
 	public final String clientSecret;
@@ -61,6 +58,9 @@ public class NiceIdService {
 	@SuppressWarnings("unchecked")
 	public ResponseEntity<Map<String,Object>> getToken() throws IOException {
 		log.info("getToken 호출");
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
 
 		String token = "";
 
@@ -161,6 +161,9 @@ public class NiceIdService {
 	// 본인인증 창 열기
 	public ResponseEntity<Map<String, Object>> open(HttpServletRequest request, HttpServletResponse response) {
 		log.info("open 호출");
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
 
 		getCryptoToken();
 
@@ -328,6 +331,9 @@ public class NiceIdService {
 	}
 
 	public ResponseEntity<Map<String, Object>> redirect(String enc_data, HttpServletRequest request, HttpServletResponse response) {
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
 
 		String key = "";
 		String iv = "";

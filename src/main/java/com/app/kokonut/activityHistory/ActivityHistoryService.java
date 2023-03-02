@@ -87,6 +87,10 @@ public class ActivityHistoryService {
             activityHistorySearchDto.setStimeStart(stimeList.get(0));
             activityHistorySearchDto.setStimeEnd(stimeList.get(1));
         }
+        else {
+            log.info("활동날짜는 필수값 입니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO077.getCode(), ResponseErrorCode.KO077.getDesc()));
+        }
 
         Page<ActivityHistoryListDto> activityHistoryListDtos = activityHistoryRepository.findByActivityHistoryList(activityHistorySearchDto, pageable);
         if(activityHistoryListDtos.getTotalPages() == 0) {

@@ -208,13 +208,12 @@ public class AlimtalkMessageService {
         if(result.getResultCode().equals(200)) {
             log.info("발송성공후 알림톡 메세지 등록 정보 INSERT");
 
-            Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
             Long adminId = adminRepository.findByCompanyInfo(email).getAdminId();
 
             HashMap<String, Object> response = Utils.convertJSONstringToMap(result.getResultText());
 
             AlimtalkMessage alimTalkMessage = new AlimtalkMessage();
-            alimTalkMessage.setCompanyId(companyId);
+            alimTalkMessage.setAdminId(adminId);
             alimTalkMessage.setAmRequestId(response.get("requestId").toString());
             alimTalkMessage.setKcChannelId(alimtalkMessageSendDto.getKcChannelId());
             alimTalkMessage.setAmTransmitType(alimtalkMessageSendDto.getAmTransmitType());

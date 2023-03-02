@@ -198,6 +198,40 @@ public class AuthService {
         return ResponseEntity.ok(res.success(data));
     }
 
+//    Utils.cookieSave("refreshToken", jwtToken.getRefreshToken(), 604800, response);
+
+    // 이메일찾기 기능
+    public ResponseEntity<Map<String, Object>> findKnEmail() {
+        log.info("findKnEmail 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+    // 이메일로 임시비밀번호 보내는 기능
+    public ResponseEntity<Map<String, Object>> passwordSendKnEmail(String knEmail) {
+        log.info("passwordSendKnEmail 호출");
+
+        log.info("knEmail : "+knEmail);
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+    // 비밀번호찾기 기능
+    public ResponseEntity<Map<String, Object>> findKnPassword() {
+        log.info("findKnPassword 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
     // 코코넛 회원가입 기능
     @Transactional
     public ResponseEntity<Map<String, Object>> kokonutSignUp(AuthRequestDto.KokonutSignUp kokonutSignUp, HttpServletRequest request, HttpServletResponse response) {
@@ -225,10 +259,17 @@ public class AuthService {
         log.info("회원가입 시작");
         log.info("받아온 값 kokonutSignUp : "+kokonutSignUp);
 
+        // 소속 저장
+        Company company = new Company();
+        company.setCpName(kokonutSignUp.getCpName());
+        company.setInsert_email(kokonutSignUp.getKnEmail());
+        company.setInsert_date(LocalDateTime.now());
+
+        // 계정 저장
         Admin admin = new Admin();
         admin.setKnEmail(kokonutSignUp.getKnEmail());
         admin.setKnPassword(passwordEncoder.encode(kokonutSignUp.getKnPassword()));
-//        admin.setCompanyId(saveCompany.getCompanyId());
+        admin.setCompanyId(companyRepository.save(company).getCompanyId());
         admin.setMasterId(0L); // 사업자는 0, 관리자가 등록한건 관리자IDX ?
         admin.setKnRoleCode(AuthorityRole.ROLE_MASTER);
         admin.setInsert_email(kokonutSignUp.getKnEmail());
@@ -540,12 +581,8 @@ public class AuthService {
 
                             data.put("jwtToken", jwtToken.getAccessToken());
 
-                            Cookie cookieRefreshToken = new Cookie("refreshToken", jwtToken.getRefreshToken());
-                            cookieRefreshToken.setMaxAge(604800); // 쿠키 값을 30일로 셋팅
-                            cookieRefreshToken.setPath("/");
-                            cookieRefreshToken.setHttpOnly(true);
-                            cookieRefreshToken.setSecure(true);
-                            response.addCookie(cookieRefreshToken);
+                            // 쿠키저장함수 호출
+                            Utils.cookieSave("refreshToken", jwtToken.getRefreshToken(), 604800, response);
 
                             // RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
                             redisDao.setValues("RT: " + authentication.getName(), jwtToken.getRefreshToken(), Duration.ofMillis(jwtToken.getRefreshTokenExpirationTime()));
@@ -764,4 +801,5 @@ public class AuthService {
             return ResponseEntity.ok(res.success(data));
         }
     }
+
 }

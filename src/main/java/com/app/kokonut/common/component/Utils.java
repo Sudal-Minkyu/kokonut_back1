@@ -142,6 +142,16 @@ public class Utils {
 		}
 	}
 
+	// 쿠키 저장함수 -> 옵션 고정 : HttpOnly = true, Secure = true, Path = "/"
+	public static void cookieSave(String cookieName, String cookieValue, Integer maxAge, HttpServletResponse response) {
+		Cookie cookieRefreshToken = new Cookie(cookieName, cookieValue);
+		cookieRefreshToken.setMaxAge(maxAge); // 쿠키 값을 30일로 셋팅
+		cookieRefreshToken.setPath("/");
+		cookieRefreshToken.setHttpOnly(true);
+		cookieRefreshToken.setSecure(true);
+		response.addCookie(cookieRefreshToken);
+	}
+
 	// 쿠키 리셋함수
 	public static void cookieLogout(HttpServletRequest request, HttpServletResponse response) {
 		Cookie[] cookies = request.getCookies();

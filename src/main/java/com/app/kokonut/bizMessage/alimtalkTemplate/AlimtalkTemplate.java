@@ -28,13 +28,6 @@ public class AlimtalkTemplate implements Serializable {
     private Long atId;
 
     /**
-     * 회사 키
-     */
-    @ApiModelProperty("회사 키")
-    @Column(name = "company_id")
-    private Long companyId;
-
-    /**
      * 채널ID
      */
     @ApiModelProperty("채널ID")

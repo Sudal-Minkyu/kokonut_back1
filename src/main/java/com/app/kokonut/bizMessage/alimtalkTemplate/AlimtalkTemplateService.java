@@ -83,7 +83,7 @@ public class AlimtalkTemplateService {
                         log.info("currentState : " + currentState);
                         log.info("templateName : " + templateName);
 
-                        Optional<AlimtalkTemplate> optionalAlimtalkTemplate = alimtalkTemplateRepository.findByAlimtalkTemplate(templateCode, channelId, companyId);
+                        Optional<AlimtalkTemplate> optionalAlimtalkTemplate = alimtalkTemplateRepository.findByAlimtalkTemplate(templateCode, channelId);
                         if (optionalAlimtalkTemplate.isPresent()) {
                             optionalAlimtalkTemplate.get().setAtTemplateName(templateName);
                             optionalAlimtalkTemplate.get().setAtStatus(currentState);
@@ -117,11 +117,7 @@ public class AlimtalkTemplateService {
         if(result.getResultCode().equals(200)) {
             log.info("템플릿 저장성공 후 DB 인서트");
 
-            // 해당 이메일을 통해 회사 IDX 조회
-            Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
-
             AlimtalkTemplate alimtalkTemplate = new AlimtalkTemplate();
-            alimtalkTemplate.setCompanyId(companyId);
             alimtalkTemplate.setKcChannelId(alimtalkTemplateSaveAndUpdateDto.getKcChannelId());
             alimtalkTemplate.setAtTemplateCode(alimtalkTemplateSaveAndUpdateDto.getAtTemplateCode());
 
@@ -164,12 +160,8 @@ public class AlimtalkTemplateService {
         if(result.getResultCode().equals(200)) {
             log.info("템플릿 수정 성공 후 DB 수정시작");
 
-
-            // 해당 이메일을 통해 회사 IDX 조회
-            Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
-
             Optional<AlimtalkTemplate> optionalAlimtalkTemplate
-                    = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateSaveAndUpdateDto.getAtTemplateCode(), alimtalkTemplateSaveAndUpdateDto.getKcChannelId(), companyId);
+                    = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateSaveAndUpdateDto.getAtTemplateCode(), alimtalkTemplateSaveAndUpdateDto.getKcChannelId());
             if (optionalAlimtalkTemplate.isPresent()) {
 
                 String messageType = alimtalkTemplateSaveAndUpdateDto.getAtMessageType();
@@ -209,11 +201,8 @@ public class AlimtalkTemplateService {
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-        // 해당 이메일을 통해 회사 IDX 조회
-        Long companyId = adminRepository.findByCompanyInfo(email).getCompanyId();
-
         Optional<AlimtalkTemplate> optionalAlimtalkTemplate
-                = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateDeleteDto.getAtTemplateCode(), alimtalkTemplateDeleteDto.getKcChannelId(), companyId);
+                = alimtalkTemplateRepository.findByAlimtalkTemplate(alimtalkTemplateDeleteDto.getAtTemplateCode(), alimtalkTemplateDeleteDto.getKcChannelId());
 
         if(email.equals("test@kokonut.me")){
             log.error("체험하기모드는 이용할 수 없습니다.");

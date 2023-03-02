@@ -24,6 +24,9 @@ public class AuthRequestDto {
     @NoArgsConstructor
     public static class KokonutSignUp {
 
+        @NotBlank(message = "소속(회사명)은 필수 입력값 입니다.")
+        private String CpName; // 소속
+
         @NotBlank(message = "이메일은 필수 입력값 입니다.")
         @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
         private String knEmail;

@@ -28,13 +28,6 @@ public class AlimtalkMessage implements Serializable {
     private Long amId;
 
     /**
-     * 회사 키
-     */
-    @ApiModelProperty("회사 키")
-    @Column(name = "company_id")
-    private Long companyId;
-
-    /**
      * 관리자 키
      */
     @ApiModelProperty("관리자 키")
