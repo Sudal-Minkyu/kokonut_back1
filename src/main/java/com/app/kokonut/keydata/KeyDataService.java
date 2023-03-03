@@ -155,12 +155,20 @@ public class KeyDataService {
     public KeyDataNICEDto nice_key() {
         log.info("nice_key 호출 시작");
 
+        String frontServerName = "front_server_domain";
         String idkeyName = "nice_id";
         String accesskeyName = "nice_access";
         String secretkeyName = "nice_secret";
         String productkeyName = "nice_product";
 
         KeyDataNICEDto keyDataNICEDto = new KeyDataNICEDto();
+
+        KeyDataDto frontServerDomain = keyDataRepository.findByKeyValue(frontServerName);
+        if(frontServerDomain == null) {
+            errorLog(frontServerName, null);
+        } else {
+            keyDataNICEDto.setFRONTSERVERDOMAINIP(frontServerDomain.getKdKeyValue());
+        }
 
         String nice_id = keyDataRepository.findByNICEKey(idkeyName);
 //        log.info("nice_id : "+nice_id);

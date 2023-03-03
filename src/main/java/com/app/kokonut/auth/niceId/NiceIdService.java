@@ -35,6 +35,8 @@ import java.util.*;
 @Service
 public class NiceIdService {
 
+	public final String frontServerDomainIp;
+
 	public final String clientId;
 	
 	public final String clientSecret;
@@ -46,6 +48,7 @@ public class NiceIdService {
 	@Autowired
 	public NiceIdService(KeyDataService keyDataService) {
 		KeyDataNICEDto keyDataNICEDto = keyDataService.nice_key();
+		this.frontServerDomainIp = keyDataNICEDto.getFRONTSERVERDOMAINIP();
 		this.clientId = keyDataNICEDto.getNICEID();
 		this.clientSecret = keyDataNICEDto.getNICESECRET();
 		this.productId = keyDataNICEDto.getNICEPRODUCT();
@@ -160,7 +163,7 @@ public class NiceIdService {
 
 	// 본인인증 창 열기
 	public ResponseEntity<Map<String, Object>> open(HttpServletRequest request, HttpServletResponse response) {
-		log.info("open 호출");
+		log.info("본인인증 open 호출");
 
 		AjaxResponse res = new AjaxResponse();
 		HashMap<String, Object> data = new HashMap<>();
@@ -168,7 +171,7 @@ public class NiceIdService {
 		getCryptoToken();
 
 		CryptoToken cryptoToken = CryptoToken.getInstance();
-		log.info("cryptoToken : "+cryptoToken);
+//		log.info("cryptoToken : "+cryptoToken);
 
 		String value = cryptoToken.getReqDtim().trim() + cryptoToken.getReqNo().trim() + cryptoToken.getTokenValue().trim();
 		MessageDigest md = null;
@@ -181,7 +184,11 @@ public class NiceIdService {
 		md.update(value.getBytes());
 		byte[] arrHashValue = md.digest();
 		String resultVal = new String(Base64.getEncoder().encode(arrHashValue)).trim();
-		String reqData = "{\"returnurl\":\""+CommonUtil.getDomain(request)+"/niceId/redirect"+"\", \"sitecode\":\""+cryptoToken.getSiteCode()+"\", \"popupyn\" : \"Y\", \"receivedata\" : \"xxxxdddeee\", \"authtype\":\"M\"}";
+
+//		String reqData = "{\"returnurl\":\""+CommonUtil.getDomain(request)+"/niceId/redirect"+"\", \"sitecode\":\""+cryptoToken.getSiteCode()+"\", \"popupyn\" : \"Y\", \"receivedata\" : \"xxxxdddeee\", \"authtype\":\"M\"}";
+		String reqData = "{\"returnurl\":\""+frontServerDomainIp+"/#/niceId/redirect"+"\", \"sitecode\":\""+cryptoToken.getSiteCode()+"\", \"popupyn\" : \"Y\", \"receivedata\" : \"xxxxdddeee\", \"authtype\":\"M\"}";
+
+
 		String key = resultVal.substring(0, 16);
 		String iv = resultVal.substring(resultVal.length() - 16, resultVal.length());
 		String hmac_key = resultVal.substring(0, 32);
@@ -331,6 +338,7 @@ public class NiceIdService {
 	}
 
 	public ResponseEntity<Map<String, Object>> redirect(String enc_data, HttpServletRequest request, HttpServletResponse response) {
+		log.info("본인인증 open 호출");
 
 		AjaxResponse res = new AjaxResponse();
 		HashMap<String, Object> data = new HashMap<>();
@@ -353,23 +361,23 @@ public class NiceIdService {
 		try {
 			//TODO: 서버 안정화 후 주석 제거 예정
 //			int getStatus = response.getStatus();
-//			logger.error("[NICEID] getStatus : " + getStatus);
-//			Enumeration paramsHeader = request.getHeaderNames();
+//			log.error("[NICEID] getStatus : " + getStatus);
+//			Enumeration<String> paramsHeader = request.getHeaderNames();
 //			while(paramsHeader.hasMoreElements()) {
-//				String name = (String) paramsHeader.nextElement();
-//			  logger.error("[NICEID] paramsHeader name : " + name + ", value : " + request.getHeader(name));
+//				String name = paramsHeader.nextElement();
+//			  log.error("[NICEID] paramsHeader name : " + name + ", value : " + request.getHeader(name));
 //			}
 //			String enc_data_req = request.getParameter("enc_data") == null ? "":request.getParameter("enc_data").toString();
-//			Enumeration params = request.getParameterNames();
+//			Enumeration<String> params = request.getParameterNames();
 //			while(params.hasMoreElements()) {
-//			  String name = (String) params.nextElement();
-////				  System.out.print(name + " : " + request.getParameter(name) + "     ");
-//			  logger.error("[NICEID] redirect params name : " + name + ", value : " + request.getParameter(name));
+//			  String name = params.nextElement();
+//			  log.info(name + " : " + request.getParameter(name) + "     ");
+//			  log.error("[NICEID] redirect params name : " + name + ", value : " + request.getParameter(name));
 //			}
 //
-//			logger.error("[NICEID] redirect Controller!!!!!!!");
-//			logger.error("[NICEID] enc_data_req - " + enc_data_req);
-//			logger.error("[NICEID] open ### enc_data = " + enc_data);
+//			log.error("[NICEID] redirect Controller!!!!!!!");
+//			log.error("[NICEID] enc_data_req - " + enc_data_req);
+//			log.error("[NICEID] open ### enc_data = " + enc_data);
 
 			SecretKey secureKey = new SecretKeySpec(key.getBytes(), "AES");
 			Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -379,7 +387,7 @@ public class NiceIdService {
 			String resData =   new String(c.doFinal(cipherEnc), "euc-kr");
 			HashMap<String, Object> resMap = CommonUtil.jsonStringToHashMap(resData);
 			String mobileno = "01020450716" ;
-//					resMap.get("mobileno").toString();
+//			resMap.get("mobileno").toString();
 			String name = "김민규";
 //			resMap.get("name").toString();
 
@@ -388,6 +396,9 @@ public class NiceIdService {
 			CookieGenerator cookieGener = new CookieGenerator();
 			cookieGener.setCookieName("mobileno");
 			cookieGener.addCookie(response, mobileno);
+			cookieGener.setCookieSecure(true);
+			cookieGener.setCookieHttpOnly(true);
+
 
 			data.put("mobileno", mobileno);
 			data.put("name", name);

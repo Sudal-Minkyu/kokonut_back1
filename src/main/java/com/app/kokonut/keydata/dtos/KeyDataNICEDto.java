@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KeyDataNICEDto {
 
+    private String FRONTSERVERDOMAINIP;
+
     private String NICEID;
 
     private String NICEACCESS;

@@ -4,7 +4,7 @@ import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkMessageTemplateIn
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateInfoListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateListDto;
 import com.app.kokonut.bizMessage.alimtalkTemplate.dto.AlimtalkTemplateSearchDto;
-import com.app.kokonut.company.QCompany;
+import com.app.kokonut.bizMessage.kakaoChannel.QKakaoChannel;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -37,9 +37,11 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
     public Page<AlimtalkTemplateListDto> findByAlimtalkTemplatePage(AlimtalkTemplateSearchDto alimtalkTemplateSearchDto, Long companyId, Pageable pageable) {
 
         QAlimtalkTemplate alimtalkTemplate  = QAlimtalkTemplate.alimtalkTemplate;
+        QKakaoChannel kakaoChannel = QKakaoChannel.kakaoChannel;
 
         JPQLQuery<AlimtalkTemplateListDto> query = from(alimtalkTemplate)
-                .where(alimtalkTemplate.companyId.eq(companyId))
+                .innerJoin(kakaoChannel).on(kakaoChannel.kcChannelId.eq(alimtalkTemplate.kcChannelId))
+                .where(kakaoChannel.companyId.eq(companyId))
                 .select(Projections.constructor(AlimtalkTemplateListDto.class,
                         alimtalkTemplate.kcChannelId,
                         alimtalkTemplate.atTemplateCode,
@@ -74,11 +76,11 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
     public List<AlimtalkTemplateInfoListDto> findByAlimtalkTemplateInfoList(Long companyId, String channelId, String state) {
 
         QAlimtalkTemplate alimtalkTemplate = QAlimtalkTemplate.alimtalkTemplate;
-        QCompany company = QCompany.company;
+        QKakaoChannel kakaoChannel = QKakaoChannel.kakaoChannel;
 
         JPQLQuery<AlimtalkTemplateInfoListDto> query = from(alimtalkTemplate)
-                .innerJoin(company).on(company.companyId.eq(companyId))
-                .where(alimtalkTemplate.kcChannelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.companyId)))
+                .innerJoin(kakaoChannel).on(kakaoChannel.kcChannelId.eq(alimtalkTemplate.kcChannelId))
+                .where(alimtalkTemplate.kcChannelId.eq(channelId).and(kakaoChannel.companyId.eq(companyId)))
                 .select(Projections.constructor(AlimtalkTemplateInfoListDto.class,
                         alimtalkTemplate.atTemplateCode,
                         alimtalkTemplate.atStatus
@@ -95,11 +97,11 @@ public class AlimtalkTemplateRepositoryCustomImpl extends QuerydslRepositorySupp
     public List<AlimtalkMessageTemplateInfoListDto> findByAlimtalkMessageTemplateInfoList(Long companyId, String channelId) {
 
         QAlimtalkTemplate alimtalkTemplate = QAlimtalkTemplate.alimtalkTemplate;
-        QCompany company = QCompany.company;
+        QKakaoChannel kakaoChannel = QKakaoChannel.kakaoChannel;
 
         JPQLQuery<AlimtalkMessageTemplateInfoListDto> query = from(alimtalkTemplate)
-                .innerJoin(company).on(company.companyId.eq(companyId))
-                .where(alimtalkTemplate.kcChannelId.eq(channelId).and(alimtalkTemplate.companyId.eq(company.companyId)))
+                .innerJoin(kakaoChannel).on(kakaoChannel.kcChannelId.eq(alimtalkTemplate.kcChannelId))
+                .where(alimtalkTemplate.kcChannelId.eq(channelId).and(kakaoChannel.companyId.eq(companyId)))
                 .select(Projections.constructor(AlimtalkMessageTemplateInfoListDto.class,
                         alimtalkTemplate.atTemplateCode,
                         alimtalkTemplate.atMessageType,

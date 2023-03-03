@@ -1,10 +1,10 @@
 package com.app.kokonut.bizMessage.alimtalkMessage;
 
+import com.app.kokonut.admin.QAdmin;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageInfoListDto;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageListDto;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageResultDetailDto;
 import com.app.kokonut.bizMessage.alimtalkMessage.dto.AlimtalkMessageSearchDto;
-import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -37,9 +37,11 @@ public class AlimtalkMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
     public Page<AlimtalkMessageListDto> findByAlimtalkMessagePage(AlimtalkMessageSearchDto alimtalkMessageSearchDto, Long companyId, Pageable pageable) {
 
         QAlimtalkMessage alimtalkMessage  = QAlimtalkMessage.alimtalkMessage;
-
+        QAdmin admin = QAdmin.admin;
+        
         JPQLQuery<AlimtalkMessageListDto> query = from(alimtalkMessage)
-                .where(alimtalkMessage.companyId.eq(companyId))
+                .innerJoin(admin).on(admin.adminId.eq(alimtalkMessage.adminId))
+                .where(admin.companyId.eq(companyId))
                 .select(Projections.constructor(AlimtalkMessageListDto.class,
                         alimtalkMessage.kcChannelId,
                         alimtalkMessage.atTemplateCode,
@@ -75,11 +77,11 @@ public class AlimtalkMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
     public List<AlimtalkMessageInfoListDto> findByAlimtalkMessageInfoList(Long companyId, String state) {
 
         QAlimtalkMessage alimtalkMessage = QAlimtalkMessage.alimtalkMessage;
-        QCompany company = QCompany.company;
+        QAdmin admin = QAdmin.admin;
 
         JPQLQuery<AlimtalkMessageInfoListDto> query = from(alimtalkMessage)
-                .innerJoin(company).on(company.companyId.eq(companyId))
-                .where(alimtalkMessage.companyId.eq(company.companyId))
+                .innerJoin(admin).on(admin.adminId.eq(alimtalkMessage.adminId))
+                .where(admin.companyId.eq(companyId))
                 .select(Projections.constructor(AlimtalkMessageInfoListDto.class,
                         alimtalkMessage.amId,
                         alimtalkMessage.amRequestId,

@@ -88,7 +88,7 @@ public class ActivityHistoryService {
             activityHistorySearchDto.setStimeEnd(stimeList.get(1));
         }
         else {
-            log.info("활동날짜는 필수값 입니다.");
+            log.info("활동날짜 범위를 지정해주세요.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO077.getCode(), ResponseErrorCode.KO077.getDesc()));
         }
 

@@ -22,7 +22,7 @@ import java.util.Map;
  * Remark : 핸드폰 인증 Nice 관련 Controller
  */
 @Slf4j
-@RequestMapping("/v0/api/NiceId")
+@RequestMapping("/v1/api/NiceId")
 @RestController
 public class NiceIdRestController {
 
@@ -74,9 +74,9 @@ public class NiceIdRestController {
 	// NICEID 본인인증 정보 받아오기
 	@GetMapping(value = "/redirect")
 	public ResponseEntity<Map<String,Object>> redirect(@RequestParam(name="enc_data", defaultValue = "") String enc_data,
+													   @RequestParam(name="token_version_id", defaultValue = "") String token_version_id,
+													   @RequestParam(name="integrity_value", defaultValue = "") String integrity_value,
 													   HttpServletRequest request, HttpServletResponse response) {
 		return niceIdService.redirect(enc_data, request, response);
 	}
-
-
 }
