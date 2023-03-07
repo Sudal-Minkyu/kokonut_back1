@@ -17,4 +17,5 @@ public interface AdminRepository extends JpaRepository<Admin, Long>, JpaSpecific
 
     boolean existsByKnEmailAuthNumber(String knEmailAuthNumber);
 
+    Optional<Admin> findAdminByKnNameAndKnPhoneNumber(String knName, String knPhoneNumber);
 }

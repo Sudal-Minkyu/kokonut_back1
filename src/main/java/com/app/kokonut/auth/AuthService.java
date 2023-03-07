@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -201,23 +202,49 @@ public class AuthService {
 //    Utils.cookieSave("refreshToken", jwtToken.getRefreshToken(), 604800, response);
 
     // 이메일찾기 기능
-    public ResponseEntity<Map<String, Object>> findKnEmail() {
+    public ResponseEntity<Map<String, Object>> findKnEmail(String keyEmail) {
         log.info("findKnEmail 호출");
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
+        log.info("keyEmail : "+keyEmail);
+        // 레디스의 keyEmail의 값과 동일한 이메일 가져오기
+        String redisKnEmail = redisDao.getValues("KE: "+keyEmail);
+        if(redisKnEmail != null) {
+            log.info("redisKnEmail : "+redisKnEmail);
+            // 이메일 *** 처리하기
+            String[] array = redisKnEmail.split("@");
+            String firstEmail = array[0];
+            String secondEmail = array[1];
+
+            data.put("knEmail", redisKnEmail);
+
+            // 레디스에서 삭제처리
+//            redisDao.deleteValues("KE: " + keyEmail);
+        } else {
+            log.error("조회한 데이터가 없습니다."); // 이쪽으로 들어올 수가 없음
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO003.getCode(), ResponseErrorCode.KO003.getDesc()));
+        }
+
         return ResponseEntity.ok(res.success(data));
     }
 
     // 이메일로 임시비밀번호 보내는 기능
-    public ResponseEntity<Map<String, Object>> passwordSendKnEmail(String knEmail) {
+    public ResponseEntity<Map<String, Object>> passwordSendKnEmail(String knEmail, String knPhoneNumber) {
         log.info("passwordSendKnEmail 호출");
 
         log.info("knEmail : "+knEmail);
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
+
+//        Optional<Admin> optionalAdmin = adminRepository.findByKnEmail()
+
+
+
+        String tempPassword = Utils.getRamdomStr(10);
+        log.info("임시비밀번호 : "+tempPassword);
 
         return ResponseEntity.ok(res.success(data));
     }

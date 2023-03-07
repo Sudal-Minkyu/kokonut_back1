@@ -67,16 +67,16 @@ public class NiceIdRestController {
 
 	// NICEID 휴대폰 본인인증 창 열기
 	@GetMapping(value = "/open")
-	public ResponseEntity<Map<String,Object>> open(HttpServletRequest request, HttpServletResponse response) {
-		return niceIdService.open(request, response);
+	public ResponseEntity<Map<String,Object>> open(@RequestParam(name="state", defaultValue = "0") String state, HttpServletRequest request, HttpServletResponse response) {
+		return niceIdService.open(state, request, response);
 	}
 
 	// NICEID 본인인증 정보 받아오기
 	@GetMapping(value = "/redirect")
-	public ResponseEntity<Map<String,Object>> redirect(@RequestParam(name="enc_data", defaultValue = "") String enc_data,
-													   @RequestParam(name="token_version_id", defaultValue = "") String token_version_id,
-													   @RequestParam(name="integrity_value", defaultValue = "") String integrity_value,
+	public ResponseEntity<Map<String, Object>> redirect(@RequestParam(name="state", defaultValue = "0") String state,
+														@RequestParam(name="enc_data", defaultValue = "") String enc_data,
 													   HttpServletRequest request, HttpServletResponse response) {
-		return niceIdService.redirect(enc_data, request, response);
+		return niceIdService.redirect(state, enc_data, request, response);
 	}
+
 }

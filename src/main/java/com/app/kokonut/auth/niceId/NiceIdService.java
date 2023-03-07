@@ -1,14 +1,20 @@
 package com.app.kokonut.auth.niceId;
 
+import com.app.kokonut.admin.Admin;
+import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.auth.jwt.dto.RedisDao;
 import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.common.ResponseErrorCode;
 import com.app.kokonut.common.component.AriaUtil;
 import com.app.kokonut.common.component.CommonUtil;
+import com.app.kokonut.common.component.Utils;
 import com.app.kokonut.keydata.KeyDataService;
 import com.app.kokonut.keydata.dtos.KeyDataNICEDto;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.CookieGenerator;
 
@@ -27,6 +33,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.*;
 
 ;
@@ -45,14 +52,20 @@ public class NiceIdService {
 
 	public final String accessToken;
 
+	private final AdminRepository adminRepository;
+	private final RedisDao redisDao;
+
 	@Autowired
-	public NiceIdService(KeyDataService keyDataService) {
+	public NiceIdService(KeyDataService keyDataService, AdminRepository adminRepository, RedisDao redisDao) {
 		KeyDataNICEDto keyDataNICEDto = keyDataService.nice_key();
 		this.frontServerDomainIp = keyDataNICEDto.getFRONTSERVERDOMAINIP();
 		this.clientId = keyDataNICEDto.getNICEID();
 		this.clientSecret = keyDataNICEDto.getNICESECRET();
 		this.productId = keyDataNICEDto.getNICEPRODUCT();
 		this.accessToken = keyDataNICEDto.getNICEACCESS();
+
+		this.adminRepository = adminRepository;
+		this.redisDao = redisDao;
 	}
 
 	/*** 
@@ -162,7 +175,7 @@ public class NiceIdService {
 //	}
 
 	// 본인인증 창 열기
-	public ResponseEntity<Map<String, Object>> open(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<Map<String, Object>> open(String state, HttpServletRequest request, HttpServletResponse response) {
 		log.info("본인인증 open 호출");
 
 		AjaxResponse res = new AjaxResponse();
@@ -185,9 +198,8 @@ public class NiceIdService {
 		byte[] arrHashValue = md.digest();
 		String resultVal = new String(Base64.getEncoder().encode(arrHashValue)).trim();
 
-//		String reqData = "{\"returnurl\":\""+CommonUtil.getDomain(request)+"/niceId/redirect"+"\", \"sitecode\":\""+cryptoToken.getSiteCode()+"\", \"popupyn\" : \"Y\", \"receivedata\" : \"xxxxdddeee\", \"authtype\":\"M\"}";
-		String reqData = "{\"returnurl\":\""+frontServerDomainIp+"/#/niceId/redirect"+"\", \"sitecode\":\""+cryptoToken.getSiteCode()+"\", \"popupyn\" : \"Y\", \"receivedata\" : \"xxxxdddeee\", \"authtype\":\"M\"}";
-
+//		String reqData = "{\"returnurl\":\""+CommonUtil.getDomain(request)+"/v1/api/NiceId/redirect"+"\", \"sitecode\":\""+cryptoToken.getSiteCode()+"\", \"popupyn\" : \"Y\", \"receivedata\" : \"xxxxdddeee\", \"authtype\":\"M\"}";
+		String reqData = "{\"returnurl\":\""+frontServerDomainIp+"/#/niceId/redirect"+"?state="+state+"\", \"sitecode\":\""+cryptoToken.getSiteCode()+"\", \"popupyn\" : \"Y\", \"receivedata\" : \"xxxxdddeee\", \"authtype\":\"M\"}";
 
 		String key = resultVal.substring(0, 16);
 		String iv = resultVal.substring(resultVal.length() - 16, resultVal.length());
@@ -215,6 +227,131 @@ public class NiceIdService {
 		cookieGener.addCookie(response, key);
 		cookieGener.setCookieName("iv");
 		cookieGener.addCookie(response, iv);
+
+		return ResponseEntity.ok(res.success(data));
+	}
+
+	public ResponseEntity<Map<String, Object>> redirect(String state, String enc_data, HttpServletRequest request, HttpServletResponse response) {
+		log.info("본인인증 redirect 호출");
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
+
+		try {
+			//TODO: 서버 안정화 후 주석 제거 예정
+//			int getStatus = response.getStatus();
+//			log.info("[NICEID] getStatus : " + getStatus);
+//			Enumeration<String> paramsHeader = request.getHeaderNames();
+//			while(paramsHeader.hasMoreElements()) {
+//				String name = paramsHeader.nextElement();
+//				log.info("[NICEID] paramsHeader name : " + name + ", value : " + request.getHeader(name));
+//			}
+//
+//			String enc_data_req = request.getParameter("enc_data") == null ? "":request.getParameter("enc_data").toString();
+//			Enumeration<String> params = request.getParameterNames();
+//			while(params.hasMoreElements()) {
+//				String name = params.nextElement();
+//			  	log.info(name + " : " + request.getParameter(name) + "     ");
+//			  	log.info("[NICEID] redirect params name : " + name + ", value : " + request.getParameter(name));
+//			}
+//
+//			log.info("[NICEID] redirect Controller!!!!!!!");
+//			log.info("[NICEID] enc_data_req - " + enc_data_req);
+//			log.info("[NICEID] open ### enc_data = " + enc_data);
+
+			String key = "";
+			String iv = "";
+			Cookie[] cookies = request.getCookies();
+			if(cookies != null) {
+				for(Cookie c : cookies) {
+					if(c.getName().equals("key") ) {
+						key = c.getValue();
+					} else if(c.getName().equals("iv") ) {
+						iv = c.getValue();
+					}
+				}
+			}
+
+			log.info("enc_data : " + enc_data);
+
+			SecretKey secureKey = new SecretKeySpec(key.getBytes(), "AES");
+			Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			c.init(Cipher.DECRYPT_MODE, secureKey, new IvParameterSpec(iv.getBytes()));
+			byte[] cipherEnc = Base64.getDecoder().decode(enc_data);
+
+			String resData =   new String(c.doFinal(cipherEnc), "euc-kr");
+			HashMap<String, Object> resMap = CommonUtil.jsonStringToHashMap(resData);
+//			String mobileno = "01020450716" ;
+//			resMap.get("mobileno").toString();
+//			String name = "김민규";
+//			resMap.get("name").toString();
+
+//			data.put("mobileno", resMap.get("mobileno").toString());
+//			data.put("name", resMap.get("name").toString());
+			String knName = resMap.get("name").toString();
+			String knPhoneNumber = resMap.get("mobileno").toString();
+
+
+			if(state.equals("1")) {
+				if(adminRepository.existsByKnPhoneNumber(knPhoneNumber)) {
+					log.error("이미 회원가입된 핸드폰번호 입니다.");
+					return ResponseEntity.ok(res.fail(ResponseErrorCode.KO034.getCode(),ResponseErrorCode.KO034.getDesc()));
+				} else {
+					log.info("회원가입 본인인증");
+					// 회원가입떄 사용 -> 핸드폰번호 일치한지 확인하기위해서 사용됨
+
+					data.put("name", knName);
+					data.put("mobileno", knPhoneNumber);
+					Utils.cookieSave("mobileno", knPhoneNumber, 1000 * 60 * 30, response); // 쿠키 제한시간 30분
+				}
+			} else if(state.equals("2") || state.equals("3") || state.equals("4")) {
+				log.info("이메일찾기 본인인증");
+
+				// 이름과 번호를 통해 찾기?
+				Optional<Admin> optionalAdmin = adminRepository.findAdminByKnNameAndKnPhoneNumber(knName, knPhoneNumber);
+
+				if(optionalAdmin.isEmpty()) {
+					log.error("회원가입 정보가 존재하지 않습니다.");
+					return ResponseEntity.ok(res.fail(ResponseErrorCode.KO032.getCode(), ResponseErrorCode.KO032.getDesc()));
+				} else {
+					String knEmail = optionalAdmin.get().getKnEmail();
+
+					if(state.equals("2")) {
+						String keyEmail = Utils.getRamdomStr(10);
+
+						// 인증번호 레디스에 담기
+						redisDao.setValues("KE: " + keyEmail, knEmail, Duration.ofMillis(5000)); // 제한시간 5초
+						log.info("레디스에 인증번호 저장성공");
+						data.put("keyEmail", keyEmail);
+					}else if(state.equals("3")) {
+						log.info("비밀번호찾기 본인인증");
+						data.put("knEmail", knEmail); // -> 입력한 이메일과 DB데이터 이메일과 일치할 경우 임시비밀번호 메일전송 + 업데이트
+					}else {
+						log.info("OTP변경 본인인증");
+						// 추후 처리
+					}
+				}
+			} else {
+				log.info("그 외 본인인증");
+			}
+
+			AriaUtil aria = new AriaUtil();
+			String encValue = aria.Encrypt("authOtpKey11");
+			log.info("encValue : "+encValue);
+
+			data.put("authOtpKey", encValue);
+
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
+				 InvalidAlgorithmParameterException | UnsupportedEncodingException | BadPaddingException |
+				 IllegalBlockSizeException e) {
+			log.error("e : "+e.getMessage());
+		}
+
+		CookieGenerator cookieGener = new CookieGenerator();
+		cookieGener.setCookieName("key");
+		cookieGener.addCookie(response, "");
+		cookieGener.setCookieName("iv");
+		cookieGener.addCookie(response, "");
 
 		return ResponseEntity.ok(res.success(data));
 	}
@@ -337,92 +474,5 @@ public class NiceIdService {
 		return hmac256;
 	}
 
-	public ResponseEntity<Map<String, Object>> redirect(String enc_data, HttpServletRequest request, HttpServletResponse response) {
-		log.info("본인인증 open 호출");
-
-		AjaxResponse res = new AjaxResponse();
-		HashMap<String, Object> data = new HashMap<>();
-
-		String key = "";
-		String iv = "";
-		Cookie[] cookies = request.getCookies();
-		if(cookies != null) {
-			for(Cookie c : cookies) {
-				if(c.getName().equals("key") ) {
-					key = c.getValue();
-				} else if(c.getName().equals("iv") ) {
-					iv = c.getValue();
-				}
-			}
-		}
-
-		System.out.println("enc_data : " + enc_data);
-
-		try {
-			//TODO: 서버 안정화 후 주석 제거 예정
-//			int getStatus = response.getStatus();
-//			log.error("[NICEID] getStatus : " + getStatus);
-//			Enumeration<String> paramsHeader = request.getHeaderNames();
-//			while(paramsHeader.hasMoreElements()) {
-//				String name = paramsHeader.nextElement();
-//			  log.error("[NICEID] paramsHeader name : " + name + ", value : " + request.getHeader(name));
-//			}
-//			String enc_data_req = request.getParameter("enc_data") == null ? "":request.getParameter("enc_data").toString();
-//			Enumeration<String> params = request.getParameterNames();
-//			while(params.hasMoreElements()) {
-//			  String name = params.nextElement();
-//			  log.info(name + " : " + request.getParameter(name) + "     ");
-//			  log.error("[NICEID] redirect params name : " + name + ", value : " + request.getParameter(name));
-//			}
-//
-//			log.error("[NICEID] redirect Controller!!!!!!!");
-//			log.error("[NICEID] enc_data_req - " + enc_data_req);
-//			log.error("[NICEID] open ### enc_data = " + enc_data);
-
-			SecretKey secureKey = new SecretKeySpec(key.getBytes(), "AES");
-			Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			c.init(Cipher.DECRYPT_MODE, secureKey, new IvParameterSpec(iv.getBytes()));
-			byte[] cipherEnc = Base64.getDecoder().decode(enc_data);
-
-			String resData =   new String(c.doFinal(cipherEnc), "euc-kr");
-			HashMap<String, Object> resMap = CommonUtil.jsonStringToHashMap(resData);
-			String mobileno = "01020450716" ;
-//			resMap.get("mobileno").toString();
-			String name = "김민규";
-//			resMap.get("name").toString();
-
-//			logger.error("[NICEID] open ### resMap = " + resMap);
-
-			CookieGenerator cookieGener = new CookieGenerator();
-			cookieGener.setCookieName("mobileno");
-			cookieGener.addCookie(response, mobileno);
-			cookieGener.setCookieSecure(true);
-			cookieGener.setCookieHttpOnly(true);
-
-
-			data.put("mobileno", mobileno);
-			data.put("name", name);
-
-			AriaUtil aria = new AriaUtil();
-			String encValue = aria.Encrypt("authOtpKey11");
-			log.info("encValue : "+encValue);
-
-			data.put("authOtpKey", encValue);
-
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
-				 InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException |
-				 UnsupportedEncodingException e) {
-			log.error("e : "+e.getMessage());
-		}
-
-		String[] cookieNames = {"key", "iv"};
-		for(String cookieName : cookieNames) {
-			Cookie cookie = new Cookie(cookieName, null);
-			cookie.setMaxAge(0);
-			response.addCookie(cookie);
-		}
-
-		return ResponseEntity.ok(res.success(data));
-	}
 
 }

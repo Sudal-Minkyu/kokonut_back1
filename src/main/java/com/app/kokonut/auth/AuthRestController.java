@@ -64,15 +64,13 @@ public class AuthRestController {
         return authService.numberCheckKnEmail(knEmail, ctNumber);
     }
 
-    // 핸드폰(나이스) 인증 기능
-
     // 이메일찾기 기능
     @GetMapping(value = "/findKnEmail")
     @ApiOperation(value = "이메일찾기 기능" , notes = "" +
             "1. 가입한 휴대전화번호를 인증받는다." +
             "2. 인증이 성공을 성공하게되면 해당 휴대폰번희에 가입된 이메일을 화면단에 보내준다.")
-    public ResponseEntity<Map<String,Object>> findKnEmail() {
-        return authService.findKnEmail();
+    public ResponseEntity<Map<String,Object>> findKnEmail(@RequestParam(value="keyEmail", defaultValue = "") String keyEmail) {
+        return authService.findKnEmail(keyEmail);
     }
 
     // 이메일로 임시비밀번호 보내는 기능
@@ -80,8 +78,9 @@ public class AuthRestController {
     @ApiOperation(value = "비밀번호찾기 기능" , notes = "" +
             "1. 인증을 완료한 이메일의 대해 임시비밀번호로 업데이트한다." +
             "2. 임시비밀번호를 이메일에 보낸다.")
-    public ResponseEntity<Map<String,Object>> passwordSendKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail) {
-        return authService.passwordSendKnEmail(knEmail);
+    public ResponseEntity<Map<String,Object>> passwordSendKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail,
+                                                                  @RequestParam(value="knPhoneNumber", defaultValue = "") String knPhoneNumber) {
+        return authService.passwordSendKnEmail(knEmail, knPhoneNumber);
     }
 
 
