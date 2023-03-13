@@ -26,6 +26,7 @@ import java.util.List;
 @Service
 public class MailSender {
 
+	public final String frontServerDomainIp;
 	public final String mailHost; // 보내는 사람의 이메일
 	public final String myHost; // otp_url
 
@@ -35,6 +36,7 @@ public class MailSender {
 	@Autowired
 	public MailSender(KeyDataService keyDataService, NaverCloudPlatformService naverCloudPlatformService, EmailHistoryRepository emailHistoryRepository) {
 		KeyDataMAILDto keyDataMAILDto = keyDataService.mail_key();
+		this.frontServerDomainIp = keyDataMAILDto.getFRONTSERVERDOMAINIP();
 		this.naverCloudPlatformService = naverCloudPlatformService;
 		this.emailHistoryRepository = emailHistoryRepository;
 		this.mailHost = keyDataMAILDto.getMAILHOST();
@@ -108,9 +110,10 @@ public class MailSender {
 		InputStream is = conn.getInputStream();
 		return IOUtils.toString(is, StandardCharsets.UTF_8);
 	}
+
 	//TODO keyData 테이블에 데이터 추가후 사용
-	public String getHTML5(Map callTemplate) throws IOException {
-		String htmlURL = "http://192.168.0.32:5173/src/template/"+callTemplate.get("template")+".html";
+	public String getHTML5(HashMap<String, String> callTemplate) throws IOException {
+		String htmlURL = frontServerDomainIp+"/src/template/"+callTemplate.get("template")+".html";
 		URL url = new URL(htmlURL);
 		URLConnection conn = url.openConnection();
 		InputStream is = conn.getInputStream();

@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KeyDataMAILDto {
 
+    private String FRONTSERVERDOMAINIP;
+
     private String MAILHOST;
 
     private String OTPURL;

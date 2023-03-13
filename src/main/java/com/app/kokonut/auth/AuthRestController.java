@@ -1,6 +1,7 @@
 package com.app.kokonut.auth;
 
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
+import com.app.kokonut.auth.dtos.AdminPasswordChangeDto;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -74,24 +75,24 @@ public class AuthRestController {
     }
 
     // 이메일로 임시비밀번호 보내는 기능
-    @GetMapping(value = "/passwordSendKnEmail")
+    @PostMapping(value = "/passwordSendKnEmail")
     @ApiOperation(value = "비밀번호찾기 기능" , notes = "" +
             "1. 인증을 완료한 이메일의 대해 임시비밀번호로 업데이트한다." +
             "2. 임시비밀번호를 이메일에 보낸다.")
-    public ResponseEntity<Map<String,Object>> passwordSendKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail,
-                                                                  @RequestParam(value="knPhoneNumber", defaultValue = "") String knPhoneNumber) {
-        return authService.passwordSendKnEmail(knEmail, knPhoneNumber);
+    public ResponseEntity<Map<String,Object>> passwordSendKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail) throws IOException {
+        return authService.passwordSendKnEmail(knEmail);
     }
 
-
-    // 비밀번호찾기 기능
-    @GetMapping(value = "/findKnPassword")
+    // 비밀번호 찾기(사용할 비밀번호로 변경하는) 기능
+    @PostMapping(value = "/passwordUpdate")
     @ApiOperation(value = "비밀번호찾기 기능" , notes = "" +
-            "1. 가입한 이메일을 입력받고 핸드폰인증을 한다." +
-            "2. 인증완료시 가입된 이메일의 비밀번호를 임시비밀번호로 업데이트시켜준다." +
-            "3. 해당 이메일로 임시비밀번호를 전송한다.")
-    public ResponseEntity<Map<String,Object>> findKnPassword() {
-        return authService.findKnPassword();
+            "1. 임시비밀번호를 받는다." +
+            "2. 이메일을 통해 사용자정보를 가져온다." +
+            "3. 해당 사용자의 비밀번호와 받은 임시비밀번호와 비교한다." +
+            "4. 일치할시 사용할 비밀번호와, 비밀번호체크를 체크한다." +
+            "5. 또 일치할시 해당 비밀번호로 업데이트한다.")
+    public ResponseEntity<Map<String,Object>> passwordUpdate(@RequestBody AdminPasswordChangeDto adminPasswordChangeDto) {
+        return authService.passwordUpdate(adminPasswordChangeDto);
     }
 
     // 리뉴얼 회원가입

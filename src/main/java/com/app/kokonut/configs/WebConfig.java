@@ -70,7 +70,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry
             .addMapping("/*/api/**")
             .allowedOriginPatterns("http://localhost:5174", "http://localhost:5173")
-            .allowedHeaders("Authorization", "Accept", "ApiKey")
+            .allowedHeaders("Authorization", "Content-type", "ApiKey")
             .exposedHeaders("Authorization")
             .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name())
             .allowCredentials(true)

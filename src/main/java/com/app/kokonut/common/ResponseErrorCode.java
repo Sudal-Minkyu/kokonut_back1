@@ -99,6 +99,8 @@ public enum ResponseErrorCode {
 
     KO077("KO077", "활동날짜 범위를 지정해주세요."),
 
+    KO078("KO078", "보내드린 임시 비밀번호가 일치하지 않습니다."),
+
     ;
 
 

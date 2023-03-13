@@ -4,6 +4,7 @@ import com.app.kokonut.admin.Admin;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
+import com.app.kokonut.auth.dtos.AdminPasswordChangeDto;
 import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
@@ -31,6 +32,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -231,30 +233,86 @@ public class AuthService {
     }
 
     // 이메일로 임시비밀번호 보내는 기능
-    public ResponseEntity<Map<String, Object>> passwordSendKnEmail(String knEmail, String knPhoneNumber) {
+    @Transactional
+    public ResponseEntity<Map<String, Object>> passwordSendKnEmail(String knEmail) throws IOException {
         log.info("passwordSendKnEmail 호출");
 
-        log.info("knEmail : "+knEmail);
+//        log.info("knEmail : "+knEmail);
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-//        Optional<Admin> optionalAdmin = adminRepository.findByKnEmail()
-
-
+        // 접속정보에서 필요한 정보 가져오기.
+        Admin admin = adminRepository.findByKnEmail(knEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + knEmail));
 
         String tempPassword = Utils.getRamdomStr(10);
-        log.info("임시비밀번호 : "+tempPassword);
+//        log.info("임시비밀번호 : "+tempPassword);
+
+        admin.setKnPassword(passwordEncoder.encode(tempPassword));
+        adminRepository.save(admin);
+
+        // 인증번호 메일전송
+        // 이메일 전송을 위한 전처리 - filter, unfilter
+        String title = ReqUtils.filter("코코넛 이메일 임시비밀번호가 도착했습니다.");
+        String contents = ReqUtils.unFilter("임시비밀번호 : "+tempPassword);
+
+        // 템플릿 호출을 위한 데이터 세팅
+//        HashMap<String, String> callTemplate = new HashMap<>();
+//        callTemplate.put("template", "MailTemplate");
+//        callTemplate.put("title", "인증번호 알림");
+//        callTemplate.put("content", contents);
+
+        // 템플릿 TODO 템플릿 디자인 추가되면 수정
+//        contents = mailSender.getHTML5(callTemplate);
+        String reciverName = "kokonut";
+
+        boolean mailSenderResult = mailSender.sendMail(knEmail, reciverName, title, contents);
+        if(mailSenderResult){
+            // mailSender 성공
+            log.error("### 메일전송 성공했습니다. reciver Email : "+ knEmail);
+        }else{
+            // mailSender 실패
+            log.error("### 해당 메일 전송에 실패했습니다. 관리자에게 문의하세요. reciverEmail : "+ knEmail);
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO041.getCode(), ResponseErrorCode.KO041.getDesc()));
+        }
+
+        data.put("tempPassword", tempPassword);
 
         return ResponseEntity.ok(res.success(data));
     }
 
-    // 비밀번호찾기 기능
-    public ResponseEntity<Map<String, Object>> findKnPassword() {
-        log.info("findKnPassword 호출");
+    // 비밀번호 찾기(사용할 비밀번호로 변경하는) 기능
+    @Transactional
+    public ResponseEntity<Map<String, Object>> passwordUpdate(AdminPasswordChangeDto adminPasswordChangeDto) {
+        log.info("passwordUpdate 호출");
+
+//        log.info("adminPasswordChangeDto : "+adminPasswordChangeDto);
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
+
+        Admin admin = adminRepository.findByKnEmail(adminPasswordChangeDto.getKnEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : " + adminPasswordChangeDto.getKnEmail()));
+
+        // 임시비밀번호 일치한지 체크
+        if (!passwordEncoder.matches(adminPasswordChangeDto.getTempPwd(), admin.getKnPassword())){
+            log.error("보내드린 임시 비밀번호가 일치하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO078.getCode(), ResponseErrorCode.KO078.getDesc()));
+        }
+
+        // 비밀번호 일치한지 체크
+        if (!adminPasswordChangeDto.getKnPassword().equals(adminPasswordChangeDto.getKnPasswordConfirm())) {
+            log.error("입력한 비밀번호가 서로 일치하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO037.getCode(), ResponseErrorCode.KO037.getDesc()));
+        }
+
+        admin.setKnPassword(passwordEncoder.encode(adminPasswordChangeDto.getKnPassword()));
+        admin.setKnPwdChangeDate(LocalDateTime.now());
+        admin.setModify_email(adminPasswordChangeDto.getKnEmail());
+        admin.setModify_date(LocalDateTime.now());
+
+        adminRepository.save(admin);
 
         return ResponseEntity.ok(res.success(data));
     }

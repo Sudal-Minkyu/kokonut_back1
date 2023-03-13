@@ -210,6 +210,7 @@ public class KeyDataService {
     public KeyDataMAILDto mail_key() {
         log.info("mail_key 호출 시작");
 
+        String frontServerName = "front_server_domain";
         String mailKeyName = "mail_host"; // concat@kokonut.me
         String otpKeyName = "otp_url"; // 127.0.0.1
 
@@ -229,6 +230,13 @@ public class KeyDataService {
             errorLog(otpKeyName, null);
         } else {
             keyDataMAILDto.setOTPURL(otp_url);
+        }
+
+        KeyDataDto frontServerDomain = keyDataRepository.findByKeyValue(frontServerName);
+        if(frontServerDomain == null) {
+            errorLog(frontServerName, null);
+        } else {
+            keyDataMAILDto.setFRONTSERVERDOMAINIP(frontServerDomain.getKdKeyValue());
         }
 
         log.info("mail_key 호출 성공");

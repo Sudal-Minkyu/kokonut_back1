@@ -325,7 +325,7 @@ public class NiceIdService {
 						data.put("keyEmail", keyEmail);
 					}else if(state.equals("3")) {
 						log.info("비밀번호찾기 본인인증");
-						data.put("knEmail", knEmail); // -> 입력한 이메일과 DB데이터 이메일과 일치할 경우 임시비밀번호 메일전송 + 업데이트
+						data.put("keyEmail", knEmail); // -> 입력한 이메일과 DB데이터 이메일과 일치할 경우 임시비밀번호 메일전송 + 업데이트
 					}else {
 						log.info("OTP변경 본인인증");
 						// 추후 처리
