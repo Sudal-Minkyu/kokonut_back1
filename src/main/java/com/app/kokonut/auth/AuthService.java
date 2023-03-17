@@ -2,6 +2,7 @@ package com.app.kokonut.auth;
 
 import com.app.kokonut.admin.Admin;
 import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.admin.AdminService;
 import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.dtos.AdminPasswordChangeDto;
@@ -69,6 +70,7 @@ public class AuthService {
 
     private final String AWSURL;
 
+    private final AdminService adminService;
     private final AwsS3Util awsS3Util;
     private final AwsKmsUtil awsKmsUtil;
 
@@ -90,11 +92,12 @@ public class AuthService {
     private final MailSender mailSender;
 
     @Autowired
-    public AuthService(KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository,
+    public AuthService(AdminService adminService, KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository,
                        AwsKmsUtil awsKmsUtil, KeyGenerateService keyGenerateService, CompanyRepository companyRepository, CompanyFileRepository companyFileRepository,
                        AwsKmsHistoryRepository awsKmsHistoryRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
                        RedisDao redisDao, GoogleOTP googleOTP, MailSender mailSender) {
+        this.adminService = adminService;
         this.awsS3Util = awsS3Util;
         this.adminRepository = adminRepository;
         this.awsKmsUtil = awsKmsUtil;
@@ -111,6 +114,22 @@ public class AuthService {
         this.mailSender = mailSender;
     }
 
+    // 이메일 가입존재 여부
+    public ResponseEntity<Map<String, Object>> checkKnEmail(String knEmail) {
+        log.info("checkKnEmail 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        if(knEmail.isEmpty()){
+            log.info("이메일을 입력해주세요.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO079.getCode(), ResponseErrorCode.KO079.getDesc()));
+        }
+
+        data.put("result", adminRepository.existsByKnEmail(knEmail));
+        return ResponseEntity.ok(res.success(data));
+    }
+
     // 이메일 중복확인
     public ResponseEntity<Map<String, Object>> existsKnEmail(String knEmail) {
         log.info("existsKnEmail 호출");
@@ -120,12 +139,12 @@ public class AuthService {
 
         if(knEmail.isEmpty()){
             log.info("이메일을 입력해주세요.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO005.getCode(), ResponseErrorCode.KO005.getDesc()));
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO079.getCode(), ResponseErrorCode.KO079.getDesc()));
         }
 
 //        log.info("knEmail : "+knEmail);
         if (adminRepository.existsByKnEmail(knEmail)) {
-            log.info("이미 회원가입된 이메일입니다.");
+            log.info("이미 가입되어 있는 이메일입니다.");
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO005.getCode(), ResponseErrorCode.KO005.getDesc()));
         }
         return ResponseEntity.ok(res.success(data));
@@ -159,7 +178,7 @@ public class AuthService {
         String reciverName = "kokonut";
 
         boolean mailSenderResult = mailSender.sendMail(reciverEmail, reciverName, title, contents);
-        if(mailSenderResult){
+        if(mailSenderResult) {
             // mailSender 성공
             log.error("### 메일전송 성공했습니다. reciver Email : "+ knEmail);
         }else{
@@ -219,6 +238,22 @@ public class AuthService {
             String[] array = redisKnEmail.split("@");
             String firstEmail = array[0];
             String secondEmail = array[1];
+
+            // 앞에고 firstEmail
+//            log.info("firstEmail : "+firstEmail);
+            int firstEmailLen = firstEmail.length();
+            int firstEmailLenVal = (firstEmailLen*2)/3;
+
+            // 뒤에고 secondEmail
+//            log.info("secondEmail : "+secondEmail);
+            int secondEmailLen = secondEmail.length();
+            int secondEmailLenVal = (secondEmailLen*2)/3;
+            StringBuilder secondResult = new StringBuilder(secondEmail.substring(secondEmailLenVal));
+            for(int i=0; i<=secondEmailLen-secondEmailLenVal; i++) {
+                secondResult = new StringBuilder("*"+secondResult);
+            }
+
+            redisKnEmail = firstEmail.substring(0, firstEmailLenVal) + "*".repeat(Math.max(0, firstEmailLen - firstEmailLenVal + 1)) + "@" + secondResult;
 
             data.put("knEmail", redisKnEmail);
 
@@ -319,7 +354,7 @@ public class AuthService {
 
     // 코코넛 회원가입 기능
     @Transactional
-    public ResponseEntity<Map<String, Object>> kokonutSignUp(AuthRequestDto.KokonutSignUp kokonutSignUp, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> kokonutSignUp(AuthRequestDto.KokonutSignUp kokonutSignUp, HttpServletRequest request) {
         log.info("kokonutSignUp 호출");
 
         AjaxResponse res = new AjaxResponse();
@@ -344,6 +379,25 @@ public class AuthService {
         log.info("회원가입 시작");
         log.info("받아온 값 kokonutSignUp : "+kokonutSignUp);
 
+        if(!kokonutSignUp.getKnEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
+            String joinPhone = "";
+            Cookie[] cookies = request.getCookies();
+            if(cookies != null) {
+                log.info("현재 쿠키값들 : "+ Arrays.toString(cookies));
+                for(Cookie c : cookies) {
+                    if(c.getName().equals("joinPhone") ) {
+                        joinPhone = c.getValue();
+                        log.info("본인인증 된 핸드폰번호 : "+joinPhone);
+                    }
+                }
+            }
+            // 본인인증 체크
+            if(!kokonutSignUp.getKnPhoneNumber().equals(joinPhone)) {
+                log.info("본인인증으로 입력된 핸드폰 번호가 아닙니다. 본인인증을 완료해주세요.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO033.getCode(), ResponseErrorCode.KO033.getDesc()));
+            }
+        }
+
         // 소속 저장
         Company company = new Company();
         company.setCpName(kokonutSignUp.getCpName());
@@ -352,18 +406,19 @@ public class AuthService {
 
         // 계정 저장
         Admin admin = new Admin();
+        admin.setKnName(kokonutSignUp.getKnName());
+        admin.setKnPhoneNumber(kokonutSignUp.getKnPhoneNumber());
         admin.setKnEmail(kokonutSignUp.getKnEmail());
         admin.setKnPassword(passwordEncoder.encode(kokonutSignUp.getKnPassword()));
         admin.setCompanyId(companyRepository.save(company).getCompanyId());
         admin.setMasterId(0L); // 사업자는 0, 관리자가 등록한건 관리자IDX ?
+        admin.setKnUserType(1);
+        admin.setKnRegType(1);
         admin.setKnRoleCode(AuthorityRole.ROLE_MASTER);
         admin.setInsert_email(kokonutSignUp.getKnEmail());
         admin.setInsert_date(LocalDateTime.now());
         Admin saveAdmin = adminRepository.save(admin);
         log.info("사업자 정보 저장 saveAdmin : "+saveAdmin.getAdminId());
-
-
-
 
         return ResponseEntity.ok(res.success(data));
     }
@@ -631,8 +686,8 @@ public class AuthService {
             Optional<Admin> optionalAdmin = adminRepository.findByKnEmail(knEmail);
 
             if (optionalAdmin.isEmpty()) {
-                log.error("해당 유저가 존재하지 않습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(),"해당 유저가 "+ResponseErrorCode.KO004.getDesc()));
+                log.error("아이디 또는 비밀번호가 일치하지 않습니다.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO016.getCode(),ResponseErrorCode.KO016.getDesc()));
             }
             else {
                 try {
@@ -641,10 +696,13 @@ public class AuthService {
                     UsernamePasswordAuthenticationToken authenticationToken = login.toAuthentication();
 
                     if(optionalAdmin.get().getKnOtpKey() == null){
-                        log.error("등록된 OTP가 존재하지 않습니다. 구글 OTP 2단계 인증을 등록해주세요.");
+                        log.error("등록된 OTP가 존재하지 않습니다. 구글 OTP 인증을 등록해주세요.");
                         return ResponseEntity.ok(res.fail(ResponseErrorCode.KO011.getCode(),ResponseErrorCode.KO011.getDesc()));
                     }
                     else {
+                        // 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
+                        // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
+                        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
                         // OTP 검증 절차
                         boolean auth = googleOTP.checkCode(login.getOtpValue(), optionalAdmin.get().getKnOtpKey());
@@ -655,11 +713,6 @@ public class AuthService {
                             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO012.getCode(), ResponseErrorCode.KO012.getDesc()));
                         } else {
                             log.info("OTP인증완료 -> JWT토큰 발급");
-
-
-                            // 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-                            // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
-                            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
                             // 인증 정보를 기반으로 JWT 토큰 생성
                             AuthResponseDto.TokenInfo jwtToken = jwtTokenProvider.generateToken(authentication);
@@ -817,32 +870,46 @@ public class AuthService {
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-        
-        Pattern pattern = Pattern.compile("[+-]?\\d+");
-        if(!pattern.matcher(googleOtpCertification.getOtpValue()).matches()) {
-            log.error("OTP는 숫자 형태로 입력하세요.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO015.getCode(),ResponseErrorCode.KO015.getDesc()));
-        }
 
-        boolean auth;
-        auth = googleOTP.checkCode(googleOtpCertification.getOtpValue(), googleOtpCertification.getKnOtpKey());
+        Optional<Admin> optionalAdmin = adminRepository.findByKnEmail(googleOtpCertification.getKnEmail());
 
-        AriaUtil aria = new AriaUtil();
-        String encValue = aria.Encrypt("authOtpKey11");
-
-        if(!auth){
-            log.error("입력된 구글 OTP 값이 일치하지 않습니다. 확인해주세요.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO012.getCode(),ResponseErrorCode.KO012.getDesc()));
+        if (optionalAdmin.isEmpty()) {
+            log.error("해당 유저가 존재하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(),"해당 유저가 "+ResponseErrorCode.KO004.getDesc()));
         }
         else {
-            data.put("auth", true);
-            data.put("authOtpKey", encValue);
-            return ResponseEntity.ok(res.success(data));
-        }
+            Pattern pattern = Pattern.compile("[+-]?\\d+");
+            if(!pattern.matcher(googleOtpCertification.getOtpValue()).matches()) {
+                log.error("OTP는 숫자 형태로 입력하세요.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO015.getCode(),ResponseErrorCode.KO015.getDesc()));
+            }
 
+            //현재암호비교
+            if (!passwordEncoder.matches(googleOtpCertification.getKnPassword(), optionalAdmin.get().getKnPassword())){
+                log.error("입력한 비밀번호가 일치하지 않습니다.");
+                adminService.adminErrorPwd(optionalAdmin.get());
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO013.getCode(), ResponseErrorCode.KO013.getDesc()));
+            }
+
+            boolean auth;
+            auth = googleOTP.checkCode(googleOtpCertification.getOtpValue(), googleOtpCertification.getKnOtpKey());
+
+            AriaUtil aria = new AriaUtil();
+            String encValue = aria.Encrypt("authOtpKeyKokonut!!");
+
+            if(!auth){
+                log.error("입력된 구글 OTP 값이 일치하지 않습니다. 확인해주세요.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO012.getCode(),ResponseErrorCode.KO012.getDesc()));
+            }
+            else {
+                data.put("authOtpKey", encValue);
+                return ResponseEntity.ok(res.success(data));
+            }
+        }
     }
 
     // 구글 OTPKey 등록(3번)
+    @Transactional
     public ResponseEntity<Map<String, Object>> saveOTP(AdminGoogleOTPDto.GoogleOtpSave googleOtpSave) {
         log.info("saveOTP 호출");
 
@@ -859,20 +926,14 @@ public class AuthService {
 
             log.info("OTP Key 등록 할 이메일 : " + optionalAdmin.get().getKnEmail());
 
-            //현재암호비교
-            if (!passwordEncoder.matches(googleOtpSave.getKnPassword(), optionalAdmin.get().getKnPassword())){
-                log.error("입력한 비밀번호가 일치하지 않습니다.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO013.getCode(), ResponseErrorCode.KO013.getDesc()));
-            }
-
             String authOtpKey = googleOtpSave.getAuthOtpKey();
             AriaUtil aria = new AriaUtil();
             String decValue = aria.Decrypt(authOtpKey);
-            System.out.println("decValue : "+decValue);
+            log.info("decValue : " + decValue);
 
-            if (!decValue.equals("authOtpKey11")) { // 본인인증 이후 나오는 값
+            if (!decValue.equals("authOtpKeyKokonut!!")) { // 본인인증 이후 나오는 값
                 log.error("인증되지 않은 절차로 진행되었습니다. 올바른 방법으로 진행해주세요.");
-                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO013.getCode(), ResponseErrorCode.KO013.getDesc()));
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO014.getCode(), ResponseErrorCode.KO014.getDesc()));
             }
 
             optionalAdmin.get().setModify_email(optionalAdmin.get().getKnEmail());

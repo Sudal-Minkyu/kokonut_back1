@@ -1,6 +1,5 @@
 package com.app.kokonut.auth.jwt.dto;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,14 +24,18 @@ public class AuthRequestDto {
     public static class KokonutSignUp {
 
         @NotBlank(message = "소속(회사명)은 필수 입력값 입니다.")
-        private String CpName; // 소속
+        private String cpName; // 소속
+
+        @NotBlank(message = "대표자명은 필수 입력값 입니다.")
+        private String knName;
+
+        @NotBlank(message = "핸드폰번호는 필수 입력값 입니다.")
+        private String knPhoneNumber;
 
         @NotBlank(message = "이메일은 필수 입력값 입니다.")
-        @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
         private String knEmail;
 
         @NotBlank(message = "비밀번호는 필수 입력값 입니다.")
-        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$", message = "비밀번호는 8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
         private String knPassword;
 
         private String knPasswordConfirm; // 비밀번호 체크
@@ -97,7 +100,6 @@ public class AuthRequestDto {
         private String otpValue;
 
         @NotBlank(message = "이메일은 필수 입력값입니다.")
-        @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
         private String knEmail;
 
         @NotBlank(message = "비밀번호는 필수 입력값입니다.")

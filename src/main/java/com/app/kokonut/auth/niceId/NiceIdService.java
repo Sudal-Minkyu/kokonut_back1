@@ -175,7 +175,7 @@ public class NiceIdService {
 //	}
 
 	// 본인인증 창 열기
-	public ResponseEntity<Map<String, Object>> open(String state, HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<Map<String, Object>> open(String state, HttpServletResponse response) {
 		log.info("본인인증 open 호출");
 
 		AjaxResponse res = new AjaxResponse();
@@ -300,13 +300,11 @@ public class NiceIdService {
 					log.info("회원가입 본인인증");
 					// 회원가입떄 사용 -> 핸드폰번호 일치한지 확인하기위해서 사용됨
 
-					data.put("name", knName);
-					data.put("mobileno", knPhoneNumber);
-					Utils.cookieSave("mobileno", knPhoneNumber, 1000 * 60 * 30, response); // 쿠키 제한시간 30분
+					data.put("joinName", knName);
+					data.put("joinPhone", knPhoneNumber);
+					Utils.cookieSave("joinPhone", knPhoneNumber, 1000 * 60 * 30, response); // 쿠키 제한시간 30분
 				}
 			} else if(state.equals("2") || state.equals("3") || state.equals("4")) {
-				log.info("이메일찾기 본인인증");
-
 				// 이름과 번호를 통해 찾기?
 				Optional<Admin> optionalAdmin = adminRepository.findAdminByKnNameAndKnPhoneNumber(knName, knPhoneNumber);
 
@@ -317,6 +315,7 @@ public class NiceIdService {
 					String knEmail = optionalAdmin.get().getKnEmail();
 
 					if(state.equals("2")) {
+						log.info("이메일찾기 본인인증");
 						String keyEmail = Utils.getRamdomStr(10);
 
 						// 인증번호 레디스에 담기
@@ -328,18 +327,11 @@ public class NiceIdService {
 						data.put("keyEmail", knEmail); // -> 입력한 이메일과 DB데이터 이메일과 일치할 경우 임시비밀번호 메일전송 + 업데이트
 					}else {
 						log.info("OTP변경 본인인증");
-						// 추후 처리
 					}
 				}
 			} else {
 				log.info("그 외 본인인증");
 			}
-
-			AriaUtil aria = new AriaUtil();
-			String encValue = aria.Encrypt("authOtpKey11");
-			log.info("encValue : "+encValue);
-
-			data.put("authOtpKey", encValue);
 
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
 				 InvalidAlgorithmParameterException | UnsupportedEncodingException | BadPaddingException |

@@ -67,8 +67,8 @@ public class NiceIdRestController {
 
 	// NICEID 휴대폰 본인인증 창 열기
 	@GetMapping(value = "/open")
-	public ResponseEntity<Map<String,Object>> open(@RequestParam(name="state", defaultValue = "0") String state, HttpServletRequest request, HttpServletResponse response) {
-		return niceIdService.open(state, request, response);
+	public ResponseEntity<Map<String,Object>> open(@RequestParam(name="state", defaultValue = "0") String state, HttpServletResponse response) {
+		return niceIdService.open(state, response);
 	}
 
 	// NICEID 본인인증 정보 받아오기

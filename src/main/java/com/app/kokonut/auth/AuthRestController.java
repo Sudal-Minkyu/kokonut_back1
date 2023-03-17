@@ -38,6 +38,15 @@ public class AuthRestController {
         this.authService = authService;
     }
 
+    // 이메일 가입존재 여부
+    @GetMapping(value = "/checkKnEmail")
+    @ApiOperation(value = "이메일 이메일 존재여부 확인" , notes = "" +
+            "1. 존재여부를 조회할 이메일을 받는다." +
+            "2. 해당이메일이 존재한지 체크하여 반환한다.")
+    public ResponseEntity<Map<String,Object>> checkKnEmail(@RequestParam(value="knEmail", defaultValue = "") String knEmail) {
+        return authService.checkKnEmail(knEmail);
+    }
+
     // 이메일 중복체크
     @GetMapping(value = "/existsByKnEmail")
     @ApiOperation(value = "이메일 중복확인 버튼" , notes = "" +
@@ -96,16 +105,15 @@ public class AuthRestController {
     }
 
     // 리뉴얼 회원가입
-    @PostMapping(value = "/kokonutSignUp", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/kokonutSignUp")
     @ApiOperation(value = "사업자 회원가입" , notes = "" +
             "1. Param 값으로 유저 이메일과 사용할 비밀번호를 받는다." +
             "2. 이메일 중복체크를 한다." +
             "3. 이메일 인증체크를 한다." +
             "4. 회원가입 완료후 메일을 보낸다.")
-    public ResponseEntity<Map<String,Object>> kokonutSignUp(@Parameter(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-                                                     @Validated AuthRequestDto.KokonutSignUp kokonutSignUp, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<Map<String,Object>> kokonutSignUp(@RequestBody AuthRequestDto.KokonutSignUp kokonutSignUp, HttpServletRequest request) {
         log.info("사업자 회원가입 API 호출");
-        return authService.kokonutSignUp(kokonutSignUp, request, response);
+        return authService.kokonutSignUp(kokonutSignUp, request);
     }
 
     // 회원가입
@@ -176,7 +184,8 @@ public class AuthRestController {
     @GetMapping(value = "/checkOTP")
     @ApiOperation(value = "구글 OTP 등록전 값 확인" , notes = "" +
             "1. Param 값으로 발급한 otpKey와 입력한 otpValue를 받는다." +
-            "2. 두 값을 통해 성공여부를 반환한다.")
+            "2. 두 값을 통해 성공여부를 판단한다." +
+            "3. 인증키를 추가로 반환한다.")
     public ResponseEntity<Map<String,Object>> checkOTP(@Validated AdminGoogleOTPDto.GoogleOtpCertification googleOtpCertification) {
         return authService.checkOTP(googleOtpCertification);
     }

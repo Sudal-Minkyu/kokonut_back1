@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +53,16 @@ public class AdminService {
         }
 
         return ResponseEntity.ok(res.success(data));
+    }
+
+    // 비밀번호 틀릴시 에러횟수 카운팅하는 함수
+    public void adminErrorPwd(Admin admin) {
+        log.info("비밀번호 틀릴시 에러횟수 카운팅하는 함수 호출");
+
+        admin.setKnPwdErrorCount(admin.getKnPwdErrorCount()+1);
+        admin.setModify_email(admin.getKnEmail());
+        admin.setModify_date(LocalDateTime.now());
+        adminRepository.save(admin);
     }
 
 }
