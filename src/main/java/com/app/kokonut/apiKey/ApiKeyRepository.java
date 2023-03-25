@@ -18,6 +18,8 @@ import java.util.Optional;
 @Repository
 public interface ApiKeyRepository extends JpaRepository<ApiKey, Long>, JpaSpecificationExecutor<ApiKey>, ApiKeyRepositoryCustom {
 
+    boolean existsByAdminIdAndCompanyId(Long adminId, Long companyId); // 사용안함 2023/03/23 woody
+
 //    Optional<ApiKey> findApiKeyBycompanyIdAndType(Long companyId, Integer type);
 //
 //    @Query("select a from ApiKey a where a.companyId = :companyId and a.type = :type and (a.validityStart <= :validityStart and :validityStart < a.validityEnd)")

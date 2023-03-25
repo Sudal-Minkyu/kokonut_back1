@@ -1,6 +1,9 @@
 package com.app.kokonut.apiKey;
 
 import com.app.kokonut.admin.AdminRepository;
+import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyAccessIpDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
 import com.app.kokonut.apiKey.dtos.ApiKeySaveDto;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
@@ -10,7 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,6 +35,65 @@ public class ApiKeyService {
         this.adminRepository = adminRepository;
     }
 
+    // 유저가 API Key를 가지고 있는지 체크하는 함수
+    public ResponseEntity<Map<String, Object>> apiKeyCheck(String knEmail) {
+        log.info("apiKeyCheck 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(knEmail);
+
+        if(adminCompanyInfoDto != null) {
+            ApiKeyDto apiKeyDto = apiKeyRepository.findByApiKey(adminCompanyInfoDto.getAdminId(), adminCompanyInfoDto.getCompanyId());
+//            log.info("apiKeyDto : "+apiKeyDto);
+            if(apiKeyDto == null) {
+                data.put("result", 1);
+            } else {
+                ApiKeyAccessIpDto apiKeyAccessIpDto;
+                List<ApiKeyAccessIpDto> accessIpList = new ArrayList<>();
+                if(!apiKeyDto.getAkAgreeIp1().equals("")) {
+                    apiKeyAccessIpDto = new ApiKeyAccessIpDto();
+                    apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp1());
+                    apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo1());
+                    accessIpList.add(apiKeyAccessIpDto);
+                }
+                if(!apiKeyDto.getAkAgreeIp2().equals("")) {
+                    apiKeyAccessIpDto = new ApiKeyAccessIpDto();
+                    apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp2());
+                    apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo2());
+                    accessIpList.add(apiKeyAccessIpDto);
+                }
+                if(!apiKeyDto.getAkAgreeIp3().equals("")) {
+                    apiKeyAccessIpDto = new ApiKeyAccessIpDto();
+                    apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp3());
+                    apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo3());
+                    accessIpList.add(apiKeyAccessIpDto);
+                }
+                if(!apiKeyDto.getAkAgreeIp4().equals("")) {
+                    apiKeyAccessIpDto = new ApiKeyAccessIpDto();
+                    apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp4());
+                    apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo4());
+                    accessIpList.add(apiKeyAccessIpDto);
+                }
+                if(!apiKeyDto.getAkAgreeIp5().equals("")) {
+                    apiKeyAccessIpDto = new ApiKeyAccessIpDto();
+                    apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp5());
+                    apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo5());
+                    accessIpList.add(apiKeyAccessIpDto);
+                }
+                data.put("result", 2);
+                data.put("apiKey", apiKeyDto.getAkKey());
+                data.put("accessIpList", accessIpList);
+            }
+        } else {
+            log.error("해당 유저가 존재하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(),"해당 유저가 "+ResponseErrorCode.KO004.getDesc()));
+        }
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
     // ApiKey 발급
     public ResponseEntity<Map<String, Object>> apiKeyIssue(JwtFilterDto jwtFilterDto, ApiKeySaveDto apiKeySaveDto) {
         log.info("apiKeyIssue 호출");
@@ -39,7 +103,6 @@ public class ApiKeyService {
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
-
 
         if(apiKeySaveDto.getAkAgreeIp1() == null) {
             log.error("최소 하나의 IP설정은 필수입니다.");

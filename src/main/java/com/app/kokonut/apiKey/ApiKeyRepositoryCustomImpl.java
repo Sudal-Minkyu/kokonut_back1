@@ -1,9 +1,8 @@
 package com.app.kokonut.apiKey;
 
 import com.app.kokonut.admin.QAdmin;
+import com.app.kokonut.apiKey.dtos.ApiKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
-import com.app.kokonut.apiKey.dtos.ApiKeyListAndDetailDto;
-import com.app.kokonut.apiKey.dtos.ApiKeyMapperDto;
 import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
@@ -12,8 +11,6 @@ import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
 
 /**
  * @author Woody
@@ -397,6 +394,32 @@ public class ApiKeyRepositoryCustomImpl extends QuerydslRepositorySupport implem
 //        return query.fetch();
 //    }
 //
+
+    // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
+    @Override
+    public ApiKeyDto findByApiKey(Long adminId, Long companyId) {
+
+        QApiKey apiKey = QApiKey.apiKey;
+
+        JPQLQuery<ApiKeyDto> query = from(apiKey)
+                .where(apiKey.adminId.eq(adminId).and(apiKey.companyId.eq(companyId))
+                        .and(apiKey.akUseYn.eq("Y")))
+                .select(Projections.constructor(ApiKeyDto.class,
+                        apiKey.akKey,
+                        apiKey.akAgreeIp1,
+                        apiKey.akAgreeMemo1,
+                        apiKey.akAgreeIp2,
+                        apiKey.akAgreeMemo2,
+                        apiKey.akAgreeIp3,
+                        apiKey.akAgreeMemo3,
+                        apiKey.akAgreeIp4,
+                        apiKey.akAgreeMemo4,
+                        apiKey.akAgreeIp5,
+                        apiKey.akAgreeMemo5
+                ));
+
+        return query.fetchOne();
+    }
 
     // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
     @Override

@@ -76,11 +76,25 @@ public class ApiKey implements Serializable {
     private String akAgreeIp1;
 
     /**
+     * 허용 IP 1의 메모내용
+     */
+    @Column(name = "ak_agree_memo_1")
+    @ApiModelProperty("허용 IP 1의 대한 메모내용")
+    private String akAgreeMemo1;
+
+    /**
      * 허용 IP 2
      */
     @Column(name = "ak_agree_ip_2")
     @ApiModelProperty("허용 IP 2")
     private String akAgreeIp2;
+
+    /**
+     * 허용 IP 2의 메모내용
+     */
+    @Column(name = "ak_agree_memo_2")
+    @ApiModelProperty("허용 IP 2의 대한 메모내용")
+    private String akAgreeMemo2;
 
     /**
      * 허용 IP 3
@@ -90,6 +104,13 @@ public class ApiKey implements Serializable {
     private String akAgreeIp3;
 
     /**
+     * 허용 IP 3의 메모내용
+     */
+    @Column(name = "ak_agree_memo_3")
+    @ApiModelProperty("허용 IP 3의 대한 메모내용")
+    private String akAgreeMemo3;
+
+    /**
      * 허용 IP 4
      */
     @Column(name = "ak_agree_ip_4")
@@ -97,11 +118,25 @@ public class ApiKey implements Serializable {
     private String akAgreeIp4;
 
     /**
+     * 허용 IP 4의 메모내용
+     */
+    @Column(name = "ak_agree_memo_4")
+    @ApiModelProperty("허용 IP 4의 대한 메모내용")
+    private String akAgreeMemo4;
+
+    /**
      * 허용 IP 5
      */
     @Column(name = "ak_agree_ip_5")
     @ApiModelProperty("허용 IP 5")
     private String akAgreeIp5;
+
+    /**
+     * 허용 IP 5의 메모내용
+     */
+    @Column(name = "ak_agree_memo_5")
+    @ApiModelProperty("허용 IP 5의 대한 메모내용")
+    private String akAgreeMemo5;
 
     /**
      * 등록자 email

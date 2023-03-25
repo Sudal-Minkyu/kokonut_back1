@@ -2,6 +2,7 @@ package com.app.kokonut.admin;
 
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
+import com.app.kokonut.admin.dtos.AdminInfoDto;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
 import java.util.List;
 
@@ -20,5 +21,7 @@ public interface AdminRepositoryCustom {
     AdminEmailInfoDto findByKnEmailInfo(Long adminId);
 
     List<AdminEmailInfoDto> findSystemAdminEmailInfo();
+
+    AdminInfoDto findByAdminInfo(String knEmail);
 
 }

@@ -1,5 +1,6 @@
 package com.app.kokonut.admin;
 
+import com.app.kokonut.admin.dtos.AdminInfoDto;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
@@ -46,10 +47,11 @@ public class AdminService {
         } else{
             log.info("해당 유저의 이메일 : "+email);
 
-            Admin admin = adminRepository.findByKnEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다. : "+email));
+            AdminInfoDto adminInfoDto = adminRepository.findByAdminInfo(email);
 
-            log.info("해당 유저의 권한 : "+admin.getKnRoleCode().getDesc());
+            log.info("해당 유저의 권한 : "+adminInfoDto.getKnRoleCode());
+            data.put("knName",adminInfoDto.getKnName());
+            data.put("cpName",adminInfoDto.getCpName());
         }
 
         return ResponseEntity.ok(res.success(data));

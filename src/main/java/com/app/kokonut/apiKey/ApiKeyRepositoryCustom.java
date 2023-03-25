@@ -1,5 +1,6 @@
 package com.app.kokonut.apiKey;
 
+import com.app.kokonut.apiKey.dtos.ApiKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
 
 /**
@@ -36,6 +37,8 @@ public interface ApiKeyRepositoryCustom {
 //
 //    // TestApiKey 만료예정 리스트 조회
 //    List<TestApiKeyExpiredListDto> findByTestApiKeyExpiredList(HashMap<String, Object> paramMap, Integer type); // SelectTestApiKeyExpiredList -> 변경후
+
+    ApiKeyDto findByApiKey(Long adminId, Long companyId); // API Key 존재여부
 
     Long findByCheck(String akKey); // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
 

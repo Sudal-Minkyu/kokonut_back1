@@ -19,6 +19,6 @@ public class AdminCompanyInfoDto {
 
     private Long companyId;
 
-    private String companyCode;
+    private String companyCode; // cpCode
 
 }

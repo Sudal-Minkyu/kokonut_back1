@@ -8,10 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -28,6 +25,18 @@ public class ApiKeyRestController {
         this.apiKeyService = apiKeyService;
     }
 
+    /**
+     * APIKey 존재여부 체크
+     */
+    @GetMapping("/apiKeyCheck")
+    @ApiOperation(value = "APIKey 발급여부", notes = "" +
+            "1. 해당 유저가 APIKey를 발급했는지 체크한다." +
+            "2. 참/거짓 여부를 보낸다.")
+    @ApiImplicitParam(name ="Authorization",  value="JWT Token", required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+    public ResponseEntity<Map<String,Object>> apiKeyCheck(){
+        String knEmail = SecurityUtil.getCurrentJwt().getEmail();
+        return apiKeyService.apiKeyCheck(knEmail);
+    }
 
     /**
      * APIKey 발급 -> JWT토큰 존재해야 발급가능

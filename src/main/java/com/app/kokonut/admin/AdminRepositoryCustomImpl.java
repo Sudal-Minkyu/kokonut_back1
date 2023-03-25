@@ -2,6 +2,7 @@ package com.app.kokonut.admin;
 
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
+import com.app.kokonut.admin.dtos.AdminInfoDto;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
 import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.company.QCompany;
@@ -86,6 +87,25 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
                         admin.knName
                 ));
         return query.fetch();
+    }
+
+    // 사이드바, 해더에 표출될 데이터
+    @Override
+    public AdminInfoDto findByAdminInfo(String knEmail) {
+
+        QAdmin admin = QAdmin.admin;
+        QCompany company = QCompany.company;
+
+        JPQLQuery<AdminInfoDto> query = from(admin)
+                .innerJoin(company).on(company.companyId.eq(admin.companyId))
+                .where(admin.knEmail.eq(knEmail))
+                .select(Projections.constructor(AdminInfoDto.class,
+                        admin.knName,
+                        company.cpName,
+                        admin.knRoleCode
+                ));
+
+        return query.fetchOne();
     }
 
 }

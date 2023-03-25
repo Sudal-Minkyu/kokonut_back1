@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v2/api/AddressBook")
 public class AddressBookRestController {
 
-    @Value("${kokonut.mail.host}")
-    public String hostUrl;
-
     private final AddressBookService addressBookService;
 
     @Autowired

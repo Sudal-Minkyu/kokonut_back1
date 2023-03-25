@@ -1,0 +1,28 @@
+package com.app.kokonut.admin.dtos;
+
+import com.app.kokonut.admin.enums.AuthorityRole;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * @author Woody
+ * Date : 2023-03-23
+ * Time :
+ * Remark : 사이드바, 해더에 표출될 데이터 Dto
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AdminInfoDto {
+
+    private String KnName; // cpCode
+
+    private String cpName; // cpCode
+
+    private AuthorityRole knRoleCode;
+
+    public String getKnRoleCode() {
+        return knRoleCode.getDesc();
+    }
+}
