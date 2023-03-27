@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -67,7 +66,7 @@ public class ActivityHistoryRepositoryCustomImpl extends QuerydslRepositorySuppo
             query.where(activityHistory.insert_date.goe(activityHistorySearchDto.getStimeStart()).and(activityHistory.insert_date.loe(activityHistorySearchDto.getStimeEnd())));
         }
 
-//        query.where(activityHistory.ahType.eq(2));
+        query.where(activityHistory.ahType.eq(2));
 
         final List<ActivityHistoryListDto> activityHistoryListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(activityHistoryListDtos, pageable, query.fetchCount());

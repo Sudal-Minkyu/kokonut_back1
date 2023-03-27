@@ -1,20 +1,15 @@
 package com.app.kokonut.admin;
 
-import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.auth.jwt.SecurityUtil;
-import com.app.kokonut.common.AjaxResponse;
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,6 +29,63 @@ public class AdminRestController {
     public AdminRestController(AdminService adminService){
         this.adminService=adminService;
     }
+
+    @GetMapping("/myInfo")
+    @ApiOperation(value = "마이페이지 데이터 가져오기" , notes = "" +
+            "1. 유저가 내정보페이지를 들어간다." +
+            "2. 해당 유저의 정보를 프론트로 보내준다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+    })
+    public ResponseEntity<Map<String,Object>> myInfo() {
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.myInfo(jwtFilterDto);
+    }
+
+    @PostMapping("/phoneChange")
+    @ApiOperation(value = "휴대전화번호 변경" , notes = "" +
+            "1. 변경할 핸드폰번호로 인증한다." +
+            "2. 인증을 성공하면 인증된번호로 변경한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+    })
+    public ResponseEntity<Map<String,Object>> phoneChange(@RequestParam(value="knName", defaultValue = "") String knName,
+                                                          @RequestParam(value="knPhoneNumber", defaultValue = "") String knPhoneNumber) {
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.phoneChange(knName, knPhoneNumber, jwtFilterDto);
+    }
+
+    @PostMapping("/cpChange")
+    @ApiOperation(value = "소속명 변경 + 부서 변경/등록" , notes = "" +
+            "1. 소속 및 부서를 변경하거나 등록할때 사용됨" +
+            "2. 변경할 내용과 비밀번호를 받는다." +
+            "3. state 값을 비교하여 구분한다. 1 -> 소속명변경, 2 -> 부서 변경및등록")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+    })
+    public ResponseEntity<Map<String,Object>> cpChange(@RequestParam(value="cpContent", defaultValue = "") String cpContent,
+                                                          @RequestParam(value="knPassword", defaultValue = "") String knPassword,
+                                                          @RequestParam(value="state", defaultValue = "") Integer state) {
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.cpChange(cpContent, knPassword, state, jwtFilterDto);
+    }
+
+    @PostMapping("/pwdChange")
+    @ApiOperation(value = "비밀번호 변경" , notes = "" +
+            "1. 현재비밀번호와 변경할 비밀번호를 받는다." +
+            "2. 현재비밀번호를 검증한다." +
+            "3. 변경할 비밀번호와 비밀번호확인 값과 비교한다." +
+            "4. 모든 조건이 충족되면 비밀번호를 변경한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+    })
+    public ResponseEntity<Map<String,Object>> pwdChange(@RequestParam(value="oldknPassword", defaultValue = "") String oldknPassword,
+                                                       @RequestParam(value="newknPassword", defaultValue = "") String newknPassword,
+                                                       @RequestParam(value="newknPasswordCheck", defaultValue = "") String newknPasswordCheck) {
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.pwdChange(oldknPassword, newknPassword, newknPasswordCheck, jwtFilterDto);
+    }
+
 
     @GetMapping("/authorityCheck")
     @ApiOperation(value = "JWT토큰 테스트" , notes = "JWT 토큰이 유효한지 테스트하는 메서드")

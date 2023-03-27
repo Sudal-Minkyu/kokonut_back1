@@ -1,9 +1,6 @@
 package com.app.kokonut.admin;
 
-import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
-import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
-import com.app.kokonut.admin.dtos.AdminInfoDto;
-import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
+import com.app.kokonut.admin.dtos.*;
 import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.company.QCompany;
 import com.querydsl.core.types.Projections;
@@ -107,5 +104,27 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
 
         return query.fetchOne();
     }
+
+    // 마이페이지(내정보)에 표출될 데이터
+    @Override
+    public AdminMyInfoDto findByAdminMyInfo(String knEmail) {
+
+        QAdmin admin = QAdmin.admin;
+        QCompany company = QCompany.company;
+
+        JPQLQuery<AdminMyInfoDto> query = from(admin)
+                .innerJoin(company).on(company.companyId.eq(admin.companyId))
+                .where(admin.knEmail.eq(knEmail))
+                .select(Projections.constructor(AdminMyInfoDto.class,
+                        admin.knEmail,
+                        admin.knName,
+                        admin.knPhoneNumber,
+                        company.cpName,
+                        admin.knDepartment
+                ));
+
+        return query.fetchOne();
+    }
+
 
 }

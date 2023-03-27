@@ -119,7 +119,7 @@ public class TotalDbDownloadService {
         ActivityCode activityCode = ActivityCode.AC_22;
         // 활동이력 저장 -> 비정상 모드
         String ip = CommonUtil.clientIp();
-        Long activityHistoryId = activityHistoryService.insertActivityHistory(2, companyId, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+        Long activityHistoryId = activityHistoryService.insertActivityHistory(2, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
         // 회원 DB데이터 다운로드 요청건 insert
         TotalDbDownload totalDbDownload = new TotalDbDownload();
@@ -204,8 +204,8 @@ public class TotalDbDownloadService {
             ActivityCode activityCode = ActivityCode.AC_23;
             // 활동이력 저장 -> 비정상 모드
             String ip = CommonUtil.clientIp();
-            Long activityHistoryId = activityHistoryService.insertActivityHistory(3, companyId, adminId, activityCode,
-                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+            Long activityHistoryId = activityHistoryService.insertActivityHistory(3, adminId, activityCode,
+                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
             Optional<TotalDbDownload> optionalTotalDbDownload = totalDbDownloadRepository.findById(tdId);
             if(optionalTotalDbDownload.isPresent()) {

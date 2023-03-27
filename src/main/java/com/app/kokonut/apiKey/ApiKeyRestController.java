@@ -1,6 +1,6 @@
 package com.app.kokonut.apiKey;
 
-import com.app.kokonut.apiKey.dtos.ApiKeySaveDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyIpDeleteDto;
 import com.app.kokonut.auth.jwt.SecurityUtil;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import io.swagger.annotations.ApiImplicitParam;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 @Slf4j
@@ -44,10 +44,28 @@ public class ApiKeyRestController {
     @PostMapping("/apiKeyIssue")
     @ApiOperation(value = "APIKey 발급", notes = "APIKey를 발급해준다.")
     @ApiImplicitParam(name ="Authorization",  value="JWT Token", required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
-    public ResponseEntity<Map<String,Object>> apiKeyIssue(@RequestBody ApiKeySaveDto apiKeySaveDto){
-        log.info("APIKey 발급");
+    public ResponseEntity<Map<String,Object>> apiKeyIssue() throws NoSuchAlgorithmException {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
-        return apiKeyService.apiKeyIssue(jwtFilterDto, apiKeySaveDto);
+        return apiKeyService.apiKeyIssue(jwtFilterDto);
+    }
+
+    @PostMapping("/apiKeyIpSave")
+    @ApiOperation(value = "APIKey 허용 IP 등록", notes = "" +
+            "1. APIKey에 호출을 허용할 IP를 등록한다.")
+    @ApiImplicitParam(name ="Authorization",  value="JWT Token", required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+    public ResponseEntity<Map<String,Object>> apiKeyIpSave(@RequestParam(value="accessIp", defaultValue = "") String accessIp,
+                                                           @RequestParam(value="ipMemo", defaultValue = "") String ipMemo) {
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return apiKeyService.apiKeyIpSave(accessIp, ipMemo, jwtFilterDto);
+    }
+
+    @PostMapping("/apiKeyIpDelete")
+    @ApiOperation(value = "APIKey 허용 IP 삭제", notes = "" +
+            "1. 등록한 허용 IP를 삭제한다.")
+    @ApiImplicitParam(name ="Authorization",  value="JWT Token", required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+    public ResponseEntity<Map<String,Object>> apiKeyIpDelete(@RequestBody ApiKeyIpDeleteDto apiKeyIpDeleteDto) {
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return apiKeyService.apiKeyIpDelete(apiKeyIpDeleteDto, jwtFilterDto);
     }
 
 //    /**

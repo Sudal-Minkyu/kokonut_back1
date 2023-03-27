@@ -1,8 +1,11 @@
 package com.app.kokonut.auth;
 
+import com.app.kokonut.activityHistory.ActivityHistoryService;
+import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.Admin;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.AdminService;
+import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.dtos.AdminPasswordChangeDto;
@@ -44,7 +47,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -52,7 +54,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -71,6 +72,8 @@ public class AuthService {
     private final String AWSURL;
 
     private final AdminService adminService;
+    private final ActivityHistoryService activityHistoryService;
+
     private final AwsS3Util awsS3Util;
     private final AwsKmsUtil awsKmsUtil;
 
@@ -92,12 +95,15 @@ public class AuthService {
     private final MailSender mailSender;
 
     @Autowired
-    public AuthService(AdminService adminService, KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository,
-                       AwsKmsUtil awsKmsUtil, KeyGenerateService keyGenerateService, CompanyRepository companyRepository, CompanyFileRepository companyFileRepository,
+    public AuthService(AdminService adminService, ActivityHistoryService activityHistoryService,
+                       KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository,
+                       AwsKmsUtil awsKmsUtil, KeyGenerateService keyGenerateService, CompanyRepository companyRepository,
+                       CompanyFileRepository companyFileRepository,
                        AwsKmsHistoryRepository awsKmsHistoryRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
                        RedisDao redisDao, GoogleOTP googleOTP, MailSender mailSender) {
         this.adminService = adminService;
+        this.activityHistoryService = activityHistoryService;
         this.awsS3Util = awsS3Util;
         this.adminRepository = adminRepository;
         this.awsKmsUtil = awsKmsUtil;
@@ -338,8 +344,8 @@ public class AuthService {
 
         // 비밀번호 일치한지 체크
         if (!adminPasswordChangeDto.getKnPassword().equals(adminPasswordChangeDto.getKnPasswordConfirm())) {
-            log.error("입력한 비밀번호가 서로 일치하지 않습니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO037.getCode(), ResponseErrorCode.KO037.getDesc()));
+            log.error("입력하신 비밀번호가 서로 일치하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO013.getCode(), ResponseErrorCode.KO013.getDesc()));
         }
 
         admin.setKnPassword(passwordEncoder.encode(adminPasswordChangeDto.getKnPassword()));
@@ -372,8 +378,8 @@ public class AuthService {
 
         // 비밀번호 일치한지 체크
         if (!kokonutSignUp.getKnPassword().equals(kokonutSignUp.getKnPasswordConfirm())) {
-            log.error("입력한 비밀번호가 서로 일치하지 않습니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO037.getCode(), ResponseErrorCode.KO037.getDesc()));
+            log.error("입력하신 비밀번호가 서로 일치하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO013.getCode(), ResponseErrorCode.KO013.getDesc()));
         }
 
         log.info("회원가입 시작");
@@ -484,8 +490,8 @@ public class AuthService {
 
         // 비밀번호 일치한지 체크
         if (!signUp.getKnPassword().equals(signUp.getKnPasswordConfirm())) {
-            log.error("입력한 비밀번호가 서로 일치하지 않습니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO037.getCode(), ResponseErrorCode.KO037.getDesc()));
+            log.error("입력하신 비밀번호가 서로 일치하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO013.getCode(), ResponseErrorCode.KO013.getDesc()));
         }
 
         MultipartFile multipartFile = signUp.getMultipartFile();
@@ -714,6 +720,18 @@ public class AuthService {
                         } else {
                             log.info("OTP인증완료 -> JWT토큰 발급");
 
+                            AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(knEmail);
+                            Long adminId = adminCompanyInfoDto.getAdminId();
+                            String companyCode = adminCompanyInfoDto.getCompanyCode();
+
+                            // 로그인 코드
+                            ActivityCode activityCode = ActivityCode.AC_01;
+                            String ip = CommonUtil.clientIp();
+
+                            // 활동이력 저장 -> 비정상 모드
+                            Long activityHistoryId = activityHistoryService.insertActivityHistory(2, adminId, activityCode,
+                                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, knEmail);
+
                             // 인증 정보를 기반으로 JWT 토큰 생성
                             AuthResponseDto.TokenInfo jwtToken = jwtTokenProvider.generateToken(authentication);
 
@@ -725,8 +743,17 @@ public class AuthService {
                             // RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
                             redisDao.setValues("RT: " + authentication.getName(), jwtToken.getRefreshToken(), Duration.ofMillis(jwtToken.getRefreshTokenExpirationTime()));
 
+                            // 비밀번호 틀린횟수 초기화
+                            if(optionalAdmin.get().getKnPwdErrorCount() != 0) {
+                                optionalAdmin.get().setKnPwdErrorCount(0);
+                                adminRepository.save(optionalAdmin.get());
+                            }
+
                             /* 해외 아이피 차단 여부 */
 //                            loginService.ResetPwdError(user.getIdx()); 패스워드에러카운트 리셋
+
+                            activityHistoryService.updateActivityHistory(activityHistoryId,
+                                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", 1);
 
                             return ResponseEntity.ok(res.success(data));
                         }

@@ -99,7 +99,7 @@ public class PersonalInfoProvisionService {
 //        ActivityCode activityCode = ActivityCode.AC_21;
 //        // 활동이력 저장 -> 비정상 모드
 //        String ip = CommonUtil.clientIp();
-//        Long activityHistoryId = activityHistoryService.insertActivityHistory(4, companyId, adminId, activityCode, companyCode + " - " + activityCode.getDesc() + " 시도 이력", "", ip, 0);
+//        Long activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode, companyCode + " - " + activityCode.getDesc() + " 시도 이력", "", ip, 0, email);
 //
 //        String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //        // 고유넘버

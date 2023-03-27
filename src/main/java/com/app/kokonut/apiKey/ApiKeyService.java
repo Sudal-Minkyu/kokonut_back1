@@ -1,22 +1,30 @@
 package com.app.kokonut.apiKey;
 
+import com.app.kokonut.activityHistory.ActivityHistoryService;
+import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
+import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyAccessIpDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
-import com.app.kokonut.apiKey.dtos.ApiKeySaveDto;
+import com.app.kokonut.apiKey.dtos.ApiKeyIpDeleteDto;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
+import com.app.kokonut.common.component.CommonUtil;
+import com.app.kokonut.configs.GoogleOTP;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.transaction.Transactional;
+import javax.xml.bind.DatatypeConverter;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * @author Woody
@@ -27,12 +35,39 @@ import java.util.Map;
 @Service
 public class ApiKeyService {
 
+    private final GoogleOTP googleOTP;
+    private final ActivityHistoryService activityHistoryService;
+
     private final ApiKeyRepository apiKeyRepository;
     private final AdminRepository adminRepository;
 
-    public ApiKeyService(ApiKeyRepository apiKeyRepository, AdminRepository adminRepository){
+    public ApiKeyService(GoogleOTP googleOTP, ActivityHistoryService activityHistoryService,
+                         ApiKeyRepository apiKeyRepository, AdminRepository adminRepository) {
+        this.googleOTP = googleOTP;
+        this.activityHistoryService = activityHistoryService;
         this.apiKeyRepository = apiKeyRepository;
         this.adminRepository = adminRepository;
+    }
+
+    // API Key 생성 함수 => AES 방식
+    public static String keyGenerate(final int keyLen) throws NoSuchAlgorithmException {
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        keyGen.init(keyLen);
+        SecretKey secretKey = keyGen.generateKey();
+        byte[] encoded = secretKey.getEncoded();
+        return DatatypeConverter.printHexBinary(encoded).toLowerCase();
+    }
+
+    // API Key 중복체크 함수
+    public String checkApiKey(String akKey) throws NoSuchAlgorithmException {
+        boolean keyCheck = apiKeyRepository.existsByAkKey(akKey);
+        log.info("keyCheck : "+keyCheck);
+        if(keyCheck) {
+            akKey =  keyGenerate(128);
+            checkApiKey(akKey);
+        }
+//        log.info("akKey : "+akKey);
+        return akKey;
     }
 
     // 유저가 API Key를 가지고 있는지 체크하는 함수
@@ -52,38 +87,44 @@ public class ApiKeyService {
             } else {
                 ApiKeyAccessIpDto apiKeyAccessIpDto;
                 List<ApiKeyAccessIpDto> accessIpList = new ArrayList<>();
-                if(!apiKeyDto.getAkAgreeIp1().equals("")) {
+                if(apiKeyDto.getAkAgreeIp1() != null) {
                     apiKeyAccessIpDto = new ApiKeyAccessIpDto();
                     apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp1());
                     apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo1());
                     accessIpList.add(apiKeyAccessIpDto);
                 }
-                if(!apiKeyDto.getAkAgreeIp2().equals("")) {
+                if(apiKeyDto.getAkAgreeIp2() != null) {
                     apiKeyAccessIpDto = new ApiKeyAccessIpDto();
                     apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp2());
                     apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo2());
                     accessIpList.add(apiKeyAccessIpDto);
                 }
-                if(!apiKeyDto.getAkAgreeIp3().equals("")) {
+                if(apiKeyDto.getAkAgreeIp3() != null) {
                     apiKeyAccessIpDto = new ApiKeyAccessIpDto();
                     apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp3());
                     apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo3());
                     accessIpList.add(apiKeyAccessIpDto);
                 }
-                if(!apiKeyDto.getAkAgreeIp4().equals("")) {
+                if(apiKeyDto.getAkAgreeIp4() != null) {
                     apiKeyAccessIpDto = new ApiKeyAccessIpDto();
                     apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp4());
                     apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo4());
                     accessIpList.add(apiKeyAccessIpDto);
                 }
-                if(!apiKeyDto.getAkAgreeIp5().equals("")) {
+                if(apiKeyDto.getAkAgreeIp5() != null) {
                     apiKeyAccessIpDto = new ApiKeyAccessIpDto();
                     apiKeyAccessIpDto.setAccessIp(apiKeyDto.getAkAgreeIp5());
                     apiKeyAccessIpDto.setMemo(apiKeyDto.getAkAgreeMemo5());
                     accessIpList.add(apiKeyAccessIpDto);
                 }
+                String akKey = apiKeyDto.getAkKey();
+                StringBuilder filterApiKey = new StringBuilder(akKey.substring(0, 5));
+                filterApiKey.append("*".repeat(Math.max(0, akKey.length() - 10)));
+                filterApiKey.append(akKey, akKey.length()-5, akKey.length());
+
                 data.put("result", 2);
-                data.put("apiKey", apiKeyDto.getAkKey());
+                data.put("filterApiKey", filterApiKey);
+                data.put("apiKey", akKey);
                 data.put("accessIpList", accessIpList);
             }
         } else {
@@ -94,31 +135,260 @@ public class ApiKeyService {
         return ResponseEntity.ok(res.success(data));
     }
 
-    // ApiKey 발급
-    public ResponseEntity<Map<String, Object>> apiKeyIssue(JwtFilterDto jwtFilterDto, ApiKeySaveDto apiKeySaveDto) {
+    // ApiKey 발급 및 재발급
+    @Transactional
+    public ResponseEntity<Map<String, Object>> apiKeyIssue(JwtFilterDto jwtFilterDto) throws NoSuchAlgorithmException {
         log.info("apiKeyIssue 호출");
 
         log.info("jwtFilterDto : "+jwtFilterDto);
-        log.info("apiKeySaveDto : "+apiKeySaveDto);
 
         AjaxResponse res = new AjaxResponse();
         HashMap<String, Object> data = new HashMap<>();
 
-        if(apiKeySaveDto.getAkAgreeIp1() == null) {
-            log.error("최소 하나의 IP설정은 필수입니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO074.getCode(), ResponseErrorCode.KO074.getDesc()));
-        } else {
+        AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(jwtFilterDto.getEmail());
+        Long adminId = adminCompanyInfoDto.getAdminId();
+        Long companyId = adminCompanyInfoDto.getCompanyId();
+        String companyCode = adminCompanyInfoDto.getCompanyCode();
 
+        // 활동코드
+        ActivityCode activityCode;
+        String ip = CommonUtil.clientIp();
+        Long activityHistoryId;
+
+        Optional<ApiKey> optionalApiKey = apiKeyRepository.findApiKeyByAdminIdAndCompanyId(adminId, companyId);
+        if(optionalApiKey.isPresent()) {
+//            log.info("현재 API Key가 존재한다.");
+//            AC_24("AC_24", "API KEY 발급"),
+//            AC_25("AC_25", "API KEY 재발급"),
+
+            // API KEY 재발급 코드
+            activityCode = ActivityCode.AC_25;
+
+            // 활동이력 저장 -> 비정상 모드
+            activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode,
+                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, jwtFilterDto.getEmail());
+
+            String akKey = optionalApiKey.get().getAkKey();
+            log.info("현재 API Key : "+akKey);
+
+            // 키 생성
+            akKey = keyGenerate(128);
+            log.info("재발급된 API Key : "+akKey);
+
+            // 중복 여부 확인
+            akKey = checkApiKey(akKey);
+
+            optionalApiKey.get().setAkKey(akKey);
+            optionalApiKey.get().setModify_email(jwtFilterDto.getEmail());
+            optionalApiKey.get().setModify_date(LocalDateTime.now());
+            apiKeyRepository.save(optionalApiKey.get());
+        } else {
+//            log.info("현재 API Key가 존재하지 않는다.");
+
+            // API KEY 발급 코드
+            activityCode = ActivityCode.AC_24;
+
+            // 활동이력 저장 -> 비정상 모드
+            activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode,
+                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, jwtFilterDto.getEmail());
+
+            ApiKey apiKey = new ApiKey();
+
+            // 키 생성
+            String akKey = keyGenerate(128);
+            log.info("발급된 API Key : "+akKey);
+
+            // 중복 여부 확인
+            akKey = checkApiKey(akKey);
+            apiKey.setAdminId(adminId);
+            apiKey.setCompanyId(companyId);
+            apiKey.setAkUseYn("Y");
+            apiKey.setAkKey(akKey);
+            apiKey.setInsert_email(jwtFilterDto.getEmail());
+            apiKey.setInsert_date(LocalDateTime.now());
+            apiKeyRepository.save(apiKey);
+        }
+
+        activityHistoryService.updateActivityHistory(activityHistoryId,
+                companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", 1);
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+    // APIKey 허용 IP 등록
+    @Transactional
+    public ResponseEntity<Map<String, Object>> apiKeyIpSave(String accessIp, String ipMemo, JwtFilterDto jwtFilterDto) {
+        log.info("apiKeyIpSave 호출");
+
+        log.info("accessIp : "+accessIp);
+        log.info("ipMemo : "+ipMemo);
+        log.info("email : "+jwtFilterDto.getEmail());
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(jwtFilterDto.getEmail());
+        Long adminId = adminCompanyInfoDto.getAdminId();
+        Long companyId = adminCompanyInfoDto.getCompanyId();
+        String companyCode = adminCompanyInfoDto.getCompanyCode();
+
+        // API KEY 허용 IP등록 코드
+        ActivityCode activityCode = ActivityCode.AC_33;
+        String ip = CommonUtil.clientIp();
+
+        Optional<ApiKey> optionalApiKey = apiKeyRepository.findApiKeyByAdminIdAndCompanyId(adminId, companyId);
+        if(optionalApiKey.isPresent()) {
+
+            // 활동이력 저장 -> 비정상 모드
+            Long activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode,
+                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, jwtFilterDto.getEmail());
+
+            while(true) {
+                if(optionalApiKey.get().getAkAgreeIp1() == null) {
+                    optionalApiKey.get().setAkAgreeIp1(accessIp);
+                    optionalApiKey.get().setAkAgreeMemo1(ipMemo);
+                    break;
+                }
+                if(optionalApiKey.get().getAkAgreeIp2() == null) {
+                    optionalApiKey.get().setAkAgreeIp2(accessIp);
+                    optionalApiKey.get().setAkAgreeMemo2(ipMemo);
+                    break;
+                }
+                if(optionalApiKey.get().getAkAgreeIp3() == null) {
+                    optionalApiKey.get().setAkAgreeIp3(accessIp);
+                    optionalApiKey.get().setAkAgreeMemo3(ipMemo);
+                    break;
+                }
+                if(optionalApiKey.get().getAkAgreeIp4() == null) {
+                    optionalApiKey.get().setAkAgreeIp4(accessIp);
+                    optionalApiKey.get().setAkAgreeMemo4(ipMemo);
+                    break;
+                }
+                if(optionalApiKey.get().getAkAgreeIp5() == null) {
+                    optionalApiKey.get().setAkAgreeIp5(accessIp);
+                    optionalApiKey.get().setAkAgreeMemo5(ipMemo);
+                    break;
+                }
+
+                log.error("등록되신 API Key의 허용IP 수가 초과되었습니다.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO081.getCode(),ResponseErrorCode.KO081.getDesc()));
+            }
+
+            optionalApiKey.get().setModify_email(jwtFilterDto.getEmail());
+            optionalApiKey.get().setModify_date(LocalDateTime.now());
+            apiKeyRepository.save(optionalApiKey.get());
+
+            activityHistoryService.updateActivityHistory(activityHistoryId,
+                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", 1);
+
+        } else {
+            log.error("등록되신 API Key가 존재하지 않습니다. API Key 먼저 발급해주시길 바랍니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO080.getCode(),ResponseErrorCode.KO080.getDesc()));
         }
 
         return ResponseEntity.ok(res.success(data));
     }
 
+    // APIKey 허용 IP 삭제
+    @Transactional
+    public ResponseEntity<Map<String, Object>> apiKeyIpDelete(ApiKeyIpDeleteDto apiKeyIpDeleteDto, JwtFilterDto jwtFilterDto) {
+        log.info("apiKeyIpDelete 호출");
+
+        String otpValue = apiKeyIpDeleteDto.getOtpValue();
+        List<String> deleteIpList = apiKeyIpDeleteDto.getDeleteIpList();
+
+        log.info("otpValue : "+otpValue);
+        log.info("deleteIpList : "+deleteIpList);
+        log.info("email : "+jwtFilterDto.getEmail());
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        if(otpValue == null || otpValue.equals("")) {
+            log.error("구글 OTP 값이 존재하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO010.getCode(),ResponseErrorCode.KO010.getDesc()));
+        }
+
+        // 입력한 구글 OTP 값 검증
+        AdminOtpKeyDto adminOtpKeyDto = adminRepository.findByOtpKey(jwtFilterDto.getEmail());
+        if(adminOtpKeyDto != null) {
+            // OTP 검증 절차
+            boolean auth = googleOTP.checkCode(otpValue, adminOtpKeyDto.getKnOtpKey());
+
+            if (!auth) {
+                log.error("입력된 구글 OTP 값이 일치하지 않습니다. 확인해주세요.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO012.getCode(), ResponseErrorCode.KO012.getDesc()));
+            }
+        } else {
+            log.error("등록된 OTP가 존재하지 않습니다. 구글 OTP 2단계 인증을 등록해주세요.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO011.getCode(), ResponseErrorCode.KO011.getDesc()));
+        }
+
+        AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(jwtFilterDto.getEmail());
+        Long adminId = adminCompanyInfoDto.getAdminId();
+        Long companyId = adminCompanyInfoDto.getCompanyId();
+        String companyCode = adminCompanyInfoDto.getCompanyCode();
+
+        // API KEY 허용 IP등록 코드
+        ActivityCode activityCode = ActivityCode.AC_34;
+        String ip = CommonUtil.clientIp();
+
+        Optional<ApiKey> optionalApiKey = apiKeyRepository.findApiKeyByAdminIdAndCompanyId(adminId, companyId);
+        if(optionalApiKey.isPresent()) {
+
+            // 활동이력 저장 -> 비정상 모드
+            Long activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode,
+                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, jwtFilterDto.getEmail());
+
+            for (String deleteIp : deleteIpList) {
+                while (true) {
+                    if (optionalApiKey.get().getAkAgreeIp1().equals(deleteIp)) {
+                        optionalApiKey.get().setAkAgreeIp1(null);
+                        optionalApiKey.get().setAkAgreeMemo1(null);
+                        break;
+                    }
+                    if (optionalApiKey.get().getAkAgreeIp2().equals(deleteIp)) {
+                        optionalApiKey.get().setAkAgreeIp2(null);
+                        optionalApiKey.get().setAkAgreeMemo2(null);
+                        break;
+                    }
+                    if (optionalApiKey.get().getAkAgreeIp3().equals(deleteIp)) {
+                        optionalApiKey.get().setAkAgreeIp3(null);
+                        optionalApiKey.get().setAkAgreeMemo3(null);
+                        break;
+                    }
+                    if (optionalApiKey.get().getAkAgreeIp4().equals(deleteIp)) {
+                        optionalApiKey.get().setAkAgreeIp4(null);
+                        optionalApiKey.get().setAkAgreeMemo4(null);
+                        break;
+                    }
+                    if (optionalApiKey.get().getAkAgreeIp5().equals(deleteIp)) {
+                        optionalApiKey.get().setAkAgreeIp5(null);
+                        optionalApiKey.get().setAkAgreeMemo5(null);
+                        break;
+                    }
+
+                    log.error("삭제하실 허용IP가 존재하지 않습니다.");
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO082.getCode(), ResponseErrorCode.KO082.getDesc()));
+                }
+            }
 
 
-//    private final AjaxResponse res = new AjaxResponse();
-//    private final HashMap<String, Object> data = new HashMap<>();
-//
+            optionalApiKey.get().setModify_email(jwtFilterDto.getEmail());
+            optionalApiKey.get().setModify_date(LocalDateTime.now());
+            apiKeyRepository.save(optionalApiKey.get());
+
+            activityHistoryService.updateActivityHistory(activityHistoryId,
+                    companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", 1);
+
+        } else {
+            log.error("등록되신 API Key가 존재하지 않습니다. API Key 먼저 발급해주시길 바랍니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO080.getCode(),ResponseErrorCode.KO080.getDesc()));
+        }
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
 
     // ApiKey가 존재하는지 그리고 유효한지 검증하는 메서드
     public Long validateApiKey(String apikey) {
@@ -133,6 +403,8 @@ public class ApiKeyService {
     public Long findByApiKeyCheck(String userIp) {
         return apiKeyRepository.findByApiKeyCheck(userIp);
     }
+
+
 
 //    /**
 //     * Api Key Insert

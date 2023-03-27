@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdminInfoDto {
 
-    private String KnName; // cpCode
+    private String KnName; // 사용자명
 
-    private String cpName; // cpCode
+    private String cpName; // 소속명
 
     private AuthorityRole knRoleCode;
 

@@ -217,7 +217,7 @@ class AuthKnServiceTest {
         ResponseEntity<Map<String,Object>> response = authService.signUp(signUp, servletRequest, servletResponse);
 
         // then
-        assertEquals(ResponseErrorCode.KO037.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
+        assertEquals(ResponseErrorCode.KO013.getCode(), Objects.requireNonNull(response.getBody()).get("err_code"));
         assertEquals("Error", Objects.requireNonNull(response.getBody()).get("message"));
         assertEquals(500, Objects.requireNonNull(response.getBody()).get("status"));
 

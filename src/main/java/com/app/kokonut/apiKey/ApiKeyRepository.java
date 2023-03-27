@@ -18,6 +18,10 @@ import java.util.Optional;
 @Repository
 public interface ApiKeyRepository extends JpaRepository<ApiKey, Long>, JpaSpecificationExecutor<ApiKey>, ApiKeyRepositoryCustom {
 
+    Optional<ApiKey> findApiKeyByAdminIdAndCompanyId(Long adminId, Long companyId);
+
+    boolean existsByAkKey(String akKey); // ApiKey가 존재하는지 체크
+
     boolean existsByAdminIdAndCompanyId(Long adminId, Long companyId); // 사용안함 2023/03/23 woody
 
 //    Optional<ApiKey> findApiKeyBycompanyIdAndType(Long companyId, Integer type);

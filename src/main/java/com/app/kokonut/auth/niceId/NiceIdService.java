@@ -5,7 +5,6 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.auth.jwt.dto.RedisDao;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.common.component.AriaUtil;
 import com.app.kokonut.common.component.CommonUtil;
 import com.app.kokonut.common.component.Utils;
 import com.app.kokonut.keydata.KeyDataService;
@@ -14,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.CookieGenerator;
 
@@ -329,7 +327,11 @@ public class NiceIdService {
 						log.info("OTP변경 본인인증");
 					}
 				}
-			} else {
+			} else if(state.equals("5")) {
+				log.info("휴대전화번호 변경 본인인증");
+				data.put("joinName", knName);
+				data.put("joinPhone", knPhoneNumber);
+			}else {
 				log.info("그 외 본인인증");
 			}
 

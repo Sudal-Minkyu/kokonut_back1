@@ -283,7 +283,7 @@ public class DynamicUserService {
 
 		/* 활동이력 추가 */
 //			String reason = "테이블 생성" + "(테이블명 :" + companyCode + ")";
-//            activityHistory = activityHistoryService.InsertActivityHistory(2, companyId, adminId, 16, "", reason, CommonUtil.clientIp(), 0);
+//            activityHistory = activityHistoryService.InsertActivityHistory(2, adminId, 16, "", reason, CommonUtil.clientIp(), 0);
 
 		// 사업자번호가 정상적으로 등록되어 있는지 확인
 		if (!companyRepository.existsByCpCode(companyCode)) {
@@ -492,7 +492,8 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_13;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(1, companyId, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+		Long activityHistoryId = activityHistoryService.insertActivityHistory(1, adminId, activityCode,
+				companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 		String id = null;
 		try {
 
@@ -669,7 +670,7 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_02;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(1, companyId, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+		Long activityHistoryId = activityHistoryService.insertActivityHistory(1, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
 		try {
 
@@ -852,8 +853,8 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_03;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(1, companyId, adminId, activityCode,
-				companyCode+" - "+activityCode.getDesc()+" 시도 이력 ID : "+kokonutRemoveInfoDtos.get(0).getID(), "", ip, 0);
+		Long activityHistoryId = activityHistoryService.insertActivityHistory(1, adminId, activityCode,
+				companyCode+" - "+activityCode.getDesc()+" 시도 이력 ID : "+kokonutRemoveInfoDtos.get(0).getID(), "", ip, 0, email);
 
 		try {
 
@@ -1161,8 +1162,8 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_19;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(3, companyId, adminId, activityCode,
-				companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+		Long activityHistoryId = activityHistoryService.insertActivityHistory(3, adminId, activityCode,
+				companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
 		// 사용테이블에 컬럼 추가
 		kokonutUserService.alterAddColumnTableQuery(companyCode, fieldName, type, length, isNull, defaultValue, comment);
@@ -1293,8 +1294,8 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_20;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(3, companyId, adminId, activityCode,
-				companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+		Long activityHistoryId = activityHistoryService.insertActivityHistory(3, adminId, activityCode,
+				companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
 		// 암호화, 복호화 전환로직
 		if(changeColumnComment != null) {
@@ -1478,7 +1479,7 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_21;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(3, companyId, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0);
+		Long activityHistoryId = activityHistoryService.insertActivityHistory(3, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
 		if(companyCode.equals(userTableCheck.get(0).getTABLE_NAME()) && fieldName.equals(userTableCheck.get(0).getCOLUMN_NAME()) &&
 				companyCode.equals(dormantTableCheck.get(0).getTABLE_NAME()) && fieldName.equals(dormantTableCheck.get(0).getCOLUMN_NAME())){

@@ -197,15 +197,14 @@ class ActivityHistoryKnServiceTest {
     public void insertActivityHistoryTest() {
 
         int type = 1;
-        Long companyId = 1;
-        Long adminId = 1;
+        Long adminId = 1L;
         ActivityCode activityCode = ActivityCode.AC_01;
         String activityDetail = "저장테스트";
         String reason = "저장테스트2";
         String ipAddr = "ip테스트";
         int state = 1;
 
-        Integer saveactivityHistoryId = activityHistoryService.insertActivityHistory(type, companyId, adminId, activityCode, activityDetail, reason, ipAddr, state);
+        Long saveactivityHistoryId = activityHistoryService.insertActivityHistory(type, adminId, activityCode, activityDetail, reason, ipAddr, state, "");
         System.out.println("저장된 IDX : "+saveactivityHistoryId);
     }
 

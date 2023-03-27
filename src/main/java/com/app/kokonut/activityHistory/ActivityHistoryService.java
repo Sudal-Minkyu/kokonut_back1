@@ -17,8 +17,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Woody
@@ -132,7 +134,7 @@ public class ActivityHistoryService {
     /**
      * 활동내역 insert
      * @param ahType - 1:고객정보처리, 2:관리자활동, 3:회원DB관리이력, 4:정보제공이력
-     * @param companyId
+     * @param adminId
      * @param activityCode
      * @param ahActivityDetail - 활동상세내역
      * @param ahReason - 사유
@@ -141,8 +143,8 @@ public class ActivityHistoryService {
      * @return save IDX
      * 기존 코코넛 : InsertActivityHistory
      */
-    public Long insertActivityHistory(int ahType, Long companyId, Long adminId, ActivityCode activityCode,
-                                      String ahActivityDetail, String ahReason, String ahIpAddr, int ahState) {
+    public Long insertActivityHistory(int ahType, Long adminId, ActivityCode activityCode,
+                                      String ahActivityDetail, String ahReason, String ahIpAddr, int ahState, String email) {
 
         ActivityHistory activityHistory = new ActivityHistory();
         activityHistory.setAhType(ahType);
@@ -152,6 +154,7 @@ public class ActivityHistoryService {
         activityHistory.setAhReason(ahReason);
         activityHistory.setAhIpAddr(ahIpAddr);
         activityHistory.setAhState(ahState);
+        activityHistory.setInsert_email(email);
         activityHistory.setInsert_date(LocalDateTime.now());
 
         activityHistory = activityHistoryRepository.save(activityHistory);
