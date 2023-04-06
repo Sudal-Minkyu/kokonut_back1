@@ -2,12 +2,12 @@ package com.app.kokonut.auth.jwt.been;
 
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 import com.app.kokonut.auth.jwt.dto.RedisDao;
-import com.app.kokonut.keydata.KeyDataService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +35,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final KeyDataService keyDataService;
+    @Value("${kokonut.jwt.secret}")
+    private String jwtSecret;
 
     private final RedisDao redisDao;
 
@@ -48,7 +49,7 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(keyDataService.findByKeyValue("jwt_secret"));
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         key = Keys.hmacShaKeyFor(keyBytes);
     }
 

@@ -1,5 +1,6 @@
 package com.app.kokonut.auth.jwt.dto;
 
+import com.app.kokonut.admin.enums.AuthorityRole;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,15 +15,12 @@ public class JwtFilterDto {
 
     private String email;
 
-    private String role;
+    private AuthorityRole role;
 
     @Builder
-    public JwtFilterDto(String email, String role) {
+    public JwtFilterDto(String email, AuthorityRole role) {
         this.email = email;
         this.role = role;
     }
 
-    public JwtFilterDto() {
-
-    }
 }

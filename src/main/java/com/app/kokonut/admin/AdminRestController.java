@@ -7,9 +7,12 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -85,6 +88,38 @@ public class AdminRestController {
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
         return adminService.pwdChange(oldknPassword, newknPassword, newknPasswordCheck, jwtFilterDto);
     }
+
+    @GetMapping("/list")
+    @ApiOperation(value = "관리자 목록 리스트 호출" , notes = "" +
+            "검색할 문자와 관리자등급 계정상태의 대한 필터로 목록을 조회한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+    })
+    public ResponseEntity<Map<String,Object>> list(@RequestParam(value="searchText", defaultValue = "") String searchText,
+                                                   @RequestParam(value="filterRole", defaultValue = "") String filterRole,
+                                                   @RequestParam(value="filterState", defaultValue = "") String filterState,
+                                                   @PageableDefault Pageable pageable) {
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.list(searchText, filterRole, filterState, jwtFilterDto, pageable);
+    }
+
+    @PostMapping("/create")
+    @ApiOperation(value = "관리자 등록" , notes = "" +
+            "1. 대표관리자, 최고관리자만 할 수 있는 권한" +
+            "2. 이메일중복체크후 해당 관리자의 권한을 선택후 등록을 누른다." +
+            "3. 입력한 이메일로 인증메일을 전송한다." +
+            "4. 해당메일의 링크를 통해 사용할 비밀번호를 입력하여 비밀번호를 등록한다." +
+            "5. 최종적으로 비밀번호가 변경되면, 로그인을 할 수 있다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name ="Authorization", value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+    })
+    public ResponseEntity<Map<String,Object>> create(@RequestParam(value="userEmail", defaultValue = "") String userEmail,
+                                                     @RequestParam(value="choseRole", defaultValue = "") String choseRole) throws Exception {
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+        return adminService.create(userEmail, choseRole, jwtFilterDto);
+    }
+
+
 
 
     @GetMapping("/authorityCheck")

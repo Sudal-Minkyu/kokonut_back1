@@ -1,20 +1,17 @@
 package com.app.kokonut.company;
 
-import com.app.kokonut.awsKmsHistory.AwsKmsHistory;
 import com.app.kokonut.awsKmsHistory.AwsKmsHistoryRepository;
-import com.app.kokonut.awsKmsHistory.dto.AwsKmsResultDto;
 import com.app.kokonut.common.AjaxResponse;
-import com.app.kokonut.common.component.AwsKmsUtil;
+import com.app.kokonut.common.realcomponent.AwsKmsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import javax.crypto.SecretKey;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author Woody
@@ -99,65 +96,46 @@ public class CompanyService {
 //    }
 
     /**
-     * 회사 암호화 키 조회 및 업데이트
-     * @param companyId
-     * @return companyId 키(DATA_KEY)
-     * Remark 기존 코코넛 메서드 명 : SelectCompanyEncryptKey
-     * ENCRYPT_TEXT, DATA_KEY 복호화후 재등록하고,
+     * 회사 암호화 키 조회 -> 암호화된 키를 복호화한다.
+     * @return DATA_KEY(복호화)
      * 최종적으로 복호화한 DATA_KEY를 전달하는 메서드
      */
     @Transactional
-    public String selectCompanyEncryptKey(Long companyId) {
+    public SecretKey selectCompanyEncryptKey(Long companyId) {
 
-        Optional<Company> optionalCompany = companyRepository.findById(companyId);
-
-        if(optionalCompany.isPresent()){
-            if(optionalCompany.get().getCpEncryptText() == null) {
-                log.error("해당 기업의 encryptText 데이터가 존재하지 않습니다.");
-                return null;
-            }
-
-            if(optionalCompany.get().getCpDataKey() == null) {
-                log.error("해당 기업의 dataKey 데이터가 존재하지 않습니다.");
-                return null;
-            }
-
-            String encrpyText = optionalCompany.get().getCpEncryptText();
-            String dataKey = optionalCompany.get().getCpDataKey();
-            AwsKmsResultDto awsKmsResultDto = awsKmsUtil.decrypt(encrpyText, dataKey);
-
-            if(awsKmsResultDto.getResult().equals("success")){
-                log.info("KMS 암복호화 성공");
-
-                /* 복호화 후 키 업데이트 처리 */
-                String decryptText = awsKmsResultDto.getDecryptText();
-                AwsKmsResultDto enc = awsKmsUtil.encrypt(decryptText);
-                if(enc.getResult().equals("success")) {
-                    log.info("KMS 키 업데이트 시작");
-                    optionalCompany.get().setCpEncryptText(enc.getEncryptText());
-                    optionalCompany.get().setCpDataKey(enc.getDataKey());
-                    companyRepository.save(optionalCompany.get());
-                    log.info("KMS 키 업데이트 성공");
-
-                    log.info("KMS 발급 이력 저장(Insert) 로직 시작");
-                    AwsKmsHistory awsKmsHistory = new AwsKmsHistory();
-                    awsKmsHistory.setAkhType("DEC");
-                    awsKmsHistory.setAkhRegdate(LocalDateTime.now());
-                    AwsKmsHistory saveAwsKmsHistory =  awsKmsHistoryRepository.save(awsKmsHistory);
-                    log.info("KMS 이력 저장 saveAwsKmsHistory : "+saveAwsKmsHistory.getAkhIdx());
-                }
-
-                return decryptText;
-            }
-            else {
-                log.error("KMS 암복호화 실패");
-                return null;
-            }
-        }
-        else {
-            log.error("해당 기업은 존재하지 않습니다. companyId : "+companyId);
+//        Optional<Company> optionalCompany = companyRepository.findById(companyId);
+//
+//        if(optionalCompany.isPresent()){
+//            if(optionalCompany.get().getCpDataKey() == null) {
+//                log.error("해당 기업의 dataKey 데이터가 존재하지 않습니다.");
+//                return null;
+//            }
+//
+//            String dataKey = optionalCompany.get().getCpDataKey();
+//            AwsKmsResultDto awsKmsResultDto = awsKmsUtil.dataKeyDecrypt(dataKey);
+//
+//            if(awsKmsResultDto.getResult().equals("success")) {
+//                log.info("KMS 암복호화 성공");
+//
+//                /* 복호화 후 이력저장 */
+//                log.info("KMS 복호화 이력 저장 로직 시작");
+//                AwsKmsHistory awsKmsHistory = new AwsKmsHistory();
+//                awsKmsHistory.setAkhType("DEC");
+//                awsKmsHistory.setAkhRegdate(LocalDateTime.now());
+//                AwsKmsHistory saveAwsKmsHistory =  awsKmsHistoryRepository.save(awsKmsHistory);
+//                log.info("KMS 복호화 이력 저장 saveAwsKmsHistory : "+saveAwsKmsHistory.getAkhIdx());
+//
+//                return awsKmsResultDto.getSecretKey();
+//            }
+//            else {
+//                log.error("KMS 암복호화 실패");
+//                return null;
+//            }
+//        }
+//        else {
+//            log.error("해당 기업은 존재하지 않습니다. companyId : "+companyId);
             return null;
-        }
+//        }
     }
 
     /**

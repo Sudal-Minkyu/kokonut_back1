@@ -1,12 +1,11 @@
 package com.app.kokonut.auth;
 
-import com.app.kokonut.activityHistory.ActivityHistoryService;
-import com.app.kokonut.activityHistory.dto.ActivityCode;
 import com.app.kokonut.admin.Admin;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.AdminService;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.enums.AuthorityRole;
+import com.app.kokonut.auth.dtos.AdminCreateDto;
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.dtos.AdminPasswordChangeDto;
 import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
@@ -20,13 +19,19 @@ import com.app.kokonut.awsKmsHistory.dto.AwsKmsResultDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 import com.app.kokonut.common.component.*;
+import com.app.kokonut.common.realcomponent.*;
 import com.app.kokonut.company.Company;
 import com.app.kokonut.company.CompanyRepository;
+import com.app.kokonut.company.dtos.CompanyEncryptDto;
 import com.app.kokonut.companyFile.CompanyFile;
 import com.app.kokonut.companyFile.CompanyFileRepository;
+import com.app.kokonut.companydatakey.CompanyDataKey;
+import com.app.kokonut.companydatakey.CompanyDataKeyRepository;
 import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.configs.KeyGenerateService;
 import com.app.kokonut.configs.MailSender;
+import com.app.kokonut.history.HistoryService;
+import com.app.kokonut.history.dto.ActivityCode;
 import com.app.kokonut.keydata.KeyDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +44,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
@@ -69,10 +74,11 @@ public class AuthService {
     @Value("${kokonut.aws.s3.businessS3Folder}")
     private String businessS3Folder;
 
-    private final String AWSURL;
+    @Value("${kokonut.aws.s3.url}")
+    private String AWSURL;
 
     private final AdminService adminService;
-    private final ActivityHistoryService activityHistoryService;
+    private final HistoryService historyService;
 
     private final AwsS3Util awsS3Util;
     private final AwsKmsUtil awsKmsUtil;
@@ -81,6 +87,7 @@ public class AuthService {
     private final AdminRepository adminRepository;
 
     private final CompanyRepository companyRepository;
+    private final CompanyDataKeyRepository companyDataKeyRepository;
     private final CompanyFileRepository companyFileRepository;
     private final AwsKmsHistoryRepository awsKmsHistoryRepository;
 
@@ -95,20 +102,21 @@ public class AuthService {
     private final MailSender mailSender;
 
     @Autowired
-    public AuthService(AdminService adminService, ActivityHistoryService activityHistoryService,
+    public AuthService(AdminService adminService, HistoryService historyService,
                        KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository,
                        AwsKmsUtil awsKmsUtil, KeyGenerateService keyGenerateService, CompanyRepository companyRepository,
-                       CompanyFileRepository companyFileRepository,
+                       CompanyDataKeyRepository companyDataKeyRepository, CompanyFileRepository companyFileRepository,
                        AwsKmsHistoryRepository awsKmsHistoryRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
                        RedisDao redisDao, GoogleOTP googleOTP, MailSender mailSender) {
         this.adminService = adminService;
-        this.activityHistoryService = activityHistoryService;
+        this.historyService = historyService;
         this.awsS3Util = awsS3Util;
         this.adminRepository = adminRepository;
         this.awsKmsUtil = awsKmsUtil;
         this.keyGenerateService = keyGenerateService;
         this.companyRepository = companyRepository;
+        this.companyDataKeyRepository = companyDataKeyRepository;
         this.companyFileRepository = companyFileRepository;
         this.awsKmsHistoryRepository = awsKmsHistoryRepository;
         this.passwordEncoder = passwordEncoder;
@@ -116,7 +124,7 @@ public class AuthService {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.redisDao = redisDao;
         this.googleOTP = googleOTP;
-        this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
+//        this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
         this.mailSender = mailSender;
     }
 
@@ -225,8 +233,6 @@ public class AuthService {
 
         return ResponseEntity.ok(res.success(data));
     }
-
-//    Utils.cookieSave("refreshToken", jwtToken.getRefreshToken(), 604800, response);
 
     // 이메일찾기 기능
     public ResponseEntity<Map<String, Object>> findKnEmail(String keyEmail) {
@@ -383,32 +389,55 @@ public class AuthService {
         }
 
         log.info("회원가입 시작");
-        log.info("받아온 값 kokonutSignUp : "+kokonutSignUp);
+        log.info("받아온 값 kokonutSignUp : " + kokonutSignUp);
 
-        if(!kokonutSignUp.getKnEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
+        if (!kokonutSignUp.getKnEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
             String joinPhone = "";
             Cookie[] cookies = request.getCookies();
-            if(cookies != null) {
-                log.info("현재 쿠키값들 : "+ Arrays.toString(cookies));
-                for(Cookie c : cookies) {
-                    if(c.getName().equals("joinPhone") ) {
+            if (cookies != null) {
+//                log.info("현재 쿠키값들 : " + Arrays.toString(cookies));
+                for (Cookie c : cookies) {
+                    if (c.getName().equals("joinPhone")) {
                         joinPhone = c.getValue();
-                        log.info("본인인증 된 핸드폰번호 : "+joinPhone);
+//                        log.info("본인인증 된 핸드폰번호 : " + joinPhone);
+
                     }
                 }
             }
             // 본인인증 체크
-            if(!kokonutSignUp.getKnPhoneNumber().equals(joinPhone)) {
+            if (!kokonutSignUp.getKnPhoneNumber().equals(joinPhone)) {
                 log.info("본인인증으로 입력된 핸드폰 번호가 아닙니다. 본인인증을 완료해주세요.");
                 return ResponseEntity.ok(res.fail(ResponseErrorCode.KO033.getCode(), ResponseErrorCode.KO033.getDesc()));
             }
         }
 
+        // 저장할 KMS 암호화키 생성
+        String dataKey;
+//        if(!signUp.getKnEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
+        AwsKmsResultDto awsKmsResultDto = awsKmsUtil.dataKeyEncrypt();
+        if (awsKmsResultDto.getResult().equals("success")) {
+            dataKey = awsKmsResultDto.getDataKey();
+        } else {
+            // 리턴처리를 어떻게해야 할지 내용 정하기 - 2022/12/22 to.woody
+
+            log.error("암호화 키 생성 실패");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO036.getCode(), ResponseErrorCode.KO036.getDesc()));
+        }
+    //    }
+
         // 소속 저장
+        String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
         Company company = new Company();
+        // 회사 고유코드
+        company.setCpCode(keyGenerateService.keyGenerate("kn_company", "kokonut"+nowDate, "KokonutSystem"));
         company.setCpName(kokonutSignUp.getCpName());
         company.setInsert_email(kokonutSignUp.getKnEmail());
         company.setInsert_date(LocalDateTime.now());
+
+        // 회사 암호화키(DataKey) 저장
+        CompanyDataKey companyDataKey = new CompanyDataKey();
+        companyDataKey.setCpCode(company.getCpCode());
+        companyDataKey.setDataKey(dataKey);
 
         // 계정 저장
         Admin admin = new Admin();
@@ -421,9 +450,11 @@ public class AuthService {
         admin.setKnUserType(1);
         admin.setKnRegType(1);
         admin.setKnRoleCode(AuthorityRole.ROLE_MASTER);
+        admin.setKnIsEmailAuth("Y");
         admin.setInsert_email(kokonutSignUp.getKnEmail());
         admin.setInsert_date(LocalDateTime.now());
         Admin saveAdmin = adminRepository.save(admin);
+        companyDataKeyRepository.save(companyDataKey);
         log.info("사업자 정보 저장 saveAdmin : "+saveAdmin.getAdminId());
 
         return ResponseEntity.ok(res.success(data));
@@ -516,22 +547,22 @@ public class AuthService {
         Company company = new Company();
 
         // 저장할 KMS 암호화키, 복호화키 생성
-        String encryptText = "";
+//        String encryptText = "";
         String dataKey = "";
 //        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMM");
-        String currDate = formatter.format(new Date());
-        String encKey = currDate + businessNumber; // -> 기존의 encKey 생성은 가입한 날짜시간+사업자등록번호
-        log.info("encKey : "+encKey);
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMM");
+//        String currDate = formatter.format(new Date());
+//        String encKey = currDate + businessNumber; // -> 기존의 encKey 생성은 가입한 날짜시간+사업자등록번호
+//        log.info("encKey : "+encKey);
         // -> woody 수정 가입날짜 년도+월+사업자등록번호 ex) 가입날짜 년월 : 202301, 사업자등록번호(10자리) 1234567890 -> encKey = 2023011234567890 으로 수정
         // -> 이유는 개인정보등록시 암호화가 필요한 필드일 경우 해당 key를 통해 암호화처리를 할때 Aes암호화를 해야하는데 encKey가 16byte가 넘어가게 되면 예외처리를 하여 16byte로 맞춤.
         // 사업자 등록번호는 10자리를 넘어가면 안되고, 10자리 미만이여도 안되는 조건 추가한다.
 
 //        20230112 3488101536
 //        if(!signUp.getKnEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
-            AwsKmsResultDto awsKmsResultDto = awsKmsUtil.encrypt(encKey);
+            AwsKmsResultDto awsKmsResultDto = awsKmsUtil.dataKeyEncrypt();
             if (awsKmsResultDto.getResult().equals("success")) {
-                encryptText = awsKmsResultDto.getEncryptText();
+//                encryptText = awsKmsResultDto.getEncryptText();
                 dataKey = awsKmsResultDto.getDataKey();
             } else {
                 // 리턴처리를 어떻게해야 할지 내용 정하기 - 2022/12/22 to.woody
@@ -541,7 +572,7 @@ public class AuthService {
 //        }
 
         String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
-        company.setCpCode(keyGenerateService.keyGenerate("kn_company", "kokonut"+nowDate, "system"));
+        company.setCpCode(keyGenerateService.keyGenerate("kn_company", "kokonut"+nowDate, "KokonutSystem"));
         company.setCpName(signUp.getCpName());
         company.setCpRepresentative(signUp.getCpRepresentative());
         company.setCpTel(signUp.getCpTel());
@@ -550,8 +581,7 @@ public class AuthService {
         company.setCpAddress(signUp.getCpAddress());
         company.setCpAddressNumber(signUp.getCpAddressNumber());
         company.setCpAddressDetail(signUp.getCpAddressDetail());
-        company.setCpEncryptText(encryptText);
-        company.setCpDataKey(dataKey);
+//        company.setCpDataKey(dataKey);
         company.setInsert_email(signUp.getKnEmail());
         company.setInsert_date(LocalDateTime.now());
         Company saveCompany = companyRepository.save(company);
@@ -676,7 +706,7 @@ public class AuthService {
         // 이메일이 test@kokonut.me 체크하는 로직추가
         String knEmail = login.getKnEmail();
 
-        if (knEmail.equals("test@kokonut.me") || knEmail.equals("test2@kokonut.me")) {
+        if (knEmail.equals("test@kokonut.me")) {
             // 여기부터 우디(Wooody)가 작성
             System.out.println("체험하기 모드 : 체험하기 로그인");
 
@@ -729,7 +759,7 @@ public class AuthService {
                             String ip = CommonUtil.clientIp();
 
                             // 활동이력 저장 -> 비정상 모드
-                            Long activityHistoryId = activityHistoryService.insertActivityHistory(2, adminId, activityCode,
+                            Long activityHistoryId = historyService.insertHistory(2, adminId, activityCode,
                                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, knEmail);
 
                             // 인증 정보를 기반으로 JWT 토큰 생성
@@ -738,7 +768,9 @@ public class AuthService {
                             data.put("jwtToken", jwtToken.getAccessToken());
 
                             // 쿠키저장함수 호출
-                            Utils.cookieSave("refreshToken", jwtToken.getRefreshToken(), 604800, response);
+                            if(response != null) {
+                                Utils.cookieSave("refreshToken", jwtToken.getRefreshToken(), 604800, response);
+                            }
 
                             // RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
                             redisDao.setValues("RT: " + authentication.getName(), jwtToken.getRefreshToken(), Duration.ofMillis(jwtToken.getRefreshTokenExpirationTime()));
@@ -752,7 +784,7 @@ public class AuthService {
                             /* 해외 아이피 차단 여부 */
 //                            loginService.ResetPwdError(user.getIdx()); 패스워드에러카운트 리셋
 
-                            activityHistoryService.updateActivityHistory(activityHistoryId,
+                            historyService.updateHistory(activityHistoryId,
                                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", 1);
 
                             return ResponseEntity.ok(res.success(data));
@@ -967,12 +999,121 @@ public class AuthService {
             optionalAdmin.get().setModify_date(LocalDateTime.now());
 
             optionalAdmin.get().setKnOtpKey(googleOtpSave.getKnOtpKey());
+            optionalAdmin.get().setKnIsLoginAuth("Y");
             adminRepository.save(optionalAdmin.get());
 
             // 변경이후 시스템관리자에게 메일보내기 시작 추가하기 12/05 Woody
 
             return ResponseEntity.ok(res.success(data));
         }
+    }
+
+    // 관리자 등록하기전 키 검증
+    public ResponseEntity<Map<String, Object>> createCheck(AdminCreateDto adminCreateDto) throws Exception {
+        log.info("createCheck 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+//        log.info("adminCreateDto.getEvKoData() : "+adminCreateDto.getEvKoData());
+//        log.info("adminCreateDto.getKvKoData() : "+adminCreateDto.getKvKoData());
+//        log.info("adminCreateDto.getIvKoData() : "+adminCreateDto.getIvKoData());
+
+        long ev = Long.parseLong(adminCreateDto.getEvKoData());
+        String kv = adminCreateDto.getKvKoData();
+        String iv = adminCreateDto.getIvKoData();
+
+        CompanyEncryptDto companyEncryptDto = companyRepository.findByDataKey(ev);
+        AwsKmsResultDto awsKmsResultDto = awsKmsUtil.dataKeyDecrypt(companyEncryptDto.getDataKey());
+        String email = AESGCMcrypto.decrypt(kv,awsKmsResultDto.getSecretKey(), iv);
+//        log.info("email : "+email);
+
+        // 검증후 삭제처리
+        String redisEvCode = redisDao.getValues("EV: "+email);
+//        log.info("redisEvCode : "+redisEvCode);
+
+        if(redisEvCode != null) {
+            if(redisEvCode.equals(kv)) {
+//                redisDao.deleteValues("EV: " + email); // 데이터를 삭제해줘야할지 1일동안 놔둘지 고민임
+                Optional<Admin> optionalAdmin = adminRepository.findByKnEmail(email);
+                if (optionalAdmin.isEmpty()) {
+                    log.error("존재하지 않은 유저");
+                    return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(),"해당 유저가 "+ResponseErrorCode.KO004.getDesc()));
+                } else {
+                    if(optionalAdmin.get().getKnIsEmailAuth().equals("Y")) {
+                        log.error("이미 가입된 관리자 입니다.");
+                        return ResponseEntity.ok(res.fail(ResponseErrorCode.KO086.getCode(), ResponseErrorCode.KO086.getDesc()));
+                    } else {
+                        data.put("userEmail", email);
+                        log.info("검증완료");
+                    }
+                }
+            } else {
+                log.error("이메일 인증이 맞지 않습니다.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO084.getCode(), ResponseErrorCode.KO084.getDesc()));
+            }
+        } else {
+            log.error("만료된 페이지 입니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO085.getCode(), ResponseErrorCode.KO085.getDesc()));
+        }
+
+        return ResponseEntity.ok(res.success(data));
+    }
+
+    // 관리자 등록 최종
+    public ResponseEntity<Map<String, Object>> createUser(AuthRequestDto.KokonutCreateUser kokonutCreateUser, HttpServletRequest request) {
+        log.info("createUser 호출");
+
+        AjaxResponse res = new AjaxResponse();
+        HashMap<String, Object> data = new HashMap<>();
+
+        // 비밀번호 일치한지 체크
+        if (!kokonutCreateUser.getKnPassword().equals(kokonutCreateUser.getKnPasswordConfirm())) {
+            log.error("입력하신 비밀번호가 서로 일치하지 않습니다.");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO013.getCode(), ResponseErrorCode.KO013.getDesc()));
+        }
+
+        log.info("관리자등록 시작");
+        log.info("받아온 값 kokonutCreateUser : " + kokonutCreateUser);
+
+        if (!kokonutCreateUser.getUserEmail().equals("kokonut@kokonut.me")) { // 테스트일 경우 패스
+            String joinPhone = "";
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+//                log.info("현재 쿠키값들 : " + Arrays.toString(cookies));
+                for (Cookie c : cookies) {
+                    if (c.getName().equals("joinPhone")) {
+                        joinPhone = c.getValue();
+//                        log.info("본인인증 된 핸드폰번호 : " + joinPhone);
+                    }
+                }
+            }
+            // 본인인증 체크
+            if (!kokonutCreateUser.getKnPhoneNumber().equals(joinPhone)) {
+                log.info("본인인증으로 입력된 핸드폰 번호가 아닙니다. 본인인증을 완료해주세요.");
+                return ResponseEntity.ok(res.fail(ResponseErrorCode.KO033.getCode(), ResponseErrorCode.KO033.getDesc()));
+            }
+        }
+
+        Optional<Admin> optionalAdmin = adminRepository.findByKnEmail(kokonutCreateUser.getUserEmail());
+        if (optionalAdmin.isEmpty()) {
+            log.error("존재하지 않은 유저");
+            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO004.getCode(),"해당 유저가 "+ResponseErrorCode.KO004.getDesc()));
+        } else {
+            log.info("관리자 최종등록 완료");
+
+            optionalAdmin.get().setKnName(kokonutCreateUser.getKnName());
+            optionalAdmin.get().setKnPhoneNumber(kokonutCreateUser.getKnPhoneNumber());
+            optionalAdmin.get().setKnPassword(passwordEncoder.encode(kokonutCreateUser.getKnPassword()));
+            optionalAdmin.get().setKnIsEmailAuth("Y");
+            optionalAdmin.get().setKnEmailAuthCode(null);
+            optionalAdmin.get().setModify_email(kokonutCreateUser.getUserEmail());
+            optionalAdmin.get().setInsert_date(LocalDateTime.now());
+
+            adminRepository.save(optionalAdmin.get());
+        }
+
+        return ResponseEntity.ok(res.success(data));
     }
 
 }

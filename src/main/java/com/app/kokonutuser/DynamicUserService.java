@@ -1,13 +1,13 @@
 package com.app.kokonutuser;
 
-import com.app.kokonut.activityHistory.ActivityHistoryService;
-import com.app.kokonut.activityHistory.dto.ActivityCode;
+import com.app.kokonut.common.realcomponent.AESGCMcrypto;
+import com.app.kokonut.history.HistoryService;
+import com.app.kokonut.history.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.common.component.AesCrypto;
-import com.app.kokonut.common.component.CommonUtil;
+import com.app.kokonut.common.realcomponent.CommonUtil;
 import com.app.kokonut.company.CompanyRepository;
 import com.app.kokonut.company.CompanyService;
 import com.app.kokonut.configs.ExcelService;
@@ -26,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -50,16 +52,16 @@ public class DynamicUserService {
 	private final ExcelService excelService;
 	private final KokonutUserService kokonutUserService;
 	private final CompanyService companyService;
-	private final ActivityHistoryService activityHistoryService;
+	private final HistoryService historyService;
 
 	private final KokonutDormantService kokonutDormantService;
 	private final KokonutRemoveService kokonutRemoveService;
 
 	@Autowired
 	public DynamicUserService(PasswordEncoder passwordEncoder, AdminRepository adminRepository,
-							  CompanyRepository companyRepository, ExcelService excelService,
-							  KokonutUserService kokonutUserService, KokonutDormantService kokonutDormantService, CompanyService companyService,
-							  ActivityHistoryService activityHistoryService, KokonutRemoveService kokonutRemoveService) {
+                              CompanyRepository companyRepository, ExcelService excelService,
+                              KokonutUserService kokonutUserService, KokonutDormantService kokonutDormantService, CompanyService companyService,
+                              HistoryService historyService, KokonutRemoveService kokonutRemoveService) {
 		this.passwordEncoder = passwordEncoder;
 		this.adminRepository = adminRepository;
 		this.companyRepository = companyRepository;
@@ -67,7 +69,7 @@ public class DynamicUserService {
 		this.kokonutUserService = kokonutUserService;
 		this.kokonutDormantService = kokonutDormantService;
 		this.companyService = companyService;
-		this.activityHistoryService = activityHistoryService;
+		this.historyService = historyService;
 		this.kokonutRemoveService = kokonutRemoveService;
 	}
 
@@ -283,7 +285,7 @@ public class DynamicUserService {
 
 		/* 활동이력 추가 */
 //			String reason = "테이블 생성" + "(테이블명 :" + companyCode + ")";
-//            activityHistory = activityHistoryService.InsertActivityHistory(2, adminId, 16, "", reason, CommonUtil.clientIp(), 0);
+//            activityHistory = activityHistoryService.insertHistory(2, adminId, 16, "", reason, CommonUtil.clientIp(), 0);
 
 		// 사업자번호가 정상적으로 등록되어 있는지 확인
 		if (!companyRepository.existsByCpCode(companyCode)) {
@@ -333,7 +335,7 @@ public class DynamicUserService {
 
 		/* 활동이력 정상으로 변경 */
 //            int activityHistoryId = Integer.parseInt(activityHistory.get("idx").toString());
-//            activityHistoryService.UpdateActivityHistory(activityHistoryId, "", reason, 1);
+//            activityHistoryService.updateHistory(activityHistoryId, "", reason, 1);
 
 //			returnMap.put("isSuccess", "true");
 
@@ -343,7 +345,7 @@ public class DynamicUserService {
 //        String errorMsg = returnMap.get("errorMsg").toString();
 //        if(isSuccess.equals("false")) {
 //            int activityHistoryId = Integer.parseInt(activityHistory.get("idx").toString());
-//            activityHistoryService.UpdateActivityHistory(activityHistoryId, "", errorMsg, 0);
+//            activityHistoryService.updateHistory(activityHistoryId, "", errorMsg, 0);
 //        }
 
 //		return null;
@@ -492,15 +494,15 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_13;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(1, adminId, activityCode,
+		Long activityHistoryId = historyService.insertHistory(1, adminId, activityCode,
 				companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 		String id = null;
 		try {
 
 			// 회사의 암호화 키
-			String DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyId);
+			SecretKey secretKey = companyService.selectCompanyEncryptKey(companyId);
 
-			if(DECRYPTED_KEY == null) {
+			if(secretKey == null) {
 				log.error("해당 기업의 암호화 키가 존재하지 않습니다.");
 				return ResponseEntity.ok(res.fail(ResponseErrorCode.KO043.getCode(), ResponseErrorCode.KO043.getDesc()));
 			}
@@ -563,9 +565,11 @@ public class DynamicUserService {
 					// 암호화 속성을 갖는 컬럼의 데이터 암호화
 					else {
 						for(KokonutUserFieldDto column : encryptColumns) {
+							byte[] ivBytes = AESGCMcrypto.generateIV();
 							if(column.getField().equals(field)) {
+								String ciphertext = AESGCMcrypto.encrypt(value.getBytes(StandardCharsets.UTF_8), secretKey, ivBytes);
 								// 암호화된 데이터로 변경
-								value = AesCrypto.encrypt(value, DECRYPTED_KEY);
+								value = ciphertext+","+Base64.getEncoder().encodeToString(ivBytes);
 								break;
 							}
 						}
@@ -616,7 +620,7 @@ public class DynamicUserService {
 				}
 			}
 
-			activityHistoryService.updateActivityHistory(activityHistoryId,companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
+			historyService.updateHistory(activityHistoryId,companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
 
 		} catch (Exception e) {
 			log.error("회원등록 에러확인 필요");
@@ -670,14 +674,14 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_02;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(1, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
+		Long activityHistoryId = historyService.insertHistory(1, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
 		try {
 
 			// 회사의 암호화 키
-			String DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyId);
+			SecretKey secretKey = companyService.selectCompanyEncryptKey(companyId);
 
-			if(DECRYPTED_KEY == null) {
+			if(secretKey == null) {
 				log.error("해당 기업의 암호화 키가 존재하지 않습니다.");
 				return ResponseEntity.ok(res.fail(ResponseErrorCode.KO043.getCode(), ResponseErrorCode.KO043.getDesc()));
 			}
@@ -746,9 +750,11 @@ public class DynamicUserService {
 					// 암호화 속성을 갖는 컬럼의 데이터 암호화
 					else {
 						for(KokonutUserFieldDto column : encryptColumns) {
+							byte[] ivBytes = AESGCMcrypto.generateIV();
 							if(column.getField().equals(field)) {
+								String ciphertext = AESGCMcrypto.encrypt(value.getBytes(StandardCharsets.UTF_8), secretKey, ivBytes);
 								// 암호화된 데이터로 변경
-								value = AesCrypto.encrypt(value, DECRYPTED_KEY);
+								value = ciphertext+","+Base64.getEncoder().encodeToString(ivBytes);
 								break;
 							}
 						}
@@ -776,7 +782,7 @@ public class DynamicUserService {
 			}
 
 
-			activityHistoryService.updateActivityHistory(activityHistoryId,companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
+			historyService.updateHistory(activityHistoryId,companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
 
 //			log.info("updateString : "+ updateString);
 
@@ -853,7 +859,7 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_03;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(1, adminId, activityCode,
+		Long activityHistoryId = historyService.insertHistory(1, adminId, activityCode,
 				companyCode+" - "+activityCode.getDesc()+" 시도 이력 ID : "+kokonutRemoveInfoDtos.get(0).getID(), "", ip, 0, email);
 
 		try {
@@ -888,11 +894,11 @@ public class DynamicUserService {
 		} catch (Exception e ){
 			log.error("회원삭제 에러확인 필요");
 			log.error("e : "+e.getMessage());
-			activityHistoryService.deleteActivityHistoryByIdx(activityHistoryId);
+			historyService.deleteHistoryByIdx(activityHistoryId);
 			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO059.getCode(), "회원삭제 "+ResponseErrorCode.KO059.getDesc()));
 		}
 
-		activityHistoryService.updateActivityHistory(activityHistoryId,
+		historyService.updateHistory(activityHistoryId,
 				companyCode+" - "+activityCode.getDesc()+" 완료 이력 ID : "+kokonutRemoveInfoDtos.get(0).getID(), "", 1);
 
 		return ResponseEntity.ok(res.success(data));
@@ -1162,7 +1168,7 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_19;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(3, adminId, activityCode,
+		Long activityHistoryId = historyService.insertHistory(3, adminId, activityCode,
 				companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
 		// 사용테이블에 컬럼 추가
@@ -1170,7 +1176,7 @@ public class DynamicUserService {
 		// 휴면테이블에 컬럼 추가
 		kokonutDormantService.alterAddColumnTableQuery(companyCode, fieldName, type, length, isNull, defaultValue, comment);
 
-		activityHistoryService.updateActivityHistory(activityHistoryId,
+		historyService.updateHistory(activityHistoryId,
 				companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
 
 		return ResponseEntity.ok(res.success(data));
@@ -1283,8 +1289,8 @@ public class DynamicUserService {
 		// Comment 정형화
 		String comment;
 
-		// 사업자 DECRYPTED_KEY
-		String DECRYPTED_KEY;
+		// 사업자 secretKey
+		SecretKey secretKey;
 
 		// 현재 바꾼 필드의 커멘트 가져오기
 		String changeColumnComment = kokonutUserService.selectUserColumnComment(companyCode, beforField);
@@ -1294,7 +1300,7 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_20;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(3, adminId, activityCode,
+		Long activityHistoryId = historyService.insertHistory(3, adminId, activityCode,
 				companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
 		// 암호화, 복호화 전환로직
@@ -1304,7 +1310,7 @@ public class DynamicUserService {
 					comment = fieldOptionName + "(수정가능)";
 
 					log.info("이전에 암호화필드였지만 암호화 불필요로 수정하여 모든데이터 복호화시작");
-					DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyId);
+					secretKey = companyService.selectCompanyEncryptKey(companyId);
 
 					// 개인정보(유저)테이블 필드의 데이터 복호화
 					List<KokonutUserFieldInfoDto> fieldList = kokonutUserService.selectUserFieldList(companyCode, beforField);
@@ -1316,8 +1322,12 @@ public class DynamicUserService {
 							continue;
 						}
 
+						String[] result = fieldValue.split(",");
+						String resultText = result[0];
+						String resultIV = result[1];
+
 						// 암호화 -> 복호화 시작
-						String decryptedValue = AesCrypto.decrypt(new String(fieldValue.getBytes()), DECRYPTED_KEY);
+						String decryptedValue = AESGCMcrypto.decrypt(resultText, secretKey, resultIV);
 						String queryString = beforField + "='"+decryptedValue+"'";
 //					log.info("queryString : "+queryString);
 
@@ -1334,8 +1344,12 @@ public class DynamicUserService {
 							continue;
 						}
 
+						String[] result = fieldValue.split(",");
+						String resultText = result[0];
+						String resultIV = result[1];
+
 						// 암호화 -> 복호화 시작
-						String decryptedValue = AesCrypto.decrypt(new String(fieldValue.getBytes()), DECRYPTED_KEY);
+						String decryptedValue = AESGCMcrypto.decrypt(resultText, secretKey, resultIV);
 						String queryString = beforField + "='"+decryptedValue+"'";
 //					log.info("queryString : "+queryString);
 
@@ -1352,7 +1366,7 @@ public class DynamicUserService {
 					comment = fieldOptionName + "(암호화,수정가능)";
 
 					log.info("이전에 암호화필드가 아니였지만 암호화필요로 수정하여 이전 데이터를 암호화시작");
-					DECRYPTED_KEY = companyService.selectCompanyEncryptKey(companyId);
+					secretKey = companyService.selectCompanyEncryptKey(companyId);
 
 					// 개인정보(유저)테이블 필드의 데이터 암호화
 					List<KokonutUserFieldInfoDto> fieldListUser = kokonutUserService.selectUserFieldList(companyCode, beforField);
@@ -1364,8 +1378,10 @@ public class DynamicUserService {
 							continue;
 						}
 
+						byte[] ivBytes = AESGCMcrypto.generateIV();
+						String ciphertext = AESGCMcrypto.encrypt(fieldValue.getBytes(StandardCharsets.UTF_8), secretKey, ivBytes);
 						// 평문 -> 암호화 시작
-						String encryptedValue = AesCrypto.encrypt(fieldValue, DECRYPTED_KEY);
+						String encryptedValue = ciphertext+","+Base64.getEncoder().encodeToString(ivBytes);
 
 						String queryString = beforField + "='"+encryptedValue+"'";
 //					log.info("queryString : "+queryString);
@@ -1383,8 +1399,11 @@ public class DynamicUserService {
 							continue;
 						}
 
+						byte[] ivBytes = AESGCMcrypto.generateIV();
+						String ciphertext = AESGCMcrypto.encrypt(fieldValue.getBytes(StandardCharsets.UTF_8), secretKey, ivBytes);
+
 						// 평문 -> 암호화 시작
-						String encryptedValue = AesCrypto.encrypt(fieldValue, DECRYPTED_KEY);
+						String encryptedValue = ciphertext+","+Base64.getEncoder().encodeToString(ivBytes);
 
 						String queryString = beforField + "='"+encryptedValue+"'";
 //					log.info("queryString : "+queryString);
@@ -1408,13 +1427,13 @@ public class DynamicUserService {
 				kokonutDormantService.alterChangeColumnTableQuery(companyCode, beforField, fieldName, type, length, isNull, defaultValue, comment);
 			}
 
-			activityHistoryService.updateActivityHistory(activityHistoryId,
+			historyService.updateHistory(activityHistoryId,
 					companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
 
 		}
 		else {
 			log.error("수정할 필드가 테이블에 존재하지 않습니다.");
-			activityHistoryService.updateActivityHistory(activityHistoryId,
+			historyService.updateHistory(activityHistoryId,
 					companyCode+" - "+activityCode.getDesc()+" 실패 이력", "수정할 필드가 존재하지 않습니다.", 1);
 			return ResponseEntity.ok(res.fail(ResponseErrorCode.KO067.getCode(), "수정할 필드가 "+ResponseErrorCode.KO067.getDesc()));
 		}
@@ -1479,7 +1498,7 @@ public class DynamicUserService {
 		ActivityCode activityCode = ActivityCode.AC_21;
 		// 활동이력 저장 -> 비정상 모드
 		String ip = CommonUtil.clientIp();
-		Long activityHistoryId = activityHistoryService.insertActivityHistory(3, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
+		Long activityHistoryId = historyService.insertHistory(3, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
 		if(companyCode.equals(userTableCheck.get(0).getTABLE_NAME()) && fieldName.equals(userTableCheck.get(0).getCOLUMN_NAME()) &&
 				companyCode.equals(dormantTableCheck.get(0).getTABLE_NAME()) && fieldName.equals(dormantTableCheck.get(0).getCOLUMN_NAME())){
@@ -1487,10 +1506,10 @@ public class DynamicUserService {
 			kokonutUserService.alterDropColumnUserTableQuery(companyCode, fieldName);
 			kokonutDormantService.alterDropColumnDormantTableQuery(companyCode, fieldName);
 
-			activityHistoryService.updateActivityHistory(activityHistoryId,
+			historyService.updateHistory(activityHistoryId,
 					companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
 		} else {
-			activityHistoryService.updateActivityHistory(activityHistoryId,
+			historyService.updateHistory(activityHistoryId,
 					companyCode+" - "+activityCode.getDesc()+" 실패 이력", "필드 삭제 조건에 부합하지 않습니다.", 1);
 		}
 

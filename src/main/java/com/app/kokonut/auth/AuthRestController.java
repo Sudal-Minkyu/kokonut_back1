@@ -1,5 +1,6 @@
 package com.app.kokonut.auth;
 
+import com.app.kokonut.auth.dtos.AdminCreateDto;
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.dtos.AdminPasswordChangeDto;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
@@ -102,6 +103,29 @@ public class AuthRestController {
             "5. 또 일치할시 해당 비밀번호로 업데이트한다.")
     public ResponseEntity<Map<String,Object>> passwordUpdate(@RequestBody AdminPasswordChangeDto adminPasswordChangeDto) {
         return authService.passwordUpdate(adminPasswordChangeDto);
+    }
+
+    // 관리자 등록하기전 키 검증
+    @PostMapping(value = "/createCheck")
+    @ApiOperation(value = "이메일 키검증" , notes = "" +
+            "1. 관리자등록을 통해 메일이 온다." +
+            "2. 해당 메일의 링크를 누르게 되면 키검증을 한다." +
+            "3. 만료기간이 넘어가면 에러페이지로 안내한다." +
+            "4. 휴대폰인증과 비밀번호를 입력하여 완료한다.")
+    public ResponseEntity<Map<String,Object>> createCheck(@RequestBody AdminCreateDto adminCreateDto) throws Exception {
+        return authService.createCheck(adminCreateDto);
+    }
+
+    // 관리자 등록 최종
+    @PostMapping(value = "/createUser")
+    @ApiOperation(value = "관리자등록" , notes = "" +
+            "1. 이메일로 등록신청의 링크를 진입한다." +
+            "2. 해당 링크의 키를 통해 검증한다." +
+            "3. 휴대폰인증을한다." +
+            "4. 사용할 비밀번호를 입력하여 등록한다.")
+    public ResponseEntity<Map<String,Object>> createUser(@RequestBody AuthRequestDto.KokonutCreateUser kokonutCreateUser, HttpServletRequest request) {
+        log.info("사업자 회원가입 API 호출");
+        return authService.createUser(kokonutCreateUser, request);
     }
 
     // 리뉴얼 회원가입

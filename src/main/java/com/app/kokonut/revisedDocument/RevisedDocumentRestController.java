@@ -50,8 +50,8 @@ public class RevisedDocumentRestController {
     })
     public ResponseEntity<Map<String,Object>> revDocList(@RequestBody RevDocSearchDto revDocSearchDto, @PageableDefault Pageable pageable) {
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return revisedDocumentService.revDocList(userRole, email, revDocSearchDto, pageable);
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
+        return revisedDocumentService.revDocList(null, email, revDocSearchDto, pageable);
     }
 
     @ApiOperation(value="개정문서 등록", notes="" +
@@ -62,9 +62,9 @@ public class RevisedDocumentRestController {
     })
     public ResponseEntity<Map<String,Object>> revDocSave(@Parameter(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
                                                            @Validated RevDocSaveDto revDocDetailDto, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return revisedDocumentService.revDocSave(userRole, email, revDocDetailDto, request, response);
+        return revisedDocumentService.revDocSave(null, email, revDocDetailDto, request, response);
     }
 //    @ApiOperation(value="개정문서 삭제", notes="처리방침 개정문서 삭제")
 //    @PostMapping(value = "/revDocDelete") // -> 기존의 코코넛 호출 메서드명 : 서비스만 있음. 호출x,  - MemberRevisedDocumentController

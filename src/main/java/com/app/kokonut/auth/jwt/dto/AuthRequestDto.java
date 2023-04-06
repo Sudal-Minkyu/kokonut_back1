@@ -1,5 +1,6 @@
 package com.app.kokonut.auth.jwt.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,6 +42,17 @@ public class AuthRequestDto {
         private String knPasswordConfirm; // 비밀번호 체크
 
         private Boolean knEmailCheck; // 이메일인증 여부
+
+        @Builder
+        public KokonutSignUp(String cpName, String knName, String knPhoneNumber, String knEmail, String knPassword, String knPasswordConfirm, Boolean knEmailCheck) {
+            this.cpName = cpName;
+            this.knName = knName;
+            this.knPhoneNumber = knPhoneNumber;
+            this.knEmail = knEmail;
+            this.knPassword = knPassword;
+            this.knPasswordConfirm = knPasswordConfirm;
+            this.knEmailCheck = knEmailCheck;
+        }
 
     }
 
@@ -128,4 +140,33 @@ public class AuthRequestDto {
 //        private String refreshToken;
     }
 
+    // 관리자등록 Dto
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class KokonutCreateUser {
+
+        private String userEmail;
+
+        @NotBlank(message = "이름은 필수값 입니다.")
+        private String knName;
+
+        @NotBlank(message = "핸드폰번호는 필수값 입니다.")
+        private String knPhoneNumber;
+
+        @NotBlank(message = "비밀번호는 필수 입력값 입니다.")
+        private String knPassword;
+
+        private String knPasswordConfirm; // 비밀번호 체크
+
+        @Builder
+        public KokonutCreateUser(String userEmail, String knName, String knPhoneNumber, String knPassword, String knPasswordConfirm) {
+            this.userEmail = userEmail;
+            this.knName = knName;
+            this.knPhoneNumber = knPhoneNumber;
+            this.knPassword = knPassword;
+            this.knPasswordConfirm = knPasswordConfirm;
+        }
+
+    }
 }

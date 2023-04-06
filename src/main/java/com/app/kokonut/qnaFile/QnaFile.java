@@ -24,9 +24,14 @@ public class QnaFile {
     @Column(name = "qna_id")
     private Long qnaId;
 
-    @ApiModelProperty("S3 파일 경로")
+    @ApiModelProperty("S3 버킷 주소")
     @Column(name = "qf_path")
     private String qfPath;
+
+    @ApiModelProperty("S3 버킷 폴더 경로")
+    @Column(name = "qf_bucket")
+    private String qfBucket;
+
 
     @ApiModelProperty("S3 파일 명")
     @Column(name = "qf_filename")

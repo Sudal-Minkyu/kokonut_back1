@@ -1,7 +1,7 @@
 package com.app.kokonut.apiKey;
 
-import com.app.kokonut.activityHistory.ActivityHistoryService;
-import com.app.kokonut.activityHistory.dto.ActivityCode;
+import com.app.kokonut.history.HistoryService;
+import com.app.kokonut.history.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
@@ -12,7 +12,7 @@ import com.app.kokonut.apiKey.dtos.ApiKeyIpDeleteDto;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.common.component.CommonUtil;
+import com.app.kokonut.common.realcomponent.CommonUtil;
 import com.app.kokonut.configs.GoogleOTP;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import javax.xml.bind.DatatypeConverter;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -36,15 +36,15 @@ import java.util.*;
 public class ApiKeyService {
 
     private final GoogleOTP googleOTP;
-    private final ActivityHistoryService activityHistoryService;
+    private final HistoryService historyService;
 
     private final ApiKeyRepository apiKeyRepository;
     private final AdminRepository adminRepository;
 
-    public ApiKeyService(GoogleOTP googleOTP, ActivityHistoryService activityHistoryService,
+    public ApiKeyService(GoogleOTP googleOTP, HistoryService historyService,
                          ApiKeyRepository apiKeyRepository, AdminRepository adminRepository) {
         this.googleOTP = googleOTP;
-        this.activityHistoryService = activityHistoryService;
+        this.historyService = historyService;
         this.apiKeyRepository = apiKeyRepository;
         this.adminRepository = adminRepository;
     }
@@ -165,7 +165,7 @@ public class ApiKeyService {
             activityCode = ActivityCode.AC_25;
 
             // 활동이력 저장 -> 비정상 모드
-            activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode,
+            activityHistoryId = historyService.insertHistory(4, adminId, activityCode,
                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, jwtFilterDto.getEmail());
 
             String akKey = optionalApiKey.get().getAkKey();
@@ -189,7 +189,7 @@ public class ApiKeyService {
             activityCode = ActivityCode.AC_24;
 
             // 활동이력 저장 -> 비정상 모드
-            activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode,
+            activityHistoryId = historyService.insertHistory(4, adminId, activityCode,
                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, jwtFilterDto.getEmail());
 
             ApiKey apiKey = new ApiKey();
@@ -209,7 +209,7 @@ public class ApiKeyService {
             apiKeyRepository.save(apiKey);
         }
 
-        activityHistoryService.updateActivityHistory(activityHistoryId,
+        historyService.updateHistory(activityHistoryId,
                 companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", 1);
 
         return ResponseEntity.ok(res.success(data));
@@ -240,7 +240,7 @@ public class ApiKeyService {
         if(optionalApiKey.isPresent()) {
 
             // 활동이력 저장 -> 비정상 모드
-            Long activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode,
+            Long activityHistoryId = historyService.insertHistory(4, adminId, activityCode,
                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, jwtFilterDto.getEmail());
 
             while(true) {
@@ -278,7 +278,7 @@ public class ApiKeyService {
             optionalApiKey.get().setModify_date(LocalDateTime.now());
             apiKeyRepository.save(optionalApiKey.get());
 
-            activityHistoryService.updateActivityHistory(activityHistoryId,
+            historyService.updateHistory(activityHistoryId,
                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", 1);
 
         } else {
@@ -337,32 +337,32 @@ public class ApiKeyService {
         if(optionalApiKey.isPresent()) {
 
             // 활동이력 저장 -> 비정상 모드
-            Long activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode,
+            Long activityHistoryId = historyService.insertHistory(4, adminId, activityCode,
                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, jwtFilterDto.getEmail());
 
             for (String deleteIp : deleteIpList) {
                 while (true) {
-                    if (optionalApiKey.get().getAkAgreeIp1().equals(deleteIp)) {
+                    if (optionalApiKey.get().getAkAgreeIp1() != null && optionalApiKey.get().getAkAgreeIp1().equals(deleteIp)) {
                         optionalApiKey.get().setAkAgreeIp1(null);
                         optionalApiKey.get().setAkAgreeMemo1(null);
                         break;
                     }
-                    if (optionalApiKey.get().getAkAgreeIp2().equals(deleteIp)) {
+                    if (optionalApiKey.get().getAkAgreeIp2() != null && optionalApiKey.get().getAkAgreeIp2().equals(deleteIp)) {
                         optionalApiKey.get().setAkAgreeIp2(null);
                         optionalApiKey.get().setAkAgreeMemo2(null);
                         break;
                     }
-                    if (optionalApiKey.get().getAkAgreeIp3().equals(deleteIp)) {
+                    if (optionalApiKey.get().getAkAgreeIp3() != null && optionalApiKey.get().getAkAgreeIp3().equals(deleteIp)) {
                         optionalApiKey.get().setAkAgreeIp3(null);
                         optionalApiKey.get().setAkAgreeMemo3(null);
                         break;
                     }
-                    if (optionalApiKey.get().getAkAgreeIp4().equals(deleteIp)) {
+                    if (optionalApiKey.get().getAkAgreeIp4() != null && optionalApiKey.get().getAkAgreeIp4().equals(deleteIp)) {
                         optionalApiKey.get().setAkAgreeIp4(null);
                         optionalApiKey.get().setAkAgreeMemo4(null);
                         break;
                     }
-                    if (optionalApiKey.get().getAkAgreeIp5().equals(deleteIp)) {
+                    if (optionalApiKey.get().getAkAgreeIp5() != null && optionalApiKey.get().getAkAgreeIp5().equals(deleteIp)) {
                         optionalApiKey.get().setAkAgreeIp5(null);
                         optionalApiKey.get().setAkAgreeMemo5(null);
                         break;
@@ -378,7 +378,7 @@ public class ApiKeyService {
             optionalApiKey.get().setModify_date(LocalDateTime.now());
             apiKeyRepository.save(optionalApiKey.get());
 
-            activityHistoryService.updateActivityHistory(activityHistoryId,
+            historyService.updateHistory(activityHistoryId,
                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", 1);
 
         } else {

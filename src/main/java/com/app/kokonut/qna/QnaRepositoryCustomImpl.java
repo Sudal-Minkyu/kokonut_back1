@@ -1,11 +1,17 @@
 package com.app.kokonut.qna;
 
+import com.app.kokonut.admin.Admin;
 import com.app.kokonut.admin.QAdmin;
 import com.app.kokonut.admin.enums.AuthorityRole;
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.qna.dtos.QnaDetailDto;
 import com.app.kokonut.qna.dtos.QnaListDto;
 import com.app.kokonut.qna.dtos.QnaSchedulerDto;
 import com.app.kokonut.qna.dtos.QnaSearchDto;
+import com.app.kokonut.qnaFile.QQnaFile;
+import com.app.kokonut.qnaFile.QnaFile;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
@@ -16,6 +22,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,25 +43,8 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
 
     // qna 목록 조회
     @Override
-    public Page<QnaListDto> findQnaPage(String userRole, String email, QnaSearchDto qnaSearchDto, Pageable pageable) {
-        /*
-         *
-        SELECT A.`IDX`
-             , A.`ADMIN_IDX`
-			 , A.`TITLE`
-			 , A.`TYPE`
-			 , A.`REGDATE`
-			 , A.`qnaState`
-			 , A.`ANSWER_DATE`
-			 , B.`NAME` AS `MASKING_NAME` -- 김**개, 홍*동, 최*선
-		FROM `qna` A
-   LEFT JOIN `admin` B
-		  ON A.`ADMIN_IDX` = B.`IDX`
-		WHERE 1 = 1
-	            ...
-		ORDER BY A.`REGDATE` DESC;
-		*
-        */
+    public Page<QnaListDto> findQnaPage(JwtFilterDto jwtFilterDto, Pageable pageable) {
+
         QQna qna  = QQna.qna;
         QAdmin admin  = QAdmin.admin;
 
@@ -62,87 +52,42 @@ public class QnaRepositoryCustomImpl extends QuerydslRepositorySupport implement
                 .innerJoin(admin).on(admin.adminId.eq(qna.adminId))
                 .select(Projections.constructor(QnaListDto.class,
                         qna.qnaId,
-                        qna.adminId,
                         qna.qnaTitle,
                         qna.qnaType,
                         qna.insert_date,
-                        qna.qnaState,
-                        qna.modify_date,
-                        admin.knName
+                        qna.qnaState
                 ));
 
-        // 조건에 따른 where 절 추가
-        if(qnaSearchDto.getQnaState() != null){
-            query.where(qna.qnaState.eq(qnaSearchDto.getQnaState()));
-        }
-        if(qnaSearchDto.getQnaType() != null){
-            query.where(qna.qnaType.eq(qnaSearchDto.getQnaType()));
-        }
-        if(email != null && !AuthorityRole.ROLE_SYSTEM.getDesc().equals(userRole)){
-            query.where(admin.knEmail.eq(email));
-        }
-        if(qnaSearchDto.getStimeStart() != null){
-            query.where(qna.insert_date.goe(qnaSearchDto.getStimeStart()));
-        }
-        if(qnaSearchDto.getStimeEnd() != null){
-            query.where(qna.insert_date.loe(qnaSearchDto.getStimeEnd()));
+        if(!jwtFilterDto.getRole().getCode().equals("ROLE_SYSTEM")) {
+            // 시스템 관리자가 아닐경우 자신이 작성한 글만 나와야함.
+            query.where(admin.knEmail.eq(jwtFilterDto.getEmail()));
         }
 
-        query.orderBy(qna.insert_date.desc());
+        query.orderBy(qna.qnaId.desc());
 
         final List<QnaListDto> QnaListDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
         return new PageImpl<>(QnaListDtos, pageable, query.fetchCount());
     }
 
     @Override
-    public QnaDetailDto findQnaByIdx(Long qnaId) {
-        /*
-         *
-        SELECT A.`IDX`
-		     , A.`ADMIN_IDX`
-			 , A.`TITLE`
-			 , A.`CONTENT`
-			 , A.`FILE_GROUP_ID`
-			 , A.`TYPE`
-			 , A.`REGDATE`
-			 , A.`qnaState`
-			 , A.`ANS_IDX`
-			 , A.`ANSWER`
-			 , A.`ANSWER_DATE`
-			 , B.`NAME` AS `MASKING_NAME`
-             , B.`EMAIL`
-			 , C.`NAME` AS `ANS_NAME`
-		 FROM `qna` A
-    LEFT JOIN `admin` B
-		   ON A.`ADMIN_IDX` = B.`IDX`
-    LEFT JOIN `admin` C
-	 	   ON A.`ANS_IDX` = C.`IDX`
-	    WHERE A.`IDX` = #{idx}
-        *
-        */
+    public QnaDetailDto findByQnaDetail(Long qnaId) {
 
-        QQna qna  = QQna.qna;
-        QAdmin adminQ  = QAdmin.admin;  // 질문자 정보
-        QAdmin adminB = QAdmin.admin;   // 답변자 정보
+        QQna qna = QQna.qna;
 
         JPQLQuery<QnaDetailDto> query = from(qna)
-                .select(Projections.constructor(QnaDetailDto.class,
-                        qna.qnaId,
-                        qna.adminId,
-                        qna.qnaTitle,
-                        qna.qnaContent,
-                        qna.qnaType,
-                        qna.insert_date,
-                        qna.qnaState,
-                        qna.qnaAnswer,
-                        qna.modify_date,
-                        adminQ.knEmail,
-                        adminQ.knName.as("maskingName"),
-                        adminB.knName.as("ansName")
-                ));
-        query.leftJoin(adminB).on(qna.adminId.eq(adminB.adminId)); // 답변자 이름을 구하기 위한 조인
-        query.leftJoin(adminQ).on(qna.adminId.eq(adminQ.adminId)); // 질문자 이름을 구하기 위한 조인
+            .select(Projections.constructor(QnaDetailDto.class,
+                    qna.qnaId,
+                    qna.qnaTitle,
+                    qna.qnaContent,
+                    qna.qnaType,
+                    qna.qnaState,
+                    qna.insert_email,
+                    qna.qnaAnswer,
+                    qna.modify_date
+            ));
+
         query.where(qna.qnaId.eq(qnaId));
+
         return query.fetchOne();
     }
 

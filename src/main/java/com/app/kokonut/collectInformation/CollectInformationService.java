@@ -1,7 +1,7 @@
 package com.app.kokonut.collectInformation;
 
-import com.app.kokonut.activityHistory.ActivityHistoryService;
-import com.app.kokonut.activityHistory.dto.ActivityCode;
+import com.app.kokonut.history.HistoryService;
+import com.app.kokonut.history.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.Admin;
@@ -10,7 +10,7 @@ import com.app.kokonut.collectInformation.dtos.CollectInfoListDto;
 import com.app.kokonut.collectInformation.dtos.CollectInfoSearchDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.common.component.CommonUtil;
+import com.app.kokonut.common.realcomponent.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,12 +34,12 @@ import java.util.Map;
 public class CollectInformationService {
     private final CollectInformationRepository collectInfoRepository;
     private final AdminRepository adminRepository;
-    private final ActivityHistoryService activityHistoryService;
+    private final HistoryService historyService;
 
-    public CollectInformationService(CollectInformationRepository collectInfoRepository, AdminRepository adminRepository, ActivityHistoryService activityHistoryService) {
+    public CollectInformationService(CollectInformationRepository collectInfoRepository, AdminRepository adminRepository, HistoryService historyService) {
         this.collectInfoRepository = collectInfoRepository;
         this.adminRepository = adminRepository;
-        this.activityHistoryService = activityHistoryService;
+        this.historyService = historyService;
     }
 
     /**
@@ -170,19 +170,19 @@ public class CollectInformationService {
                 }
 
                 // 활동이력 -> 비정상 모드
-                Long activityHistoryId = activityHistoryService.insertActivityHistory(2, adminId, activityCode
+                Long activityHistoryId = historyService.insertHistory(2, adminId, activityCode
                         , companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
                 try{
                     log.info("개인정보처리방침 등록/수정 시작.");
                     Long savedIdx = collectInfoRepository.save(saveCollectInfo).getCiId();
                     log.info("개인정보처리방침 등록/수정 완료. idx : " + savedIdx);
                     // 활동이력 -> 정상 모드
-                    activityHistoryService.updateActivityHistory(activityHistoryId,
+                    historyService.updateHistory(activityHistoryId,
                             companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
                     return ResponseEntity.ok(res.success(data));
                 } catch(Exception e){
                     // 활동이력 -> 정상 모드
-                    activityHistoryService.updateActivityHistory(activityHistoryId,
+                    historyService.updateHistory(activityHistoryId,
                             companyCode+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
                     e.getStackTrace();
                     log.error("개인정보처리방침 등록/수정 실패");
@@ -232,19 +232,19 @@ public class CollectInformationService {
                     String companyCode = adminCompanyInfoDto.getCompanyCode();
 
                     // 활동이력 -> 비정상 모드
-                    Long activityHistoryId = activityHistoryService.insertActivityHistory(2, adminId, activityCode
+                    Long activityHistoryId = historyService.insertHistory(2, adminId, activityCode
                             , companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
                     collectInfoRepository.deleteById(ciId);
                     if(!collectInfoRepository.existsById(ciId)){
                         // 활동이력 -> 정상 모드
-                        activityHistoryService.updateActivityHistory(activityHistoryId,
+                        historyService.updateHistory(activityHistoryId,
                                 companyCode+" - "+activityCode.getDesc()+" 성공 이력", "", 1);
                         log.info("개인정보 처리방침 삭제 완료. ciId : "+ciId);
                         return ResponseEntity.ok(res.success(data));
                     }else{
                         // 활동이력 -> 정상 모드
-                        activityHistoryService.updateActivityHistory(activityHistoryId,
+                        historyService.updateHistory(activityHistoryId,
                                 companyCode+" - "+activityCode.getDesc()+" 실패 이력", "", 1);
                         // TODO errorCode 추가 -  개인정보 처리방침 삭제 실패했습니다. 시스템 관리자에게 문의해주세요.
                         log.error("개인정보 처리방침 삭제에 실패했습니다. 관리자에게 문의해주세요. ciId : " + ciId);

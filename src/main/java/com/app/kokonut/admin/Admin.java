@@ -202,12 +202,19 @@ public class Admin implements UserDetails {
      */
     @ApiModelProperty("이메일인증여부")
     @Column(name = "kn_is_email_auth")
-    private String knIsEmailAuth = "N";
+    private String knIsEmailAuth;
+
+    /**
+     * 이메일인증코드(관리자등록용)
+     */
+    @ApiModelProperty("이메일인증코드(관리자등록용)")
+    @Column(name = "kn_email_auth_Code")
+    private String knEmailAuthCode;
 
     /**
      * 이메일인증번호
      */
-    @ApiModelProperty("이메일인증번호")
+    @ApiModelProperty("이메일인증코드(관리자등록용)")
     @Column(name = "kn_email_auth_number")
     private String knEmailAuthNumber;
 

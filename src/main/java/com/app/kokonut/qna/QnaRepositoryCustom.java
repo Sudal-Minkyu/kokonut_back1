@@ -1,5 +1,6 @@
 package com.app.kokonut.qna;
 
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.qna.dtos.QnaDetailDto;
 import com.app.kokonut.qna.dtos.QnaListDto;
 import com.app.kokonut.qna.dtos.QnaSchedulerDto;
@@ -17,11 +18,12 @@ import java.util.List;
  * Remark : 기존의 코코넛 프로젝트의 QnaDao 쿼리호출
  */
 public interface QnaRepositoryCustom {
+
     // qna 목록 조회 - 기존 SelectQnaList, SelectQnaListCount
-    Page<QnaListDto> findQnaPage(String userRole, String email, QnaSearchDto qnaSearchDto, Pageable pageable);
+    Page<QnaListDto> findQnaPage(JwtFilterDto jwtFilterDto, Pageable pageable);
 
     // qna 내용 조회 - 기존 SelectQnaByIdx
-    QnaDetailDto findQnaByIdx(Long qnaId);
+    QnaDetailDto findByQnaDetail(Long qnaId);
 
     // qna 답변 지연 게시글 조회 - 기존 SelectNonAnsweredQnaList
     List<QnaSchedulerDto> findNoneAnswerQnaByRegDate(LocalDateTime compareDate);

@@ -11,8 +11,9 @@ import com.app.kokonut.navercloud.dto.RecipientForRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -26,21 +27,26 @@ import java.util.List;
 @Service
 public class MailSender {
 
-	public final String frontServerDomainIp;
-	public final String mailHost; // 보내는 사람의 이메일
-	public final String myHost; // otp_url
+	@Value("${kokonut.front.server.domain}")
+	public String frontServerDomainIp;
+
+	@Value("${kokonut.mail.host}")
+	public String mailHost; // 보내는 사람의 이메일
+
+	@Value("${kokonut.otp.hostUrl}")
+	public String myHost; // otp_url
 
 	private final  NaverCloudPlatformService naverCloudPlatformService;
 	private final EmailHistoryRepository emailHistoryRepository;
 
 	@Autowired
 	public MailSender(KeyDataService keyDataService, NaverCloudPlatformService naverCloudPlatformService, EmailHistoryRepository emailHistoryRepository) {
-		KeyDataMAILDto keyDataMAILDto = keyDataService.mail_key();
-		this.frontServerDomainIp = keyDataMAILDto.getFRONTSERVERDOMAINIP();
+//		KeyDataMAILDto keyDataMAILDto = keyDataService.mail_key();
+//		this.frontServerDomainIp = keyDataMAILDto.getFRONTSERVERDOMAINIP();
 		this.naverCloudPlatformService = naverCloudPlatformService;
 		this.emailHistoryRepository = emailHistoryRepository;
-		this.mailHost = keyDataMAILDto.getMAILHOST();
-		this.myHost = keyDataMAILDto.getOTPURL();
+//		this.mailHost = keyDataMAILDto.getMAILHOST();
+//		this.myHost = keyDataMAILDto.getOTPURL();
 	}
 
 	public boolean sendMail(String toEmail, String toName, String title, String contents) {
@@ -111,9 +117,8 @@ public class MailSender {
 		return IOUtils.toString(is, StandardCharsets.UTF_8);
 	}
 
-	//TODO keyData 테이블에 데이터 추가후 사용
 	public String getHTML5(HashMap<String, String> callTemplate) throws IOException {
-		String htmlURL = frontServerDomainIp+"/src/template/"+callTemplate.get("template")+".html";
+		String htmlURL = frontServerDomainIp+"/src/template/mail/"+callTemplate.get("template")+".html";
 		URL url = new URL(htmlURL);
 		URLConnection conn = url.openConnection();
 		InputStream is = conn.getInputStream();

@@ -43,9 +43,9 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoList(@RequestBody CollectInfoSearchDto collectInfoSearchDto, @PageableDefault Pageable pageable) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+//        String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return collectInformationService.collectInfoList(userRole, email, collectInfoSearchDto, pageable);
+        return collectInformationService.collectInfoList(null, email, collectInfoSearchDto, pageable);
     }
 
     @ApiOperation(value="개인정보처리방침 내용 조회", notes=""+
@@ -56,8 +56,8 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoDetail(@RequestParam(name="ciId") Long ciId) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return collectInformationService.collectInfoDetail(userRole, ciId);
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
+        return collectInformationService.collectInfoDetail(null, ciId);
     }
 
     @ApiOperation(value="개인정보처리방침 수정, 등록", notes=""+
@@ -68,9 +68,9 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoSave(@RequestBody CollectInfoDetailDto collectInfoDetailDto) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return collectInformationService.collectInfoSave(userRole, email, collectInfoDetailDto);
+        return collectInformationService.collectInfoSave(null, email, collectInfoDetailDto);
     }
 
     @ApiOperation(value="개인정보처리방침 삭제", notes=""+
@@ -81,9 +81,9 @@ public class CollectInformationRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header")
     })
     public ResponseEntity<Map<String,Object>> collectInfoDelete(@RequestParam(name="ciId") Long ciId) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return collectInformationService.collectInfoDelete(userRole, email, ciId);
+        return collectInformationService.collectInfoDelete(null, email, ciId);
     }
 
 }

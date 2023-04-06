@@ -3,13 +3,19 @@ package com.app.kokonut.admin;
 import com.app.kokonut.admin.dtos.*;
 import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.company.QCompany;
+import com.app.kokonut.history.QHistory;
+import com.app.kokonut.history.dto.ActivityCode;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Woody
@@ -98,8 +104,7 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
                 .where(admin.knEmail.eq(knEmail))
                 .select(Projections.constructor(AdminInfoDto.class,
                         admin.knName,
-                        company.cpName,
-                        admin.knRoleCode
+                        company.cpName
                 ));
 
         return query.fetchOne();
@@ -124,6 +129,41 @@ public class AdminRepositoryCustomImpl extends QuerydslRepositorySupport impleme
                 ));
 
         return query.fetchOne();
+    }
+
+    // 관리자 목록관리 페이지에 표출될 데이터
+    @Override
+    public Page<AdminListSubDto> findByAdminList(String searchText, String roleCode, Integer knState, Long companyId, String email, Pageable pageable) {
+
+        QAdmin admin = new QAdmin("admin");
+        QAdmin InsertAdmin = new QAdmin("InsertAdmin");
+
+        JPQLQuery<AdminListSubDto> query = from(admin)
+                .innerJoin(InsertAdmin).on(admin.insert_email.eq(InsertAdmin.knEmail))
+                .where(admin.companyId.eq(companyId))
+                .select(Projections.constructor(AdminListSubDto.class,
+                        admin.knName,
+                        admin.knEmail,
+                        admin.knRoleCode,
+                        admin.knRoleCode,
+                        InsertAdmin.knName,
+                        admin.insert_date,
+                        admin.knIsEmailAuth,
+                        admin.knState
+                ));
+
+        if(!roleCode.equals("")) {
+            query.where(admin.knRoleCode.eq(AuthorityRole.valueOf(roleCode)));
+        }
+
+        if(knState != null) {
+            query.where(admin.knState.eq(knState));
+        }
+
+        query.orderBy(admin.adminId.desc());
+
+        final List<AdminListSubDto> adminListSubDtos = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query).fetch();
+        return new PageImpl<>(adminListSubDtos, pageable, query.fetchCount());
     }
 
 

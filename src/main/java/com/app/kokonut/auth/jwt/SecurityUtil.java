@@ -1,5 +1,6 @@
 package com.app.kokonut.auth.jwt;
 
+import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
 import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,13 @@ public class SecurityUtil {
     public static JwtFilterDto getCurrentJwt() {
         log.info("SecurityUtil.getCurrentJwt 호출");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.getName() == null) {
+
+        String desc = authentication.getAuthorities().toString().replaceAll("\\[|\\]", "");;
+//        log.info("desc : "+desc);
+        String code = AuthorityRole.getCodeByDesc(desc);
+//        log.info("code : "+code);
+
+        if (code == null || authentication.getName() == null) {
             log.info("토큰이 없습니다.");
             throw new RuntimeException("인증된 정보가 없습니다.");
         }
@@ -28,7 +35,7 @@ public class SecurityUtil {
         return JwtFilterDto
                 .builder()
                 .email(authentication.getName())
-                .role(authentication.getAuthorities().toString())
+                .role(AuthorityRole.valueOf(code))
                 .build();
     }
 
@@ -45,16 +52,18 @@ public class SecurityUtil {
                 return JwtFilterDto
                         .builder()
                         .email(apiKeyInfoDto.getEmail())
-                        .role("")
+                        .role(null)
                         .build();
             }else {
-                throw new RuntimeException("인증된 정보가 없습니다.");
+                throw new RuntimeException("해당 API Key가 존재하지 않습니다.");
             }
         } else {
+            String desc = authentication.getAuthorities().toString().replaceAll("\\[|\\]", "");;
+            String code = AuthorityRole.getCodeByDesc(desc);
             return JwtFilterDto
                     .builder()
                     .email(authentication.getName())
-                    .role(authentication.getAuthorities().toString())
+                    .role(AuthorityRole.valueOf(code))
                     .build();
         }
     }

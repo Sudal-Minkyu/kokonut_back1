@@ -1,14 +1,14 @@
 package com.app.kokonut.totalDBDownload;
 
-import com.app.kokonut.activityHistory.ActivityHistoryService;
-import com.app.kokonut.activityHistory.dto.ActivityCode;
+import com.app.kokonut.history.HistoryService;
+import com.app.kokonut.history.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.common.component.CommonUtil;
-import com.app.kokonut.common.component.Utils;
+import com.app.kokonut.common.realcomponent.CommonUtil;
+import com.app.kokonut.common.realcomponent.Utils;
 import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadListDto;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadSearchDto;
@@ -47,7 +47,7 @@ import java.util.*;
 @Service
 public class TotalDbDownloadService {
 
-    private final ActivityHistoryService activityHistoryService;
+    private final HistoryService historyService;
 
     private final GoogleOTP googleOTP;
     private final AdminRepository adminRepository;
@@ -59,14 +59,14 @@ public class TotalDbDownloadService {
 
     @Autowired
     public TotalDbDownloadService(GoogleOTP googleOTP, AdminRepository adminRepository,
-                                  ActivityHistoryService activityHistoryService, KokonutDormantService kokonutDormantService,
+                                  HistoryService historyService, KokonutDormantService kokonutDormantService,
                                   KokonutUserService kokonutUserService,
                                   TotalDbDownloadRepository totalDbDownloadRepository, TotalDbDownloadHistoryRepository totalDbDownloadHistoryRepository){
         this.googleOTP = googleOTP;
         this.adminRepository = adminRepository;
         this.kokonutUserService = kokonutUserService;
         this.kokonutDormantService = kokonutDormantService;
-        this.activityHistoryService = activityHistoryService;
+        this.historyService = historyService;
         this.totalDbDownloadRepository = totalDbDownloadRepository;
         this.totalDbDownloadHistoryRepository = totalDbDownloadHistoryRepository;
     }
@@ -119,7 +119,7 @@ public class TotalDbDownloadService {
         ActivityCode activityCode = ActivityCode.AC_22;
         // 활동이력 저장 -> 비정상 모드
         String ip = CommonUtil.clientIp();
-        Long activityHistoryId = activityHistoryService.insertActivityHistory(2, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
+        Long activityHistoryId = historyService.insertHistory(2, adminId, activityCode, companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
         // 회원 DB데이터 다운로드 요청건 insert
         TotalDbDownload totalDbDownload = new TotalDbDownload();
@@ -133,12 +133,12 @@ public class TotalDbDownloadService {
             totalDbDownloadRepository.save(totalDbDownload);
 
             log.info("회원 DB 데이터 다운로드 요청 완료");
-            activityHistoryService.updateActivityHistory(activityHistoryId,
+            historyService.updateHistory(activityHistoryId,
                     companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
         } catch (Exception e){
             log.error("e : "+e.getMessage());
             log.error("회원 DB 데이터 다운로드 요청 실패");
-            activityHistoryService.updateActivityHistory(activityHistoryId,
+            historyService.updateHistory(activityHistoryId,
                     companyCode+" - "+activityCode.getDesc()+" 실패 이력", "필드 삭제 조건에 부합하지 않습니다.", 1);
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO068.getCode(), ResponseErrorCode.KO068.getDesc()));
         }
@@ -204,7 +204,7 @@ public class TotalDbDownloadService {
             ActivityCode activityCode = ActivityCode.AC_23;
             // 활동이력 저장 -> 비정상 모드
             String ip = CommonUtil.clientIp();
-            Long activityHistoryId = activityHistoryService.insertActivityHistory(3, adminId, activityCode,
+            Long activityHistoryId = historyService.insertHistory(3, adminId, activityCode,
                     companyCode+" - "+activityCode.getDesc()+" 시도 이력", "", ip, 0, email);
 
             Optional<TotalDbDownload> optionalTotalDbDownload = totalDbDownloadRepository.findById(tdId);
@@ -415,12 +415,12 @@ public class TotalDbDownloadService {
                 totalDbDownloadHistoryRepository.save(totalDbDownloadHistory);
 
                 // 활동 완료 업데이트
-                activityHistoryService.updateActivityHistory(activityHistoryId,
+                historyService.updateHistory(activityHistoryId,
                         companyCode+" - "+activityCode.getDesc()+" 완료 이력", "", 1);
 
             } else {
                 log.error("개인정보 DB 데이터 다운로드 요청 데이터가 존재하지 않습니다.");
-                activityHistoryService.updateActivityHistory(activityHistoryId,
+                historyService.updateHistory(activityHistoryId,
                         companyCode+" - "+activityCode.getDesc()+" 실패 이력", "조회한 데이터가 없습니다.", 1);
             }
 

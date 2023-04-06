@@ -3,6 +3,7 @@ package com.app.kokonut.company;
 import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.admin.dtos.AdminOtpKeyDto;
+import com.app.kokonut.company.dtos.CompanyEncryptDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.List;
  * Remark : 기존의 코코넛 프로젝트의 Company Sql 쿼리호출
  */
 public interface CompanyRepositoryCustom {
+
+    CompanyEncryptDto findByDataKey(Long companyId);
 
 //    public void InsertCompany(HashMap<String, Object> paramMap);
 //

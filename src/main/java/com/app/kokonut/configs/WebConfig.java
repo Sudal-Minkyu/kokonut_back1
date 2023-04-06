@@ -5,12 +5,10 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.app.kokonut.keydata.KeyDataService;
-import com.app.kokonut.keydata.dtos.KeyDataAWSS3Dto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.qlrm.mapper.JpaResultMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,16 +28,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final String AWSS3ACCESSKEY;
+    @Value("${kokonut.aws.s3.access}")
+    private String AWSS3ACCESSKEY;
 
-    private final String AWSS3SECRETKEY;
-
-    @Autowired
-    public WebConfig(KeyDataService keyDataService) {
-        KeyDataAWSS3Dto keyDataAWSS3Dto = keyDataService.aws_S3_Key();
-        this.AWSS3ACCESSKEY = keyDataAWSS3Dto.getAWSS3ACCESSKEY();
-        this.AWSS3SECRETKEY = keyDataAWSS3Dto.getAWSS3SECRETKEY();
-    }
+    @Value("${kokonut.aws.s3.secret}")
+    private String AWSS3SECRETKEY;
 
     @Bean
     public BasicAWSCredentials AwsCredentianls() {
@@ -69,7 +62,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry
             .addMapping("/*/api/**")
-            .allowedOriginPatterns("http://localhost:5174", "http://localhost:5173")
+            .allowedOriginPatterns("http://localhost:5173")
             .allowedHeaders("Authorization", "Content-type", "ApiKey")
             .exposedHeaders("Authorization")
             .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name())

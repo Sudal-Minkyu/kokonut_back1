@@ -49,8 +49,8 @@ public class NoticeRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> noticeList(@RequestBody NoticeSearchDto noticeSearchDto, @PageableDefault Pageable pageable) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return noticeService.noticeList(userRole, noticeSearchDto, pageable);
+//        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        return noticeService.noticeList(null, noticeSearchDto, pageable);
     }
 
     @ApiOperation(value="Notice 내용 조회", notes="" +
@@ -61,8 +61,8 @@ public class NoticeRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> noticeDetail(@PathVariable("ntId") Long ntId) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return noticeService.noticeDetail(userRole, ntId);
+//        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        return noticeService.noticeDetail(null, ntId);
     }
 
     @ApiOperation(value="Notice 등록, 수정", notes="" +
@@ -72,9 +72,9 @@ public class NoticeRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> noticeSave(@RequestBody NoticeDetailDto noticeDetailDto) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+//        String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return noticeService.noticeSave(userRole, email, noticeDetailDto);
+        return noticeService.noticeSave(null, email, noticeDetailDto);
     }
 
     @ApiOperation(value="Notice 삭제", notes="" +
@@ -85,9 +85,9 @@ public class NoticeRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> noticeDelete(@RequestParam(name="ntId") Long ntId) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+//        String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return noticeService.noticeDelete(userRole, email, ntId);
+        return noticeService.noticeDelete(null, email, ntId);
     }
 
     @ApiOperation(value="Notice 게시 상태변경", notes="" +
@@ -97,8 +97,8 @@ public class NoticeRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> noticeState(@RequestBody NoticeStateDto noticeStateDto) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+//        String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return noticeService.noticeState(userRole, email, noticeStateDto);
+        return noticeService.noticeState(null, email, noticeStateDto);
     }
 }

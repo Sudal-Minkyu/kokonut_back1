@@ -40,8 +40,8 @@ public class FaqRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> faqList(@RequestBody FaqSearchDto faqSearchDto, @PageableDefault Pageable pageable) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return faqService.faqList(userRole, faqSearchDto, pageable);
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
+        return faqService.faqList(null, faqSearchDto, pageable);
     }
 
     @ApiOperation(value="Faq 내용 조회", notes="" +
@@ -52,8 +52,8 @@ public class FaqRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> faqDetail(@PathVariable("faqId") Long faqId) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
-        return faqService.faqDetail(userRole, faqId);
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
+        return faqService.faqDetail(null, faqId);
     }
 
     @ApiOperation(value="Faq 등록, 수정", notes="" +
@@ -63,9 +63,9 @@ public class FaqRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> faqSave(@RequestBody FaqDetailDto faqDetailDto) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return faqService.faqSave(userRole, email, faqDetailDto);
+        return faqService.faqSave(null, email, faqDetailDto);
     }
 
     @ApiOperation(value="Faq 삭제", notes="" +
@@ -76,9 +76,9 @@ public class FaqRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> faqDelete(@RequestParam(name="faqId") Long faqId) {
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return faqService.faqDelete(userRole, email, faqId);
+        return faqService.faqDelete(null, email, faqId);
     }
 
 

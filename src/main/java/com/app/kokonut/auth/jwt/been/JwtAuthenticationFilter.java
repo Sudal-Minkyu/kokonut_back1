@@ -67,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             }
                         }
                     }
-//                    log.info("리플레쉬 토큰 : "+refreshToken);
+                    log.info("리플레쉬 토큰 : "+refreshToken);
 
                     if(refreshToken == null) {
                         log.info("리플레쉬 토큰이 만료되었습니다. 새로 로그인해주시길 바랍니다.");

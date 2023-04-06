@@ -59,14 +59,16 @@ public class SecurityConfig {
 
             .and()
             .authorizeRequests()
-            .antMatchers("/favicon.ico","/swagger-ui/index.html/**","/v3/api/PersonalInfoProvision/list").permitAll()
+            // 권한 : 없음
+            .antMatchers("/favicon.ico","/swagger-ui/index.html/**",
+                    "/v3/api/PersonalInfoProvision/list", "/v3/api/History/activityList").permitAll()
             // 권한 : 권한(코코넛직원:ROLE_SYSTEM, 대표관리자:ROLE_MASTER, 최고관리자:ROLE_ADMIN, 일반관리자:ROLE_USER, 게스트:ROLE_GUEST)
             // 권한에 따라 요청허용
             .antMatchers("/v2/api/Admin/systemTest").hasAuthority(AuthorityRole.ROLE_SYSTEM.getDesc())
-            .antMatchers("/v2/api/Admin/masterTest", "/v2/api/ApiKey/**", "/v2/api/Setting/**").hasAnyAuthority(AuthorityRole.ROLE_MASTER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
-            .antMatchers("/v2/api/Admin/adminTest").hasAnyAuthority(AuthorityRole.ROLE_ADMIN.getDesc(), AuthorityRole.ROLE_MASTER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
-            .antMatchers("/v2/api/Admin/userTest").hasAnyAuthority(AuthorityRole.ROLE_USER.getDesc(), AuthorityRole.ROLE_ADMIN.getDesc(), AuthorityRole.ROLE_MASTER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
-            .antMatchers("/v2/api/Admin/guestTest", "/v2/api/Admin/**").hasAnyAuthority(AuthorityRole.ROLE_GUEST.getDesc(), AuthorityRole.ROLE_USER.getDesc(), AuthorityRole.ROLE_ADMIN.getDesc(), AuthorityRole.ROLE_MASTER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
+            .antMatchers("/v2/api/Admin/masterTest").hasAnyAuthority(AuthorityRole.ROLE_MASTER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
+            .antMatchers("/v2/api/Admin/adminTest", "/v2/api/ApiKey/**", "/v2/api/Setting/**").hasAnyAuthority(AuthorityRole.ROLE_ADMIN.getDesc(), AuthorityRole.ROLE_MASTER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
+            .antMatchers("/v2/api/Admin/userTest", "/v2/api/Admin/create").hasAnyAuthority(AuthorityRole.ROLE_USER.getDesc(), AuthorityRole.ROLE_ADMIN.getDesc(), AuthorityRole.ROLE_MASTER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
+            .antMatchers("/v2/api/Admin/guestTest", "/v2/api/Admin/**", "/v2/api/History/**").hasAnyAuthority(AuthorityRole.ROLE_GUEST.getDesc(), AuthorityRole.ROLE_USER.getDesc(), AuthorityRole.ROLE_ADMIN.getDesc(), AuthorityRole.ROLE_MASTER.getDesc(), AuthorityRole.ROLE_SYSTEM.getDesc())
             .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
 
             .and()

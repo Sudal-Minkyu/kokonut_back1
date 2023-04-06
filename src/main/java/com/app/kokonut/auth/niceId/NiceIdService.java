@@ -5,13 +5,13 @@ import com.app.kokonut.admin.AdminRepository;
 import com.app.kokonut.auth.jwt.dto.RedisDao;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.common.component.CommonUtil;
-import com.app.kokonut.common.component.Utils;
+import com.app.kokonut.common.realcomponent.CommonUtil;
+import com.app.kokonut.common.realcomponent.Utils;
 import com.app.kokonut.keydata.KeyDataService;
-import com.app.kokonut.keydata.dtos.KeyDataNICEDto;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.CookieGenerator;
@@ -40,27 +40,32 @@ import java.util.*;
 @Service
 public class NiceIdService {
 
-	public final String frontServerDomainIp;
+	@Value("${kokonut.front.server.domain}")
+	public String frontServerDomainIp;
 
-	public final String clientId;
-	
-	public final String clientSecret;
+	@Value("${kokonut.nice.id}")
+	public String clientId;
 
-	public final String productId;
+	@Value("${kokonut.nice.secret}")
+	public String clientSecret;
 
-	public final String accessToken;
+	@Value("${kokonut.nice.product}")
+	public String productId;
+
+	@Value("${kokonut.nice.access}")
+	public String accessToken;
 
 	private final AdminRepository adminRepository;
 	private final RedisDao redisDao;
 
 	@Autowired
 	public NiceIdService(KeyDataService keyDataService, AdminRepository adminRepository, RedisDao redisDao) {
-		KeyDataNICEDto keyDataNICEDto = keyDataService.nice_key();
-		this.frontServerDomainIp = keyDataNICEDto.getFRONTSERVERDOMAINIP();
-		this.clientId = keyDataNICEDto.getNICEID();
-		this.clientSecret = keyDataNICEDto.getNICESECRET();
-		this.productId = keyDataNICEDto.getNICEPRODUCT();
-		this.accessToken = keyDataNICEDto.getNICEACCESS();
+//		KeyDataNICEDto keyDataNICEDto = keyDataService.nice_key();
+//		this.frontServerDomainIp = keyDataNICEDto.getFRONTSERVERDOMAINIP();
+//		this.clientId = keyDataNICEDto.getNICEID();
+//		this.clientSecret = keyDataNICEDto.getNICESECRET();
+//		this.productId = keyDataNICEDto.getNICEPRODUCT();
+//		this.accessToken = keyDataNICEDto.getNICEACCESS();
 
 		this.adminRepository = adminRepository;
 		this.redisDao = redisDao;

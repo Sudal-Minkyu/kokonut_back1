@@ -28,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -39,7 +39,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class EmailService {
 
-    private final String hostUrl; // otp_url
+    @Value("${kokonut.otp.hostUrl}")
+    private String hostUrl; // otp_url
 
     private final EmailGroupRepository emailGroupRepository;
     private final AdminRepository adminRepository;
@@ -50,7 +51,7 @@ public class EmailService {
     public EmailService(KeyDataService keyDataService, EmailRepository emailRepository,
                         AdminRepository adminRepository,
                         EmailGroupRepository emailGroupRepository, MailSender mailSender) {
-        this.hostUrl = keyDataService.findByKeyValue("otp_url");
+//        this.hostUrl = keyDataService.findByKeyValue("otp_url");
         this.emailRepository = emailRepository;
         this.adminRepository = adminRepository;
         this.emailGroupRepository = emailGroupRepository;

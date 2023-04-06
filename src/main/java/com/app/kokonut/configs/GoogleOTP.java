@@ -4,6 +4,7 @@ import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;
 import com.app.kokonut.keydata.KeyDataService;
 import org.apache.commons.codec.binary.Base32;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
@@ -17,11 +18,12 @@ import java.util.Random;
 @Service
 public class GoogleOTP {
 
-	public final String hostUrl;
+	@Value("${kokonut.otp.hostUrl}")
+	public String hostUrl;
 
 	@Autowired
 	public GoogleOTP(KeyDataService keyDataService) {
-		this.hostUrl = keyDataService.findByKeyValue("otp_url");
+//		this.hostUrl = keyDataService.findByKeyValue("otp_url");
 	}
 
 //	public HashMap<String, String> generate(String userName) {

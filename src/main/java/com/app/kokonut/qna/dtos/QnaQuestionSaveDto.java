@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +22,9 @@ import java.util.List;
 @NoArgsConstructor
 public class QnaQuestionSaveDto {
 
+    @ApiModelProperty("분류(0:기타,1:회원정보,2:사업자정보,3:Kokonut서비스,4:결제)")
+    private String qnaType;
+
     @ApiModelProperty("제목")
     private String qnaTitle;
 
@@ -27,9 +32,6 @@ public class QnaQuestionSaveDto {
     private String qnaContent;
 
     @ApiModelProperty("첨부파일 목록")
-    private List<MultipartFile> multipartFiles; // AS-IS fileGroupId
-
-    @ApiModelProperty("분류(0:기타,1:회원정보,2:사업자정보,3:Kokonut서비스,4:결제)")
-    private Integer qnaType;
+    private List<MultipartFile> multipartFiles;
 
 }

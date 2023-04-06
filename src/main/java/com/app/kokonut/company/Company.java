@@ -152,20 +152,6 @@ public class Company implements Serializable {
     private String cpPayRequestUid;
 
     /**
-     * 암호화한 키
-     */
-    @ApiModelProperty("암호화한 키")
-    @Column(name = "cp_encrypt_text")
-    private String cpEncryptText;
-
-    /**
-     * 복호화에 사용할 데이터 키
-     */
-    @Column(name = "cp_data_key")
-    @ApiModelProperty("복호화에 사용할 데이터 키")
-    private String cpDataKey;
-
-    /**
      * 누적 휴면회원 수
      */
     @ApiModelProperty("누적 휴면회원 수")

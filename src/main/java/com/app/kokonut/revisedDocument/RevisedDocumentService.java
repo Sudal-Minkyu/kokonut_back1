@@ -10,8 +10,9 @@ import com.app.kokonut.revisedDocumentFile.RevisedDocumentFile;
 import com.app.kokonut.revisedDocumentFile.RevisedDocumentFileRepository;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.common.component.AwsS3Util;
+import com.app.kokonut.common.realcomponent.AwsS3Util;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
@@ -44,8 +45,8 @@ public class RevisedDocumentService {
     // @Value("/revise-docs/")
     private final String revDocS3Folder = "/revise-docs/"; // TODO keyData 방식으로 추후 변경
 
-    // @Value("${kokonut.aws.s3.url}")
-    private final String AWSURL;
+    @Value("${kokonut.aws.s3.url}")
+    private String AWSURL;
 
     private final AwsS3Util awsS3Util;
 
@@ -58,7 +59,7 @@ public class RevisedDocumentService {
                                   RevisedDocumentRepository revisedDocumentRepository,
                                   AdminRepository adminRepository,
                                   RevisedDocumentFileRepository revisedDocumentFileRepository) {
-        this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
+//        this.AWSURL = keyDataService.findByKeyValue("aws_s3_url");
         this.awsS3Util = awsS3Util;
         this.adminRepository = adminRepository;
         this.revisedDocumentRepository = revisedDocumentRepository;

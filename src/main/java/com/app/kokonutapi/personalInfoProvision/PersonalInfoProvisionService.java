@@ -1,17 +1,13 @@
 package com.app.kokonutapi.personalInfoProvision;
 
-import com.app.kokonut.common.component.AriaUtil;
+import com.app.kokonut.common.realcomponent.AriaUtil;
 import com.app.kokonut.configs.MailSender;
 import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionSetDto;
 import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionSaveDto;
 import org.modelmapper.ModelMapper;
-import com.app.kokonut.activityHistory.ActivityHistoryService;
-import com.app.kokonut.activityHistory.dto.ActivityCode;
+import com.app.kokonut.history.HistoryService;
 import com.app.kokonut.admin.AdminRepository;
-import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.common.AjaxResponse;
-import com.app.kokonut.common.ResponseErrorCode;
-import com.app.kokonut.common.component.CommonUtil;
 import com.app.kokonut.configs.KeyGenerateService;
 import com.app.kokonutapi.personalInfoProvision.dtos.PersonalInfoProvisionListDto;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,20 +38,20 @@ public class PersonalInfoProvisionService {
     private final MailSender mailSender;
     private final KeyGenerateService keyGenerateService;
 
-    private final ActivityHistoryService activityHistoryService;
+    private final HistoryService historyService;
 
     private final AdminRepository adminRepository;
     private final PersonalInfoProvisionRepository personalInfoProvisionRepository;
 
     @Autowired
     public PersonalInfoProvisionService(AriaUtil ariaUtil, ModelMapper modelMapper, MailSender mailSender,
-                                        KeyGenerateService keyGenerateService, ActivityHistoryService activityHistoryService,
+                                        KeyGenerateService keyGenerateService, HistoryService historyService,
                                         AdminRepository adminRepository, PersonalInfoProvisionRepository personalInfoProvisionRepository){
         this.ariaUtil = ariaUtil;
         this.modelMapper = modelMapper;
         this.mailSender = mailSender;
         this.keyGenerateService = keyGenerateService;
-        this.activityHistoryService = activityHistoryService;
+        this.historyService = historyService;
         this.adminRepository = adminRepository;
         this.personalInfoProvisionRepository = personalInfoProvisionRepository;
     }
@@ -99,7 +93,7 @@ public class PersonalInfoProvisionService {
 //        ActivityCode activityCode = ActivityCode.AC_21;
 //        // 활동이력 저장 -> 비정상 모드
 //        String ip = CommonUtil.clientIp();
-//        Long activityHistoryId = activityHistoryService.insertActivityHistory(4, adminId, activityCode, companyCode + " - " + activityCode.getDesc() + " 시도 이력", "", ip, 0, email);
+//        Long activityHistoryId = activityHistoryService.insertHistory(4, adminId, activityCode, companyCode + " - " + activityCode.getDesc() + " 시도 이력", "", ip, 0, email);
 //
 //        String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //        // 고유넘버
@@ -114,11 +108,11 @@ public class PersonalInfoProvisionService {
 //        try {
 //            personalInfoProvisionRepository.save(personalInfoProvision);
 //            log.error("정보제공 등록 성공");
-//            activityHistoryService.updateActivityHistory(activityHistoryId,
+//            activityHistoryService.updateHistory(activityHistoryId,
 //                    companyCode + " - " + activityCode.getDesc() + " 완료 이력", "", 1);
 //        } catch (Exception e){
 //            log.error("정보제공 등록 실패");
-//            activityHistoryService.updateActivityHistory(activityHistoryId,
+//            activityHistoryService.updateHistory(activityHistoryId,
 //                    companyCode + " - " + activityCode.getDesc() + " 실패 이력", "필드 삭제 조건에 부합하지 않습니다.", 1);
 //            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO073.getCode(), ResponseErrorCode.KO073.getDesc()));
 //        }

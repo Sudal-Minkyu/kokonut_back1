@@ -133,13 +133,13 @@ public class DynamicUserRestController {
 	// 개인정보 일괄등록 - 엑셀파일 검사 -> 미리보여주기 기능 - 기존코코넛 메서드 : readUploadExcelFile #일단 보류 woody
 	@PostMapping(value = "/readUploadExcelFile")
 	@ApiImplicitParams({
-//			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
-//			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
+			@ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey"),
+			@ApiImplicitParam(name ="ApiKey", value="API Key",required = true, dataTypeClass = String.class, paramType = "header", example = "apiKey")
 	})
 	public ResponseEntity<Map<String, Object>> readUploadExcelFile(@RequestParam(name="type", defaultValue = "") String type,
 																   MultipartHttpServletRequest request) {
-//		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwtOrApiKey(request);
-		return dynamicUserService.readUploadExcelFile(request, type, "woody2@kokonut.me");
+		JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwtOrApiKey(request);
+		return dynamicUserService.readUploadExcelFile(request, type, jwtFilterDto.getEmail());
 	}
 
 	// 개인정보 테이블 필드 추가 - 기존코코넛 메서드 : /member/userDB/save

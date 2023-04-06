@@ -1,6 +1,6 @@
 package com.app.kokonut.auth.jwt.been;
 
-import com.app.kokonut.common.component.Utils;
+import com.app.kokonut.common.realcomponent.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

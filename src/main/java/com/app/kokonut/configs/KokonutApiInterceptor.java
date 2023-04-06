@@ -2,7 +2,7 @@ package com.app.kokonut.configs;
 
 import com.app.kokonut.apiKey.ApiKeyService;
 import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
-import com.app.kokonut.common.component.Utils;
+import com.app.kokonut.common.realcomponent.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;

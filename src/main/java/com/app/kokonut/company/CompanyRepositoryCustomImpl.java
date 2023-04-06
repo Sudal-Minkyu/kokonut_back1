@@ -1,5 +1,11 @@
 package com.app.kokonut.company;
 
+import com.app.kokonut.company.dtos.CompanyEncryptDto;
+import com.app.kokonut.companydatakey.QCompanyDataKey;
+import com.app.kokonut.qna.QQna;
+import com.app.kokonut.qna.dtos.QnaDetailDto;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -19,5 +25,23 @@ public class CompanyRepositoryCustomImpl extends QuerydslRepositorySupport imple
         super(Company.class);
         this.jpaResultMapper = jpaResultMapper;
     }
+
+    @Override
+    public CompanyEncryptDto findByDataKey(Long companyId) {
+
+        QCompany company = QCompany.company;
+        QCompanyDataKey companyDataKey = QCompanyDataKey.companyDataKey;
+
+        JPQLQuery<CompanyEncryptDto> query = from(company)
+                .where(company.companyId.eq(companyId))
+                .innerJoin(companyDataKey).on(companyDataKey.cpCode.eq(company.cpCode))
+                .select(Projections.constructor(CompanyEncryptDto.class,
+                        company.cpCode,
+                        companyDataKey.dataKey
+                ));
+
+        return query.fetchOne();
+    }
+
 
 }

@@ -50,9 +50,9 @@ public class KnSettingRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> settingDetail(){
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return knSettingService.settingDetail(userRole, email);
+        return knSettingService.settingDetail(null, email);
     }
 
     @ApiOperation(value="관리자 환경설정 저장", notes="" +
@@ -62,9 +62,9 @@ public class KnSettingRestController {
             @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     })
     public ResponseEntity<Map<String,Object>> settingSave(@RequestBody KnSettingDetailDto knSettingDetailDto){
-        String userRole = SecurityUtil.getCurrentJwt().getRole();
+        // String userRole = SecurityUtil.getCurrentJwt().getRole();
         String email = SecurityUtil.getCurrentJwt().getEmail();
-        return knSettingService.settingSave(userRole, email, knSettingDetailDto);
+        return knSettingService.settingSave(null, email, knSettingDetailDto);
     }
 
 //    @ApiOperation(value="관리자 환경설정 삭제", notes="관리자 환경설정 전체 삭제")
