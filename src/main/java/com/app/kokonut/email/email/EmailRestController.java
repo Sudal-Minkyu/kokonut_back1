@@ -28,19 +28,19 @@ public class EmailRestController {
             "1. 토큰과 페이지 처리를 위한 값을 받는다." +
             "2. 발송한 메일 목록을 조회한다.")
     @GetMapping(value = "/emailList") // -> 기존의 코코넛 호출 메서드명 : getEmail
-    @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
-    })
-    public ResponseEntity<Map<String,Object>> emailList(Pageable pageable) {
-         return emailService.emailList(pageable);
+    @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
+    public ResponseEntity<Map<String,Object>> emailList(@RequestParam(value="searchText", defaultValue = "") String searchText,
+                                                        @RequestParam(value="stime", defaultValue = "") String stime,
+                                                        @RequestParam(value="emailType", defaultValue = "") String emailType,
+                                                        Pageable pageable) {
+        JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();
+         return emailService.emailList(jwtFilterDto.getEmail(), searchText, stime, emailType, pageable);
     }
 
     @ApiOperation(value="이메일 보내기", notes="" +
             "1. 이메일을 전송한다.")
     @PostMapping("/sendEmail")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name ="Authorization",  value="JWT Token", required = true, dataType = "string" ,paramType = "header", example = "jwtKey")
-    })
+    @ApiImplicitParam(name ="Authorization",  value="JWT Token",required = true, dataTypeClass = String.class, paramType = "header", example = "jwtKey")
     public ResponseEntity<Map<String,Object>> sendEmail(@RequestBody EmailDetailDto emailDetailDto) {
         // 접속한 사용자 이메일
         JwtFilterDto jwtFilterDto = SecurityUtil.getCurrentJwt();

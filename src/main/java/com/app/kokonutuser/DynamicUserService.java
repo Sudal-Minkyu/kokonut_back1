@@ -1,6 +1,9 @@
 package com.app.kokonutuser;
 
+import com.app.kokonut.auth.jwt.dto.JwtFilterDto;
 import com.app.kokonut.common.realcomponent.AESGCMcrypto;
+import com.app.kokonut.company.companytable.CompanyTable;
+import com.app.kokonut.company.companytable.CompanyTableRepository;
 import com.app.kokonut.history.HistoryService;
 import com.app.kokonut.history.dto.ActivityCode;
 import com.app.kokonut.admin.AdminRepository;
@@ -8,8 +11,8 @@ import com.app.kokonut.admin.dtos.AdminCompanyInfoDto;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 import com.app.kokonut.common.realcomponent.CommonUtil;
-import com.app.kokonut.company.CompanyRepository;
-import com.app.kokonut.company.CompanyService;
+import com.app.kokonut.company.company.CompanyRepository;
+import com.app.kokonut.company.company.CompanyService;
 import com.app.kokonut.configs.ExcelService;
 import com.app.kokonutdormant.KokonutDormantService;
 import com.app.kokonutdormant.dtos.KokonutDormantFieldCheckDto;
@@ -56,12 +59,13 @@ public class DynamicUserService {
 
 	private final KokonutDormantService kokonutDormantService;
 	private final KokonutRemoveService kokonutRemoveService;
+	private final CompanyTableRepository companyTableRepository;
 
 	@Autowired
 	public DynamicUserService(PasswordEncoder passwordEncoder, AdminRepository adminRepository,
-                              CompanyRepository companyRepository, ExcelService excelService,
-                              KokonutUserService kokonutUserService, KokonutDormantService kokonutDormantService, CompanyService companyService,
-                              HistoryService historyService, KokonutRemoveService kokonutRemoveService) {
+							  CompanyRepository companyRepository, ExcelService excelService,
+							  KokonutUserService kokonutUserService, KokonutDormantService kokonutDormantService, CompanyService companyService,
+							  HistoryService historyService, KokonutRemoveService kokonutRemoveService, CompanyTableRepository companyTableRepository) {
 		this.passwordEncoder = passwordEncoder;
 		this.adminRepository = adminRepository;
 		this.companyRepository = companyRepository;
@@ -71,6 +75,7 @@ public class DynamicUserService {
 		this.companyService = companyService;
 		this.historyService = historyService;
 		this.kokonutRemoveService = kokonutRemoveService;
+		this.companyTableRepository = companyTableRepository;
 	}
 
 	/**
@@ -194,7 +199,7 @@ public class DynamicUserService {
 //		log.info("result : "+result);
 
 		// kokonut_user DB 회원테이블의 컬럼리스트 조회 - 테스트완료 woody
-//		List<KokonutUserFieldDto> result = kokonutUserService.getColumns(companyCode);
+//		List<KokonutUserFieldDto> result = kokonutUserService.getUserColumns(companyCode);
 //		log.info("result : "+result);
 
 		// kokonut_user DB 회원테이블의 암호화 속성의 컬럼리스트 조회 - 테스트완료 woody
@@ -301,8 +306,8 @@ public class DynamicUserService {
 //			}
 
 		// kokonut_user DB 생성 (유저 테이블) - 테스트완료 woody
-//		boolean result = kokonutUserService.createTableKokonutUser(companyCode);
-//		log.info("result : "+result);
+		boolean result = kokonutUserService.createTableKokonutUser(companyCode);
+		log.info("result : "+result);
 
 //			if(!dynamicUserService.CreateDynamicTable(companyCode)) {
 //				logger.info("###[kokonut_user DB 항목 관리] Create Table Field. Database : kokonut_user, Table : " + companyCode);
@@ -1512,6 +1517,156 @@ public class DynamicUserService {
 			historyService.updateHistory(activityHistoryId,
 					companyCode+" - "+activityCode.getDesc()+" 실패 이력", "필드 삭제 조건에 부합하지 않습니다.", 1);
 		}
+
+		return ResponseEntity.ok(res.success(data));
+	}
+
+	// 테이블의 컬럼조회
+	public ResponseEntity<Map<String, Object>> tableColumnCall(String tableName, JwtFilterDto jwtFilterDto) {
+		log.info("tableColumnCall 호출");
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
+
+		List<KokonutUserFieldDto> kokonutUserFieldDtos = kokonutUserService.getUserColumns(tableName);
+		log.info("kokonutUserFieldDtos : "+kokonutUserFieldDtos);
+
+		List<KokonutUserFieldListDto> kokonutUserFieldListDtos = new ArrayList<>();
+		KokonutUserFieldListDto kokonutUserFieldListDto;
+		for (KokonutUserFieldDto kokonutUserFieldDto : kokonutUserFieldDtos) {
+			kokonutUserFieldListDto = new KokonutUserFieldListDto();
+			String field = kokonutUserFieldDto.getField();
+			if(!field.contains("kokonut_")) {
+				String comment = kokonutUserFieldDto.getComment();
+				if (comment != null) {
+					String[] commentText = comment.split(",");
+
+					if(commentText.length == 5) {
+						kokonutUserFieldListDto.setFieldName(field);
+
+						if (commentText[1].equals("암호화")) {
+							kokonutUserFieldListDto.setFieldSecrity(1);
+						} else {
+							kokonutUserFieldListDto.setFieldSecrity(0);
+						}
+
+						kokonutUserFieldListDto.setFieldComment(commentText[0]);
+						kokonutUserFieldListDto.setFieldCategory(commentText[3]);
+						kokonutUserFieldListDto.setFieldColor(commentText[4]);
+					}
+				}
+				kokonutUserFieldListDtos.add(kokonutUserFieldListDto);
+			}
+		}
+
+		data.put("fieldList",kokonutUserFieldListDtos);
+		return ResponseEntity.ok(res.success(data));
+	}
+
+	// 테이블의 컬럼 목록보내주는 함수
+	public List<KokonutUserFieldListDto> tableColumnList(String tableName) {
+		log.info("tableColumnList 호출");
+
+		List<KokonutUserFieldDto> kokonutUserFieldDtos = kokonutUserService.getUserColumns(tableName);
+		log.info("kokonutUserFieldDtos : "+kokonutUserFieldDtos);
+
+		List<KokonutUserFieldListDto> kokonutUserFieldListDtos = new ArrayList<>();
+		KokonutUserFieldListDto kokonutUserFieldListDto;
+		for (KokonutUserFieldDto kokonutUserFieldDto : kokonutUserFieldDtos) {
+			kokonutUserFieldListDto = new KokonutUserFieldListDto();
+			String field = kokonutUserFieldDto.getField();
+			if(!field.contains("kokonut_")) {
+				String comment = kokonutUserFieldDto.getComment();
+				if (comment != null) {
+					String[] commentText = comment.split(",");
+
+					if(commentText.length == 5) {
+						kokonutUserFieldListDto.setFieldName(field);
+
+						if (commentText[1].equals("암호화")) {
+							kokonutUserFieldListDto.setFieldSecrity(1);
+						} else {
+							kokonutUserFieldListDto.setFieldSecrity(0);
+						}
+
+						kokonutUserFieldListDto.setFieldComment(commentText[0]);
+						kokonutUserFieldListDto.setFieldCategory(commentText[3]);
+						kokonutUserFieldListDto.setFieldColor(commentText[4]);
+					}
+				}
+				kokonutUserFieldListDtos.add(kokonutUserFieldListDto);
+			}
+		}
+
+		return kokonutUserFieldListDtos;
+	}
+
+
+	// 컬럼추가 버튼(오른쪽에 추가)
+	public ResponseEntity<Map<String, Object>> tableColumnAdd(KokonutColumnAddDto kokonutColumnAddDto, JwtFilterDto jwtFilterDto) {
+		log.info("tableColumnCall 호출");
+
+		AjaxResponse res = new AjaxResponse();
+		HashMap<String, Object> data = new HashMap<>();
+
+		AdminCompanyInfoDto adminCompanyInfoDto = adminRepository.findByCompanyInfo(jwtFilterDto.getEmail());
+		Long adminId = adminCompanyInfoDto.getAdminId();
+//        Long companyId = adminCompanyInfoDto.getCompanyId();
+		String companyCode = adminCompanyInfoDto.getCompanyCode();
+
+		// 휴대전화변경 코드
+		ActivityCode activityCode = ActivityCode.AC_19;
+		// 활동이력 저장 -> 비정상 모드
+		String ip = CommonUtil.clientIp();
+
+		log.info("kokonutColumAddDto : "+ kokonutColumnAddDto);
+
+		String tableName = kokonutColumnAddDto.getTableName();
+		log.info("컬럼추가하는 테이블명 : "+tableName);
+
+		// 해당테이블의 추가컬럼 카운팅 값 가져오기
+		Optional<CompanyTable> optionalCompanyTable = companyTableRepository.findCompanyTableByCtName(tableName);
+		if(optionalCompanyTable.isPresent()) {
+			Integer tableAddColumnCount = optionalCompanyTable.get().getCtAddColumnCount();
+			log.info("추가된 컬럼수 : "+tableAddColumnCount);
+
+			List<KokonutAddColumnListDto> kokonutAddColumnListDtos = kokonutColumnAddDto.getKokonutAddColumnListDtos();
+			// 테이블에 컬럼 추가하기
+			for(KokonutAddColumnListDto kokonutAddColumnListDto : kokonutAddColumnListDtos) {
+
+				Long activityHistoryId = historyService.insertHistory(2, adminId, activityCode,
+						companyCode+" - "+activityCode.getDesc()+" 시도 이력"+ "추가된 컬럼명 : "+kokonutAddColumnListDto.getCcName(), "", ip, 0, jwtFilterDto.getEmail());
+
+				StringBuilder comment = new StringBuilder(kokonutAddColumnListDto.getCcName());
+				if(kokonutAddColumnListDto.getCcSecurity() == 0) {
+					comment.append(",비암호화");
+				} else {
+					comment.append(",암호화");
+				}
+				comment.append(",수정가능,");
+				comment.append(kokonutAddColumnListDto.getCategoryName());
+				comment.append(",");
+				comment.append(kokonutAddColumnListDto.getTextColor());
+
+				kokonutUserService.alterAddColumnTableQuery(
+						tableName, tableName+"_"+tableAddColumnCount, "VARCHAR", 256, true, "", String.valueOf(comment)
+				);
+
+				historyService.updateHistory(activityHistoryId,
+						companyCode+" - "+activityCode.getDesc()+" 시도 이력"+ "추가된 컬럼명 : "+kokonutAddColumnListDto.getCcName(), "", 1);
+
+				tableAddColumnCount++;
+			}
+
+			log.info("tableAddColumnCount : "+tableAddColumnCount);
+			optionalCompanyTable.get().setCtAddColumnCount(tableAddColumnCount);
+			companyTableRepository.save(optionalCompanyTable.get());
+		}
+
+
+
+
+
 
 		return ResponseEntity.ok(res.success(data));
 	}

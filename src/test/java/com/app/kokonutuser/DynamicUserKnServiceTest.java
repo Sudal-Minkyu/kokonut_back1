@@ -3,8 +3,8 @@
 //import com.app.kokonut.admin.AdminRepository;
 //import com.app.kokonut.admin.Admin;
 //import com.app.kokonut.admin.enums.AuthorityRole;
-//import com.app.kokonut.company.Company;
-//import com.app.kokonut.company.CompanyRepository;
+//import com.app.kokonut.company.company.Company;
+//import com.app.kokonut.company.company.CompanyRepository;
 //import org.junit.jupiter.api.AfterEach;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.springframework.beans.factory.annotation.Autowired;

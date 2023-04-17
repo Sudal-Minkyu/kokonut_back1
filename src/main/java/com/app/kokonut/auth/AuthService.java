@@ -8,6 +8,7 @@ import com.app.kokonut.admin.enums.AuthorityRole;
 import com.app.kokonut.auth.dtos.AdminCreateDto;
 import com.app.kokonut.auth.dtos.AdminGoogleOTPDto;
 import com.app.kokonut.auth.dtos.AdminPasswordChangeDto;
+import com.app.kokonut.auth.dtos.CompanyEncryptDto;
 import com.app.kokonut.auth.jwt.been.JwtTokenProvider;
 import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
@@ -20,19 +21,21 @@ import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
 import com.app.kokonut.common.component.*;
 import com.app.kokonut.common.realcomponent.*;
-import com.app.kokonut.company.Company;
-import com.app.kokonut.company.CompanyRepository;
-import com.app.kokonut.company.dtos.CompanyEncryptDto;
-import com.app.kokonut.companyFile.CompanyFile;
-import com.app.kokonut.companyFile.CompanyFileRepository;
-import com.app.kokonut.companydatakey.CompanyDataKey;
-import com.app.kokonut.companydatakey.CompanyDataKeyRepository;
+import com.app.kokonut.company.company.Company;
+import com.app.kokonut.company.company.CompanyRepository;
+import com.app.kokonut.company.companyFile.CompanyFile;
+import com.app.kokonut.company.companyFile.CompanyFileRepository;
+import com.app.kokonut.company.companydatakey.CompanyDataKey;
+import com.app.kokonut.company.companydatakey.CompanyDataKeyRepository;
+import com.app.kokonut.company.companytable.CompanyTable;
+import com.app.kokonut.company.companytable.CompanyTableRepository;
 import com.app.kokonut.configs.GoogleOTP;
 import com.app.kokonut.configs.KeyGenerateService;
 import com.app.kokonut.configs.MailSender;
 import com.app.kokonut.history.HistoryService;
 import com.app.kokonut.history.dto.ActivityCode;
 import com.app.kokonut.keydata.KeyDataService;
+import com.app.kokonutuser.KokonutUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +82,7 @@ public class AuthService {
 
     private final AdminService adminService;
     private final HistoryService historyService;
+    private final KokonutUserService kokonutUserService;
 
     private final AwsS3Util awsS3Util;
     private final AwsKmsUtil awsKmsUtil;
@@ -88,7 +92,9 @@ public class AuthService {
 
     private final CompanyRepository companyRepository;
     private final CompanyDataKeyRepository companyDataKeyRepository;
+    private final CompanyTableRepository companyTableRepository;
     private final CompanyFileRepository companyFileRepository;
+
     private final AwsKmsHistoryRepository awsKmsHistoryRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -103,20 +109,22 @@ public class AuthService {
 
     @Autowired
     public AuthService(AdminService adminService, HistoryService historyService,
-                       KeyDataService keyDataService, AwsS3Util awsS3Util, AdminRepository adminRepository,
+                       KeyDataService keyDataService, KokonutUserService kokonutUserService, AwsS3Util awsS3Util, AdminRepository adminRepository,
                        AwsKmsUtil awsKmsUtil, KeyGenerateService keyGenerateService, CompanyRepository companyRepository,
-                       CompanyDataKeyRepository companyDataKeyRepository, CompanyFileRepository companyFileRepository,
+                       CompanyDataKeyRepository companyDataKeyRepository, CompanyTableRepository companyTableRepository, CompanyFileRepository companyFileRepository,
                        AwsKmsHistoryRepository awsKmsHistoryRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
                        RedisDao redisDao, GoogleOTP googleOTP, MailSender mailSender) {
         this.adminService = adminService;
         this.historyService = historyService;
+        this.kokonutUserService = kokonutUserService;
         this.awsS3Util = awsS3Util;
         this.adminRepository = adminRepository;
         this.awsKmsUtil = awsKmsUtil;
         this.keyGenerateService = keyGenerateService;
         this.companyRepository = companyRepository;
         this.companyDataKeyRepository = companyDataKeyRepository;
+        this.companyTableRepository = companyTableRepository;
         this.companyFileRepository = companyFileRepository;
         this.awsKmsHistoryRepository = awsKmsHistoryRepository;
         this.passwordEncoder = passwordEncoder;
@@ -194,7 +202,7 @@ public class AuthService {
         boolean mailSenderResult = mailSender.sendMail(reciverEmail, reciverName, title, contents);
         if(mailSenderResult) {
             // mailSender 성공
-            log.error("### 메일전송 성공했습니다. reciver Email : "+ knEmail);
+            log.info("### 메일전송 성공했습니다. reciver Email : "+ knEmail);
         }else{
             // mailSender 실패
             log.error("### 해당 메일 전송에 실패했습니다. 관리자에게 문의하세요. reciverEmail : "+ knEmail);
@@ -317,7 +325,7 @@ public class AuthService {
         boolean mailSenderResult = mailSender.sendMail(knEmail, reciverName, title, contents);
         if(mailSenderResult){
             // mailSender 성공
-            log.error("### 메일전송 성공했습니다. reciver Email : "+ knEmail);
+            log.info("### 메일전송 성공했습니다. reciver Email : "+ knEmail);
         }else{
             // mailSender 실패
             log.error("### 해당 메일 전송에 실패했습니다. 관리자에게 문의하세요. reciverEmail : "+ knEmail);
@@ -427,10 +435,13 @@ public class AuthService {
 
         // 소속 저장
         String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
+        String cpCode = keyGenerateService.keyGenerate("kn_company", "kokonut"+nowDate, "KokonutSystem");
+
         Company company = new Company();
         // 회사 고유코드
-        company.setCpCode(keyGenerateService.keyGenerate("kn_company", "kokonut"+nowDate, "KokonutSystem"));
+        company.setCpCode(cpCode);
         company.setCpName(kokonutSignUp.getCpName());
+        company.setCpTableCount(1);
         company.setInsert_email(kokonutSignUp.getKnEmail());
         company.setInsert_date(LocalDateTime.now());
 
@@ -438,6 +449,18 @@ public class AuthService {
         CompanyDataKey companyDataKey = new CompanyDataKey();
         companyDataKey.setCpCode(company.getCpCode());
         companyDataKey.setDataKey(dataKey);
+
+        String ctName = cpCode+"_0001";
+
+        // 회사 유저 기본테이블 저장
+        CompanyTable companyTable = new CompanyTable();
+        companyTable.setCpCode(cpCode);
+        companyTable.setCtName(ctName);
+        companyTable.setCtTableCount("0001");
+        companyTable.setCtDesignation("기본");
+        companyTable.setCtAddColumnCount(1);
+        companyTable.setInsert_email(kokonutSignUp.getKnEmail());
+        companyTable.setInsert_date(LocalDateTime.now());
 
         // 계정 저장
         Admin admin = new Admin();
@@ -454,7 +477,13 @@ public class AuthService {
         admin.setInsert_email(kokonutSignUp.getKnEmail());
         admin.setInsert_date(LocalDateTime.now());
         Admin saveAdmin = adminRepository.save(admin);
+
         companyDataKeyRepository.save(companyDataKey);
+        companyTableRepository.save(companyTable);
+
+        boolean result = kokonutUserService.createTableKokonutUser(ctName);
+        log.warn("result : "+result);
+
         log.info("사업자 정보 저장 saveAdmin : "+saveAdmin.getAdminId());
 
         return ResponseEntity.ok(res.success(data));
@@ -510,14 +539,14 @@ public class AuthService {
             return ResponseEntity.ok(res.fail(ResponseErrorCode.KO034.getCode(), ResponseErrorCode.KO034.getDesc()));
         }
 
-        // 사업자번호 중복 체크
-        if (companyRepository.existsByCpBusinessNumber(businessNumber)) {
-            log.error("이미 회원가입된 사업자등록번호 입니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO035.getCode(), ResponseErrorCode.KO035.getDesc()));
-        } else if(businessNumber.length() != 10){
-            log.error("입력하신 사업자등록번호는 10자리가 아닙니다.");
-            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO035.getCode(), ResponseErrorCode.KO035.getDesc()));
-        }
+//        // 사업자번호 중복 체크
+//        if (companyRepository.existsByCpBusinessNumber(businessNumber)) {
+//            log.error("이미 회원가입된 사업자등록번호 입니다.");
+//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO035.getCode(), ResponseErrorCode.KO035.getDesc()));
+//        } else if(businessNumber.length() != 10){
+//            log.error("입력하신 사업자등록번호는 10자리가 아닙니다.");
+//            return ResponseEntity.ok(res.fail(ResponseErrorCode.KO035.getCode(), ResponseErrorCode.KO035.getDesc()));
+//        }
 
         // 비밀번호 일치한지 체크
         if (!signUp.getKnPassword().equals(signUp.getKnPasswordConfirm())) {
@@ -574,13 +603,13 @@ public class AuthService {
         String nowDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
         company.setCpCode(keyGenerateService.keyGenerate("kn_company", "kokonut"+nowDate, "KokonutSystem"));
         company.setCpName(signUp.getCpName());
-        company.setCpRepresentative(signUp.getCpRepresentative());
-        company.setCpTel(signUp.getCpTel());
-        company.setCpBusinessType(signUp.getCpBusinessType());
-        company.setCpBusinessNumber(businessNumber);
-        company.setCpAddress(signUp.getCpAddress());
-        company.setCpAddressNumber(signUp.getCpAddressNumber());
-        company.setCpAddressDetail(signUp.getCpAddressDetail());
+//        company.setCpRepresentative(signUp.getCpRepresentative());
+//        company.setCpTel(signUp.getCpTel());
+//        company.setCpBusinessType(signUp.getCpBusinessType());
+//        company.setCpBusinessNumber(businessNumber);
+//        company.setCpAddress(signUp.getCpAddress());
+//        company.setCpAddressNumber(signUp.getCpAddressNumber());
+//        company.setCpAddressDetail(signUp.getCpAddressDetail());
 //        company.setCpDataKey(dataKey);
         company.setInsert_email(signUp.getKnEmail());
         company.setInsert_date(LocalDateTime.now());
@@ -620,7 +649,7 @@ public class AuthService {
             log.info("CompanyFile 저장(Insert) 로직 시작");
 
             CompanyFile companyFile = new CompanyFile();
-            companyFile.setCompanyId(saveCompany.getCompanyId());
+            companyFile.setCpCode(saveCompany.getCpCode());
 
             // 파일 오리지널 Name
             String originalFilename = Normalizer.normalize(Objects.requireNonNull(multipartFile.getOriginalFilename()), Normalizer.Form.NFC);

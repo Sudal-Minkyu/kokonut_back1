@@ -21,11 +21,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/v2/api/Qna")
 public class QnaRestController {
-    // 기존 코코넛 SystemQnaController 컨트롤러 리팩토링
-    // 기존 url : /system/qna , 변경 url : /api/Qna
-
-    // 기존 코코넛 MemberQnaController 컨트롤러 리팩토링
-    // 기존 url : /member/qna" , 변경 url : /api/Qna
 
     private final QnaService qnaService;
 

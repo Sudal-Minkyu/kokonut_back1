@@ -1,8 +1,8 @@
 package com.app.kokonutuser;
 
-import com.app.kokonut.company.CompanyService;
-import com.app.kokonutuser.common.CommonRepositoryCustom;
-import com.app.kokonutuser.common.dtos.CommonFieldDto;
+import com.app.kokonut.commonfield.dtos.CommonFieldDto;
+import com.app.kokonut.history.dto.Column;
+import com.app.kokonut.commonfield.CommonFieldRepositoryCustom;
 import com.app.kokonutuser.dtos.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +26,14 @@ public class KokonutUserService {
 
 	private final PasswordEncoder passwordEncoder;
 
-	private final CommonRepositoryCustom commonRepositoryCustom;
+	private final CommonFieldRepositoryCustom commonFieldRepositoryCustom;
 	private final DynamicUserRepositoryCustom dynamicUserRepositoryCustom;
 
 	@Autowired
-	public KokonutUserService(PasswordEncoder passwordEncoder, CommonRepositoryCustom commonRepositoryCustom,
+	public KokonutUserService(PasswordEncoder passwordEncoder, CommonFieldRepositoryCustom commonFieldRepositoryCustom,
 							  DynamicUserRepositoryCustom dynamicUserRepositoryCustom){
 		this.passwordEncoder = passwordEncoder;
-		this.commonRepositoryCustom = commonRepositoryCustom;
+		this.commonFieldRepositoryCustom = commonFieldRepositoryCustom;
 		this.dynamicUserRepositoryCustom = dynamicUserRepositoryCustom;
 	}
 
@@ -331,25 +331,23 @@ public class KokonutUserService {
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
 	/**
-	 * 동적테이블 생성
-	 * @param companyCode : 사업자번호(고유값)
+	 * 동적 기본테이블 생성
+	 * @param ctName : 테이블명(사업자코드+테이블카운트 수)
 	 * @return boolean
 	 * 기존 코코넛 : CreateDynamicTable
 	 */
 	@Transactional
-	public boolean createTableKokonutUser(String companyCode) {
+	public boolean createTableKokonutUser(String ctName) {
 		log.info("createTableKokonutUser 호출");
 
 		boolean isSuccess = false;
 
 		try {
-//			List<HashMap<String, Object>> commonTable = SelectCommonUserTable();
-
-			List<CommonFieldDto> commonTable = commonRepositoryCustom.selectCommonUserTable();
-			log.info("가져온 commonTable 필드리스트 : "+commonTable);
+			List<CommonFieldDto> commonTable = commonFieldRepositoryCustom.selectCommonUserTable();
+//			log.info("가져온 commonTable 필드리스트 : "+commonTable);
 			
 			StringBuilder sb = new StringBuilder();
-			sb.append("CREATE TABLE " + "`").append(companyCode).append("` ( ");
+			sb.append("CREATE TABLE " + "`").append(ctName).append("` ( ");
 
 			int num = 0;
 			for (CommonFieldDto commonFieldDto : commonTable) {
@@ -395,17 +393,18 @@ public class KokonutUserService {
 				sb.append(query);
 				num++;
 			}
-
 			sb.append(")");
 			String createQuery = sb.toString();
 
 			log.info("createQuery : "+createQuery);
 			dynamicUserRepositoryCustom.userCommonTable(createQuery);
 
-			log.info("동적 테이블 생성 완료 - 테이블 명 : "+companyCode);
+			log.info("동적 테이블 생성 완료 - 테이블 명 : "+ctName);
 			isSuccess = true;
-		} catch (Exception e) {
-			log.error("동적 테이블 생성 실패 - 테이블 명 : "+companyCode);
+		}
+		catch (Exception e) {
+			log.error("e : "+e);
+			log.error("동적 테이블 생성 실패 - 테이블 명 : "+ctName);
 		}
 
 		return isSuccess;
@@ -450,7 +449,7 @@ public class KokonutUserService {
 	/**
 	 * 컬럼(필드) 추가
 	 *
-	 * @param companyCode - 추가(수정)할 테이블 명
+	 * @param tableName 	- 추가할 테이블 명
 	 * @param field 		- 변경 할 컬럼
 	 * @param type 			- 데이터 타입
 	 * @param length		- 데이터 길이
@@ -460,7 +459,7 @@ public class KokonutUserService {
 	 * 기존 코코넛 : AlterAddColumnTableQuery
 	 */
 	@Transactional
-	public void alterAddColumnTableQuery(String companyCode, String field, String type, int length, Boolean isNull, String defaultValue, String comment) {
+	public void alterAddColumnTableQuery(String tableName, String field, String type, int length, Boolean isNull, String defaultValue, String comment) {
 		log.info("alterAddColumnTableQuery 호출");
 
 		try {
@@ -473,7 +472,7 @@ public class KokonutUserService {
 
 			StringBuilder sb = new StringBuilder();
 
-			sb.append("ALTER TABLE `").append(companyCode).append("`");
+			sb.append("ALTER TABLE `").append(tableName).append("`");
 			sb.append(" ADD COLUMN " + "`").append(field).append("`");
 
 			if(length == 0) {
@@ -495,9 +494,9 @@ public class KokonutUserService {
 
 			dynamicUserRepositoryCustom.userCommonTable(updateQuery);
 
-			log.info("유저테이블 필드추가 성공 : "+companyCode);
+			log.info("유저테이블 필드추가 성공 : "+tableName);
 		} catch (Exception e) {
-			log.error("유저테이블 필드추가 에러 : "+companyCode);
+			log.error("유저테이블 필드추가 에러 : "+tableName);
 		}
 
 	}

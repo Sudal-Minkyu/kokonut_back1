@@ -1,6 +1,6 @@
 package com.app.kokonut.setting;
 
-import com.app.kokonut.company.QCompany;
+import com.app.kokonut.company.company.QCompany;
 import com.app.kokonut.setting.dtos.KnSettingDetailDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;

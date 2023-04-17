@@ -2,7 +2,7 @@ package com.app.kokonut.email.email;
 
 import com.app.kokonut.email.email.dtos.EmailDetailDto;
 import com.app.kokonut.email.email.dtos.EmailListDto;
-import com.app.kokonut.email.emailGroup.QEmailGroup;
+import com.app.kokonut.email.emailgroup.QEmailGroup;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;

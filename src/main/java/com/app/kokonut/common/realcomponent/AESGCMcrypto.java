@@ -38,11 +38,34 @@ public class AESGCMcrypto {
 
     public static void main(String[] args) throws Exception {
 
-        String dataKey = createDataKey();
+        String dataKey = createDataKey(); // 데이키를 받음
+
+
         SecretKey secretKey = generateDataKey(dataKey);
         byte[] ivBytes = generateIV(); // IV 값
 
-        String plaintext = "Hello, world!";
+        String plaintext = "김민규만규김민규만규김민규만규김민규만규";
+//        plaintext : 20
+//        15:02:00.315 [main] INFO com.app.kokonut.common.realcomponent.AESGCMcrypto - 암호화 할 값 : 김민규만규김민규만규김민규만규김민규만규
+//        15:02:00.316 [main] INFO com.app.kokonut.common.realcomponent.AESGCMcrypto - encrypt 호출
+//        15:02:00.318 [main] INFO com.app.kokonut.common.realcomponent.AESGCMcrypto - b : [B@4d48bd85
+//        15:02:00.318 [main] INFO com.app.kokonut.common.realcomponent.AESGCMcrypto - base64 byte : 76
+//        15:02:00.318 [main] INFO com.app.kokonut.common.realcomponent.AESGCMcrypto - base64 string : 104
+//
+//        String plaintext = "abcdeabcdeabcdeabcde";
+//        plaintext : 20
+//         - 암호화 할 값 : abcdeabcdeabcdeabcde
+//         - encrypt 호출
+//         b : [B@4d48bd85
+//         base64 byte : 36
+//         base64 string : 48
+        
+        log.info("plaintext : " + plaintext.length());
+
+//      gkstls2006@naver.com -> 암호화 : 7HS90ZkXY6yLV+qrM6e9tLQXdNbP7yZ4wyjewqO5URhCpAHF       ,NxhDfexShL83YMvt06JBtQ==
+//      hello, world -> 암호화           QsMHeorxRsS61HuhhBloKd2OZDcEJ0nNowhYUw==     ,vY78hnpLZkM13m4lfBs1kQ==
+//      VeLL/bShT3LHjfa5oC/lYaLwACm+IJUyC6ENi2Ba5++fvQ5f/AvP83zreTaF87eFdEPu2ndSBcsU0qQjvxis/LBCLP5WY5low51PIMgFfO/qEWq82e25Xu5LEv/XotPH9JNp0syavZDhrLACNx0+AyqttbN2K/2JlO1btm0JO9VM8FivkCCsaAFNTi/sYQIR1y6ikdaNVxsLi40IxknUPtC8Lg==
+
         log.info("암호화 할 값 : " + plaintext);
 
         String ciphertext = encrypt(plaintext.getBytes(StandardCharsets.UTF_8), secretKey, ivBytes);

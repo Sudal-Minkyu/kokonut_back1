@@ -2,9 +2,7 @@ package com.app.kokonut.admin;
 
 import com.app.kokonut.admin.dtos.*;
 import com.app.kokonut.admin.enums.AuthorityRole;
-import com.app.kokonut.company.QCompany;
-import com.app.kokonut.history.QHistory;
-import com.app.kokonut.history.dto.ActivityCode;
+import com.app.kokonut.company.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.qlrm.mapper.JpaResultMapper;

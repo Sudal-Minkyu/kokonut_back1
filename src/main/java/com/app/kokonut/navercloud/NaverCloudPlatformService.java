@@ -1363,6 +1363,7 @@ public class NaverCloudPlatformService {
     // 이메일용 메서드
     public boolean sendMail(NCloudPlatformMailRequest request) {
 
+        //
         boolean isSuccess = false;
 
         final String URL = "https://mail.apigw.ntruss.com/api/v1/mails";
@@ -1406,7 +1407,7 @@ public class NaverCloudPlatformService {
             String code = String.valueOf(conn.getResponseCode());
             String data = sb.toString();
 
-            log.error("code: {}, data: {}", code, data);
+            log.info("code: {}, data: {}", code, data);
 
             br.close();
             conn.disconnect();

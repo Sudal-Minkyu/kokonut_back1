@@ -8,8 +8,8 @@
 //import com.app.kokonut.auth.jwt.dto.AuthRequestDto;
 //import com.app.kokonut.auth.jwt.dto.AuthResponseDto;
 //import com.app.kokonut.auth.jwt.dto.GoogleOtpGenerateDto;
-//import com.app.kokonut.company.Company;
-//import com.app.kokonut.company.CompanyRepository;
+//import com.app.kokonut.company.company.Company;
+//import com.app.kokonut.company.company.CompanyRepository;
 //import com.app.kokonut.faq.dtos.FaqSearchDto;
 //import com.google.gson.Gson;
 //import org.apache.commons.codec.binary.Base32;

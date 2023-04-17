@@ -8,8 +8,8 @@
 //import com.app.kokonut.apiKey.dtos.TestApiKeyExpiredListDto;
 //import com.app.kokonut.apiKey.ApiKey;
 //import com.app.kokonut.apiKey.ApiKeyRepository;
-//import com.app.kokonut.company.Company;
-//import com.app.kokonut.company.CompanyRepository;
+//import com.app.kokonut.company.company.Company;
+//import com.app.kokonut.company.company.CompanyRepository;
 //import org.junit.jupiter.api.AfterEach;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.DisplayName;
@@ -208,7 +208,7 @@
 //        System.out.println("apiKeyDetail : "+apiKeyDetail);
 //
 //        // then
-////        assertEquals(1, apiKeyDetail.getIdx());
+//        assertEquals(1, apiKeyDetail.getIdx());
 //    }
 //
 //    @Test

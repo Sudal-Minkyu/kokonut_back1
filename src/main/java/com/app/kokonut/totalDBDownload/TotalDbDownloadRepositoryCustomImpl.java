@@ -1,7 +1,7 @@
 package com.app.kokonut.totalDBDownload;
 
 import com.app.kokonut.admin.QAdmin;
-import com.app.kokonut.company.QCompany;
+import com.app.kokonut.company.company.QCompany;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadListDto;
 import com.app.kokonut.totalDBDownload.dtos.TotalDbDownloadSearchDto;
 import com.querydsl.core.types.Projections;

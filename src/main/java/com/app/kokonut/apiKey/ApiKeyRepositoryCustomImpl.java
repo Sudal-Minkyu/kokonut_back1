@@ -3,7 +3,7 @@ package com.app.kokonut.apiKey;
 import com.app.kokonut.admin.QAdmin;
 import com.app.kokonut.apiKey.dtos.ApiKeyDto;
 import com.app.kokonut.apiKey.dtos.ApiKeyInfoDto;
-import com.app.kokonut.company.QCompany;
+import com.app.kokonut.company.company.QCompany;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.slf4j.Slf4j;

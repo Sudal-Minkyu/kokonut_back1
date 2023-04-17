@@ -7,11 +7,11 @@ import com.app.kokonut.admin.dtos.AdminEmailInfoDto;
 import com.app.kokonut.email.email.dtos.EmailDetailDto;
 import com.app.kokonut.email.email.dtos.EmailListDto;
 
-import com.app.kokonut.email.emailGroup.EmailGroupRepository;
+import com.app.kokonut.email.emailgroup.EmailGroupRepository;
 
-import com.app.kokonut.email.emailGroup.dtos.EmailGroupAdminInfoDto;
-import com.app.kokonut.email.emailGroup.dtos.EmailGroupListDto;
-import com.app.kokonut.email.emailGroup.EmailGroup;
+import com.app.kokonut.email.emailgroup.dtos.EmailGroupAdminInfoDto;
+import com.app.kokonut.email.emailgroup.dtos.EmailGroupListDto;
+import com.app.kokonut.email.emailgroup.EmailGroup;
 import com.app.kokonut.configs.MailSender;
 import com.app.kokonut.common.AjaxResponse;
 import com.app.kokonut.common.ResponseErrorCode;
@@ -35,6 +35,11 @@ import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author Woody
+ * Date : 2023-04-07
+ * Remark :
+ */
 @Slf4j
 @Service
 public class EmailService {
@@ -62,8 +67,13 @@ public class EmailService {
      * 이메일 목록 조회
      * @param pageable 페이징 처리를 위한 정보
      */
-    public ResponseEntity<Map<String,Object>> emailList(Pageable pageable){
-        log.info("### emailList 호출");
+    public ResponseEntity<Map<String,Object>> emailList(String email, String searchText, String stime, String emailType, Pageable pageable){
+        log.info("emailList 호출");
+
+        log.info("email : "+email);
+        log.info("searchText : "+searchText);
+        log.info("stime : "+stime);
+        log.info("emailType : "+emailType);
 
         AjaxResponse res = new AjaxResponse();
         Page<EmailListDto> emailListDtos = emailRepository.findByEmailPage(pageable);
